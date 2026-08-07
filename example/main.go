@@ -114,8 +114,7 @@ es.addEventListener("datastar-patch-signals", (e) => {
 });
 </script>
 </body>
-</html>`, datastar.ScriptTag("/datastar.js"))
-	if err != nil {
+</html>`, datastar.ScriptTag("/datastar.js")); err != nil {
 		log.Printf("index: write response: %v", err)
 	}
 }
