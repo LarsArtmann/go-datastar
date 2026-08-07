@@ -3,9 +3,9 @@ package datastar
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"time"
 
+	errorfamily "github.com/larsartmann/go-error-family"
 	"github.com/larsartmann/go-sse"
 )
 
@@ -83,7 +83,8 @@ func NewSignalsIfMissingPatch(v any, opts ...SignalsPatchOption) (SignalsPatch, 
 func MarshalSignals(v any) ([]byte, error) {
 	b, err := json.Marshal(v)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal signals: %w", err)
+		return nil, errorfamily.Wrapf(err, errorfamily.Rejection,
+			CodeSignalsMarshalFailed, "marshal signals value of type %T", v)
 	}
 	return b, nil
 }

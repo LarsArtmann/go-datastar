@@ -2,10 +2,11 @@ package datastar
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 
+	errorfamily "github.com/larsartmann/go-error-family"
 	"github.com/larsartmann/go-sse"
 )
 
@@ -30,9 +31,11 @@ func ReadSignals(r *http.Request, signals any) error {
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			if err == http.ErrBodyReadAfterClose {
-				return fmt.Errorf("body already closed (create SSE after ReadSignals?): %w", err)
+				return ErrBodyReadAfterClose
 			}
-			return fmt.Errorf("failed to read body: %w", err)
+			return errorfamily.Wrapf(err, errorfamily.Transient,
+				CodeBodyReadFailed, "read request body").
+				WithContext("method", r.Method)
 		}
 		if len(body) == 0 {
 			return nil
@@ -41,7 +44,10 @@ func ReadSignals(r *http.Request, signals any) error {
 	}
 
 	if err := json.Unmarshal(input, signals); err != nil {
-		return fmt.Errorf("failed to unmarshal signals: %w", err)
+		return errorfamily.Wrapf(err, errorfamily.Rejection,
+			CodeSignalsUnmarshalFailed, "unmarshal signals JSON into %T", signals).
+			WithContext("method", r.Method).
+			WithContext("input_bytes", strconv.Itoa(len(input)))
 	}
 	return nil
 }

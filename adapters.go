@@ -2,9 +2,10 @@ package datastar
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"strings"
+
+	errorfamily "github.com/larsartmann/go-error-family"
 )
 
 // TemplComponent satisfies the component rendering interface for the [Templ]
@@ -21,7 +22,8 @@ type TemplComponent interface {
 func ElementsFromTempl(c TemplComponent, opts ...ElementPatchOption) (ElementsPatch, error) {
 	var buf strings.Builder
 	if err := c.Render(context.Background(), &buf); err != nil {
-		return ElementsPatch{}, fmt.Errorf("failed to render templ component: %w", err)
+		return ElementsPatch{}, errorfamily.Wrapf(err, errorfamily.Orchestration,
+			CodeTemplRenderFailed, "render templ component to HTML")
 	}
 	return NewElementsPatch(buf.String(), opts...), nil
 }
@@ -39,7 +41,8 @@ type GoStarElementRenderer interface {
 func ElementsFromGostar(r GoStarElementRenderer, opts ...ElementPatchOption) (ElementsPatch, error) {
 	var buf strings.Builder
 	if err := r.Render(&buf); err != nil {
-		return ElementsPatch{}, fmt.Errorf("failed to render gostar element: %w", err)
+		return ElementsPatch{}, errorfamily.Wrapf(err, errorfamily.Orchestration,
+			CodeGostarRenderFailed, "render gostar element to HTML")
 	}
 	return NewElementsPatch(buf.String(), opts...), nil
 }
