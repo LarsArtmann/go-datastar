@@ -258,7 +258,3 @@ func verifyEventRemoveElement(t *testing.T, event sseEvent) {
 		}
 	}
 }
-
-func sliceContains(slice []string, want string) bool {
-	return slices.Contains(slice, want)
-}

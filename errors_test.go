@@ -102,7 +102,7 @@ func TestError_ReadSignals_BodyReadFailed_Transient(t *testing.T) {
 func TestError_ReadSignals_UnmarshalFailed_Rejection(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequestWithContext(
+	req := httptest.NewRequestWithContext(
 		context.Background(),
 		http.MethodPost,
 		"/",
@@ -111,7 +111,7 @@ func TestError_ReadSignals_UnmarshalFailed_Rejection(t *testing.T) {
 
 	var s map[string]any
 
-	err := datastar.ReadSignals(r, &s)
+	err := datastar.ReadSignals(req, &s)
 
 	errorfamilytest.AssertFamily(t, err, errorfamily.Rejection)
 	errorfamilytest.AssertCode(t, err, datastar.CodeSignalsUnmarshalFailed)

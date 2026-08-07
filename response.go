@@ -1,12 +1,12 @@
 package datastar
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
 	"time"
 
 	"github.com/larsartmann/go-sse"
+	errorfamily "github.com/larsartmann/go-error-family"
 )
 
 // Response wraps an [sse.Stream] and provides fluent methods for sending
@@ -38,7 +38,7 @@ func wrapStreamError(err error) error {
 		return nil
 	}
 
-	return fmt.Errorf("send SSE event: %w", err)
+	return errorfamily.WrapTransient(err, CodeStreamSendFailed, "send SSE event")
 }
 
 func (r *Response) PatchElements(html string, opts ...ElementPatchOption) error {

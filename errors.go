@@ -60,6 +60,10 @@ const (
 	// CodeNamespaceInvalid: [NamespaceFromString] received an unrecognized
 	// namespace string.
 	CodeNamespaceInvalid = "datastar.namespace_invalid"
+
+	// CodeStreamSendFailed: [Response] could not deliver an SSE event to the
+	// underlying stream. Wraps any error returned by the transport.
+	CodeStreamSendFailed = "datastar.stream_send_failed"
 )
 
 // Sentinel errors for fixed-message failure modes. Match with [errors.Is]:
