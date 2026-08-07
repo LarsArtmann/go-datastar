@@ -148,18 +148,18 @@ func TestReadSignals_FromBody(t *testing.T) {
 		Count int    `json:"count"`
 	}
 
-	var s signals
+	var decoded signals
 
-	if err := datastar.ReadSignals(req, &s); err != nil {
+	if err := datastar.ReadSignals(req, &decoded); err != nil {
 		t.Fatalf("ReadSignals: %v", err)
 	}
 
-	if s.Name != "test" {
-		t.Errorf("Name: got %q, want %q", s.Name, "test")
+	if decoded.Name != "test" {
+		t.Errorf("Name: got %q, want %q", decoded.Name, "test")
 	}
 
-	if s.Count != 5 {
-		t.Errorf("Count: got %d, want 5", s.Count)
+	if decoded.Count != 5 {
+		t.Errorf("Count: got %d, want 5", decoded.Count)
 	}
 }
 
@@ -168,13 +168,13 @@ func TestReadSignals_FromQuery(t *testing.T) {
 
 	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api?datastar=%7B%22x%22%3A1%7D", nil)
 
-	var s map[string]int
-	if err := datastar.ReadSignals(req, &s); err != nil {
+	var decoded map[string]int
+	if err := datastar.ReadSignals(req, &decoded); err != nil {
 		t.Fatalf("ReadSignals: %v", err)
 	}
 
-	if s["x"] != 1 {
-		t.Errorf("x: got %d, want 1", s["x"])
+	if decoded["x"] != 1 {
+		t.Errorf("x: got %d, want 1", decoded["x"])
 	}
 }
 
@@ -183,13 +183,13 @@ func TestReadSignals_EmptyQuery(t *testing.T) {
 
 	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api", nil)
 
-	var s map[string]any
-	if err := datastar.ReadSignals(req, &s); err != nil {
+	var decoded map[string]any
+	if err := datastar.ReadSignals(req, &decoded); err != nil {
 		t.Fatalf("ReadSignals: %v", err)
 	}
 
-	if len(s) != 0 {
-		t.Errorf("should be empty; got %v", s)
+	if len(decoded) != 0 {
+		t.Errorf("should be empty; got %v", decoded)
 	}
 }
 
@@ -198,13 +198,13 @@ func TestReadSignals_EmptyBody(t *testing.T) {
 
 	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api", strings.NewReader(""))
 
-	var s map[string]any
-	if err := datastar.ReadSignals(req, &s); err != nil {
+	var decoded map[string]any
+	if err := datastar.ReadSignals(req, &decoded); err != nil {
 		t.Fatalf("ReadSignals: %v", err)
 	}
 
-	if len(s) != 0 {
-		t.Errorf("should be empty; got %v", s)
+	if len(decoded) != 0 {
+		t.Errorf("should be empty; got %v", decoded)
 	}
 }
 
@@ -213,9 +213,9 @@ func TestReadSignals_MalformedJSON(t *testing.T) {
 
 	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api", strings.NewReader("{bad json"))
 
-	var s map[string]any
+	var decoded map[string]any
 
-	err := datastar.ReadSignals(req, &s)
+	err := datastar.ReadSignals(req, &decoded)
 	if err == nil {
 		t.Fatal("expected error for malformed JSON")
 	}
@@ -234,18 +234,18 @@ func TestReadSignals_NestedStruct(t *testing.T) {
 		Items []int `json:"items"`
 	}
 
-	var s nested
+	var decoded nested
 
-	if err := datastar.ReadSignals(req, &s); err != nil {
+	if err := datastar.ReadSignals(req, &decoded); err != nil {
 		t.Fatalf("ReadSignals: %v", err)
 	}
 
-	if s.User.Name != "bob" {
-		t.Errorf("User.Name: got %q, want bob", s.User.Name)
+	if decoded.User.Name != "bob" {
+		t.Errorf("User.Name: got %q, want bob", decoded.User.Name)
 	}
 
-	if len(s.Items) != 3 {
-		t.Errorf("Items: got %d, want 3", len(s.Items))
+	if len(decoded.Items) != 3 {
+		t.Errorf("Items: got %d, want 3", len(decoded.Items))
 	}
 }
 

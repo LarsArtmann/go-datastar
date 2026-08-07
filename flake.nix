@@ -12,10 +12,6 @@
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    go-sse-src = {
-      url = "github:LarsArtmann/go-sse";
-      flake = false;
-    };
   };
 
   outputs =
@@ -44,7 +40,7 @@
           goPkg = pkgs.go_1_26;
           buildGoModule = pkgs.buildGoModule.override { go = goPkg; };
           version = self.rev or self.dirtyRev or "dev";
-          vendorHash = "sha256-TzgUuZw7DdKK4uSM/6wTU31yvMp8TyWtFp+1JP7l7Gg=";
+          vendorHash = "sha256-+BcQ1X/Jz/P8dkvfy+kQOU8LPYAxOB1I5ST5lpvTjFk=";
 
           hermeticCheck = buildGoModule {
             pname = "go-datastar";
@@ -57,19 +53,6 @@
             proxyVendor = true;
             doCheck = true;
             env.GOEXPERIMENT = "jsonv2";
-
-            # The go.mod has a local replace directive
-            # (replace github.com/larsartmann/go-sse => ../go-sse) for
-            # development. During the hermetic Nix build, proxyVendor needs to
-            # resolve this path, so we copy the go-sse source to the expected
-            # sibling location. postPatch runs in both the go-modules FOD
-            # (where `go mod download` resolves the replace) and the main
-            # derivation (harmless — the source is already vendored by then).
-            postPatch = ''
-              mkdir -p ../go-sse
-              cp -r ${inputs.go-sse-src}/* ../go-sse/
-              chmod -R u+w ../go-sse
-            '';
 
             meta = {
               description = "DataStar protocol library for Go";
