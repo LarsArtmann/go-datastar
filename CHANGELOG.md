@@ -2,30 +2,67 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.0.1] - 2026-08-07
+
+First public release. DataStar protocol library for Go — patches as first-class
+values producing `sse.Event`, built on [go-sse](https://github.com/LarsArtmann/go-sse).
+
 ### Added
 
-- `MemoryStore` type: ring buffer implementing `sse.EventStore` for reconnection replay
-- `NewMemoryStore(capacity)` and `DefaultMemoryStoreCapacity` (128)
-- E2E HTTP round-trip test verifying wire-format parity with the DataStar SDK
-- Nix flake `go-sse-src` input for hermetic builds with local `replace` directive
-- Response method tests covering all 11 methods previously at 0% coverage
-- ADR 001 documenting the go-datastar/go-sse/SDK layered architecture
+- **Core `Patch` interface** — `Patch interface { Event() sse.Event }`. Every
+  protocol message is a value that can be stored, queued, filtered, replayed, and
+  broadcast through go-sse's `Broadcaster[T]`, `EventStore`, `SubscribeFilter`.
+- **Four patch types**: `ElementsPatch`, `SignalsPatch`, `ScriptPatch`,
+  `DispatchCustomEventPatch` — each with functional-option constructors.
+- **Convenience patch constructors**: `NewRemovePatch`, `NewRemoveByIDPatch`,
+  `NewRedirectPatch`, `NewConsoleLogPatch`, `NewConsoleErrorPatch`,
+  `NewReplaceURLPatch`, `NewPrefetchPatch`, `NewSignalsIfMissingPatch`, plus
+  printf-style variants (`WithSelectorf`, `NewRedirectfPatch`, `NewConsoleLogfPatch`).
+- **`Response` fluent builder** — wraps `sse.Stream` with 16 methods for
+  single-connection patching (`PatchElements`, `MarshalAndPatchSignals`,
+  `ExecuteScript`, `Redirect`, `ConsoleLog`, `ConsoleError`,
+  `DispatchCustomEvent`, `ReplaceURL`, `Prefetch`, `RemoveElement`,
+  `RemoveElementByID`, `ApplyPatches`, `Send`, `Stream`, etc.). Plus
+  `NewResponseFromHTTP`, `ErrorResponse`, `NotificationResponse` helpers.
+- **Template engine adapters**: `ElementsFromTempl` (Templ) and
+  `ElementsFromGostar` (GoStar) — render components to HTML without imposing a
+  dependency on consumers who prefer a different engine.
+- **`MemoryStore`** — in-memory ring buffer implementing `sse.EventStore` for
+  SSE reconnection replay. `NewMemoryStore(capacity)` with
+  `DefaultMemoryStoreCapacity` (128).
+- **Embedded DataStar JS client** (v1.0.2) — `ScriptHandler()` serves the bundle
+  with ETag and Cache-Control headers. Also `ScriptHandlerWith` for custom
+  bundles, `ScriptTag(path)`, `Version()`.
+- **Inbound helpers**: `ReadSignals(r, &target)` extracts signals from
+  `?datastar=` query param (GET/DELETE) or JSON body (all other methods);
+  `LastEventID(r)` extracts the reconnection event ID.
+- **HTTP action helpers**: `GetSSE`, `PostSSE`, `PutSSE`, `PatchSSE`, `DeleteSSE`
+  generate DataStar `@get`/`@post`/etc. attribute strings.
+- **Sugar helpers**: mode helpers (`WithModeInner`, `WithModePrepend`, ...),
+  namespace helpers (`WithNamespaceSVG`, `WithNamespaceMathML`), selector
+  helpers (`WithSelectorID`), validation helpers (`ElementPatchModeFromString`,
+  `NamespaceFromString`).
+- **Typed error system** built on
+  [go-error-family](https://github.com/LarsArtmann/go-error-family): every error
+  carries a stable code, a behavioral family (Rejection / Transient /
+  Orchestration), and structured context. Two sentinel errors
+  (`ErrBodyReadAfterClose`, `ErrEventNameRequired`) and nine stable codes.
+- **Wire-format parity** with the upstream DataStar SDK — mode `outer` and
+  namespace `html` never emitted, retry gating, script wrapping, signal
+  splitting, dataline key trailing spaces.
+- **Complete test suite** including E2E HTTP round-trip test verifying
+  wire-format parity and response method tests covering all builder methods.
+- **Example application** (`example/`): live-feed demo using pure DataStar
+  attributes with zero JavaScript, broadcasting patches through go-sse.
+- **Nix flake** for hermetic builds with `buildGoModule`, treefmt formatting,
+  and dev shell.
 
 ### Changed
 
-- `flake.nix` `vendorHash` computed and set (was `lib.fakeHash`)
-- `postPatch` in Nix build copies go-sse source to resolve local `replace` directive
-
-### Fixed
-
-- `example/main.go` rewritten with pure DataStar attributes (zero JavaScript)
-
-## [0.1.0] - 2026-01-01
-
-### Added
-
-- Initial release
+- Removed local `replace` directive — the module now resolves `go-sse v0.4.0`
+  and `go-error-family v0.10.0` from the Go module proxy.
