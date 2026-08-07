@@ -12,6 +12,8 @@ import (
 	"github.com/larsartmann/go-sse"
 )
 
+var errWriteFailed = errors.New("write failed")
+
 func TestOptionConstructors(t *testing.T) {
 	t.Parallel()
 
@@ -20,6 +22,7 @@ func TestOptionConstructors(t *testing.T) {
 
 		d := 7500 * time.Millisecond
 		patch := datastar.NewScriptPatch("console.log(1)", datastar.WithScriptRetryDuration(d))
+
 		if patch.RetryDuration != d {
 			t.Errorf("RetryDuration: got %v, want %v", patch.RetryDuration, d)
 		}
@@ -30,6 +33,7 @@ func TestOptionConstructors(t *testing.T) {
 
 		patch := datastar.SignalsPatch{}
 		datastar.WithSignalsEventID("evt-99")(&patch)
+
 		if patch.EventID != "evt-99" {
 			t.Errorf("EventID: got %q, want %q", patch.EventID, "evt-99")
 		}
@@ -41,6 +45,7 @@ func TestOptionConstructors(t *testing.T) {
 		d := 3000 * time.Millisecond
 		patch := datastar.SignalsPatch{}
 		datastar.WithSignalsRetryDuration(d)(&patch)
+
 		if patch.RetryDuration != d {
 			t.Errorf("RetryDuration: got %v, want %v", patch.RetryDuration, d)
 		}
@@ -53,7 +58,9 @@ func TestOptionConstructors(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+
 		datastar.WithCustomEventBubbles(false)(&patch)
+
 		if patch.Bubbles {
 			t.Error("Bubbles: got true, want false")
 		}
@@ -66,7 +73,9 @@ func TestOptionConstructors(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+
 		datastar.WithCustomEventCancelable(false)(&patch)
+
 		if patch.Cancelable {
 			t.Error("Cancelable: got true, want false")
 		}
@@ -79,7 +88,9 @@ func TestOptionConstructors(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+
 		datastar.WithCustomEventComposed(false)(&patch)
+
 		if patch.Composed {
 			t.Error("Composed: got true, want false")
 		}
@@ -92,7 +103,9 @@ func TestOptionConstructors(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+
 		datastar.WithCustomEventEventID("evt-42")(&patch)
+
 		if patch.EventID != "evt-42" {
 			t.Errorf("EventID: got %q, want %q", patch.EventID, "evt-42")
 		}
@@ -102,10 +115,13 @@ func TestOptionConstructors(t *testing.T) {
 // failingWriter is an http.ResponseWriter that always returns an error on Write.
 type failingWriter struct{}
 
-func (failingWriter) Write([]byte) (int, error) { return 0, errors.New("write failed") }
-func (failingWriter) WriteHeader(int)           {}
-func (failingWriter) Header() http.Header           { return make(http.Header) }
-func (failingWriter) Flush()                    {}
+func (failingWriter) Write([]byte) (int, error) { return 0, errWriteFailed }
+
+func (failingWriter) WriteHeader(int) {}
+
+func (failingWriter) Header() http.Header { return make(http.Header) }
+
+func (failingWriter) Flush() {}
 
 func TestWrapStreamError_ErrorPath(t *testing.T) {
 	t.Parallel()
