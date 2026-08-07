@@ -1,6 +1,7 @@
 package datastar
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 	"time"
@@ -32,9 +33,16 @@ func NewResponse(stream *sse.Stream) *Response {
 	return &Response{stream: stream}
 }
 
-// PatchElements sends an [ElementsPatch] on the underlying stream.
+func wrapStreamError(err error) error {
+	if err == nil {
+		return nil
+	}
+
+	return fmt.Errorf("send SSE event: %w", err)
+}
+
 func (r *Response) PatchElements(html string, opts ...ElementPatchOption) error {
-	return r.stream.Send(NewElementsPatch(html, opts...).Event())
+	return wrapStreamError(r.stream.Send(NewElementsPatch(html, opts...).Event()))
 }
 
 // PatchElementsTempl renders a [TemplComponent] to HTML and sends it as an
@@ -45,7 +53,7 @@ func (r *Response) PatchElementsTempl(c TemplComponent, opts ...ElementPatchOpti
 		return err
 	}
 
-	return r.stream.Send(patch.Event())
+	return wrapStreamError(r.stream.Send(patch.Event()))
 }
 
 // PatchSignals sends a [SignalsPatch] with the given pre-encoded JSON.
@@ -58,7 +66,7 @@ func (r *Response) PatchSignals(signalsJSON []byte, opts ...SignalsPatchOption) 
 		opt(&patch)
 	}
 
-	return r.stream.Send(patch.Event())
+	return wrapStreamError(r.stream.Send(patch.Event()))
 }
 
 // MarshalAndPatchSignals marshals a Go value to JSON and sends it as a
@@ -69,38 +77,38 @@ func (r *Response) MarshalAndPatchSignals(v any, opts ...SignalsPatchOption) err
 		return err
 	}
 
-	return r.stream.Send(patch.Event())
+	return wrapStreamError(r.stream.Send(patch.Event()))
 }
 
 // RemoveElement sends an [ElementsPatch] that removes the given selector.
 func (r *Response) RemoveElement(selector string, opts ...ElementPatchOption) error {
-	return r.stream.Send(NewRemovePatch(selector, opts...).Event())
+	return wrapStreamError(r.stream.Send(NewRemovePatch(selector, opts...).Event()))
 }
 
 // RemoveElementByID sends an [ElementsPatch] that removes the element with the
 // given ID.
 func (r *Response) RemoveElementByID(id string, opts ...ElementPatchOption) error {
-	return r.stream.Send(NewRemoveByIDPatch(id, opts...).Event())
+	return wrapStreamError(r.stream.Send(NewRemoveByIDPatch(id, opts...).Event()))
 }
 
 // ExecuteScript sends a [ScriptPatch] on the underlying stream.
 func (r *Response) ExecuteScript(script string, opts ...ScriptPatchOption) error {
-	return r.stream.Send(NewScriptPatch(script, opts...).Event())
+	return wrapStreamError(r.stream.Send(NewScriptPatch(script, opts...).Event()))
 }
 
 // Redirect sends a redirect [ScriptPatch].
 func (r *Response) Redirect(targetURL string, opts ...ScriptPatchOption) error {
-	return r.stream.Send(NewRedirectPatch(targetURL, opts...).Event())
+	return wrapStreamError(r.stream.Send(NewRedirectPatch(targetURL, opts...).Event()))
 }
 
 // ConsoleLog sends a console.log [ScriptPatch].
 func (r *Response) ConsoleLog(msg string, opts ...ScriptPatchOption) error {
-	return r.stream.Send(NewConsoleLogPatch(msg, opts...).Event())
+	return wrapStreamError(r.stream.Send(NewConsoleLogPatch(msg, opts...).Event()))
 }
 
 // ConsoleError sends a console.error [ScriptPatch].
 func (r *Response) ConsoleError(err error, opts ...ScriptPatchOption) error {
-	return r.stream.Send(NewConsoleErrorPatch(err, opts...).Event())
+	return wrapStreamError(r.stream.Send(NewConsoleErrorPatch(err, opts...).Event()))
 }
 
 // DispatchCustomEvent dispatches a custom DOM event on the client.
@@ -114,23 +122,23 @@ func (r *Response) DispatchCustomEvent(
 		return err
 	}
 
-	return r.stream.Send(patch.Event())
+	return wrapStreamError(r.stream.Send(patch.Event()))
 }
 
 // ReplaceURL sends a replaceState [ScriptPatch].
 func (r *Response) ReplaceURL(u url.URL, opts ...ScriptPatchOption) error {
-	return r.stream.Send(NewReplaceURLPatch(u, opts...).Event())
+	return wrapStreamError(r.stream.Send(NewReplaceURLPatch(u, opts...).Event()))
 }
 
 // Prefetch sends a speculation rules [ScriptPatch] to prefetch the given URLs.
 func (r *Response) Prefetch(urls ...string) error {
-	return r.stream.Send(NewPrefetchPatch(urls...).Event())
+	return wrapStreamError(r.stream.Send(NewPrefetchPatch(urls...).Event()))
 }
 
 // ApplyPatches sends multiple patches in sequence.
 func (r *Response) ApplyPatches(patches ...Patch) error {
 	for _, p := range patches {
-		if err := r.stream.Send(p.Event()); err != nil {
+		if err := wrapStreamError(r.stream.Send(p.Event())); err != nil {
 			return err
 		}
 	}
@@ -140,7 +148,7 @@ func (r *Response) ApplyPatches(patches ...Patch) error {
 
 // Send sends a raw [sse.Event] on the underlying stream.
 func (r *Response) Send(evt sse.Event) error {
-	return r.stream.Send(evt)
+	return wrapStreamError(r.stream.Send(evt))
 }
 
 // Stream returns the underlying [sse.Stream].
@@ -154,7 +162,7 @@ func sendSignalsMap(stream *sse.Stream, signals map[string]any) error {
 		return err
 	}
 
-	return stream.Send(patch.Event())
+	return wrapStreamError(stream.Send(patch.Event()))
 }
 
 // ErrorResponse sends a signals patch with error information that the

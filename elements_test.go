@@ -96,22 +96,22 @@ func TestElementsPatch_AllModes(t *testing.T) {
 		{"after", datastar.ElementPatchModeAfter, "mode after"},
 	}
 
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
 			t.Parallel()
 
 			patch := datastar.NewElementsPatch("<div>x</div>",
-				datastar.WithMode(tc.mode),
+				datastar.WithMode(testCase.mode),
 			)
 			got := patch.Event()
 
-			if tc.want == "" {
+			if testCase.want == "" {
 				if strings.Contains(got.Data, "mode ") {
 					t.Errorf("mode should not be emitted for outer; Data=%q", got.Data)
 				}
 			} else {
-				if !strings.Contains(got.Data, tc.want) {
-					t.Errorf("Data should contain %q; got %q", tc.want, got.Data)
+				if !strings.Contains(got.Data, testCase.want) {
+					t.Errorf("Data should contain %q; got %q", testCase.want, got.Data)
 				}
 			}
 		})

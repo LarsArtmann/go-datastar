@@ -141,7 +141,7 @@ func TestReadSignals_FromBody(t *testing.T) {
 	t.Parallel()
 
 	body := strings.NewReader(`{"name":"test","count":5}`)
-	r := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api", body)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api", body)
 
 	type signals struct {
 		Name  string `json:"name"`
@@ -150,7 +150,7 @@ func TestReadSignals_FromBody(t *testing.T) {
 
 	var s signals
 
-	if err := datastar.ReadSignals(r, &s); err != nil {
+	if err := datastar.ReadSignals(req, &s); err != nil {
 		t.Fatalf("ReadSignals: %v", err)
 	}
 
@@ -166,10 +166,10 @@ func TestReadSignals_FromBody(t *testing.T) {
 func TestReadSignals_FromQuery(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api?datastar=%7B%22x%22%3A1%7D", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api?datastar=%7B%22x%22%3A1%7D", nil)
 
 	var s map[string]int
-	if err := datastar.ReadSignals(r, &s); err != nil {
+	if err := datastar.ReadSignals(req, &s); err != nil {
 		t.Fatalf("ReadSignals: %v", err)
 	}
 
@@ -181,10 +181,10 @@ func TestReadSignals_FromQuery(t *testing.T) {
 func TestReadSignals_EmptyQuery(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api", nil)
 
 	var s map[string]any
-	if err := datastar.ReadSignals(r, &s); err != nil {
+	if err := datastar.ReadSignals(req, &s); err != nil {
 		t.Fatalf("ReadSignals: %v", err)
 	}
 
@@ -196,10 +196,10 @@ func TestReadSignals_EmptyQuery(t *testing.T) {
 func TestReadSignals_EmptyBody(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api", strings.NewReader(""))
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api", strings.NewReader(""))
 
 	var s map[string]any
-	if err := datastar.ReadSignals(r, &s); err != nil {
+	if err := datastar.ReadSignals(req, &s); err != nil {
 		t.Fatalf("ReadSignals: %v", err)
 	}
 
@@ -211,11 +211,11 @@ func TestReadSignals_EmptyBody(t *testing.T) {
 func TestReadSignals_MalformedJSON(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api", strings.NewReader("{bad json"))
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api", strings.NewReader("{bad json"))
 
 	var s map[string]any
 
-	err := datastar.ReadSignals(r, &s)
+	err := datastar.ReadSignals(req, &s)
 	if err == nil {
 		t.Fatal("expected error for malformed JSON")
 	}
@@ -225,7 +225,7 @@ func TestReadSignals_NestedStruct(t *testing.T) {
 	t.Parallel()
 
 	body := strings.NewReader(`{"user":{"name":"bob"},"items":[1,2,3]}`)
-	r := httptest.NewRequestWithContext(context.Background(), http.MethodPut, "/api", body)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodPut, "/api", body)
 
 	type nested struct {
 		User struct {
@@ -236,7 +236,7 @@ func TestReadSignals_NestedStruct(t *testing.T) {
 
 	var s nested
 
-	if err := datastar.ReadSignals(r, &s); err != nil {
+	if err := datastar.ReadSignals(req, &s); err != nil {
 		t.Fatalf("ReadSignals: %v", err)
 	}
 
@@ -254,10 +254,10 @@ func TestReadSignals_NestedStruct(t *testing.T) {
 func TestLastEventID_FromHeader(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events", nil)
-	r.Header.Set("Last-Event-ID", "42")
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events", nil)
+	req.Header.Set("Last-Event-ID", "42")
 
-	id := datastar.LastEventID(r)
+	id := datastar.LastEventID(req)
 	if id.Get() != "42" {
 		t.Errorf("got %q, want 42", id.Get())
 	}
@@ -266,9 +266,9 @@ func TestLastEventID_FromHeader(t *testing.T) {
 func TestLastEventID_FromQuery(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events?lastEventId=99", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events?lastEventId=99", nil)
 
-	id := datastar.LastEventID(r)
+	id := datastar.LastEventID(req)
 	if id.Get() != "99" {
 		t.Errorf("got %q, want 99", id.Get())
 	}
@@ -277,10 +277,10 @@ func TestLastEventID_FromQuery(t *testing.T) {
 func TestLastEventID_HeaderTakesPriority(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events?lastEventId=99", nil)
-	r.Header.Set("Last-Event-ID", "42")
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events?lastEventId=99", nil)
+	req.Header.Set("Last-Event-ID", "42")
 
-	id := datastar.LastEventID(r)
+	id := datastar.LastEventID(req)
 	if id.Get() != "42" {
 		t.Errorf("got %q, want 42 (header should win)", id.Get())
 	}
@@ -289,9 +289,9 @@ func TestLastEventID_HeaderTakesPriority(t *testing.T) {
 func TestLastEventID_None(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events", nil)
 
-	id := datastar.LastEventID(r)
+	id := datastar.LastEventID(req)
 	if !id.IsZero() {
 		t.Errorf("got %q, want zero", id.Get())
 	}
@@ -300,9 +300,9 @@ func TestLastEventID_None(t *testing.T) {
 func TestLastEventID_ReturnsSSEEventID(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events", nil)
-	r.Header.Set("Last-Event-ID", "abc")
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events", nil)
+	req.Header.Set("Last-Event-ID", "abc")
 
-	id := datastar.LastEventID(r)
+	id := datastar.LastEventID(req)
 	_ = id // verify return type is sse.EventID
 }

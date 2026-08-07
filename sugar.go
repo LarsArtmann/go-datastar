@@ -97,14 +97,14 @@ var ValidNamespaces = []Namespace{
 
 // ElementPatchModeFromString converts a string to an [ElementPatchMode].
 // Returns an error for invalid mode strings.
-func ElementPatchModeFromString(s string) (ElementPatchMode, error) {
+func ElementPatchModeFromString(modeStr string) (ElementPatchMode, error) {
 	i := slices.IndexFunc(
 		ValidElementPatchModes,
-		func(m ElementPatchMode) bool { return string(m) == s },
+		func(m ElementPatchMode) bool { return string(m) == modeStr },
 	)
 	if i < 0 {
 		return "", errorfamily.Newf(errorfamily.Rejection,
-			CodeElementPatchModeInvalid, "unrecognized element patch mode %q", s)
+			CodeElementPatchModeInvalid, "unrecognized element patch mode %q", modeStr)
 	}
 
 	return ValidElementPatchModes[i], nil
@@ -112,11 +112,11 @@ func ElementPatchModeFromString(s string) (ElementPatchMode, error) {
 
 // NamespaceFromString converts a string to a [Namespace].
 // Returns an error for invalid namespace strings.
-func NamespaceFromString(s string) (Namespace, error) {
-	i := slices.IndexFunc(ValidNamespaces, func(ns Namespace) bool { return string(ns) == s })
+func NamespaceFromString(nsStr string) (Namespace, error) {
+	i := slices.IndexFunc(ValidNamespaces, func(ns Namespace) bool { return string(ns) == nsStr })
 	if i < 0 {
 		return "", errorfamily.Newf(errorfamily.Rejection,
-			CodeNamespaceInvalid, "unrecognized namespace %q", s)
+			CodeNamespaceInvalid, "unrecognized namespace %q", nsStr)
 	}
 
 	return ValidNamespaces[i], nil

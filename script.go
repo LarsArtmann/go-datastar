@@ -88,37 +88,37 @@ func WithScriptRetryDuration(d time.Duration) ScriptPatchOption {
 // NewScriptPatch creates a [ScriptPatch] with the given JavaScript source and
 // options. The default retry duration is [DefaultRetryDuration].
 func NewScriptPatch(script string, opts ...ScriptPatchOption) ScriptPatch {
-	p := ScriptPatch{
+	patch := ScriptPatch{
 		Script:        script,
 		RetryDuration: DefaultRetryDuration,
 	}
 	for _, opt := range opts {
-		opt(&p)
+		opt(&patch)
 	}
 
-	return p
+	return patch
 }
 
 // Event returns the [sse.Event] for this script patch. The script is wrapped in
 // a <script> element and sent as a patch-elements event with selector=body,
 // mode=append — matching the DataStar SDK wire format exactly.
 func (p ScriptPatch) Event() sse.Event {
-	var sb strings.Builder
-	sb.WriteString("<script")
+	var builder strings.Builder
+	builder.WriteString("<script")
 
 	for _, attr := range p.Attributes {
-		sb.WriteString(" ")
-		sb.WriteString(attr)
+		builder.WriteString(" ")
+		builder.WriteString(attr)
 	}
 
 	// nil and true both add data-effect="el.remove()"
 	if p.AutoRemove == nil || *p.AutoRemove {
-		sb.WriteString(` data-effect="el.remove()"`)
+		builder.WriteString(` data-effect="el.remove()"`)
 	}
 
-	sb.WriteString(">")
-	sb.WriteString(p.Script)
-	sb.WriteString("</script>")
+	builder.WriteString(">")
+	builder.WriteString(p.Script)
+	builder.WriteString("</script>")
 
 	elementsOpts := []ElementPatchOption{
 		WithSelector("body"),
@@ -132,5 +132,5 @@ func (p ScriptPatch) Event() sse.Event {
 		elementsOpts = append(elementsOpts, WithElementsRetryDuration(p.RetryDuration))
 	}
 
-	return NewElementsPatch(sb.String(), elementsOpts...).Event()
+	return NewElementsPatch(builder.String(), elementsOpts...).Event()
 }

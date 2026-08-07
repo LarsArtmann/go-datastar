@@ -127,23 +127,23 @@ h1 { margin-bottom: 0.25rem; }
 </html>`, datastar.ScriptTag("/datastar.js"))
 }
 
-func eventsHandler(b *sse.Broadcaster[sse.Event]) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		stream := sse.NewStream(w, r)
+func eventsHandler(broadcaster *sse.Broadcaster[sse.Event]) http.HandlerFunc {
+	return func(responseWriter http.ResponseWriter, request *http.Request) {
+		stream := sse.NewStream(responseWriter, request)
 		defer func() {
 			if err := stream.Close(); err != nil {
 				log.Printf("events: close stream: %v", err)
 			}
 		}()
 
-		ch := b.Subscribe()
-		defer b.Unsubscribe(ch)
+		events := broadcaster.Subscribe()
+		defer broadcaster.Unsubscribe(events)
 
 		for {
 			select {
-			case <-r.Context().Done():
+			case <-request.Context().Done():
 				return
-			case evt, ok := <-ch:
+			case evt, ok := <-events:
 				if !ok {
 					return
 				}

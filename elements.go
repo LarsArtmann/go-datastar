@@ -150,7 +150,7 @@ func (p ElementsPatch) Event() sse.Event {
 
 	evt := sse.Event{
 		Event: string(EventTypePatchElements),
-		Data:  sse.JoinLines(dataLines...),
+		Data:  strings.Join(dataLines, "\n"),
 	}
 
 	if p.EventID != "" {

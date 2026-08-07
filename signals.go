@@ -3,6 +3,7 @@ package datastar
 import (
 	"bytes"
 	"encoding/json/v2"
+	"strings"
 	"time"
 
 	errorfamily "github.com/larsartmann/go-error-family"
@@ -63,15 +64,15 @@ func NewSignalsPatch(v any, opts ...SignalsPatchOption) (SignalsPatch, error) {
 		return SignalsPatch{}, err
 	}
 
-	p := SignalsPatch{
+	patch := SignalsPatch{
 		Signals:       b,
 		RetryDuration: DefaultRetryDuration,
 	}
 	for _, opt := range opts {
-		opt(&p)
+		opt(&patch)
 	}
 
-	return p, nil
+	return patch, nil
 }
 
 // NewSignalsIfMissingPatch creates a [SignalsPatch] with OnlyIfMissing=true.
@@ -109,7 +110,7 @@ func (p SignalsPatch) Event() sse.Event {
 
 	evt := sse.Event{
 		Event: string(EventTypePatchSignals),
-		Data:  sse.JoinLines(dataLines...),
+		Data:  strings.Join(dataLines, "\n"),
 	}
 
 	if p.EventID != "" {

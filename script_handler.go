@@ -29,30 +29,30 @@ func ScriptHandler() http.Handler {
 
 // ScriptHandlerWith returns an [http.Handler] that serves a custom JavaScript
 // bundle. Use this to serve a different version of the DataStar client.
-func ScriptHandlerWith(js []byte, _ string) http.Handler {
-	etag := computeETag(js)
+func ScriptHandlerWith(scriptBytes []byte, _ string) http.Handler {
+	etag := computeETag(scriptBytes)
 
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet && r.Method != http.MethodHead {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+	return http.HandlerFunc(func(responseWriter http.ResponseWriter, request *http.Request) {
+		if request.Method != http.MethodGet && request.Method != http.MethodHead {
+			http.Error(responseWriter, "method not allowed", http.StatusMethodNotAllowed)
 
 			return
 		}
 
-		w.Header().Set("Content-Type", "text/javascript; charset=utf-8")
-		w.Header().Set("ETag", etag)
-		w.Header().Set("Cache-Control", "public, max-age=86400") // 24h
+		responseWriter.Header().Set("Content-Type", "text/javascript; charset=utf-8")
+		responseWriter.Header().Set("ETag", etag)
+		responseWriter.Header().Set("Cache-Control", "public, max-age=86400") // 24h
 
 		// Support conditional requests
-		if match := r.Header.Get("If-None-Match"); match == etag {
-			w.WriteHeader(http.StatusNotModified)
+		if match := request.Header.Get("If-None-Match"); match == etag {
+			responseWriter.WriteHeader(http.StatusNotModified)
 
 			return
 		}
 
-		w.Header().Set("Content-Length", strconv.Itoa(len(js)))
+		responseWriter.Header().Set("Content-Length", strconv.Itoa(len(scriptBytes)))
 
-		if _, err := w.Write(js); err != nil {
+		if _, err := responseWriter.Write(scriptBytes); err != nil {
 			return // client disconnected or write failed; nothing more to send
 		}
 	})

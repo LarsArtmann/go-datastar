@@ -97,7 +97,7 @@ func NewDispatchCustomEventPatch(
 		return DispatchCustomEventPatch{}, ErrEventNameRequired
 	}
 
-	p := DispatchCustomEventPatch{
+	patch := DispatchCustomEventPatch{
 		EventName:  eventName,
 		Detail:     detail,
 		Selector:   defaultCustomEventSelector,
@@ -106,10 +106,10 @@ func NewDispatchCustomEventPatch(
 		Composed:   true,
 	}
 	for _, opt := range opts {
-		opt(&p)
+		opt(&patch)
 	}
 
-	return p, nil
+	return patch, nil
 }
 
 // Event returns the [sse.Event] for this custom event dispatch.
@@ -124,7 +124,7 @@ func (p DispatchCustomEventPatch) Event() sse.Event {
 		elementsJS = fmt.Sprintf(`document.querySelectorAll(%q)`, p.Selector)
 	}
 
-	js := fmt.Sprintf(`{
+	scriptBody := fmt.Sprintf(`{
 	const elements = %s
 
 	const event = new CustomEvent(%q, {
@@ -152,7 +152,7 @@ func (p DispatchCustomEventPatch) Event() sse.Event {
 		scriptOpts = append(scriptOpts, WithScriptEventID(p.EventID))
 	}
 
-	return NewScriptPatch(js, scriptOpts...).Event()
+	return NewScriptPatch(scriptBody, scriptOpts...).Event()
 }
 
 // NewReplaceURLPatch creates a [ScriptPatch] that replaces the browser URL
