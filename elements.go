@@ -95,16 +95,16 @@ func WithElementsRetryDuration(d time.Duration) ElementPatchOption {
 // The default mode is [DefaultElementPatchMode] (outer), which is never emitted
 // on the wire.
 func NewElementsPatch(html string, opts ...ElementPatchOption) ElementsPatch {
-	p := ElementsPatch{
+	patch := ElementsPatch{
 		HTML:          html,
 		Mode:          DefaultElementPatchMode,
 		RetryDuration: DefaultRetryDuration,
 	}
 	for _, opt := range opts {
-		opt(&p)
+		opt(&patch)
 	}
 
-	return p
+	return patch
 }
 
 // Event returns the [sse.Event] for this element patch. The data lines are

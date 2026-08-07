@@ -50,15 +50,15 @@ func (r *Response) PatchElementsTempl(c TemplComponent, opts ...ElementPatchOpti
 
 // PatchSignals sends a [SignalsPatch] with the given pre-encoded JSON.
 func (r *Response) PatchSignals(signalsJSON []byte, opts ...SignalsPatchOption) error {
-	p := SignalsPatch{
+	patch := SignalsPatch{
 		Signals:       signalsJSON,
 		RetryDuration: DefaultRetryDuration,
 	}
 	for _, opt := range opts {
-		opt(&p)
+		opt(&patch)
 	}
 
-	return r.stream.Send(p.Event())
+	return r.stream.Send(patch.Event())
 }
 
 // MarshalAndPatchSignals marshals a Go value to JSON and sends it as a

@@ -148,10 +148,10 @@ func advanceSSEEvent(current *sseEvent, line string) *sseEvent {
 		current = &sseEvent{}
 	}
 
-	if strings.HasPrefix(line, "event: ") {
-		current.eventType = strings.TrimPrefix(line, "event: ")
-	} else if strings.HasPrefix(line, "data: ") {
-		current.dataLines = append(current.dataLines, strings.TrimPrefix(line, "data: "))
+	if before, ok := strings.CutPrefix(line, "event: "); ok {
+		current.eventType = before
+	} else if before, ok := strings.CutPrefix(line, "data: "); ok {
+		current.dataLines = append(current.dataLines, before)
 	}
 
 	return current

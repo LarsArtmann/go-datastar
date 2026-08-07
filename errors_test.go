@@ -58,7 +58,7 @@ func (afterCloseBody) Close() error             { return nil }
 func TestError_ReadSignals_BodyReadAfterClose(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequest(http.MethodPost, "/", nil)
+	r := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/", nil)
 	r.Body = afterCloseBody{}
 
 	err := datastar.ReadSignals(r, new(map[string]any))
@@ -86,7 +86,7 @@ func (failingBody) Close() error               { return nil }
 func TestError_ReadSignals_BodyReadFailed_Transient(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequest(http.MethodPost, "/", nil)
+	r := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/", nil)
 	r.Body = failingBody{err: errConnReset}
 
 	err := datastar.ReadSignals(r, new(map[string]any))
@@ -102,7 +102,7 @@ func TestError_ReadSignals_BodyReadFailed_Transient(t *testing.T) {
 func TestError_ReadSignals_UnmarshalFailed_Rejection(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequest(http.MethodPost, "/", strings.NewReader("{bad json"))
+	r := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/", strings.NewReader("{bad json"))
 
 	var s map[string]any
 

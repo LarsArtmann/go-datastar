@@ -141,7 +141,7 @@ func TestReadSignals_FromBody(t *testing.T) {
 	t.Parallel()
 
 	body := strings.NewReader(`{"name":"test","count":5}`)
-	r := httptest.NewRequest(http.MethodPost, "/api", body)
+	r := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api", body)
 
 	type signals struct {
 		Name  string `json:"name"`
@@ -166,7 +166,7 @@ func TestReadSignals_FromBody(t *testing.T) {
 func TestReadSignals_FromQuery(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequest(http.MethodGet, "/api?datastar=%7B%22x%22%3A1%7D", nil)
+	r := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api?datastar=%7B%22x%22%3A1%7D", nil)
 
 	var s map[string]int
 	if err := datastar.ReadSignals(r, &s); err != nil {
@@ -181,7 +181,7 @@ func TestReadSignals_FromQuery(t *testing.T) {
 func TestReadSignals_EmptyQuery(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequest(http.MethodGet, "/api", nil)
+	r := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api", nil)
 
 	var s map[string]any
 	if err := datastar.ReadSignals(r, &s); err != nil {
@@ -196,7 +196,7 @@ func TestReadSignals_EmptyQuery(t *testing.T) {
 func TestReadSignals_EmptyBody(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequest(http.MethodPost, "/api", strings.NewReader(""))
+	r := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api", strings.NewReader(""))
 
 	var s map[string]any
 	if err := datastar.ReadSignals(r, &s); err != nil {
@@ -211,7 +211,7 @@ func TestReadSignals_EmptyBody(t *testing.T) {
 func TestReadSignals_MalformedJSON(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequest(http.MethodPost, "/api", strings.NewReader("{bad json"))
+	r := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api", strings.NewReader("{bad json"))
 
 	var s map[string]any
 
@@ -225,7 +225,7 @@ func TestReadSignals_NestedStruct(t *testing.T) {
 	t.Parallel()
 
 	body := strings.NewReader(`{"user":{"name":"bob"},"items":[1,2,3]}`)
-	r := httptest.NewRequest(http.MethodPut, "/api", body)
+	r := httptest.NewRequestWithContext(context.Background(), http.MethodPut, "/api", body)
 
 	type nested struct {
 		User struct {
@@ -254,7 +254,7 @@ func TestReadSignals_NestedStruct(t *testing.T) {
 func TestLastEventID_FromHeader(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequest(http.MethodGet, "/events", nil)
+	r := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events", nil)
 	r.Header.Set("Last-Event-ID", "42")
 
 	id := datastar.LastEventID(r)
@@ -266,7 +266,7 @@ func TestLastEventID_FromHeader(t *testing.T) {
 func TestLastEventID_FromQuery(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequest(http.MethodGet, "/events?lastEventId=99", nil)
+	r := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events?lastEventId=99", nil)
 
 	id := datastar.LastEventID(r)
 	if id.Get() != "99" {
@@ -277,7 +277,7 @@ func TestLastEventID_FromQuery(t *testing.T) {
 func TestLastEventID_HeaderTakesPriority(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequest(http.MethodGet, "/events?lastEventId=99", nil)
+	r := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events?lastEventId=99", nil)
 	r.Header.Set("Last-Event-ID", "42")
 
 	id := datastar.LastEventID(r)
@@ -289,7 +289,7 @@ func TestLastEventID_HeaderTakesPriority(t *testing.T) {
 func TestLastEventID_None(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequest(http.MethodGet, "/events", nil)
+	r := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events", nil)
 
 	id := datastar.LastEventID(r)
 	if !id.IsZero() {
@@ -300,7 +300,7 @@ func TestLastEventID_None(t *testing.T) {
 func TestLastEventID_ReturnsSSEEventID(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequest(http.MethodGet, "/events", nil)
+	r := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events", nil)
 	r.Header.Set("Last-Event-ID", "abc")
 
 	id := datastar.LastEventID(r)
