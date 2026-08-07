@@ -1,7 +1,7 @@
 version: "2"
 run:
   timeout: 5m
-  go: 1.26.5
+  go: "1.26"
   build-tags:
     - goexperiment.arenas
     - goexperiment.goroutineleakprofile
@@ -193,6 +193,9 @@ linters:
         - a
         - b
         - v
+        - p
+        - r
+        - id
       ignore-type-assert-ok: true
     wrapcheck:
       ignore-sigs:
@@ -205,6 +208,7 @@ linters:
         - .WithMessage(
         - .WithMessagef(
         - .WithStack(
+        - (.Stream).Send(
   exclusions:
     generated: lax
     rules:
