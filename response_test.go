@@ -228,7 +228,8 @@ func TestResponse_Actions(t *testing.T) {
 		{
 			name: "PatchElements",
 			run: func(s *sse.Stream) error {
-				return datastar.NewResponse(s).PatchElements("<div>hi</div>", datastar.WithSelector("#feed"))
+				return datastar.NewResponse(s).
+					PatchElements("<div>hi</div>", datastar.WithSelector("#feed"))
 			},
 			assert: assertContains("event: datastar-patch-elements", "selector #feed"),
 		},
@@ -276,14 +277,16 @@ func TestResponse_Actions(t *testing.T) {
 		{
 			name: "PatchElementsTempl",
 			run: func(s *sse.Stream) error {
-				return datastar.NewResponse(s).PatchElementsTempl(templComp, datastar.WithSelectorID("main"))
+				return datastar.NewResponse(s).
+					PatchElementsTempl(templComp, datastar.WithSelectorID("main"))
 			},
 			assert: assertContains("elements <div>templ-rendered</div>"),
 		},
 		{
 			name: "MarshalAndPatchSignals",
 			run: func(s *sse.Stream) error {
-				return datastar.NewResponse(s).MarshalAndPatchSignals(map[string]any{"count": 42, "name": "test"})
+				return datastar.NewResponse(s).
+					MarshalAndPatchSignals(map[string]any{"count": 42, "name": "test"})
 			},
 			assert: assertContains("event: datastar-patch-signals", "count", "42"),
 		},
@@ -318,7 +321,8 @@ func TestResponse_Actions(t *testing.T) {
 		{
 			name: "DispatchCustomEvent",
 			run: func(s *sse.Stream) error {
-				return datastar.NewResponse(s).DispatchCustomEvent("item-added", map[string]any{"id": 1})
+				return datastar.NewResponse(s).
+					DispatchCustomEvent("item-added", map[string]any{"id": 1})
 			},
 			assert: assertContains("CustomEvent", "item-added"),
 		},

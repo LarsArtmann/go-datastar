@@ -5,8 +5,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/larsartmann/go-sse"
 	errorfamily "github.com/larsartmann/go-error-family"
+	"github.com/larsartmann/go-sse"
 )
 
 // Response wraps an [sse.Stream] and provides fluent methods for sending

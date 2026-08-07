@@ -97,7 +97,7 @@ func startProducer(b *sse.Broadcaster[sse.Event]) {
 func indexHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-	_, _ = fmt.Fprintf(w, `<!DOCTYPE html>
+	if _, err := fmt.Fprintf(w, `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -124,7 +124,9 @@ h1 { margin-bottom: 0.25rem; }
 </div>
 <div data-init="@get('/events')"></div>
 </body>
-</html>`, datastar.ScriptTag("/datastar.js"))
+</html>`, datastar.ScriptTag("/datastar.js")); err != nil {
+		log.Printf("index: write html: %v", err)
+	}
 }
 
 func eventsHandler(broadcaster *sse.Broadcaster[sse.Event]) http.HandlerFunc {
