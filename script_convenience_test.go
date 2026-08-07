@@ -143,25 +143,24 @@ func TestNewPrefetchPatch(t *testing.T) {
 	patch := datastar.NewPrefetchPatch("/page1", "/page2")
 	got := patch.Event()
 
-	data := string(got.Data)
 	// Should have type="speculationrules" attribute
-	if !bytes.Contains([]byte(data), []byte(`type="speculationrules"`)) {
-		t.Errorf("should contain speculationrules type; got %q", data)
+	if !bytes.Contains([]byte(got.Data), []byte(`type="speculationrules"`)) {
+		t.Errorf("should contain speculationrules type; got %q", got.Data)
 	}
 	// Should NOT have auto-remove (false)
-	if bytes.Contains([]byte(data), []byte(`data-effect="el.remove()"`)) {
-		t.Errorf("should NOT contain auto-remove; got %q", data)
+	if bytes.Contains([]byte(got.Data), []byte(`data-effect="el.remove()"`)) {
+		t.Errorf("should NOT contain auto-remove; got %q", got.Data)
 	}
 	// Should contain both URLs
-	if !bytes.Contains([]byte(data), []byte(`"/page1"`)) {
-		t.Errorf("should contain /page1; got %q", data)
+	if !bytes.Contains([]byte(got.Data), []byte(`"/page1"`)) {
+		t.Errorf("should contain /page1; got %q", got.Data)
 	}
-	if !bytes.Contains([]byte(data), []byte(`"/page2"`)) {
-		t.Errorf("should contain /page2; got %q", data)
+	if !bytes.Contains([]byte(got.Data), []byte(`"/page2"`)) {
+		t.Errorf("should contain /page2; got %q", got.Data)
 	}
 	// Should contain prefetch source
-	if !bytes.Contains([]byte(data), []byte(`"source": "list"`)) {
-		t.Errorf("should contain source list; got %q", data)
+	if !bytes.Contains([]byte(got.Data), []byte(`"source": "list"`)) {
+		t.Errorf("should contain source list; got %q", got.Data)
 	}
 }
 

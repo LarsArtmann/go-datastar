@@ -37,7 +37,7 @@ func ScriptHandlerWith(js []byte, _ string) http.Handler {
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/javascript")
+		w.Header().Set("Content-Type", "text/javascript; charset=utf-8")
 		w.Header().Set("ETag", etag)
 		w.Header().Set("Cache-Control", "public, max-age=86400") // 24h
 

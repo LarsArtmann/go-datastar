@@ -34,8 +34,8 @@ func TestScriptHandler_Basic(t *testing.T) {
 		}
 
 		ct := rec.Header().Get("Content-Type")
-		if ct != "application/javascript" {
-			t.Errorf("Content-Type: got %q, want %q", ct, "application/javascript")
+		if ct != "text/javascript; charset=utf-8" {
+			t.Errorf("Content-Type: got %q, want %q", ct, "text/javascript; charset=utf-8")
 		}
 
 		if rec.Body.Len() == 0 {
