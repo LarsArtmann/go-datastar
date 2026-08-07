@@ -51,6 +51,7 @@ func TestSignalsPatch_OnlyIfMissing(t *testing.T) {
 	if !bytes.Contains([]byte(got.Data), []byte("onlyIfMissing true\n")) {
 		t.Errorf("should contain 'onlyIfMissing true'; got %q", got.Data)
 	}
+
 	if !bytes.Contains([]byte(got.Data), []byte("signals {\"x\":1}")) {
 		t.Errorf("should contain 'signals {\"x\":1}'; got %q", got.Data)
 	}
@@ -136,6 +137,7 @@ func TestNewSignalsPatch(t *testing.T) {
 		if !bytes.Contains([]byte(got.Data), []byte(`"name":"test"`)) {
 			t.Errorf("should contain name field; got %q", got.Data)
 		}
+
 		if !bytes.Contains([]byte(got.Data), []byte(`"count":5`)) {
 			t.Errorf("should contain count field; got %q", got.Data)
 		}
@@ -174,6 +176,7 @@ func TestMarshalSignals(t *testing.T) {
 		if err != nil {
 			t.Fatalf("MarshalSignals: %v", err)
 		}
+
 		if string(b) != `{"a":1}` {
 			t.Errorf("got %q, want %q", b, `{"a":1}`)
 		}
@@ -224,7 +227,7 @@ func TestSignalsPatch_FullWireFormat(t *testing.T) {
 	}
 }
 
-// Verify SignalsPatch satisfies sse.Event compatibility
+// Verify SignalsPatch satisfies sse.Event compatibility.
 func TestSignalsPatch_EventIsSSEEvent(t *testing.T) {
 	t.Parallel()
 

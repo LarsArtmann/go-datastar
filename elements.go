@@ -103,6 +103,7 @@ func NewElementsPatch(html string, opts ...ElementPatchOption) ElementsPatch {
 	for _, opt := range opts {
 		opt(&p)
 	}
+
 	return p
 }
 
@@ -134,12 +135,15 @@ func (p ElementsPatch) Event() sse.Event {
 		dataLines = append(dataLines, UseViewTransitionDatalineKey+"true")
 
 		if p.ViewTransitionSelector != "" {
-			dataLines = append(dataLines, ViewTransitionSelectorDatalineKey+p.ViewTransitionSelector)
+			dataLines = append(
+				dataLines,
+				ViewTransitionSelectorDatalineKey+p.ViewTransitionSelector,
+			)
 		}
 	}
 
 	if p.HTML != "" {
-		for _, line := range strings.Split(p.HTML, "\n") {
+		for line := range strings.SplitSeq(p.HTML, "\n") {
 			dataLines = append(dataLines, ElementsDatalineKey+line)
 		}
 	}
@@ -154,7 +158,9 @@ func (p ElementsPatch) Event() sse.Event {
 	}
 
 	if p.RetryDuration > 0 && p.RetryDuration != DefaultRetryDuration {
-		evt.Retry = uint(p.RetryDuration.Milliseconds()) //nolint:gosec // always positive after > 0 check
+		evt.Retry = uint(
+			p.RetryDuration.Milliseconds(),
+		)
 	}
 
 	return evt

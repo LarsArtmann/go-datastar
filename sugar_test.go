@@ -16,6 +16,7 @@ func TestNewRemovePatch(t *testing.T) {
 	if !bytes.Contains([]byte(got.Data), []byte("selector #feed")) {
 		t.Errorf("should contain selector; got %q", got.Data)
 	}
+
 	if !bytes.Contains([]byte(got.Data), []byte("mode remove")) {
 		t.Errorf("should contain mode remove; got %q", got.Data)
 	}
@@ -154,12 +155,22 @@ func TestValidation_ElementPatchModeFromString(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
 		t.Parallel()
 
-		valid := []string{"outer", "inner", "remove", "replace", "prepend", "append", "before", "after"}
+		valid := []string{
+			"outer",
+			"inner",
+			"remove",
+			"replace",
+			"prepend",
+			"append",
+			"before",
+			"after",
+		}
 		for _, s := range valid {
 			m, err := datastar.ElementPatchModeFromString(s)
 			if err != nil {
 				t.Errorf("ElementPatchModeFromString(%q): %v", s, err)
 			}
+
 			if string(m) != s {
 				t.Errorf("got %q, want %q", m, s)
 			}
@@ -188,6 +199,7 @@ func TestValidation_NamespaceFromString(t *testing.T) {
 			if err != nil {
 				t.Errorf("NamespaceFromString(%q): %v", s, err)
 			}
+
 			if string(ns) != s {
 				t.Errorf("got %q, want %q", ns, s)
 			}

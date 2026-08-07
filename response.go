@@ -44,6 +44,7 @@ func (r *Response) PatchElementsTempl(c TemplComponent, opts ...ElementPatchOpti
 	if err != nil {
 		return err
 	}
+
 	return r.stream.Send(patch.Event())
 }
 
@@ -56,6 +57,7 @@ func (r *Response) PatchSignals(signalsJSON []byte, opts ...SignalsPatchOption) 
 	for _, opt := range opts {
 		opt(&p)
 	}
+
 	return r.stream.Send(p.Event())
 }
 
@@ -66,6 +68,7 @@ func (r *Response) MarshalAndPatchSignals(v any, opts ...SignalsPatchOption) err
 	if err != nil {
 		return err
 	}
+
 	return r.stream.Send(patch.Event())
 }
 
@@ -101,11 +104,16 @@ func (r *Response) ConsoleError(err error, opts ...ScriptPatchOption) error {
 }
 
 // DispatchCustomEvent dispatches a custom DOM event on the client.
-func (r *Response) DispatchCustomEvent(eventName string, detail any, opts ...DispatchCustomEventOption) error {
+func (r *Response) DispatchCustomEvent(
+	eventName string,
+	detail any,
+	opts ...DispatchCustomEventOption,
+) error {
 	patch, err := NewDispatchCustomEventPatch(eventName, detail, opts...)
 	if err != nil {
 		return err
 	}
+
 	return r.stream.Send(patch.Event())
 }
 
@@ -126,6 +134,7 @@ func (r *Response) ApplyPatches(patches ...Patch) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -149,6 +158,7 @@ func ErrorResponse(stream *sse.Stream, message string, code string) error {
 	if err != nil {
 		return err
 	}
+
 	return stream.Send(patch.Event())
 }
 
@@ -164,6 +174,7 @@ func NotificationResponse(stream *sse.Stream, message string, kind string) error
 	if err != nil {
 		return err
 	}
+
 	return stream.Send(patch.Event())
 }
 

@@ -6,6 +6,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -42,17 +43,21 @@ func main() {
 
 	go func() {
 		log.Printf("go-datastar example on http://localhost%s", addr)
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("server: %v", err)
 		}
 	}()
 
 	<-ctx.Done()
+
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		log.Printf("server shutdown: %v", err)
 	}
+
 	if err := broadcaster.Shutdown(shutdownCtx); err != nil {
 		log.Printf("broadcaster shutdown: %v", err)
 	}
@@ -77,14 +82,17 @@ func startProducer(b *sse.Broadcaster[sse.Event]) {
 		countPatch, err := datastar.NewSignalsPatch(map[string]any{"total": i})
 		if err != nil {
 			log.Printf("producer: marshal count signals: %v", err)
+
 			continue
 		}
+
 		b.Broadcast(countPatch.Event())
 	}
 }
 
 func indexHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
+
 	if _, err := fmt.Fprintf(w, `<!DOCTYPE html>
 <html>
 <head>
@@ -139,6 +147,7 @@ func eventsHandler(b *sse.Broadcaster[sse.Event]) http.HandlerFunc {
 				if !ok {
 					return
 				}
+
 				if err := stream.Send(evt); err != nil {
 					return
 				}

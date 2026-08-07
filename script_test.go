@@ -17,9 +17,11 @@ func TestScriptPatch_DefaultAutoRemove(t *testing.T) {
 	if got.Event != "datastar-patch-elements" {
 		t.Errorf("Event: got %q, want datastar-patch-elements", got.Event)
 	}
+
 	if !bytes.Contains([]byte(got.Data), []byte("selector body")) {
 		t.Errorf("should contain 'selector body'; got %q", got.Data)
 	}
+
 	if !bytes.Contains([]byte(got.Data), []byte("mode append")) {
 		t.Errorf("should contain 'mode append'; got %q", got.Data)
 	}
@@ -28,7 +30,10 @@ func TestScriptPatch_DefaultAutoRemove(t *testing.T) {
 		t.Errorf("should contain auto-remove effect; got %q", got.Data)
 	}
 	// Should contain the script wrapped in <script>
-	if !bytes.Contains([]byte(got.Data), []byte("<script data-effect=\"el.remove()\">console.log('hi')</script>")) {
+	if !bytes.Contains(
+		[]byte(got.Data),
+		[]byte("<script data-effect=\"el.remove()\">console.log('hi')</script>"),
+	) {
 		t.Errorf("should contain wrapped script; got %q", got.Data)
 	}
 }
@@ -138,6 +143,8 @@ func TestScriptPatch_FullWireFormat(t *testing.T) {
 func TestScriptPatch_ImplementsPatch(t *testing.T) {
 	t.Parallel()
 
-	var _ datastar.Patch = datastar.ScriptPatch{}
-	var _ datastar.Patch = datastar.NewScriptPatch("x")
+	var (
+		_ datastar.Patch = datastar.ScriptPatch{}
+		_ datastar.Patch = datastar.NewScriptPatch("x")
+	)
 }

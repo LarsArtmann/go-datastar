@@ -1,7 +1,8 @@
 package datastar
 
 import (
-	"encoding/json"
+	"encoding/json/v2"
+	"errors"
 	"io"
 	"net/http"
 	"strconv"
@@ -26,20 +27,24 @@ func ReadSignals(r *http.Request, signals any) error {
 		if dsJSON == "" {
 			return nil
 		}
+
 		input = []byte(dsJSON)
 	} else {
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
-			if err == http.ErrBodyReadAfterClose {
+			if errors.Is(err, http.ErrBodyReadAfterClose) {
 				return ErrBodyReadAfterClose
 			}
+
 			return errorfamily.Wrapf(err, errorfamily.Transient,
 				CodeBodyReadFailed, "read request body").
 				WithContext("method", r.Method)
 		}
+
 		if len(body) == 0 {
 			return nil
 		}
+
 		input = body
 	}
 
@@ -49,6 +54,7 @@ func ReadSignals(r *http.Request, signals any) error {
 			WithContext("method", r.Method).
 			WithContext("input_bytes", strconv.Itoa(len(input)))
 	}
+
 	return nil
 }
 

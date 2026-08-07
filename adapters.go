@@ -25,6 +25,7 @@ func ElementsFromTempl(c TemplComponent, opts ...ElementPatchOption) (ElementsPa
 		return ElementsPatch{}, errorfamily.Wrapf(err, errorfamily.Orchestration,
 			CodeTemplRenderFailed, "render templ component to HTML")
 	}
+
 	return NewElementsPatch(buf.String(), opts...), nil
 }
 
@@ -38,11 +39,15 @@ type GoStarElementRenderer interface {
 
 // ElementsFromGostar renders a [GoStarElementRenderer] to HTML and creates an
 // [ElementsPatch] from the result.
-func ElementsFromGostar(r GoStarElementRenderer, opts ...ElementPatchOption) (ElementsPatch, error) {
+func ElementsFromGostar(
+	r GoStarElementRenderer,
+	opts ...ElementPatchOption,
+) (ElementsPatch, error) {
 	var buf strings.Builder
 	if err := r.Render(&buf); err != nil {
 		return ElementsPatch{}, errorfamily.Wrapf(err, errorfamily.Orchestration,
 			CodeGostarRenderFailed, "render gostar element to HTML")
 	}
+
 	return NewElementsPatch(buf.String(), opts...), nil
 }

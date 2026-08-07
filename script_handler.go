@@ -16,6 +16,7 @@ const DatastarJSVersion = "1.0.2"
 
 func computeETag(data []byte) string {
 	h := sha256.Sum256(data)
+
 	return `"` + hex.EncodeToString(h[:16]) + `"`
 }
 
@@ -34,6 +35,7 @@ func ScriptHandlerWith(js []byte, _ string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet && r.Method != http.MethodHead {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+
 			return
 		}
 
@@ -44,10 +46,12 @@ func ScriptHandlerWith(js []byte, _ string) http.Handler {
 		// Support conditional requests
 		if match := r.Header.Get("If-None-Match"); match == etag {
 			w.WriteHeader(http.StatusNotModified)
+
 			return
 		}
 
 		w.Header().Set("Content-Length", strconv.Itoa(len(js)))
+
 		if _, err := w.Write(js); err != nil {
 			return // client disconnected or write failed; nothing more to send
 		}

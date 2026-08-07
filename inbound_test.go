@@ -23,7 +23,9 @@ func (f fakeTemplComponent) Render(_ context.Context, w io.Writer) error {
 	if f.err != nil {
 		return f.err
 	}
+
 	_, err := w.Write([]byte(f.html))
+
 	return err
 }
 
@@ -36,7 +38,9 @@ func (f fakeGoStarRenderer) Render(w io.Writer) error {
 	if f.err != nil {
 		return f.err
 	}
+
 	_, err := w.Write([]byte(f.html))
+
 	return err
 }
 
@@ -144,6 +148,7 @@ func TestReadSignals_FromBody(t *testing.T) {
 		Name  string `json:"name"`
 		Count int    `json:"count"`
 	}
+
 	var s signals
 
 	if err := datastar.ReadSignals(r, &s); err != nil {
@@ -153,6 +158,7 @@ func TestReadSignals_FromBody(t *testing.T) {
 	if s.Name != "test" {
 		t.Errorf("Name: got %q, want %q", s.Name, "test")
 	}
+
 	if s.Count != 5 {
 		t.Errorf("Count: got %d, want 5", s.Count)
 	}
@@ -209,6 +215,7 @@ func TestReadSignals_MalformedJSON(t *testing.T) {
 	r := httptest.NewRequest(http.MethodPost, "/api", strings.NewReader("{bad json"))
 
 	var s map[string]any
+
 	err := datastar.ReadSignals(r, &s)
 	if err == nil {
 		t.Fatal("expected error for malformed JSON")
@@ -227,6 +234,7 @@ func TestReadSignals_NestedStruct(t *testing.T) {
 		} `json:"user"`
 		Items []int `json:"items"`
 	}
+
 	var s nested
 
 	if err := datastar.ReadSignals(r, &s); err != nil {
@@ -236,6 +244,7 @@ func TestReadSignals_NestedStruct(t *testing.T) {
 	if s.User.Name != "bob" {
 		t.Errorf("User.Name: got %q, want bob", s.User.Name)
 	}
+
 	if len(s.Items) != 3 {
 		t.Errorf("Items: got %d, want 3", len(s.Items))
 	}

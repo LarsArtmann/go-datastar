@@ -12,8 +12,10 @@ import (
 
 func newTestStream() (*sse.Stream, *mockFlushWriter) {
 	var buf mockFlushWriter
+
 	r := httptest.NewRequest(http.MethodGet, "/events", nil)
 	stream := sse.NewStream(&buf, r)
+
 	return stream, &buf
 }
 
@@ -88,12 +90,14 @@ func TestScriptHandler_ConditionalRequest(t *testing.T) {
 	// Second request with If-None-Match should get 304
 	req2 := httptest.NewRequest(http.MethodGet, "/datastar.js", nil)
 	req2.Header.Set("If-None-Match", etag)
+
 	rec2 := httptest.NewRecorder()
 	handler.ServeHTTP(rec2, req2)
 
 	if rec2.Code != http.StatusNotModified {
 		t.Errorf("status: got %d, want %d", rec2.Code, http.StatusNotModified)
 	}
+
 	if rec2.Body.Len() != 0 {
 		t.Errorf("body should be empty on 304; got %d bytes", rec2.Body.Len())
 	}
@@ -131,6 +135,7 @@ func TestScriptTag(t *testing.T) {
 	t.Parallel()
 
 	got := datastar.ScriptTag("/static/datastar.js")
+
 	want := `<script type="module" src="/static/datastar.js"></script>`
 	if got != want {
 		t.Errorf("got %q, want %q", got, want)
@@ -162,6 +167,7 @@ func TestResponse_PatchElements(t *testing.T) {
 	if !strings.Contains(output, "event: datastar-patch-elements") {
 		t.Errorf("should contain patch-elements event; got:\n%s", output)
 	}
+
 	if !strings.Contains(output, "selector #feed") {
 		t.Errorf("should contain selector; got:\n%s", output)
 	}
@@ -234,6 +240,7 @@ func TestResponse_ApplyPatches(t *testing.T) {
 	if strings.Count(output, "data: elements <div>1</div>") != 1 {
 		t.Errorf("should contain first patch once; got:\n%s", output)
 	}
+
 	if strings.Count(output, "data: elements <div>2</div>") != 1 {
 		t.Errorf("should contain second patch once; got:\n%s", output)
 	}
@@ -252,6 +259,7 @@ func TestErrorResponse(t *testing.T) {
 	if !strings.Contains(output, "something broke") {
 		t.Errorf("should contain error message; got:\n%s", output)
 	}
+
 	if !strings.Contains(output, "ERR_001") {
 		t.Errorf("should contain error code; got:\n%s", output)
 	}
@@ -270,6 +278,7 @@ func TestNotificationResponse(t *testing.T) {
 	if !strings.Contains(output, "saved!") {
 		t.Errorf("should contain notification message; got:\n%s", output)
 	}
+
 	if !strings.Contains(output, "success") {
 		t.Errorf("should contain kind; got:\n%s", output)
 	}
@@ -293,6 +302,7 @@ type mockFlushWriter struct {
 
 func (m *mockFlushWriter) Write(b []byte) (int, error) {
 	m.bytes = append(m.bytes, b...)
+
 	return len(b), nil
 }
 

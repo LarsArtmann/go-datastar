@@ -12,6 +12,7 @@ import (
 //	NewElementsPatch("", WithModeRemove(), WithSelector(selector))
 func NewRemovePatch(selector string, opts ...ElementPatchOption) ElementsPatch {
 	allOpts := append([]ElementPatchOption{WithModeRemove(), WithSelector(selector)}, opts...)
+
 	return NewElementsPatch("", allOpts...)
 }
 
@@ -89,11 +90,15 @@ var ValidNamespaces = []Namespace{
 // ElementPatchModeFromString converts a string to an [ElementPatchMode].
 // Returns an error for invalid mode strings.
 func ElementPatchModeFromString(s string) (ElementPatchMode, error) {
-	i := slices.IndexFunc(ValidElementPatchModes, func(m ElementPatchMode) bool { return string(m) == s })
+	i := slices.IndexFunc(
+		ValidElementPatchModes,
+		func(m ElementPatchMode) bool { return string(m) == s },
+	)
 	if i < 0 {
 		return "", errorfamily.Newf(errorfamily.Rejection,
 			CodeElementPatchModeInvalid, "unrecognized element patch mode %q", s)
 	}
+
 	return ValidElementPatchModes[i], nil
 }
 
@@ -105,5 +110,6 @@ func NamespaceFromString(s string) (Namespace, error) {
 		return "", errorfamily.Newf(errorfamily.Rejection,
 			CodeNamespaceInvalid, "unrecognized namespace %q", s)
 	}
+
 	return ValidNamespaces[i], nil
 }

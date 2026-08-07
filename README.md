@@ -58,15 +58,15 @@ mux.Handle("GET /datastar.js", datastar.ScriptHandler())
 
 ### Patches
 
-| Type | Constructor | Description |
-|------|------------|-------------|
-| `ElementsPatch` | `NewElementsPatch(html, opts...)` | Patch HTML elements into the DOM |
-| `SignalsPatch` | `NewSignalsPatch(v, opts...)` | Patch reactive signals |
-| `ScriptPatch` | `NewScriptPatch(js, opts...)` | Execute JavaScript |
-| `RedirectPatch` | `NewRedirectPatch(url)` | Redirect the browser |
-| `ConsoleLogPatch` | `NewConsoleLogPatch(msg)` | console.log on the client |
-| `DispatchCustomEventPatch` | `NewDispatchCustomEventPatch(name, detail)` | Dispatch a custom DOM event |
-| `RemovePatch` | `NewRemovePatch(selector)` | Remove an element from the DOM |
+| Type                       | Constructor                                 | Description                      |
+| -------------------------- | ------------------------------------------- | -------------------------------- |
+| `ElementsPatch`            | `NewElementsPatch(html, opts...)`           | Patch HTML elements into the DOM |
+| `SignalsPatch`             | `NewSignalsPatch(v, opts...)`               | Patch reactive signals           |
+| `ScriptPatch`              | `NewScriptPatch(js, opts...)`               | Execute JavaScript               |
+| `RedirectPatch`            | `NewRedirectPatch(url)`                     | Redirect the browser             |
+| `ConsoleLogPatch`          | `NewConsoleLogPatch(msg)`                   | console.log on the client        |
+| `DispatchCustomEventPatch` | `NewDispatchCustomEventPatch(name, detail)` | Dispatch a custom DOM event      |
+| `RemovePatch`              | `NewRemovePatch(selector)`                  | Remove an element from the DOM   |
 
 ### Options
 

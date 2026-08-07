@@ -1,7 +1,7 @@
 package datastar
 
 import (
-	"encoding/json"
+	"encoding/json/v2"
 	"fmt"
 	"net/url"
 	"strings"
@@ -13,6 +13,7 @@ import (
 // given URL using setTimeout.
 func NewRedirectPatch(targetURL string, opts ...ScriptPatchOption) ScriptPatch {
 	js := fmt.Sprintf("setTimeout(() => window.location.href = %q)", targetURL)
+
 	return NewScriptPatch(js, opts...)
 }
 
@@ -87,7 +88,11 @@ const defaultCustomEventSelector = "document"
 // NewDispatchCustomEventPatch creates a [DispatchCustomEventPatch] with the
 // given event name and detail value. The detail is marshaled to JSON when
 // [DispatchCustomEventPatch.Event] is called.
-func NewDispatchCustomEventPatch(eventName string, detail any, opts ...DispatchCustomEventOption) (DispatchCustomEventPatch, error) {
+func NewDispatchCustomEventPatch(
+	eventName string,
+	detail any,
+	opts ...DispatchCustomEventOption,
+) (DispatchCustomEventPatch, error) {
 	if eventName == "" {
 		return DispatchCustomEventPatch{}, ErrEventNameRequired
 	}
@@ -103,6 +108,7 @@ func NewDispatchCustomEventPatch(eventName string, detail any, opts ...DispatchC
 	for _, opt := range opts {
 		opt(&p)
 	}
+
 	return p, nil
 }
 
@@ -153,6 +159,7 @@ func (p DispatchCustomEventPatch) Event() sse.Event {
 // using history.replaceState.
 func NewReplaceURLPatch(u url.URL, opts ...ScriptPatchOption) ScriptPatch {
 	js := fmt.Sprintf(`window.history.replaceState({}, "", %q)`, u.String())
+
 	return NewScriptPatch(js, opts...)
 }
 

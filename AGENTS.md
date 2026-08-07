@@ -27,11 +27,11 @@ the go-error-family contract is that libraries classify via go-error-family only
 
 Three layers:
 
-| Layer | Repo | Role |
-|-------|------|------|
-| Transport | go-sse | Stream, Broadcaster[T], Replay, EventID, Heartbeat, SubscribeFilter, Shutdown, Health |
-| Protocol | go-datastar (this repo) | Patch interface, ElementsPatch, SignalsPatch, ScriptPatch, RedirectPatch, etc. |
-| Domain | cqrs-htmx/datastar | EventBridge (CQRS event → Patch), thin re-exports |
+| Layer     | Repo                    | Role                                                                                  |
+| --------- | ----------------------- | ------------------------------------------------------------------------------------- |
+| Transport | go-sse                  | Stream, Broadcaster[T], Replay, EventID, Heartbeat, SubscribeFilter, Shutdown, Health |
+| Protocol  | go-datastar (this repo) | Patch interface, ElementsPatch, SignalsPatch, ScriptPatch, RedirectPatch, etc.        |
+| Domain    | cqrs-htmx/datastar      | EventBridge (CQRS event → Patch), thin re-exports                                     |
 
 ### Patch interface — the keystone
 
@@ -43,21 +43,21 @@ Every DataStar protocol message is a value that produces an `sse.Event`. This ma
 
 ### File layout
 
-| File | Role |
-|------|------|
-| `patch.go` | `Patch` interface |
-| `errors.go` | Error catalog: stable codes, sentinel errors, family mapping |
-| `constants.go` | EventType, ElementPatchMode, Namespace, dataline keys, DefaultRetryDuration |
-| `elements.go` | `ElementsPatch` struct + `Event()` + options |
-| `signals.go` | `SignalsPatch` struct + `Event()` + marshal helpers |
-| `script.go` | `ScriptPatch` struct + `Event()` + options |
-| `script_convenience.go` | Redirect, ConsoleLog/Error, DispatchCustomEvent, ReplaceURL, Prefetch |
-| `sugar.go` | Mode helpers, RemovePatch, validation, namespace helpers |
-| `adapters.go` | ElementsFromTempl, ElementsFromGostar |
-| `http.go` | GetSSE/PostSSE/PutSSE/PatchSSE/DeleteSSE |
-| `inbound.go` | ReadSignals, LastEventID |
-| `script_handler.go` | Embedded datastar.js, ScriptHandler, ScriptTag, Version |
-| `response.go` | Response (fluent SSE builder), ErrorResponse, NotificationResponse |
+| File                    | Role                                                                        |
+| ----------------------- | --------------------------------------------------------------------------- |
+| `patch.go`              | `Patch` interface                                                           |
+| `errors.go`             | Error catalog: stable codes, sentinel errors, family mapping                |
+| `constants.go`          | EventType, ElementPatchMode, Namespace, dataline keys, DefaultRetryDuration |
+| `elements.go`           | `ElementsPatch` struct + `Event()` + options                                |
+| `signals.go`            | `SignalsPatch` struct + `Event()` + marshal helpers                         |
+| `script.go`             | `ScriptPatch` struct + `Event()` + options                                  |
+| `script_convenience.go` | Redirect, ConsoleLog/Error, DispatchCustomEvent, ReplaceURL, Prefetch       |
+| `sugar.go`              | Mode helpers, RemovePatch, validation, namespace helpers                    |
+| `adapters.go`           | ElementsFromTempl, ElementsFromGostar                                       |
+| `http.go`               | GetSSE/PostSSE/PutSSE/PatchSSE/DeleteSSE                                    |
+| `inbound.go`            | ReadSignals, LastEventID                                                    |
+| `script_handler.go`     | Embedded datastar.js, ScriptHandler, ScriptTag, Version                     |
+| `response.go`           | Response (fluent SSE builder), ErrorResponse, NotificationResponse          |
 
 ## Wire-Format Parity Requirements
 
@@ -96,11 +96,11 @@ if errorfamily.IsRetryable(err) { /* backoff + retry */ }
 
 ### Family assignments
 
-| Family | When | Retryable |
-|--------|------|-----------|
-| Rejection | Bad/missing caller input (malformed JSON, empty name, unrecognized mode/namespace, body closed by misuse, unmarshallable value) | no |
-| Transient | Temporary I/O failure reading the request body | yes |
-| Orchestration | Internal render failure producing HTML output (templ, gostar) | no |
+| Family        | When                                                                                                                            | Retryable |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| Rejection     | Bad/missing caller input (malformed JSON, empty name, unrecognized mode/namespace, body closed by misuse, unmarshallable value) | no        |
+| Transient     | Temporary I/O failure reading the request body                                                                                  | yes       |
+| Orchestration | Internal render failure producing HTML output (templ, gostar)                                                                   | no        |
 
 ### Codes
 

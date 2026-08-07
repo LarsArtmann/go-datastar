@@ -2,7 +2,7 @@ package datastar
 
 import (
 	"bytes"
-	"encoding/json"
+	"encoding/json/v2"
 	"time"
 
 	errorfamily "github.com/larsartmann/go-error-family"
@@ -70,6 +70,7 @@ func NewSignalsPatch(v any, opts ...SignalsPatchOption) (SignalsPatch, error) {
 	for _, opt := range opts {
 		opt(&p)
 	}
+
 	return p, nil
 }
 
@@ -86,6 +87,7 @@ func MarshalSignals(v any) ([]byte, error) {
 		return nil, errorfamily.Wrapf(err, errorfamily.Rejection,
 			CodeSignalsMarshalFailed, "marshal signals value of type %T", v)
 	}
+
 	return b, nil
 }
 
@@ -115,7 +117,9 @@ func (p SignalsPatch) Event() sse.Event {
 	}
 
 	if p.RetryDuration > 0 && p.RetryDuration != DefaultRetryDuration {
-		evt.Retry = uint(p.RetryDuration.Milliseconds()) //nolint:gosec // always positive after > 0 check
+		evt.Retry = uint(
+			p.RetryDuration.Milliseconds(),
+		)
 	}
 
 	return evt

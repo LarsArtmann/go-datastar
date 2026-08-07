@@ -104,7 +104,11 @@ func TestConstants_DatalineKeys(t *testing.T) {
 		{"mode", datastar.ModeDatalineKey, "mode "},
 		{"namespace", datastar.NamespaceDatalineKey, "namespace "},
 		{"useViewTransition", datastar.UseViewTransitionDatalineKey, "useViewTransition "},
-		{"viewTransitionSelector", datastar.ViewTransitionSelectorDatalineKey, "viewTransitionSelector "},
+		{
+			"viewTransitionSelector",
+			datastar.ViewTransitionSelectorDatalineKey,
+			"viewTransitionSelector ",
+		},
 		{"elements", datastar.ElementsDatalineKey, "elements "},
 		{"signals", datastar.SignalsDatalineKey, "signals "},
 		{"onlyIfMissing", datastar.OnlyIfMissingDatalineKey, "onlyIfMissing "},

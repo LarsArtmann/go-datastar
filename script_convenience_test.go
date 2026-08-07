@@ -14,7 +14,12 @@ func TestNewRedirectPatch(t *testing.T) {
 	patch := datastar.NewRedirectPatch("https://example.com")
 	got := patch.Event()
 
-	if !bytes.Contains([]byte(got.Data), []byte("elements <script data-effect=\"el.remove()\">setTimeout(() => window.location.href = \"https://example.com\")</script>")) {
+	if !bytes.Contains(
+		[]byte(got.Data),
+		[]byte(
+			"elements <script data-effect=\"el.remove()\">setTimeout(() => window.location.href = \"https://example.com\")</script>",
+		),
+	) {
 		t.Errorf("should contain redirect script; got %q", got.Data)
 	}
 }
@@ -77,13 +82,16 @@ func TestNewDispatchCustomEventPatch(t *testing.T) {
 		if err != nil {
 			t.Fatalf("NewDispatchCustomEventPatch: %v", err)
 		}
+
 		got := patch.Event()
 		if !bytes.Contains([]byte(got.Data), []byte(`new CustomEvent("myEvent"`)) {
 			t.Errorf("should contain CustomEvent construction; got %q", got.Data)
 		}
+
 		if !bytes.Contains([]byte(got.Data), []byte(`"key":"val"`)) {
 			t.Errorf("should contain detail JSON; got %q", got.Data)
 		}
+
 		if !bytes.Contains([]byte(got.Data), []byte(`elements = [document]`)) {
 			t.Errorf("should use [document] for default selector; got %q", got.Data)
 		}
@@ -132,7 +140,10 @@ func TestNewReplaceURLPatch(t *testing.T) {
 	patch := datastar.NewReplaceURLPatch(u)
 	got := patch.Event()
 
-	if !bytes.Contains([]byte(got.Data), []byte(`window.history.replaceState({}, "", "https://example.com/new")`)) {
+	if !bytes.Contains(
+		[]byte(got.Data),
+		[]byte(`window.history.replaceState({}, "", "https://example.com/new")`),
+	) {
 		t.Errorf("should contain replaceState; got %q", got.Data)
 	}
 }
@@ -155,6 +166,7 @@ func TestNewPrefetchPatch(t *testing.T) {
 	if !bytes.Contains([]byte(got.Data), []byte(`"/page1"`)) {
 		t.Errorf("should contain /page1; got %q", got.Data)
 	}
+
 	if !bytes.Contains([]byte(got.Data), []byte(`"/page2"`)) {
 		t.Errorf("should contain /page2; got %q", got.Data)
 	}

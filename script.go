@@ -71,6 +71,7 @@ func scriptAttributeKVs(kvs []string) []string {
 	for i := 0; i+1 < len(kvs); i += 2 {
 		attrs = append(attrs, fmt.Sprintf(`%s="%s"`, kvs[i], kvs[i+1]))
 	}
+
 	return attrs
 }
 
@@ -94,6 +95,7 @@ func NewScriptPatch(script string, opts ...ScriptPatchOption) ScriptPatch {
 	for _, opt := range opts {
 		opt(&p)
 	}
+
 	return p
 }
 
@@ -125,6 +127,7 @@ func (p ScriptPatch) Event() sse.Event {
 	if p.EventID != "" {
 		elementsOpts = append(elementsOpts, WithElementsEventID(p.EventID))
 	}
+
 	if p.RetryDuration > 0 {
 		elementsOpts = append(elementsOpts, WithElementsRetryDuration(p.RetryDuration))
 	}

@@ -8,10 +8,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/larsartmann/go-datastar"
 	errorfamily "github.com/larsartmann/go-error-family"
 	"github.com/larsartmann/go-error-family/errorfamilytest"
-
-	"github.com/larsartmann/go-datastar"
 )
 
 // These tests verify the strongly typed error contract: every failure path
@@ -29,6 +28,7 @@ func TestError_ElementsFromTempl_Classified(t *testing.T) {
 	errorfamilytest.AssertFamily(t, err, errorfamily.Orchestration)
 	errorfamilytest.AssertCode(t, err, datastar.CodeTemplRenderFailed)
 	errorfamilytest.AssertRetryable(t, err, false)
+
 	if !errors.Is(err, io.ErrUnexpectedEOF) {
 		t.Errorf("cause not preserved: errors.Is(err, io.ErrUnexpectedEOF) = false")
 	}
@@ -62,9 +62,11 @@ func TestError_ReadSignals_BodyReadAfterClose(t *testing.T) {
 	errorfamilytest.AssertFamily(t, err, errorfamily.Rejection)
 	errorfamilytest.AssertCode(t, err, datastar.CodeBodyReadAfterClose)
 	errorfamilytest.AssertRetryable(t, err, false)
+
 	if !errors.Is(err, datastar.ErrBodyReadAfterClose) {
 		t.Errorf("errors.Is(err, ErrBodyReadAfterClose) = false; want true (sentinel match)")
 	}
+
 	if !errors.Is(err, http.ErrBodyReadAfterClose) {
 		t.Errorf("underlying http.ErrBodyReadAfterClose cause not preserved in chain")
 	}
@@ -99,6 +101,7 @@ func TestError_ReadSignals_UnmarshalFailed_Rejection(t *testing.T) {
 	r := httptest.NewRequest(http.MethodPost, "/", strings.NewReader("{bad json"))
 
 	var s map[string]any
+
 	err := datastar.ReadSignals(r, &s)
 
 	errorfamilytest.AssertFamily(t, err, errorfamily.Rejection)
@@ -139,6 +142,7 @@ func TestError_NewDispatchCustomEventPatch_EmptyName(t *testing.T) {
 	errorfamilytest.AssertFamily(t, err, errorfamily.Rejection)
 	errorfamilytest.AssertCode(t, err, datastar.CodeEventNameRequired)
 	errorfamilytest.AssertRetryable(t, err, false)
+
 	if !errors.Is(err, datastar.ErrEventNameRequired) {
 		t.Errorf("errors.Is(err, ErrEventNameRequired) = false; want true (sentinel match)")
 	}

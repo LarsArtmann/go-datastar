@@ -17,6 +17,7 @@ func writeEvent(t *testing.T, p datastar.Patch) string {
 	if err := sse.WriteEvent(&buf, p.Event()); err != nil {
 		t.Fatalf("WriteEvent: %v", err)
 	}
+
 	return buf.String()
 }
 
@@ -34,12 +35,15 @@ func TestElementsPatch_DefaultOuter(t *testing.T) {
 	if got.Event != want.Event {
 		t.Errorf("Event: got %q, want %q", got.Event, want.Event)
 	}
+
 	if got.Data != want.Data {
 		t.Errorf("Data: got %q, want %q", got.Data, want.Data)
 	}
+
 	if !got.ID.IsZero() {
 		t.Errorf("ID: got %q, want zero", got.ID.Get())
 	}
+
 	if got.Retry != 0 {
 		t.Errorf("Retry: got %d, want 0 (default should not emit)", got.Retry)
 	}
@@ -316,6 +320,8 @@ func TestElementsPatch_FullWireFormat(t *testing.T) {
 func TestElementsPatch_ImplementsPatch(t *testing.T) {
 	t.Parallel()
 
-	var _ datastar.Patch = datastar.ElementsPatch{}
-	var _ datastar.Patch = datastar.NewElementsPatch("<div/>")
+	var (
+		_ datastar.Patch = datastar.ElementsPatch{}
+		_ datastar.Patch = datastar.NewElementsPatch("<div/>")
+	)
 }
