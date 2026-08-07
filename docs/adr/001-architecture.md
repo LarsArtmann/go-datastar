@@ -50,6 +50,7 @@ called once; the resulting `sse.Event` is fanned out, filtered, replayed, or
 sent directly.
 
 This means:
+
 - **Fan-out:** `Broadcaster[Patch]` broadcasts typed patches, not raw events.
 - **Filtering:** `SubscribeFilter` predicates can inspect the patch type, not
   just the event name.
@@ -81,12 +82,12 @@ go-datastar produces byte-identical SSE output to the SDK for every patch type.
 This is verified by the E2E HTTP round-trip test (`e2e_test.go`) and by direct
 comparison with the SDK source:
 
-| Patch type     | Event type               | Key behavior                                    |
-| -------------- | ------------------------ | ----------------------------------------------- |
-| ElementsPatch  | `datastar-patch-elements`| `data: selector`, `data: mode`, `data: elements`|
-| SignalsPatch   | `datastar-patch-signals` | `data: signals <json>`                          |
-| ScriptPatch    | `datastar-patch-elements`| Wraps in `<script>`, appends to `body`          |
-| RedirectPatch  | `datastar-patch-elements`| `window.location.href` script                   |
+| Patch type    | Event type                | Key behavior                                     |
+| ------------- | ------------------------- | ------------------------------------------------ |
+| ElementsPatch | `datastar-patch-elements` | `data: selector`, `data: mode`, `data: elements` |
+| SignalsPatch  | `datastar-patch-signals`  | `data: signals <json>`                           |
+| ScriptPatch   | `datastar-patch-elements` | Wraps in `<script>`, appends to `body`           |
+| RedirectPatch | `datastar-patch-elements` | `window.location.href` script                    |
 
 **Critical:** `ScriptPatch` does **not** emit a `datastar-execute-script`
 event. The SDK itself uses `PatchElements` to send `<script>` elements (see SDK

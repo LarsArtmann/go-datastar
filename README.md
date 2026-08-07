@@ -101,45 +101,45 @@ type Patch interface {
 
 Four types implement this interface. Everything else is a convenience constructor:
 
-| Type                       | What it does                                  |
-| -------------------------- | --------------------------------------------- |
-| `ElementsPatch`            | Merge HTML elements into the DOM              |
-| `SignalsPatch`             | Update reactive signals                       |
-| `ScriptPatch`              | Execute JavaScript on the client              |
-| `DispatchCustomEventPatch` | Dispatch a custom DOM event                   |
+| Type                       | What it does                     |
+| -------------------------- | -------------------------------- |
+| `ElementsPatch`            | Merge HTML elements into the DOM |
+| `SignalsPatch`             | Update reactive signals          |
+| `ScriptPatch`              | Execute JavaScript on the client |
+| `DispatchCustomEventPatch` | Dispatch a custom DOM event      |
 
 ## Patch constructors
 
 ### Elements
 
-| Constructor                              | Returns            | Notes                            |
-| ---------------------------------------- | ------------------ | -------------------------------- |
-| `NewElementsPatch(html, opts...)`        | `ElementsPatch`    | Core element patch               |
-| `NewRemovePatch(selector)`               | `ElementsPatch`    | Remove element by CSS selector   |
-| `NewRemoveByIDPatch(id)`                 | `ElementsPatch`    | Remove element by ID             |
-| `ElementsFromTempl(component, opts...)`  | `(ElementsPatch, error)` | Render a [Templ] component |
-| `ElementsFromGostar(renderer, opts...)`  | `(ElementsPatch, error)` | Render a [GoStar] element  |
+| Constructor                             | Returns                  | Notes                          |
+| --------------------------------------- | ------------------------ | ------------------------------ |
+| `NewElementsPatch(html, opts...)`       | `ElementsPatch`          | Core element patch             |
+| `NewRemovePatch(selector)`              | `ElementsPatch`          | Remove element by CSS selector |
+| `NewRemoveByIDPatch(id)`                | `ElementsPatch`          | Remove element by ID           |
+| `ElementsFromTempl(component, opts...)` | `(ElementsPatch, error)` | Render a [Templ] component     |
+| `ElementsFromGostar(renderer, opts...)` | `(ElementsPatch, error)` | Render a [GoStar] element      |
 
 ### Signals
 
-| Constructor                              | Returns                   | Notes                              |
-| ---------------------------------------- | ------------------------- | ---------------------------------- |
-| `NewSignalsPatch(v, opts...)`            | `(SignalsPatch, error)`   | Marshal a Go value to signals JSON |
-| `NewSignalsIfMissingPatch(v, opts...)`   | `(SignalsPatch, error)`   | Only set signals that don't exist  |
+| Constructor                            | Returns                 | Notes                              |
+| -------------------------------------- | ----------------------- | ---------------------------------- |
+| `NewSignalsPatch(v, opts...)`          | `(SignalsPatch, error)` | Marshal a Go value to signals JSON |
+| `NewSignalsIfMissingPatch(v, opts...)` | `(SignalsPatch, error)` | Only set signals that don't exist  |
 
 Pre-encoded JSON? Construct directly: `datastar.SignalsPatch{Signals: []byte("{\"count\":1}")}`.
 
 ### Script execution
 
-| Constructor                              | Returns       | Notes                              |
-| ---------------------------------------- | ------------- | ---------------------------------- |
-| `NewScriptPatch(js, opts...)`            | `ScriptPatch` | Core script patch                  |
-| `NewRedirectPatch(url)`                  | `ScriptPatch` | Redirect the browser               |
-| `NewConsoleLogPatch(msg)`                | `ScriptPatch` | `console.log` on the client        |
-| `NewConsoleErrorPatch(err)`              | `ScriptPatch` | `console.error` on the client      |
-| `NewReplaceURLPatch(url)`                | `ScriptPatch` | `history.replaceState`             |
-| `NewPrefetchPatch(urls...)`              | `ScriptPatch` | Speculation-rules prefetch         |
-| `NewDispatchCustomEventPatch(name, detail)` | `(DispatchCustomEventPatch, error)` | Dispatch a custom DOM event |
+| Constructor                                 | Returns                             | Notes                         |
+| ------------------------------------------- | ----------------------------------- | ----------------------------- |
+| `NewScriptPatch(js, opts...)`               | `ScriptPatch`                       | Core script patch             |
+| `NewRedirectPatch(url)`                     | `ScriptPatch`                       | Redirect the browser          |
+| `NewConsoleLogPatch(msg)`                   | `ScriptPatch`                       | `console.log` on the client   |
+| `NewConsoleErrorPatch(err)`                 | `ScriptPatch`                       | `console.error` on the client |
+| `NewReplaceURLPatch(url)`                   | `ScriptPatch`                       | `history.replaceState`        |
+| `NewPrefetchPatch(urls...)`                 | `ScriptPatch`                       | Speculation-rules prefetch    |
+| `NewDispatchCustomEventPatch(name, detail)` | `(DispatchCustomEventPatch, error)` | Dispatch a custom DOM event   |
 
 ### Printf-style variants
 
@@ -171,24 +171,24 @@ Namespace sugar: `WithNamespaceHTML`, `WithNamespaceSVG`, `WithNamespaceMathML`
 
 `Response` wraps an `sse.Stream` for single-connection patching. Every method returns `error`:
 
-| Method                      | Description                                    |
-| --------------------------- | ---------------------------------------------- |
-| `PatchElements(html, opts)` | Send an `ElementsPatch`                        |
-| `PatchElementsTempl(c, opts)` | Render + send a Templ component              |
-| `PatchSignals(json, opts)`  | Send pre-encoded JSON signals                  |
-| `MarshalAndPatchSignals(v, opts)` | Marshal + send a Go value                |
-| `RemoveElement(selector)`   | Remove element by selector                     |
-| `RemoveElementByID(id)`     | Remove element by ID                           |
-| `ExecuteScript(js, opts)`   | Send a `ScriptPatch`                           |
-| `Redirect(url, opts)`       | Redirect the browser                           |
-| `ConsoleLog(msg, opts)`     | `console.log` on the client                    |
-| `ConsoleError(err, opts)`   | `console.error` on the client                  |
-| `DispatchCustomEvent(name, detail, opts)` | Dispatch a custom DOM event      |
-| `ReplaceURL(url, opts)`     | `history.replaceState`                         |
-| `Prefetch(urls...)`         | Speculation-rules prefetch                     |
-| `ApplyPatches(patches...)`  | Send multiple patches in sequence              |
-| `Send(evt)`                 | Send a raw `sse.Event`                         |
-| `Stream()`                  | Access the underlying `sse.Stream`             |
+| Method                                    | Description                        |
+| ----------------------------------------- | ---------------------------------- |
+| `PatchElements(html, opts)`               | Send an `ElementsPatch`            |
+| `PatchElementsTempl(c, opts)`             | Render + send a Templ component    |
+| `PatchSignals(json, opts)`                | Send pre-encoded JSON signals      |
+| `MarshalAndPatchSignals(v, opts)`         | Marshal + send a Go value          |
+| `RemoveElement(selector)`                 | Remove element by selector         |
+| `RemoveElementByID(id)`                   | Remove element by ID               |
+| `ExecuteScript(js, opts)`                 | Send a `ScriptPatch`               |
+| `Redirect(url, opts)`                     | Redirect the browser               |
+| `ConsoleLog(msg, opts)`                   | `console.log` on the client        |
+| `ConsoleError(err, opts)`                 | `console.error` on the client      |
+| `DispatchCustomEvent(name, detail, opts)` | Dispatch a custom DOM event        |
+| `ReplaceURL(url, opts)`                   | `history.replaceState`             |
+| `Prefetch(urls...)`                       | Speculation-rules prefetch         |
+| `ApplyPatches(patches...)`                | Send multiple patches in sequence  |
+| `Send(evt)`                               | Send a raw `sse.Event`             |
+| `Stream()`                                | Access the underlying `sse.Stream` |
 
 Convenience constructors:
 
@@ -225,12 +225,12 @@ datastar.DeleteSSE("/api/items/%d", id)
 
 ## Serving the JS client
 
-| Function                    | Description                                             |
-| --------------------------- | ------------------------------------------------------- |
-| `ScriptHandler()`           | Serve the embedded DataStar JS (v1.0.2) with ETag + Cache-Control |
-| `ScriptHandlerWith(js, ver)` | Serve a custom JS bundle                               |
-| `ScriptTag(path)`           | HTML `<script type="module">` tag string                |
-| `Version()`                 | Embedded JS client version string                       |
+| Function                     | Description                                                       |
+| ---------------------------- | ----------------------------------------------------------------- |
+| `ScriptHandler()`            | Serve the embedded DataStar JS (v1.0.2) with ETag + Cache-Control |
+| `ScriptHandlerWith(js, ver)` | Serve a custom JS bundle                                          |
+| `ScriptTag(path)`            | HTML `<script type="module">` tag string                          |
+| `Version()`                  | Embedded JS client version string                                 |
 
 ## Event store (reconnection replay)
 
