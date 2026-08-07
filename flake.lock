@@ -20,6 +20,22 @@
         "type": "github"
       }
     },
+    "go-sse-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1786084738,
+        "narHash": "sha256-08uYI1LgxBAd567FLfS3Kqrx3DaAyjtglPSRFqLSHfE=",
+        "owner": "LarsArtmann",
+        "repo": "go-sse",
+        "rev": "113608e2c1bd63b820d036826aca5504118df15e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "LarsArtmann",
+        "repo": "go-sse",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1785967620,
@@ -39,6 +55,7 @@
     "root": {
       "inputs": {
         "flake-parts": "flake-parts",
+        "go-sse-src": "go-sse-src",
         "nixpkgs": "nixpkgs",
         "systems": "systems",
         "treefmt-nix": "treefmt-nix"
