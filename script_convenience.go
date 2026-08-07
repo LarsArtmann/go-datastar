@@ -89,7 +89,7 @@ const defaultCustomEventSelector = "document"
 // [DispatchCustomEventPatch.Event] is called.
 func NewDispatchCustomEventPatch(eventName string, detail any, opts ...DispatchCustomEventOption) (DispatchCustomEventPatch, error) {
 	if eventName == "" {
-		return DispatchCustomEventPatch{}, fmt.Errorf("eventName is required")
+		return DispatchCustomEventPatch{}, ErrEventNameRequired
 	}
 
 	p := DispatchCustomEventPatch{

@@ -48,7 +48,9 @@ func ScriptHandlerWith(js []byte, _ string) http.Handler {
 		}
 
 		w.Header().Set("Content-Length", strconv.Itoa(len(js)))
-		_, _ = w.Write(js)
+		if _, err := w.Write(js); err != nil {
+			return // client disconnected or write failed; nothing more to send
+		}
 	})
 }
 

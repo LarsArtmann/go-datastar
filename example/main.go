@@ -50,8 +50,12 @@ func main() {
 	<-ctx.Done()
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	_ = srv.Shutdown(shutdownCtx)
-	_ = broadcaster.Shutdown(shutdownCtx)
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		log.Printf("server shutdown: %v", err)
+	}
+	if err := broadcaster.Shutdown(shutdownCtx); err != nil {
+		log.Printf("broadcaster shutdown: %v", err)
+	}
 }
 
 func startProducer(b *sse.Broadcaster[sse.Event]) {
@@ -70,14 +74,18 @@ func startProducer(b *sse.Broadcaster[sse.Event]) {
 		)
 		b.Broadcast(patch.Event())
 
-		countPatch, _ := datastar.NewSignalsPatch(map[string]any{"total": i})
+		countPatch, err := datastar.NewSignalsPatch(map[string]any{"total": i})
+		if err != nil {
+			log.Printf("producer: marshal count signals: %v", err)
+			continue
+		}
 		b.Broadcast(countPatch.Event())
 	}
 }
 
 func indexHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	_, _ = fmt.Fprintf(w, `<!DOCTYPE html>
+	if _, err := fmt.Fprintf(w, `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -107,12 +115,19 @@ es.addEventListener("datastar-patch-signals", (e) => {
 </script>
 </body>
 </html>`, datastar.ScriptTag("/datastar.js"))
+	if err != nil {
+		log.Printf("index: write response: %v", err)
+	}
 }
 
 func eventsHandler(b *sse.Broadcaster[sse.Event]) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		stream := sse.NewStream(w, r)
-		defer func() { _ = stream.Close() }()
+		defer func() {
+			if err := stream.Close(); err != nil {
+				log.Printf("events: close stream: %v", err)
+			}
+		}()
 
 		ch := b.Subscribe()
 		defer b.Unsubscribe(ch)

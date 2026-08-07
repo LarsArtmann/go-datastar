@@ -1,6 +1,6 @@
 package datastar
 
-import "fmt"
+import errorfamily "github.com/larsartmann/go-error-family"
 
 // NewRemovePatch creates an [ElementsPatch] that removes the element matching
 // the given CSS selector from the DOM. It is equivalent to:
@@ -90,7 +90,8 @@ func ElementPatchModeFromString(s string) (ElementPatchMode, error) {
 			return m, nil
 		}
 	}
-	return "", fmt.Errorf("invalid element patch mode: %s", s)
+	return "", errorfamily.Newf(errorfamily.Rejection,
+		CodeElementPatchModeInvalid, "unrecognized element patch mode %q", s)
 }
 
 // NamespaceFromString converts a string to a [Namespace].
@@ -101,5 +102,6 @@ func NamespaceFromString(s string) (Namespace, error) {
 			return ns, nil
 		}
 	}
-	return "", fmt.Errorf("invalid namespace: %s", s)
+	return "", errorfamily.Newf(errorfamily.Rejection,
+		CodeNamespaceInvalid, "unrecognized namespace %q", s)
 }
