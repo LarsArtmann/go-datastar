@@ -2,6 +2,7 @@ package datastar_test
 
 import (
 	"bytes"
+	"strings"
 	"testing"
 	"time"
 
@@ -105,11 +106,11 @@ func TestElementsPatch_AllModes(t *testing.T) {
 			got := patch.Event()
 
 			if tc.want == "" {
-				if bytes.Contains([]byte(got.Data), []byte("mode ")) {
+				if strings.Contains(got.Data, "mode ") {
 					t.Errorf("mode should not be emitted for outer; Data=%q", got.Data)
 				}
 			} else {
-				if !bytes.Contains([]byte(got.Data), []byte(tc.want)) {
+				if !strings.Contains(got.Data, tc.want) {
 					t.Errorf("Data should contain %q; got %q", tc.want, got.Data)
 				}
 			}
@@ -128,7 +129,7 @@ func TestElementsPatch_Namespace(t *testing.T) {
 		)
 		got := patch.Event()
 
-		if !bytes.Contains([]byte(got.Data), []byte("namespace svg")) {
+		if !strings.Contains(got.Data, "namespace svg") {
 			t.Errorf("should contain 'namespace svg'; got %q", got.Data)
 		}
 	})
@@ -141,7 +142,7 @@ func TestElementsPatch_Namespace(t *testing.T) {
 		)
 		got := patch.Event()
 
-		if bytes.Contains([]byte(got.Data), []byte("namespace ")) {
+		if strings.Contains(got.Data, "namespace ") {
 			t.Errorf("should NOT contain 'namespace'; got %q", got.Data)
 		}
 	})
@@ -154,7 +155,7 @@ func TestElementsPatch_Namespace(t *testing.T) {
 		)
 		got := patch.Event()
 
-		if !bytes.Contains([]byte(got.Data), []byte("namespace mathml")) {
+		if !strings.Contains(got.Data, "namespace mathml") {
 			t.Errorf("should contain 'namespace mathml'; got %q", got.Data)
 		}
 	})
@@ -171,7 +172,7 @@ func TestElementsPatch_ViewTransitions(t *testing.T) {
 		)
 		got := patch.Event()
 
-		if !bytes.Contains([]byte(got.Data), []byte("useViewTransition true")) {
+		if !strings.Contains(got.Data, "useViewTransition true") {
 			t.Errorf("should contain 'useViewTransition true'; got %q", got.Data)
 		}
 	})

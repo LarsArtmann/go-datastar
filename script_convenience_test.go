@@ -14,12 +14,9 @@ func TestNewRedirectPatch(t *testing.T) {
 	patch := datastar.NewRedirectPatch("https://example.com")
 	got := patch.Event()
 
-	if !bytes.Contains(
-		[]byte(got.Data),
-		[]byte(
-			"elements <script data-effect=\"el.remove()\">setTimeout(() => window.location.href = \"https://example.com\")</script>",
-		),
-	) {
+	wantScript := `elements <script data-effect="el.remove()">setTimeout(() => ` +
+		`window.location.href = "https://example.com")</script>`
+	if !bytes.Contains([]byte(got.Data), []byte(wantScript)) {
 		t.Errorf("should contain redirect script; got %q", got.Data)
 	}
 }
