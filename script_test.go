@@ -1,7 +1,7 @@
 package datastar_test
 
 import (
-	"bytes"
+	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-datastar"
@@ -18,22 +18,20 @@ func TestScriptPatch_DefaultAutoRemove(t *testing.T) {
 		t.Errorf("Event: got %q, want datastar-patch-elements", got.Event)
 	}
 
-	if !bytes.Contains([]byte(got.Data), []byte("selector body")) {
+	if !strings.Contains(got.Data, "selector body") {
 		t.Errorf("should contain 'selector body'; got %q", got.Data)
 	}
 
-	if !bytes.Contains([]byte(got.Data), []byte("mode append")) {
+	if !strings.Contains(got.Data, "mode append") {
 		t.Errorf("should contain 'mode append'; got %q", got.Data)
 	}
 	// nil AutoRemove → data-effect="el.remove()"
-	if !bytes.Contains([]byte(got.Data), []byte(`data-effect="el.remove()"`)) {
+	if !strings.Contains(got.Data, `data-effect="el.remove()"`) {
 		t.Errorf("should contain auto-remove effect; got %q", got.Data)
 	}
 	// Should contain the script wrapped in <script>
-	if !bytes.Contains(
-		[]byte(got.Data),
-		[]byte("<script data-effect=\"el.remove()\">console.log('hi')</script>"),
-	) {
+	wantScript := `<script data-effect="el.remove()">console.log('hi')</script>`
+	if !strings.Contains(got.Data, wantScript) {
 		t.Errorf("should contain wrapped script; got %q", got.Data)
 	}
 }
@@ -44,7 +42,7 @@ func TestScriptPatch_AutoRemoveTrue(t *testing.T) {
 	patch := datastar.NewScriptPatch("x", datastar.WithScriptAutoRemove(true))
 	got := patch.Event()
 
-	if !bytes.Contains([]byte(got.Data), []byte(`data-effect="el.remove()"`)) {
+	if !strings.Contains(got.Data, `data-effect="el.remove()"`) {
 		t.Errorf("should contain auto-remove; got %q", got.Data)
 	}
 }
@@ -55,7 +53,7 @@ func TestScriptPatch_AutoRemoveFalse(t *testing.T) {
 	patch := datastar.NewScriptPatch("x", datastar.WithScriptAutoRemove(false))
 	got := patch.Event()
 
-	if bytes.Contains([]byte(got.Data), []byte(`data-effect="el.remove()"`)) {
+	if strings.Contains(got.Data, `data-effect="el.remove()"`) {
 		t.Errorf("should NOT contain auto-remove; got %q", got.Data)
 	}
 }
@@ -69,7 +67,7 @@ func TestScriptPatch_WithAttributes(t *testing.T) {
 	)
 	got := patch.Event()
 
-	if !bytes.Contains([]byte(got.Data), []byte(`<script type="module">x</script>`)) {
+	if !strings.Contains(got.Data, `<script type="module">x</script>`) {
 		t.Errorf("should contain script with type attribute; got %q", got.Data)
 	}
 }
@@ -83,7 +81,7 @@ func TestScriptPatch_WithAttributeKVs(t *testing.T) {
 	)
 	got := patch.Event()
 
-	if !bytes.Contains([]byte(got.Data), []byte(`<script type="speculationrules">x</script>`)) {
+	if !strings.Contains(got.Data, `<script type="speculationrules">x</script>`) {
 		t.Errorf("should contain script with speculationrules type; got %q", got.Data)
 	}
 }
@@ -97,7 +95,7 @@ func TestScriptPatch_MultipleAttributes(t *testing.T) {
 	)
 	got := patch.Event()
 
-	if !bytes.Contains([]byte(got.Data), []byte(`<script type="module" async>x</script>`)) {
+	if !strings.Contains(got.Data, `<script type="module" async>x</script>`) {
 		t.Errorf("should contain script with multiple attrs; got %q", got.Data)
 	}
 }
@@ -130,7 +128,7 @@ func TestScriptPatch_FullWireFormat(t *testing.T) {
 	}
 
 	for _, line := range expectedLines {
-		if !bytes.Contains([]byte(wire), []byte(line)) {
+		if !strings.Contains(wire, line) {
 			t.Errorf("wire format missing %q; got:\n%s", line, wire)
 		}
 	}

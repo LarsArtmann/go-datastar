@@ -1,8 +1,8 @@
 package datastar_test
 
 import (
-	"bytes"
 	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-datastar"
@@ -16,7 +16,7 @@ func TestNewRedirectPatch(t *testing.T) {
 
 	wantScript := `elements <script data-effect="el.remove()">setTimeout(() => ` +
 		`window.location.href = "https://example.com")</script>`
-	if !bytes.Contains([]byte(got.Data), []byte(wantScript)) {
+	if !strings.Contains(got.Data, wantScript) {
 		t.Errorf("should contain redirect script; got %q", got.Data)
 	}
 }
@@ -27,7 +27,7 @@ func TestNewRedirectfPatch(t *testing.T) {
 	patch := datastar.NewRedirectfPatch("/users/%d", 42)
 	got := patch.Event()
 
-	if !bytes.Contains([]byte(got.Data), []byte(`window.location.href = "/users/42"`)) {
+	if !strings.Contains(got.Data, `window.location.href = "/users/42"`) {
 		t.Errorf("should contain formatted URL; got %q", got.Data)
 	}
 }
@@ -38,7 +38,7 @@ func TestNewConsoleLogPatch(t *testing.T) {
 	patch := datastar.NewConsoleLogPatch("hello world")
 	got := patch.Event()
 
-	if !bytes.Contains([]byte(got.Data), []byte(`console.log("hello world")`)) {
+	if !strings.Contains(got.Data, `console.log("hello world")`) {
 		t.Errorf("should contain console.log; got %q", got.Data)
 	}
 }
@@ -49,7 +49,7 @@ func TestNewConsoleLogfPatch(t *testing.T) {
 	patch := datastar.NewConsoleLogfPatch("count: %d", 5)
 	got := patch.Event()
 
-	if !bytes.Contains([]byte(got.Data), []byte(`console.log("count: 5")`)) {
+	if !strings.Contains(got.Data, `console.log("count: 5")`) {
 		t.Errorf("should contain formatted console.log; got %q", got.Data)
 	}
 }
@@ -57,17 +57,17 @@ func TestNewConsoleLogfPatch(t *testing.T) {
 func TestNewConsoleErrorPatch(t *testing.T) {
 	t.Parallel()
 
-	patch := datastar.NewConsoleErrorPatch(errTest("something broke"))
+	patch := datastar.NewConsoleErrorPatch(fakeError("something broke"))
 	got := patch.Event()
 
-	if !bytes.Contains([]byte(got.Data), []byte(`console.error("something broke")`)) {
+	if !strings.Contains(got.Data, `console.error("something broke")`) {
 		t.Errorf("should contain console.error; got %q", got.Data)
 	}
 }
 
-type errTest string
+type fakeError string
 
-func (e errTest) Error() string { return string(e) }
+func (e fakeError) Error() string { return string(e) }
 
 func TestNewDispatchCustomEventPatch(t *testing.T) {
 	t.Parallel()
@@ -81,15 +81,15 @@ func TestNewDispatchCustomEventPatch(t *testing.T) {
 		}
 
 		got := patch.Event()
-		if !bytes.Contains([]byte(got.Data), []byte(`new CustomEvent("myEvent"`)) {
+		if !strings.Contains(got.Data, `new CustomEvent("myEvent"`) {
 			t.Errorf("should contain CustomEvent construction; got %q", got.Data)
 		}
 
-		if !bytes.Contains([]byte(got.Data), []byte(`"key":"val"`)) {
+		if !strings.Contains(got.Data, `"key":"val"`) {
 			t.Errorf("should contain detail JSON; got %q", got.Data)
 		}
 
-		if !bytes.Contains([]byte(got.Data), []byte(`elements = [document]`)) {
+		if !strings.Contains(got.Data, `elements = [document]`) {
 			t.Errorf("should use [document] for default selector; got %q", got.Data)
 		}
 	})
@@ -102,7 +102,7 @@ func TestNewDispatchCustomEventPatch(t *testing.T) {
 		)
 		got := patch.Event()
 
-		if !bytes.Contains([]byte(got.Data), []byte(`document.querySelectorAll("#my-element")`)) {
+		if !strings.Contains(got.Data, `document.querySelectorAll("#my-element")`) {
 			t.Errorf("should use querySelectorAll; got %q", got.Data)
 		}
 	})
@@ -123,7 +123,7 @@ func TestNewDispatchCustomEventPatch(t *testing.T) {
 		got := patch.Event()
 
 		for _, want := range []string{"bubbles: true", "cancelable: true", "composed: true"} {
-			if !bytes.Contains([]byte(got.Data), []byte(want)) {
+			if !strings.Contains(got.Data, want) {
 				t.Errorf("should contain %q; got %q", want, got.Data)
 			}
 		}
@@ -137,10 +137,7 @@ func TestNewReplaceURLPatch(t *testing.T) {
 	patch := datastar.NewReplaceURLPatch(u)
 	got := patch.Event()
 
-	if !bytes.Contains(
-		[]byte(got.Data),
-		[]byte(`window.history.replaceState({}, "", "https://example.com/new")`),
-	) {
+	if !strings.Contains(got.Data, `window.history.replaceState({}, "", "https://example.com/new")`) {
 		t.Errorf("should contain replaceState; got %q", got.Data)
 	}
 }
@@ -152,23 +149,23 @@ func TestNewPrefetchPatch(t *testing.T) {
 	got := patch.Event()
 
 	// Should have type="speculationrules" attribute
-	if !bytes.Contains([]byte(got.Data), []byte(`type="speculationrules"`)) {
+	if !strings.Contains(got.Data, `type="speculationrules"`) {
 		t.Errorf("should contain speculationrules type; got %q", got.Data)
 	}
 	// Should NOT have auto-remove (false)
-	if bytes.Contains([]byte(got.Data), []byte(`data-effect="el.remove()"`)) {
+	if strings.Contains(got.Data, `data-effect="el.remove()"`) {
 		t.Errorf("should NOT contain auto-remove; got %q", got.Data)
 	}
 	// Should contain both URLs
-	if !bytes.Contains([]byte(got.Data), []byte(`"/page1"`)) {
+	if !strings.Contains(got.Data, `"/page1"`) {
 		t.Errorf("should contain /page1; got %q", got.Data)
 	}
 
-	if !bytes.Contains([]byte(got.Data), []byte(`"/page2"`)) {
+	if !strings.Contains(got.Data, `"/page2"`) {
 		t.Errorf("should contain /page2; got %q", got.Data)
 	}
 	// Should contain prefetch source
-	if !bytes.Contains([]byte(got.Data), []byte(`"source": "list"`)) {
+	if !strings.Contains(got.Data, `"source": "list"`) {
 		t.Errorf("should contain source list; got %q", got.Data)
 	}
 }

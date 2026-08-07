@@ -185,7 +185,7 @@ func TestElementsPatch_ViewTransitions(t *testing.T) {
 		)
 		got := patch.Event()
 
-		if bytes.Contains([]byte(got.Data), []byte("useViewTransition")) {
+		if strings.Contains(got.Data, "useViewTransition") {
 			t.Errorf("should NOT contain 'useViewTransition'; got %q", got.Data)
 		}
 	})
@@ -199,7 +199,7 @@ func TestElementsPatch_ViewTransitions(t *testing.T) {
 		)
 		got := patch.Event()
 
-		if !bytes.Contains([]byte(got.Data), []byte("viewTransitionSelector #main")) {
+		if !strings.Contains(got.Data, "viewTransitionSelector #main") {
 			t.Errorf("should contain 'viewTransitionSelector #main'; got %q", got.Data)
 		}
 	})
@@ -307,7 +307,7 @@ func TestElementsPatch_FullWireFormat(t *testing.T) {
 	}
 
 	for _, line := range expectedLines {
-		if !bytes.Contains([]byte(wire), []byte(line)) {
+		if !strings.Contains(wire, line) {
 			t.Errorf("wire format missing %q; got:\n%s", line, wire)
 		}
 	}

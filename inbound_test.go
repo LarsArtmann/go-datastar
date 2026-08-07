@@ -1,7 +1,6 @@
 package datastar_test
 
 import (
-	"bytes"
 	"context"
 	"io"
 	"net/http"
@@ -59,7 +58,7 @@ func TestElementsFromTempl(t *testing.T) {
 		}
 
 		got := patch.Event()
-		if !bytes.Contains([]byte(got.Data), []byte("elements <div>from templ</div>")) {
+		if !strings.Contains(got.Data, "elements <div>from templ</div>") {
 			t.Errorf("should contain rendered HTML; got %q", got.Data)
 		}
 	})
@@ -90,7 +89,7 @@ func TestElementsFromGostar(t *testing.T) {
 		}
 
 		got := patch.Event()
-		if !bytes.Contains([]byte(got.Data), []byte("elements <span>gostar</span>")) {
+		if !strings.Contains(got.Data, "elements <span>gostar</span>") {
 			t.Errorf("should contain rendered HTML; got %q", got.Data)
 		}
 	})

@@ -1,7 +1,7 @@
 package datastar_test
 
 import (
-	"bytes"
+	"strings"
 	"testing"
 	"time"
 
@@ -48,11 +48,11 @@ func TestSignalsPatch_OnlyIfMissing(t *testing.T) {
 	}
 	got := patch.Event()
 
-	if !bytes.Contains([]byte(got.Data), []byte("onlyIfMissing true\n")) {
+	if !strings.Contains(got.Data, "onlyIfMissing true\n") {
 		t.Errorf("should contain 'onlyIfMissing true'; got %q", got.Data)
 	}
 
-	if !bytes.Contains([]byte(got.Data), []byte("signals {\"x\":1}")) {
+	if !strings.Contains(got.Data, `signals {"x":1}`) {
 		t.Errorf("should contain 'signals {\"x\":1}'; got %q", got.Data)
 	}
 }
