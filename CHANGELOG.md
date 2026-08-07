@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.2] - 2026-08-07
+
+### Fixed
+
+- **CI lint job now passes** — golangci-lint installed via `go install` (v2)
+  instead of the pre-built binary action, which was compiled with Go 1.24 and
+  could not analyze Go 1.26 code
+- Removed deprecated `stable: false` input from `actions/setup-go@v5`
+- Replaced `golangci/golangci-lint-action@v6` with direct `go install` to ensure
+  golangci-lint is built with the same Go toolchain as the project
+
+### Changed
+
+- Lowered `go.mod` from `go 1.26.5` to `go 1.26` (patch versions in go.mod are
+  unusual and reduce consumer compatibility)
+- Added `stream.Send` to wrapcheck ignore-sigs in `.golangci.yml` — the Response
+  methods are thin pass-throughs by design
+- Added `p`, `r`, `id` to varnamelen ignore-names in `.golangci.yml` — idiomatic
+  Go short names for patch, request, and identifier
+
 ## [0.0.1] - 2026-08-07
 
 First public release. DataStar protocol library for Go — patches as first-class
