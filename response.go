@@ -146,15 +146,10 @@ func (r *Response) Send(evt sse.Event) error {
 // Stream returns the underlying [sse.Stream].
 func (r *Response) Stream() *sse.Stream { return r.stream }
 
-// ErrorResponse sends a signals patch with error information that the
-// DataStar client can display.
-func ErrorResponse(stream *sse.Stream, message string, code string) error {
-	patch, err := NewSignalsPatch(map[string]any{
-		"error": map[string]any{
-			"message": message,
-			"code":    code,
-		},
-	})
+// sendSignalsMap builds a [SignalsPatch] from a key→value map and sends it on
+// the stream. It is the shared core of [ErrorResponse] and [NotificationResponse].
+func sendSignalsMap(stream *sse.Stream, signals map[string]any) error {
+	patch, err := NewSignalsPatch(signals)
 	if err != nil {
 		return err
 	}
@@ -162,20 +157,26 @@ func ErrorResponse(stream *sse.Stream, message string, code string) error {
 	return stream.Send(patch.Event())
 }
 
+// ErrorResponse sends a signals patch with error information that the
+// DataStar client can display.
+func ErrorResponse(stream *sse.Stream, message string, code string) error {
+	return sendSignalsMap(stream, map[string]any{
+		"error": map[string]any{
+			"message": message,
+			"code":    code,
+		},
+	})
+}
+
 // NotificationResponse sends a signals patch with a notification message.
 func NotificationResponse(stream *sse.Stream, message string, kind string) error {
-	patch, err := NewSignalsPatch(map[string]any{
+	return sendSignalsMap(stream, map[string]any{
 		"notification": map[string]any{
 			"message": message,
 			"kind":    kind,
 			"time":    time.Now().Unix(),
 		},
 	})
-	if err != nil {
-		return err
-	}
-
-	return stream.Send(patch.Event())
 }
 
 // NewResponseFromHTTP is a convenience that creates an [sse.Stream] from the
