@@ -306,6 +306,7 @@ type mockTemplComponent struct {
 
 func (m *mockTemplComponent) Render(_ context.Context, w io.Writer) error {
 	_, err := io.WriteString(w, m.html)
+
 	return err
 }
 
@@ -512,6 +513,7 @@ func TestNewResponseFromHTTP(t *testing.T) {
 	t.Parallel()
 
 	var buf mockFlushWriter
+
 	req := httptest.NewRequest(http.MethodGet, "/events", nil)
 
 	resp := datastar.NewResponseFromHTTP(&buf, req)

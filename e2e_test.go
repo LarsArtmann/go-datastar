@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"net/http"
 	"net/http/httptest"
+	"slices"
 	"strings"
 	"testing"
 
@@ -69,8 +70,10 @@ func TestE2E_HTTPRoundTrip(t *testing.T) {
 		dataLines []string
 	}
 
-	var events []sseEvent
-	var current *sseEvent
+	var (
+		events  []sseEvent
+		current *sseEvent
+	)
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -136,9 +139,11 @@ func TestE2E_HTTPRoundTrip(t *testing.T) {
 
 	// The signals dataline should contain the JSON
 	foundSignals := false
+
 	for _, dl := range ev.dataLines {
 		if strings.HasPrefix(dl, "signals ") && strings.Contains(dl, "count") {
 			foundSignals = true
+
 			break
 		}
 	}
@@ -164,9 +169,11 @@ func TestE2E_HTTPRoundTrip(t *testing.T) {
 
 	// The script should be wrapped in <script> tags
 	foundScript := false
+
 	for _, dl := range ev.dataLines {
 		if strings.HasPrefix(dl, "elements ") && strings.Contains(dl, "console.log('hi')") {
 			foundScript = true
+
 			break
 		}
 	}
@@ -191,11 +198,5 @@ func TestE2E_HTTPRoundTrip(t *testing.T) {
 }
 
 func sliceContains(slice []string, want string) bool {
-	for _, s := range slice {
-		if s == want {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(slice, want)
 }

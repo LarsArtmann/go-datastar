@@ -44,7 +44,7 @@
           goPkg = pkgs.go_1_26;
           buildGoModule = pkgs.buildGoModule.override { go = goPkg; };
           version = self.rev or self.dirtyRev or "dev";
-          vendorHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+          vendorHash = "sha256-TzgUuZw7DdKK4uSM/6wTU31yvMp8TyWtFp+1JP7l7Gg=";
 
           hermeticCheck = buildGoModule {
             pname = "go-datastar";
@@ -62,8 +62,10 @@
             # (replace github.com/larsartmann/go-sse => ../go-sse) for
             # development. During the hermetic Nix build, proxyVendor needs to
             # resolve this path, so we copy the go-sse source to the expected
-            # sibling location before `go mod vendor` runs.
-            modPostPatch = ''
+            # sibling location. postPatch runs in both the go-modules FOD
+            # (where `go mod download` resolves the replace) and the main
+            # derivation (harmless — the source is already vendored by then).
+            postPatch = ''
               mkdir -p ../go-sse
               cp -r ${inputs.go-sse-src}/* ../go-sse/
               chmod -R u+w ../go-sse

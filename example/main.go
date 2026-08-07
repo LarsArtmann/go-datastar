@@ -84,6 +84,7 @@ func startProducer(b *sse.Broadcaster[sse.Event]) {
 
 			continue
 		}
+
 		b.Broadcast(countPatch.Event())
 	}
 }

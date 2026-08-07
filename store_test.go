@@ -18,11 +18,13 @@ func TestMemoryStore_AppendAndLen(t *testing.T) {
 	}
 
 	s.Append(sse.Event{ID: sse.NewEventID("1"), Event: "test", Data: "a"})
+
 	if got := s.Len(); got != 1 {
 		t.Fatalf("after 1 append: got %d, want 1", got)
 	}
 
 	s.Append(sse.Event{ID: sse.NewEventID("2"), Event: "test", Data: "b"})
+
 	if got := s.Len(); got != 2 {
 		t.Fatalf("after 2 appends: got %d, want 2", got)
 	}
@@ -152,15 +154,12 @@ func TestMemoryStore_ConcurrentAccess(t *testing.T) {
 	s := datastar.NewMemoryStore(100)
 
 	var wg sync.WaitGroup
-	wg.Add(1)
 
-	go func() {
-		defer wg.Done()
-
+	wg.Go(func() {
 		for i := range 50 {
 			s.Append(sse.Event{ID: sse.NewEventID(strconv.Itoa(i + 1))})
 		}
-	}()
+	})
 
 	for range 10 {
 		_, _ = s.EventsAfter(sse.EventID{})
