@@ -1,8 +1,12 @@
 package datastar_test
 
 import (
+	"context"
+	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"testing"
 
@@ -292,6 +296,235 @@ func TestResponse_Stream(t *testing.T) {
 
 	if resp.Stream() != stream {
 		t.Error("Stream() should return the underlying stream")
+	}
+}
+
+// mockTemplComponent implements datastar.TemplComponent for testing.
+type mockTemplComponent struct {
+	html string
+}
+
+func (m *mockTemplComponent) Render(_ context.Context, w io.Writer) error {
+	_, err := io.WriteString(w, m.html)
+	return err
+}
+
+func TestResponse_PatchElementsTempl(t *testing.T) {
+	t.Parallel()
+
+	stream, buf := newTestStream()
+	resp := datastar.NewResponse(stream)
+
+	comp := &mockTemplComponent{html: "<div>templ-rendered</div>"}
+	if err := resp.PatchElementsTempl(comp, datastar.WithSelectorID("main")); err != nil {
+		t.Fatalf("PatchElementsTempl: %v", err)
+	}
+
+	output := buf.String()
+	if !strings.Contains(output, "elements <div>templ-rendered</div>") {
+		t.Errorf("should contain rendered templ HTML; got:\n%s", output)
+	}
+}
+
+func TestResponse_MarshalAndPatchSignals(t *testing.T) {
+	t.Parallel()
+
+	stream, buf := newTestStream()
+	resp := datastar.NewResponse(stream)
+
+	if err := resp.MarshalAndPatchSignals(map[string]any{"count": 42, "name": "test"}); err != nil {
+		t.Fatalf("MarshalAndPatchSignals: %v", err)
+	}
+
+	output := buf.String()
+	if !strings.Contains(output, "event: datastar-patch-signals") {
+		t.Errorf("should contain patch-signals event; got:\n%s", output)
+	}
+
+	if !strings.Contains(output, "count") || !strings.Contains(output, "42") {
+		t.Errorf("should contain marshaled signals; got:\n%s", output)
+	}
+}
+
+func TestResponse_RemoveElementByID(t *testing.T) {
+	t.Parallel()
+
+	stream, buf := newTestStream()
+	resp := datastar.NewResponse(stream)
+
+	if err := resp.RemoveElementByID("todo-1"); err != nil {
+		t.Fatalf("RemoveElementByID: %v", err)
+	}
+
+	output := buf.String()
+	if !strings.Contains(output, "selector #todo-1") {
+		t.Errorf("should contain selector #todo-1; got:\n%s", output)
+	}
+
+	if !strings.Contains(output, "mode remove") {
+		t.Errorf("should contain mode remove; got:\n%s", output)
+	}
+}
+
+func TestResponse_Redirect(t *testing.T) {
+	t.Parallel()
+
+	stream, buf := newTestStream()
+	resp := datastar.NewResponse(stream)
+
+	if err := resp.Redirect("/dashboard"); err != nil {
+		t.Fatalf("Redirect: %v", err)
+	}
+
+	output := buf.String()
+	if !strings.Contains(output, "window.location.href") {
+		t.Errorf("should contain redirect script; got:\n%s", output)
+	}
+
+	if !strings.Contains(output, "/dashboard") {
+		t.Errorf("should contain target URL; got:\n%s", output)
+	}
+}
+
+func TestResponse_ConsoleLog(t *testing.T) {
+	t.Parallel()
+
+	stream, buf := newTestStream()
+	resp := datastar.NewResponse(stream)
+
+	if err := resp.ConsoleLog("debug info"); err != nil {
+		t.Fatalf("ConsoleLog: %v", err)
+	}
+
+	output := buf.String()
+	if !strings.Contains(output, "console.log") {
+		t.Errorf("should contain console.log; got:\n%s", output)
+	}
+
+	if !strings.Contains(output, "debug info") {
+		t.Errorf("should contain message; got:\n%s", output)
+	}
+}
+
+func TestResponse_ConsoleError(t *testing.T) {
+	t.Parallel()
+
+	stream, buf := newTestStream()
+	resp := datastar.NewResponse(stream)
+
+	if err := resp.ConsoleError(errors.New("something failed")); err != nil {
+		t.Fatalf("ConsoleError: %v", err)
+	}
+
+	output := buf.String()
+	if !strings.Contains(output, "console.error") {
+		t.Errorf("should contain console.error; got:\n%s", output)
+	}
+
+	if !strings.Contains(output, "something failed") {
+		t.Errorf("should contain error message; got:\n%s", output)
+	}
+}
+
+func TestResponse_DispatchCustomEvent(t *testing.T) {
+	t.Parallel()
+
+	stream, buf := newTestStream()
+	resp := datastar.NewResponse(stream)
+
+	if err := resp.DispatchCustomEvent("item-added", map[string]any{"id": 1}); err != nil {
+		t.Fatalf("DispatchCustomEvent: %v", err)
+	}
+
+	output := buf.String()
+	if !strings.Contains(output, "CustomEvent") {
+		t.Errorf("should contain CustomEvent; got:\n%s", output)
+	}
+
+	if !strings.Contains(output, "item-added") {
+		t.Errorf("should contain event name; got:\n%s", output)
+	}
+}
+
+func TestResponse_ReplaceURL(t *testing.T) {
+	t.Parallel()
+
+	stream, buf := newTestStream()
+	resp := datastar.NewResponse(stream)
+
+	targetURL := url.URL{Path: "/new-path"}
+	if err := resp.ReplaceURL(targetURL); err != nil {
+		t.Fatalf("ReplaceURL: %v", err)
+	}
+
+	output := buf.String()
+	if !strings.Contains(output, "replaceState") {
+		t.Errorf("should contain replaceState; got:\n%s", output)
+	}
+
+	if !strings.Contains(output, "/new-path") {
+		t.Errorf("should contain URL path; got:\n%s", output)
+	}
+}
+
+func TestResponse_Prefetch(t *testing.T) {
+	t.Parallel()
+
+	stream, buf := newTestStream()
+	resp := datastar.NewResponse(stream)
+
+	if err := resp.Prefetch("/page1", "/page2"); err != nil {
+		t.Fatalf("Prefetch: %v", err)
+	}
+
+	output := buf.String()
+	if !strings.Contains(output, "prefetch") {
+		t.Errorf("should contain prefetch; got:\n%s", output)
+	}
+
+	if !strings.Contains(output, "/page1") || !strings.Contains(output, "/page2") {
+		t.Errorf("should contain URLs; got:\n%s", output)
+	}
+}
+
+func TestResponse_Send(t *testing.T) {
+	t.Parallel()
+
+	stream, buf := newTestStream()
+	resp := datastar.NewResponse(stream)
+
+	evt := sse.Event{Event: "custom", Data: "raw-data"}
+	if err := resp.Send(evt); err != nil {
+		t.Fatalf("Send: %v", err)
+	}
+
+	output := buf.String()
+	if !strings.Contains(output, "event: custom") {
+		t.Errorf("should contain custom event; got:\n%s", output)
+	}
+
+	if !strings.Contains(output, "raw-data") {
+		t.Errorf("should contain data; got:\n%s", output)
+	}
+}
+
+func TestNewResponseFromHTTP(t *testing.T) {
+	t.Parallel()
+
+	var buf mockFlushWriter
+	req := httptest.NewRequest(http.MethodGet, "/events", nil)
+
+	resp := datastar.NewResponseFromHTTP(&buf, req)
+	if resp == nil {
+		t.Fatal("NewResponseFromHTTP returned nil")
+	}
+
+	if err := resp.PatchElements("<div>test</div>"); err != nil {
+		t.Fatalf("PatchElements via HTTP response: %v", err)
+	}
+
+	if !strings.Contains(buf.String(), "datastar-patch-elements") {
+		t.Errorf("should contain patch-elements event; got:\n%s", buf.String())
 	}
 }
 
