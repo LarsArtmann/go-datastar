@@ -24,11 +24,10 @@ func main() {
 	broadcaster := sse.NewBroadcaster[sse.Event]()
 	defer broadcaster.Close()
 
-	// Background producer: emits a new feed item every 2 seconds
 	go startProducer(broadcaster)
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /datastar.js", datastar.ScriptHandler().ServeHTTP)
+	mux.Handle("GET /datastar.js", datastar.ScriptHandler())
 	mux.HandleFunc("GET /", indexHandler)
 	mux.HandleFunc("GET /events", eventsHandler(broadcaster))
 
@@ -70,14 +69,14 @@ func startProducer(b *sse.Broadcaster[sse.Event]) {
 	for i := 1; ; i++ {
 		<-ticker.C
 
-		html := fmt.Sprintf(`<div class="item" data-signals-count="%d">Item #%d — %s</div>`,
-			i, i, time.Now().Format("15:04:05"))
+		html := fmt.Sprintf(`<div class="item">Item #%d — %s</div>`,
+			i, time.Now().Format("15:04:05"))
 
-		patch := datastar.NewElementsPatch(html,
+		elementsPatch := datastar.NewElementsPatch(html,
 			datastar.WithSelectorID("feed"),
 			datastar.WithMode(datastar.ElementPatchModePrepend),
 		)
-		b.Broadcast(patch.Event())
+		b.Broadcast(elementsPatch.Event())
 
 		countPatch, err := datastar.NewSignalsPatch(map[string]any{"total": i})
 		if err != nil {
@@ -85,46 +84,41 @@ func startProducer(b *sse.Broadcaster[sse.Event]) {
 
 			continue
 		}
-
 		b.Broadcast(countPatch.Event())
 	}
 }
 
 func indexHandler(w http.ResponseWriter, _ *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-	if _, err := fmt.Fprintf(w, `<!DOCTYPE html>
-<html>
+	_, _ = fmt.Fprintf(w, `<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
-<title>go-datastar Example</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>go-datastar Example — Live Feed</title>
 %s
 <style>
-body { font-family: system-ui; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
-#feed { display: flex; flex-direction: column; gap: 0.5rem; }
-.item { padding: 0.75rem; background: #f4f4f0; border-radius: 0.5rem; }
+body { font-family: system-ui, max-width: 600px; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; }
+h1 { margin-bottom: 0.25rem; }
+.stats { display: flex; gap: 1rem; align-items: baseline; margin-bottom: 1rem; color: #666; }
+.stats strong { font-size: 1.5rem; color: #1a1a1a; }
+#feed { display: flex; flex-direction: column-reverse; gap: 0.5rem; }
+.item { padding: 0.75rem 1rem; background: #f4f4f0; border-radius: 0.5rem; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 </style>
 </head>
 <body>
-<h1>go-datastar Live Feed</h1>
-<p>Total items: <span data-signals-total="0">0</span></p>
-<div id="feed" data-on-evt-feed-item="__event"></div>
-<script type="module">
-import { SSE } from "/events";
-const es = new EventSource("/events");
-es.addEventListener("datastar-patch-elements", (e) => {
-	const parser = new DOMParser();
-	const doc = parser.parseFromString(e.data.replace(/^data: /gm, ""), "text/html");
-	console.log("elements event", e.data);
-});
-es.addEventListener("datastar-patch-signals", (e) => {
-	console.log("signals event", e.data);
-});
-</script>
+<div data-signals="{total: 0}">
+	<h1>go-datastar Live Feed</h1>
+	<div class="stats">
+		<span>Total items: <strong data-text="$total">0</strong></span>
+	</div>
+	<div id="feed"></div>
+</div>
+<div data-init="@get('/events')"></div>
 </body>
-</html>`, datastar.ScriptTag("/datastar.js")); err != nil {
-		log.Printf("index: write response: %v", err)
-	}
+</html>`, datastar.ScriptTag("/datastar.js"))
 }
 
 func eventsHandler(b *sse.Broadcaster[sse.Event]) http.HandlerFunc {
