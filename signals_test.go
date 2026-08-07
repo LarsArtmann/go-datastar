@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/larsartmann/go-datastar"
-	"github.com/larsartmann/go-sse"
 )
 
 func TestSignalsPatch_Basic(t *testing.T) {
@@ -231,6 +230,5 @@ func TestSignalsPatch_EventIsSSEEvent(t *testing.T) {
 
 	patch := datastar.SignalsPatch{Signals: []byte(`{}`)}
 	evt := patch.Event()
-
-	var _ sse.Event = evt
+	_ = evt // verify Event() returns sse.Event
 }

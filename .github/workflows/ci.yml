@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+          stable: false
+
+      - name: Build
+        env:
+          GOEXPERIMENT: jsonv2
+          GOWORK: off
+        run: go build ./...
+
+      - name: Vet
+        env:
+          GOEXPERIMENT: jsonv2
+          GOWORK: off
+        run: go vet ./...
+
+      - name: Test
+        env:
+          GOEXPERIMENT: jsonv2
+          GOWORK: off
+        run: go test ./... -race -count=1
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+          stable: false
+
+      - uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          args: --timeout 5m
+        env:
+          GOEXPERIMENT: jsonv2
+          GOWORK: off

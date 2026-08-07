@@ -114,7 +114,7 @@ func (p SignalsPatch) Event() sse.Event {
 	}
 
 	if p.RetryDuration > 0 && p.RetryDuration != DefaultRetryDuration {
-		evt.Retry = uint(p.RetryDuration.Milliseconds())
+		evt.Retry = uint(p.RetryDuration.Milliseconds()) //nolint:gosec // always positive after > 0 check
 	}
 
 	return evt

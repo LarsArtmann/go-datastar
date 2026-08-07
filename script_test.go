@@ -92,9 +92,8 @@ func TestScriptPatch_MultipleAttributes(t *testing.T) {
 	)
 	got := patch.Event()
 
-	data := string(got.Data)
-	if !bytes.Contains([]byte(data), []byte(`<script type="module" async>x</script>`)) {
-		t.Errorf("should contain script with multiple attrs; got %q", data)
+	if !bytes.Contains([]byte(got.Data), []byte(`<script type="module" async>x</script>`)) {
+		t.Errorf("should contain script with multiple attrs; got %q", got.Data)
 	}
 }
 

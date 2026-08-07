@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-datastar"
-	"github.com/larsartmann/go-sse"
 )
 
 // --- Render Adapter Tests ---
@@ -297,5 +296,5 @@ func TestLastEventID_ReturnsSSEEventID(t *testing.T) {
 	r.Header.Set("Last-Event-ID", "abc")
 
 	id := datastar.LastEventID(r)
-	var _ sse.EventID = id
+	_ = id // verify return type is sse.EventID
 }

@@ -14,9 +14,6 @@ var embeddedDatastarJS []byte
 // DatastarJSVersion is the version of the embedded DataStar JavaScript client.
 const DatastarJSVersion = "1.0.2"
 
-// datastarJSETag is a pre-computed ETag for the embedded datastar.js bundle.
-var datastarJSETag = computeETag(embeddedDatastarJS)
-
 func computeETag(data []byte) string {
 	h := sha256.Sum256(data)
 	return `"` + hex.EncodeToString(h[:16]) + `"`
@@ -31,7 +28,7 @@ func ScriptHandler() http.Handler {
 
 // ScriptHandlerWith returns an [http.Handler] that serves a custom JavaScript
 // bundle. Use this to serve a different version of the DataStar client.
-func ScriptHandlerWith(js []byte, version string) http.Handler {
+func ScriptHandlerWith(js []byte, _ string) http.Handler {
 	etag := computeETag(js)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

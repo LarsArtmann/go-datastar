@@ -78,16 +78,14 @@ func TestNewDispatchCustomEventPatch(t *testing.T) {
 			t.Fatalf("NewDispatchCustomEventPatch: %v", err)
 		}
 		got := patch.Event()
-
-		data := string(got.Data)
-		if !bytes.Contains([]byte(data), []byte(`new CustomEvent("myEvent"`)) {
-			t.Errorf("should contain CustomEvent construction; got %q", data)
+		if !bytes.Contains([]byte(got.Data), []byte(`new CustomEvent("myEvent"`)) {
+			t.Errorf("should contain CustomEvent construction; got %q", got.Data)
 		}
-		if !bytes.Contains([]byte(data), []byte(`"key":"val"`)) {
-			t.Errorf("should contain detail JSON; got %q", data)
+		if !bytes.Contains([]byte(got.Data), []byte(`"key":"val"`)) {
+			t.Errorf("should contain detail JSON; got %q", got.Data)
 		}
-		if !bytes.Contains([]byte(data), []byte(`elements = [document]`)) {
-			t.Errorf("should use [document] for default selector; got %q", data)
+		if !bytes.Contains([]byte(got.Data), []byte(`elements = [document]`)) {
+			t.Errorf("should use [document] for default selector; got %q", got.Data)
 		}
 	})
 
@@ -119,10 +117,9 @@ func TestNewDispatchCustomEventPatch(t *testing.T) {
 		patch, _ := datastar.NewDispatchCustomEventPatch("evt", nil)
 		got := patch.Event()
 
-		data := string(got.Data)
 		for _, want := range []string{"bubbles: true", "cancelable: true", "composed: true"} {
-			if !bytes.Contains([]byte(data), []byte(want)) {
-				t.Errorf("should contain %q; got %q", want, data)
+			if !bytes.Contains([]byte(got.Data), []byte(want)) {
+				t.Errorf("should contain %q; got %q", want, got.Data)
 			}
 		}
 	})
