@@ -2,6 +2,7 @@ package datastar_test
 
 import (
 	"bufio"
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"slices"
@@ -11,6 +12,12 @@ import (
 	"github.com/larsartmann/go-datastar"
 	"github.com/larsartmann/go-sse"
 )
+
+// sseEvent is a single SSE event parsed from the wire format.
+type sseEvent struct {
+	eventType string
+	dataLines []string
+}
 
 // TestE2E_HTTPRoundTrip verifies the complete SSE wire format produced by
 // go-datastar through a real HTTP server and client — not a mock writer.
@@ -24,31 +31,68 @@ func TestE2E_HTTPRoundTrip(t *testing.T) {
 		defer func() { _ = stream.Close() }()
 
 		resp := datastar.NewResponse(stream)
-
-		// 1. Patch elements with selector + mode
-		_ = resp.PatchElements("<div>hello</div>",
-			datastar.WithSelector("#feed"),
-			datastar.WithMode(datastar.ElementPatchModeAppend),
-		)
-
-		// 2. Patch signals
-		_ = resp.MarshalAndPatchSignals(map[string]any{"count": 1})
-
-		// 3. Execute script (should be patch-elements, NOT execute-script)
-		_ = resp.ExecuteScript("console.log('hi')")
-
-		// 4. Remove element
-		_ = resp.RemoveElement("#stale")
+		emitAllPatches(t, resp)
 	}))
 	defer srv.Close()
 
-	resp, err := http.Get(srv.URL)
+	resp, err := fetchServerResponse(t, srv.URL)
 	if err != nil {
 		t.Fatalf("GET: %v", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
-	// --- Verify HTTP headers ---
+	verifySSEHeaders(t, resp)
+	events := parseSSEEvents(t, resp)
+
+	if len(events) != 4 {
+		t.Fatalf("event count: got %d, want 4", len(events))
+	}
+
+	verifyEventPatchElements(t, events[0], "datastar-patch-elements",
+		"#feed", "append", "<div>hello</div>")
+	verifyEventPatchSignals(t, events[1])
+	verifyEventExecuteScript(t, events[2])
+	verifyEventRemoveElement(t, events[3])
+}
+
+// emitAllPatches sends the four patches that the e2e test asserts against.
+// They live in a single handler for clarity but are not part of any production
+// path; this is a wire-format smoke test.
+func emitAllPatches(_ *testing.T, resp *datastar.Response) {
+	// 1. Patch elements with selector + mode
+	_ = resp.PatchElements("<div>hello</div>",
+		datastar.WithSelector("#feed"),
+		datastar.WithMode(datastar.ElementPatchModeAppend),
+	)
+
+	// 2. Patch signals
+	_ = resp.MarshalAndPatchSignals(map[string]any{"count": 1})
+
+	// 3. Execute script (should be patch-elements, NOT execute-script)
+	_ = resp.ExecuteScript("console.log('hi')")
+
+	// 4. Remove element
+	_ = resp.RemoveElement("#stale")
+}
+
+// fetchServerResponse issues a GET against the running test server using a
+// background-derived context, satisfying noctx without leaking a CancelFunc.
+func fetchServerResponse(t *testing.T, url string) (*http.Response, error) {
+	t.Helper()
+
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.DefaultClient.Do(req)
+}
+
+// verifySSEHeaders checks the transport headers that the DataStar client
+// depends on for connection management and reconnection.
+func verifySSEHeaders(t *testing.T, resp *http.Response) {
+	t.Helper()
+
 	if ct := resp.Header.Get("Content-Type"); ct != "text/event-stream" {
 		t.Errorf("Content-Type: got %q, want %q", ct, "text/event-stream")
 	}
@@ -60,15 +104,16 @@ func TestE2E_HTTPRoundTrip(t *testing.T) {
 	if conn := resp.Header.Get("Connection"); conn != "keep-alive" {
 		t.Errorf("Connection: got %q, want %q", conn, "keep-alive")
 	}
+}
 
-	// --- Parse SSE events from wire ---
+// parseSSEEvents reads the response body and parses the SSE framing into a
+// sequence of events. The scanner uses a 1 MiB max line buffer to handle any
+// reasonable DataStar payload.
+func parseSSEEvents(t *testing.T, resp *http.Response) []sseEvent {
+	t.Helper()
+
 	scanner := bufio.NewScanner(resp.Body)
 	scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)
-
-	type sseEvent struct {
-		eventType string
-		dataLines []string
-	}
 
 	var (
 		events  []sseEvent
@@ -77,26 +122,11 @@ func TestE2E_HTTPRoundTrip(t *testing.T) {
 
 	for scanner.Scan() {
 		line := scanner.Text()
+		current = advanceSSEEvent(current, line)
 
-		if line == "" {
-			// Empty line terminates the current event
-			if current != nil {
-				events = append(events, *current)
-				current = nil
-			}
-
-			continue
-		}
-
-		if current == nil {
-			current = &sseEvent{}
-		}
-
-		switch {
-		case strings.HasPrefix(line, "event: "):
-			current.eventType = strings.TrimPrefix(line, "event: ")
-		case strings.HasPrefix(line, "data: "):
-			current.dataLines = append(current.dataLines, strings.TrimPrefix(line, "data: "))
+		if line == "" && current != nil {
+			events = append(events, *current)
+			current = nil
 		}
 	}
 
@@ -104,44 +134,67 @@ func TestE2E_HTTPRoundTrip(t *testing.T) {
 		t.Fatalf("scanner: %v", err)
 	}
 
-	// Should have 4 events
-	if len(events) != 4 {
-		t.Fatalf("event count: got %d, want 4", len(events))
+	return events
+}
+
+// advanceSSEEvent folds a single SSE line into the event being built, opening
+// a new event when one is not in progress.
+func advanceSSEEvent(current *sseEvent, line string) *sseEvent {
+	if line == "" {
+		return current
 	}
 
-	// --- Event 1: patch-elements with selector + mode + elements ---
-	ev := events[0]
-	if ev.eventType != "datastar-patch-elements" {
-		t.Errorf("event[0] type: got %q, want %q", ev.eventType, "datastar-patch-elements")
+	if current == nil {
+		current = &sseEvent{}
 	}
 
-	if !sliceContains(ev.dataLines, "selector #feed") {
-		t.Errorf("event[0] should contain selector #feed; got %v", ev.dataLines)
+	if strings.HasPrefix(line, "event: ") {
+		current.eventType = strings.TrimPrefix(line, "event: ")
+	} else if strings.HasPrefix(line, "data: ") {
+		current.dataLines = append(current.dataLines, strings.TrimPrefix(line, "data: "))
 	}
 
-	if !sliceContains(ev.dataLines, "mode append") {
-		t.Errorf("event[0] should contain mode append; got %v", ev.dataLines)
+	return current
+}
+
+// verifyEventPatchElements asserts the elements patch carries the expected
+// selector, mode, and at least one elements dataline.
+func verifyEventPatchElements(t *testing.T, event sseEvent, wantType, wantSelector, wantMode, wantElements string) {
+	t.Helper()
+
+	if event.eventType != wantType {
+		t.Errorf("event type: got %q, want %q", event.eventType, wantType)
 	}
 
-	if !sliceContains(ev.dataLines, "elements <div>hello</div>") {
-		t.Errorf("event[0] should contain elements line; got %v", ev.dataLines)
+	wantLines := []string{
+		"selector " + wantSelector,
+		"mode " + wantMode,
+		"elements " + wantElements,
+	}
+	for _, line := range wantLines {
+		if !slices.Contains(event.dataLines, line) {
+			t.Errorf("event should contain %q; got %v", line, event.dataLines)
+		}
+	}
+}
+
+// verifyEventPatchSignals asserts the signals event carries a signals dataline
+// that mentions the "count" key produced by the handler.
+func verifyEventPatchSignals(t *testing.T, event sseEvent) {
+	t.Helper()
+
+	if event.eventType != "datastar-patch-signals" {
+		t.Errorf("event type: got %q, want %q", event.eventType, "datastar-patch-signals")
 	}
 
-	// --- Event 2: patch-signals ---
-	ev = events[1]
-	if ev.eventType != "datastar-patch-signals" {
-		t.Errorf("event[1] type: got %q, want %q", ev.eventType, "datastar-patch-signals")
+	if len(event.dataLines) == 0 {
+		t.Error("event should have signal data lines")
 	}
 
-	if len(ev.dataLines) == 0 {
-		t.Error("event[1] should have signal data lines")
-	}
-
-	// The signals dataline should contain the JSON
 	foundSignals := false
 
-	for _, dl := range ev.dataLines {
-		if strings.HasPrefix(dl, "signals ") && strings.Contains(dl, "count") {
+	for _, line := range event.dataLines {
+		if strings.HasPrefix(line, "signals ") && strings.Contains(line, "count") {
 			foundSignals = true
 
 			break
@@ -149,29 +202,31 @@ func TestE2E_HTTPRoundTrip(t *testing.T) {
 	}
 
 	if !foundSignals {
-		t.Errorf("event[1] should contain signals data with count; got %v", ev.dataLines)
+		t.Errorf("event should contain signals data with count; got %v", event.dataLines)
+	}
+}
+
+// verifyEventExecuteScript asserts ExecuteScript uses the patch-elements event
+// (selector=body, mode=append) and wraps the script in <script> elements.
+func verifyEventExecuteScript(t *testing.T, event sseEvent) {
+	t.Helper()
+
+	if event.eventType != "datastar-patch-elements" {
+		t.Errorf("event type: got %q, want %q (ExecuteScript uses patch-elements per SDK)",
+			event.eventType, "datastar-patch-elements")
 	}
 
-	// --- Event 3: ExecuteScript → patch-elements (NOT execute-script) ---
-	ev = events[2]
-	if ev.eventType != "datastar-patch-elements" {
-		t.Errorf("event[2] type: got %q, want %q (ExecuteScript uses patch-elements per SDK)",
-			ev.eventType, "datastar-patch-elements")
+	wantLines := []string{"selector body", "mode append"}
+	for _, line := range wantLines {
+		if !slices.Contains(event.dataLines, line) {
+			t.Errorf("event should contain %q; got %v", line, event.dataLines)
+		}
 	}
 
-	if !sliceContains(ev.dataLines, "selector body") {
-		t.Errorf("event[2] should contain selector body; got %v", ev.dataLines)
-	}
-
-	if !sliceContains(ev.dataLines, "mode append") {
-		t.Errorf("event[2] should contain mode append; got %v", ev.dataLines)
-	}
-
-	// The script should be wrapped in <script> tags
 	foundScript := false
 
-	for _, dl := range ev.dataLines {
-		if strings.HasPrefix(dl, "elements ") && strings.Contains(dl, "console.log('hi')") {
+	for _, line := range event.dataLines {
+		if strings.HasPrefix(line, "elements ") && strings.Contains(line, "console.log('hi')") {
 			foundScript = true
 
 			break
@@ -179,21 +234,24 @@ func TestE2E_HTTPRoundTrip(t *testing.T) {
 	}
 
 	if !foundScript {
-		t.Errorf("event[2] should contain script in elements line; got %v", ev.dataLines)
+		t.Errorf("event should contain script in elements line; got %v", event.dataLines)
+	}
+}
+
+// verifyEventRemoveElement asserts the remove call becomes patch-elements
+// with selector=#stale and mode=remove.
+func verifyEventRemoveElement(t *testing.T, event sseEvent) {
+	t.Helper()
+
+	if event.eventType != "datastar-patch-elements" {
+		t.Errorf("event type: got %q, want %q", event.eventType, "datastar-patch-elements")
 	}
 
-	// --- Event 4: RemoveElement → patch-elements with mode remove ---
-	ev = events[3]
-	if ev.eventType != "datastar-patch-elements" {
-		t.Errorf("event[3] type: got %q, want %q", ev.eventType, "datastar-patch-elements")
-	}
-
-	if !sliceContains(ev.dataLines, "selector #stale") {
-		t.Errorf("event[3] should contain selector #stale; got %v", ev.dataLines)
-	}
-
-	if !sliceContains(ev.dataLines, "mode remove") {
-		t.Errorf("event[3] should contain mode remove; got %v", ev.dataLines)
+	wantLines := []string{"selector #stale", "mode remove"}
+	for _, line := range wantLines {
+		if !slices.Contains(event.dataLines, line) {
+			t.Errorf("event should contain %q; got %v", line, event.dataLines)
+		}
 	}
 }
 

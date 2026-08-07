@@ -68,7 +68,11 @@ func WithoutViewTransitions() ElementPatchOption { return WithViewTransitions(fa
 
 // --- Validation helpers ---
 
-// ValidElementPatchModes lists all valid element patch modes.
+// ValidElementPatchModes lists all valid element patch modes. It is a public
+// package-level slice so callers can iterate the set without depending on the
+// private definition. Treated as immutable.
+//
+//nolint:gochecknoglobals // Public API; iterated by callers.
 var ValidElementPatchModes = []ElementPatchMode{
 	ElementPatchModeOuter,
 	ElementPatchModeInner,
@@ -80,7 +84,11 @@ var ValidElementPatchModes = []ElementPatchMode{
 	ElementPatchModeReplace,
 }
 
-// ValidNamespaces lists all valid namespaces.
+// ValidNamespaces lists all valid namespaces. It is a public package-level
+// slice so callers can iterate the set without depending on the private
+// definition. Treated as immutable.
+//
+//nolint:gochecknoglobals // Public API; iterated by callers.
 var ValidNamespaces = []Namespace{
 	NamespaceHTML,
 	NamespaceSVG,

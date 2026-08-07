@@ -19,43 +19,74 @@ import (
 //
 // Returns nil (with no data written) if no signals are present (empty query
 // param or empty body).
-func ReadSignals(r *http.Request, signals any) error {
-	var input []byte
+func ReadSignals(req *http.Request, signals any) error {
+	input, err := readSignalsInput(req)
+	if err != nil {
+		return err
+	}
 
-	if r.Method == http.MethodGet || r.Method == http.MethodDelete {
-		dsJSON := r.URL.Query().Get(DatastarKey)
-		if dsJSON == "" {
-			return nil
-		}
-
-		input = []byte(dsJSON)
-	} else {
-		body, err := io.ReadAll(r.Body)
-		if err != nil {
-			if errors.Is(err, http.ErrBodyReadAfterClose) {
-				return ErrBodyReadAfterClose
-			}
-
-			return errorfamily.Wrapf(err, errorfamily.Transient,
-				CodeBodyReadFailed, "read request body").
-				WithContext("method", r.Method)
-		}
-
-		if len(body) == 0 {
-			return nil
-		}
-
-		input = body
+	if len(input) == 0 {
+		return nil
 	}
 
 	if err := json.Unmarshal(input, signals); err != nil {
 		return errorfamily.Wrapf(err, errorfamily.Rejection,
 			CodeSignalsUnmarshalFailed, "unmarshal signals JSON into %T", signals).
-			WithContext("method", r.Method).
+			WithContext("method", req.Method).
 			WithContext("input_bytes", strconv.Itoa(len(input)))
 	}
 
 	return nil
+}
+
+// readSignalsInput extracts the raw bytes that should be unmarshaled into
+// signals, choosing the query parameter for GET/DELETE and the body otherwise.
+// Returns a nil slice (no error) if no signals are present in either location.
+func readSignalsInput(req *http.Request) ([]byte, error) {
+	if isQueryMethod(req.Method) {
+		return readSignalsFromQuery(req)
+	}
+
+	return readSignalsFromBody(req)
+}
+
+// isQueryMethod reports whether the HTTP method carries signals in the URL
+// query string rather than the request body. DataStar's protocol assigns
+// GET/DELETE to query encoding and everything else to the body.
+func isQueryMethod(method string) bool {
+	return method == http.MethodGet || method == http.MethodDelete
+}
+
+// readSignalsFromQuery returns the raw "datastar" query parameter bytes, or
+// nil if the parameter is absent.
+func readSignalsFromQuery(req *http.Request) ([]byte, error) {
+	dsJSON := req.URL.Query().Get(DatastarKey)
+	if dsJSON == "" {
+		return nil, nil
+	}
+
+	return []byte(dsJSON), nil
+}
+
+// readSignalsFromBody reads and returns the full request body, or nil for an
+// empty body. Returns an errorfamily-classified error for I/O failures.
+func readSignalsFromBody(req *http.Request) ([]byte, error) {
+	body, err := io.ReadAll(req.Body)
+	if err != nil {
+		if errors.Is(err, http.ErrBodyReadAfterClose) {
+			return nil, ErrBodyReadAfterClose
+		}
+
+		return nil, errorfamily.Wrapf(err, errorfamily.Transient,
+			CodeBodyReadFailed, "read request body").
+			WithContext("method", req.Method)
+	}
+
+	if len(body) == 0 {
+		return nil, nil
+	}
+
+	return body, nil
 }
 
 // LastEventID extracts the last event ID from an HTTP request. It checks the
@@ -63,14 +94,14 @@ func ReadSignals(r *http.Request, signals any) error {
 // query parameter (which the DataStar JS client sends on reconnection).
 //
 // Returns an empty [sse.EventID] if no event ID is present.
-func LastEventID(r *http.Request) sse.EventID {
+func LastEventID(req *http.Request) sse.EventID {
 	// Header takes priority
-	if headerID := r.Header.Get("Last-Event-ID"); headerID != "" {
+	if headerID := req.Header.Get("Last-Event-ID"); headerID != "" {
 		return sse.NewEventID(headerID)
 	}
 
 	// DataStar JS client also sends lastEventId as a query param
-	if queryID := r.URL.Query().Get("lastEventId"); queryID != "" {
+	if queryID := req.URL.Query().Get("lastEventId"); queryID != "" {
 		return sse.NewEventID(queryID)
 	}
 

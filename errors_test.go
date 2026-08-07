@@ -1,6 +1,7 @@
 package datastar_test
 
 import (
+	"context"
 	"errors"
 	"io"
 	"net/http"
