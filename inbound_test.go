@@ -166,7 +166,12 @@ func TestReadSignals_FromBody(t *testing.T) {
 func TestReadSignals_FromQuery(t *testing.T) {
 	t.Parallel()
 
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api?datastar=%7B%22x%22%3A1%7D", nil)
+	req := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodGet,
+		"/api?datastar=%7B%22x%22%3A1%7D",
+		nil,
+	)
 
 	var decoded map[string]int
 	if err := datastar.ReadSignals(req, &decoded); err != nil {
@@ -196,7 +201,12 @@ func TestReadSignals_EmptyQuery(t *testing.T) {
 func TestReadSignals_EmptyBody(t *testing.T) {
 	t.Parallel()
 
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api", strings.NewReader(""))
+	req := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodPost,
+		"/api",
+		strings.NewReader(""),
+	)
 
 	var decoded map[string]any
 	if err := datastar.ReadSignals(req, &decoded); err != nil {
@@ -211,7 +221,12 @@ func TestReadSignals_EmptyBody(t *testing.T) {
 func TestReadSignals_MalformedJSON(t *testing.T) {
 	t.Parallel()
 
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api", strings.NewReader("{bad json"))
+	req := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodPost,
+		"/api",
+		strings.NewReader("{bad json"),
+	)
 
 	var decoded map[string]any
 
@@ -266,7 +281,12 @@ func TestLastEventID_FromHeader(t *testing.T) {
 func TestLastEventID_FromQuery(t *testing.T) {
 	t.Parallel()
 
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events?lastEventId=99", nil)
+	req := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodGet,
+		"/events?lastEventId=99",
+		nil,
+	)
 
 	id := datastar.LastEventID(req)
 	if id.Get() != "99" {
@@ -277,7 +297,12 @@ func TestLastEventID_FromQuery(t *testing.T) {
 func TestLastEventID_HeaderTakesPriority(t *testing.T) {
 	t.Parallel()
 
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events?lastEventId=99", nil)
+	req := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodGet,
+		"/events?lastEventId=99",
+		nil,
+	)
 	req.Header.Set("Last-Event-ID", "42")
 
 	id := datastar.LastEventID(req)

@@ -34,7 +34,12 @@ func TestScriptHandler_Basic(t *testing.T) {
 	t.Run("GET returns JS", func(t *testing.T) {
 		t.Parallel()
 
-		req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/datastar.js", nil)
+		req := httptest.NewRequestWithContext(
+			context.Background(),
+			http.MethodGet,
+			"/datastar.js",
+			nil,
+		)
 		rec := httptest.NewRecorder()
 		handler.ServeHTTP(rec, req)
 
@@ -59,7 +64,12 @@ func TestScriptHandler_Basic(t *testing.T) {
 	t.Run("has ETag", func(t *testing.T) {
 		t.Parallel()
 
-		req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/datastar.js", nil)
+		req := httptest.NewRequestWithContext(
+			context.Background(),
+			http.MethodGet,
+			"/datastar.js",
+			nil,
+		)
 		rec := httptest.NewRecorder()
 		handler.ServeHTTP(rec, req)
 
@@ -72,7 +82,12 @@ func TestScriptHandler_Basic(t *testing.T) {
 	t.Run("has Cache-Control", func(t *testing.T) {
 		t.Parallel()
 
-		req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/datastar.js", nil)
+		req := httptest.NewRequestWithContext(
+			context.Background(),
+			http.MethodGet,
+			"/datastar.js",
+			nil,
+		)
 		rec := httptest.NewRecorder()
 		handler.ServeHTTP(rec, req)
 
@@ -89,13 +104,23 @@ func TestScriptHandler_ConditionalRequest(t *testing.T) {
 	handler := datastar.ScriptHandler()
 
 	// First request to get the ETag
-	req1 := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/datastar.js", nil)
+	req1 := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodGet,
+		"/datastar.js",
+		nil,
+	)
 	rec1 := httptest.NewRecorder()
 	handler.ServeHTTP(rec1, req1)
 	etag := rec1.Header().Get("ETag")
 
 	// Second request with If-None-Match should get 304
-	req2 := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/datastar.js", nil)
+	req2 := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodGet,
+		"/datastar.js",
+		nil,
+	)
 	req2.Header.Set("If-None-Match", etag)
 
 	rec2 := httptest.NewRecorder()
@@ -114,7 +139,12 @@ func TestScriptHandler_RejectsPost(t *testing.T) {
 	t.Parallel()
 
 	handler := datastar.ScriptHandler()
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/datastar.js", nil)
+	req := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodPost,
+		"/datastar.js",
+		nil,
+	)
 	rec := httptest.NewRecorder()
 	handler.ServeHTTP(rec, req)
 

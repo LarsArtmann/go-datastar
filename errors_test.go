@@ -102,7 +102,12 @@ func TestError_ReadSignals_BodyReadFailed_Transient(t *testing.T) {
 func TestError_ReadSignals_UnmarshalFailed_Rejection(t *testing.T) {
 	t.Parallel()
 
-	r := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/", strings.NewReader("{bad json"))
+	r := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodPost,
+		"/",
+		strings.NewReader("{bad json"),
+	)
 
 	var s map[string]any
 

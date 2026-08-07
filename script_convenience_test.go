@@ -137,7 +137,10 @@ func TestNewReplaceURLPatch(t *testing.T) {
 	patch := datastar.NewReplaceURLPatch(u)
 	got := patch.Event()
 
-	if !strings.Contains(got.Data, `window.history.replaceState({}, "", "https://example.com/new")`) {
+	if !strings.Contains(
+		got.Data,
+		`window.history.replaceState({}, "", "https://example.com/new")`,
+	) {
 		t.Errorf("should contain replaceState; got %q", got.Data)
 	}
 }

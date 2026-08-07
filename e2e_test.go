@@ -159,7 +159,11 @@ func advanceSSEEvent(current *sseEvent, line string) *sseEvent {
 
 // verifyEventPatchElements asserts the elements patch carries the expected
 // selector, mode, and at least one elements dataline.
-func verifyEventPatchElements(t *testing.T, event sseEvent, wantType, wantSelector, wantMode, wantElements string) {
+func verifyEventPatchElements(
+	t *testing.T,
+	event sseEvent,
+	wantType, wantSelector, wantMode, wantElements string,
+) {
 	t.Helper()
 
 	if event.eventType != wantType {
