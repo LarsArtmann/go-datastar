@@ -1,6 +1,10 @@
 package datastar
 
-import errorfamily "github.com/larsartmann/go-error-family"
+import (
+	"slices"
+
+	errorfamily "github.com/larsartmann/go-error-family"
+)
 
 // NewRemovePatch creates an [ElementsPatch] that removes the element matching
 // the given CSS selector from the DOM. It is equivalent to:
@@ -85,23 +89,21 @@ var ValidNamespaces = []Namespace{
 // ElementPatchModeFromString converts a string to an [ElementPatchMode].
 // Returns an error for invalid mode strings.
 func ElementPatchModeFromString(s string) (ElementPatchMode, error) {
-	for _, m := range ValidElementPatchModes {
-		if string(m) == s {
-			return m, nil
-		}
+	i := slices.IndexFunc(ValidElementPatchModes, func(m ElementPatchMode) bool { return string(m) == s })
+	if i < 0 {
+		return "", errorfamily.Newf(errorfamily.Rejection,
+			CodeElementPatchModeInvalid, "unrecognized element patch mode %q", s)
 	}
-	return "", errorfamily.Newf(errorfamily.Rejection,
-		CodeElementPatchModeInvalid, "unrecognized element patch mode %q", s)
+	return ValidElementPatchModes[i], nil
 }
 
 // NamespaceFromString converts a string to a [Namespace].
 // Returns an error for invalid namespace strings.
 func NamespaceFromString(s string) (Namespace, error) {
-	for _, ns := range ValidNamespaces {
-		if string(ns) == s {
-			return ns, nil
-		}
+	i := slices.IndexFunc(ValidNamespaces, func(ns Namespace) bool { return string(ns) == s })
+	if i < 0 {
+		return "", errorfamily.Newf(errorfamily.Rejection,
+			CodeNamespaceInvalid, "unrecognized namespace %q", s)
 	}
-	return "", errorfamily.Newf(errorfamily.Rejection,
-		CodeNamespaceInvalid, "unrecognized namespace %q", s)
+	return ValidNamespaces[i], nil
 }
