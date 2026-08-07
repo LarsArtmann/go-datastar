@@ -18,6 +18,9 @@ import (
 // machine-readable Code, and (where relevant) structured context. They also
 // confirm sentinel errors are matchable via errors.Is and stay context-pristine.
 
+// errConnReset is a static sentinel used to fake a transient body-read failure.
+var errConnReset = errors.New("connection reset")
+
 // --- Render failures (Orchestration: internal output-production failure) ---
 
 func TestError_ElementsFromTempl_Classified(t *testing.T) {
@@ -83,7 +86,7 @@ func TestError_ReadSignals_BodyReadFailed_Transient(t *testing.T) {
 	t.Parallel()
 
 	r := httptest.NewRequest(http.MethodPost, "/", nil)
-	r.Body = failingBody{err: errors.New("connection reset")}
+	r.Body = failingBody{err: errConnReset}
 
 	err := datastar.ReadSignals(r, new(map[string]any))
 

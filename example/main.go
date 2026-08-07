@@ -20,6 +20,11 @@ import (
 
 const addr = ":8765"
 
+const (
+	readHeaderTimeout = 5 * time.Second
+	shutdownTimeout   = 5 * time.Second
+)
+
 func main() {
 	broadcaster := sse.NewBroadcaster[sse.Event]()
 	defer broadcaster.Close()
@@ -34,7 +39,7 @@ func main() {
 	srv := &http.Server{
 		Addr:              addr,
 		Handler:           mux,
-		ReadHeaderTimeout: 5 * time.Second,
+		ReadHeaderTimeout: readHeaderTimeout,
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -50,7 +55,7 @@ func main() {
 
 	<-ctx.Done()
 
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 	defer cancel()
 
 	if err := srv.Shutdown(shutdownCtx); err != nil {

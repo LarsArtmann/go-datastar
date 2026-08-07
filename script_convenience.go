@@ -167,8 +167,8 @@ func NewReplaceURLPatch(u url.URL, opts ...ScriptPatchOption) ScriptPatch {
 // JSON block to prefetch the given URLs.
 func NewPrefetchPatch(urls ...string) ScriptPatch {
 	quoted := make([]string, 0, len(urls))
-	for i, u := range urls {
-		quoted[i] = fmt.Sprintf(`"%s"`, u)
+	for _, u := range urls {
+		quoted = append(quoted, fmt.Sprintf(`"%s"`, u))
 	}
 
 	script := fmt.Sprintf(`{

@@ -1,7 +1,7 @@
 package datastar_test
 
 import (
-	"bytes"
+	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-datastar"
@@ -13,15 +13,15 @@ func TestNewRemovePatch(t *testing.T) {
 	patch := datastar.NewRemovePatch("#feed")
 	got := patch.Event()
 
-	if !bytes.Contains([]byte(got.Data), []byte("selector #feed")) {
+	if !strings.Contains(got.Data, "selector #feed") {
 		t.Errorf("should contain selector; got %q", got.Data)
 	}
 
-	if !bytes.Contains([]byte(got.Data), []byte("mode remove")) {
+	if !strings.Contains(got.Data, "mode remove") {
 		t.Errorf("should contain mode remove; got %q", got.Data)
 	}
 	// Should NOT contain any elements data lines
-	if bytes.Contains([]byte(got.Data), []byte("elements ")) {
+	if strings.Contains(got.Data, "elements ") {
 		t.Errorf("should NOT contain elements data lines; got %q", got.Data)
 	}
 }
@@ -32,7 +32,7 @@ func TestNewRemoveByIDPatch(t *testing.T) {
 	patch := datastar.NewRemoveByIDPatch("my-element")
 	got := patch.Event()
 
-	if !bytes.Contains([]byte(got.Data), []byte("selector #my-element")) {
+	if !strings.Contains(got.Data, "selector #my-element") {
 		t.Errorf("should contain #my-element; got %q", got.Data)
 	}
 }
@@ -55,20 +55,20 @@ func TestSugar_ModeHelpers(t *testing.T) {
 		{"after", datastar.WithModeAfter(), "mode after"},
 	}
 
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
 			t.Parallel()
 
-			patch := datastar.NewElementsPatch("<div/>", tc.opt)
+			patch := datastar.NewElementsPatch("<div/>", testCase.opt)
 			got := patch.Event()
 
-			if tc.want == "" {
-				if bytes.Contains([]byte(got.Data), []byte("mode ")) {
+			if testCase.want == "" {
+				if strings.Contains(got.Data, "mode ") {
 					t.Errorf("should not emit mode for outer; got %q", got.Data)
 				}
 			} else {
-				if !bytes.Contains([]byte(got.Data), []byte(tc.want)) {
-					t.Errorf("should contain %q; got %q", tc.want, got.Data)
+				if !strings.Contains(got.Data, testCase.want) {
+					t.Errorf("should contain %q; got %q", testCase.want, got.Data)
 				}
 			}
 		})
@@ -81,7 +81,7 @@ func TestSugar_WithSelectorID(t *testing.T) {
 	patch := datastar.NewElementsPatch("<div/>", datastar.WithSelectorID("main"))
 	got := patch.Event()
 
-	if !bytes.Contains([]byte(got.Data), []byte("selector #main")) {
+	if !strings.Contains(got.Data, "selector #main") {
 		t.Errorf("should contain selector #main; got %q", got.Data)
 	}
 }
@@ -95,7 +95,7 @@ func TestSugar_NamespaceHelpers(t *testing.T) {
 		patch := datastar.NewElementsPatch("<circle/>", datastar.WithNamespaceSVG())
 		got := patch.Event()
 
-		if !bytes.Contains([]byte(got.Data), []byte("namespace svg")) {
+		if !strings.Contains(got.Data, "namespace svg") {
 			t.Errorf("should contain namespace svg; got %q", got.Data)
 		}
 	})
@@ -106,7 +106,7 @@ func TestSugar_NamespaceHelpers(t *testing.T) {
 		patch := datastar.NewElementsPatch("<mi/>", datastar.WithNamespaceMathML())
 		got := patch.Event()
 
-		if !bytes.Contains([]byte(got.Data), []byte("namespace mathml")) {
+		if !strings.Contains(got.Data, "namespace mathml") {
 			t.Errorf("should contain namespace mathml; got %q", got.Data)
 		}
 	})
@@ -117,7 +117,7 @@ func TestSugar_NamespaceHelpers(t *testing.T) {
 		patch := datastar.NewElementsPatch("<div/>", datastar.WithNamespaceHTML())
 		got := patch.Event()
 
-		if bytes.Contains([]byte(got.Data), []byte("namespace ")) {
+		if strings.Contains(got.Data, "namespace ") {
 			t.Errorf("should NOT contain namespace; got %q", got.Data)
 		}
 	})
@@ -132,7 +132,7 @@ func TestSugar_ViewTransitionsHelpers(t *testing.T) {
 		patch := datastar.NewElementsPatch("<div/>", datastar.WithViewTransitionsEnabled())
 		got := patch.Event()
 
-		if !bytes.Contains([]byte(got.Data), []byte("useViewTransition true")) {
+		if !strings.Contains(got.Data, "useViewTransition true") {
 			t.Errorf("should contain viewTransition; got %q", got.Data)
 		}
 	})
@@ -143,7 +143,7 @@ func TestSugar_ViewTransitionsHelpers(t *testing.T) {
 		patch := datastar.NewElementsPatch("<div/>", datastar.WithoutViewTransitions())
 		got := patch.Event()
 
-		if bytes.Contains([]byte(got.Data), []byte("useViewTransition")) {
+		if strings.Contains(got.Data, "useViewTransition") {
 			t.Errorf("should NOT contain viewTransition; got %q", got.Data)
 		}
 	})
@@ -165,14 +165,14 @@ func TestValidation_ElementPatchModeFromString(t *testing.T) {
 			"before",
 			"after",
 		}
-		for _, s := range valid {
-			m, err := datastar.ElementPatchModeFromString(s)
+		for _, modeStr := range valid {
+			m, err := datastar.ElementPatchModeFromString(modeStr)
 			if err != nil {
-				t.Errorf("ElementPatchModeFromString(%q): %v", s, err)
+				t.Errorf("ElementPatchModeFromString(%q): %v", modeStr, err)
 			}
 
-			if string(m) != s {
-				t.Errorf("got %q, want %q", m, s)
+			if string(m) != modeStr {
+				t.Errorf("got %q, want %q", m, modeStr)
 			}
 		}
 	})
@@ -194,14 +194,14 @@ func TestValidation_NamespaceFromString(t *testing.T) {
 		t.Parallel()
 
 		valid := []string{"html", "svg", "mathml"}
-		for _, s := range valid {
-			ns, err := datastar.NamespaceFromString(s)
+		for _, nsStr := range valid {
+			namespace, err := datastar.NamespaceFromString(nsStr)
 			if err != nil {
-				t.Errorf("NamespaceFromString(%q): %v", s, err)
+				t.Errorf("NamespaceFromString(%q): %v", nsStr, err)
 			}
 
-			if string(ns) != s {
-				t.Errorf("got %q, want %q", ns, s)
+			if string(namespace) != nsStr {
+				t.Errorf("got %q, want %q", namespace, nsStr)
 			}
 		}
 	})

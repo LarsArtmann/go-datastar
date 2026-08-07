@@ -115,7 +115,7 @@ func TestNewSignalsPatch(t *testing.T) {
 		}
 
 		got := patch.Event()
-		if !bytes.Contains([]byte(got.Data), []byte(`signals {"count":42}`)) {
+		if !strings.Contains(got.Data, `signals {"count":42}`) {
 			t.Errorf("should contain signals data; got %q", got.Data)
 		}
 	})
@@ -134,11 +134,11 @@ func TestNewSignalsPatch(t *testing.T) {
 		}
 
 		got := patch.Event()
-		if !bytes.Contains([]byte(got.Data), []byte(`"name":"test"`)) {
+		if !strings.Contains(got.Data, `"name":"test"`) {
 			t.Errorf("should contain name field; got %q", got.Data)
 		}
 
-		if !bytes.Contains([]byte(got.Data), []byte(`"count":5`)) {
+		if !strings.Contains(got.Data, `"count":5`) {
 			t.Errorf("should contain count field; got %q", got.Data)
 		}
 	})
@@ -217,7 +217,7 @@ func TestSignalsPatch_FullWireFormat(t *testing.T) {
 	}
 
 	for _, line := range expectedLines {
-		if !bytes.Contains([]byte(wire), []byte(line)) {
+		if !strings.Contains(wire, line) {
 			t.Errorf("wire format missing %q; got:\n%s", line, wire)
 		}
 	}

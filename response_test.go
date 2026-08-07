@@ -14,6 +14,22 @@ import (
 	"github.com/larsartmann/go-sse"
 )
 
+// errSomethingFailed is a static sentinel used to fake a ConsoleError source.
+var errSomethingFailed = errors.New("something failed")
+
+// mockFlushWriter is an io.Writer + http.Flusher used as a fake ResponseWriter
+// for tests that need to inspect SSE bytes without a real HTTP server.
+type mockFlushWriter struct {
+	io.Writer
+	http.Flusher
+
+	buf strings.Builder
+}
+
+func (m *mockFlushWriter) Write(p []byte) (int, error) { return m.buf.Write(p) }
+func (m *mockFlushWriter) Flush()                       {}
+func (m *mockFlushWriter) String() string               { return m.buf.String() }
+
 func newTestStream() (*sse.Stream, *mockFlushWriter) {
 	var buf mockFlushWriter
 
