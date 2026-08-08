@@ -145,6 +145,19 @@
               golangci-lint run ./...
             '';
 
+            erraudit = mkApp "erraudit" [ goPkg ] ''
+              export GOEXPERIMENT=jsonv2
+              export GOWORK=off
+              go install github.com/larsartmann/erraudit/cmd/erraudit@v0.3.0
+              "$HOME/go/bin/erraudit" ./... --type-aware --enforce-go-error-family --severity-threshold error
+            '';
+
+            govulncheck = mkApp "govulncheck" [ pkgs.govulncheck goPkg ] ''
+              export GOEXPERIMENT=jsonv2
+              export GOWORK=off
+              govulncheck ./...
+            '';
+
             coverage = mkApp "coverage" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
               go test ./... -coverprofile=coverage.out -covermode=atomic "$@"
