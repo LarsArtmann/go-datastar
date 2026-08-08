@@ -11,6 +11,7 @@
 ### Bug fix: broken Response godoc example (`response.go:19-26`)
 
 The godoc comment on the `Response` type showed a code example that **could not compile**:
+
 - Called `resp.Close()` — **no such method exists** on `*Response` (the underlying `*sse.Stream` has `Close()`, but `Response` does not re-export it).
 - Called `resp.PatchSignals(map[string]any{...})` — **wrong signature**. `PatchSignals` takes `[]byte` (pre-encoded JSON); the map-variant is `MarshalAndPatchSignals`.
 
@@ -25,6 +26,7 @@ Fixed: HEAD requests now receive `200 OK` with the same headers (Content-Type, E
 ### Testable examples added (`example_test.go`, 56 lines)
 
 Three `Example` functions with `// Output:` assertions:
+
 - `ExampleElementsPatch` — verifies wire format (`selector #feed\nmode prepend\nelements <div>Hello</div>`)
 - `ExampleSignalsPatch` — verifies wire format (`signals {"count":1}`)
 - `ExampleReadSignals` — verifies inbound JSON parsing
@@ -34,6 +36,7 @@ These are **compile-checked by `go test`** and their output is **asserted**. Thi
 ### Coverage improved: 96.9% → 98.7% (`coverage_test.go`)
 
 Added three test functions targeting the previously-uncovered branches:
+
 - `TestResponse_OptionApplication` — covers the option-application loop in `PatchSignals` (was skipped when called without options)
 - `TestResponse_ConstructionErrors` — covers early-return error branches in `MarshalAndPatchSignals`, `PatchElementsTempl`, `DispatchCustomEvent` (3 paths)
 - `TestResponse_SendErrorPaths` — covers stream-send failure in `ApplyPatches` and `PatchSignals` (2 paths)
@@ -48,14 +51,14 @@ Ran 15 seconds of fuzz exploration: **1,246,696 executions, 0 failures**. `ReadS
 
 ### All quality gates green
 
-| Gate | Result |
-|------|--------|
-| `go build ./...` | ✓ |
-| `go vet ./...` | ✓ |
-| `go test ./... -race -count=1` | ✓ (110 tests pass, 0 fail) |
-| `golangci-lint run ./...` | ✓ (0 issues) |
+| Gate                                       | Result                                                   |
+| ------------------------------------------ | -------------------------------------------------------- |
+| `go build ./...`                           | ✓                                                        |
+| `go vet ./...`                             | ✓                                                        |
+| `go test ./... -race -count=1`             | ✓ (110 tests pass, 0 fail)                               |
+| `golangci-lint run ./...`                  | ✓ (0 issues)                                             |
 | `erraudit ./... --enforce-go-error-family` | ✓ (only pre-existing accepted `generic_return` warnings) |
-| `nix flake check` | ✓ (all checks passed, includes gofumpt via treefmt) |
+| `nix flake check`                          | ✓ (all checks passed, includes gofumpt via treefmt)      |
 
 ### Session commits
 
@@ -107,6 +110,7 @@ The `testableexamples` linter caught it: "missing output for example, go test ca
 ### F3: Multiple formatting iterations (3 round-trips)
 
 I wrote code that didn't match the repo's strict formatting rules:
+
 1. `noctx` — used `httptest.NewRequest` instead of `NewRequestWithContext` (3 sites)
 2. `gofumpt` — long lines not wrapped (2 sites)
 3. `wsl_v5` — missing blank line before `if` after variable declarations (1 site)
