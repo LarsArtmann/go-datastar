@@ -17,7 +17,6 @@
 
 | Task                                                                                       | Status       | Impact | Effort | Evidence                                                           |
 | ------------------------------------------------------------------------------------------ | ------------ | ------ | ------ | ------------------------------------------------------------------ |
-| GitHub repo polish: set topics (`datastar`, `sse`, `go`, `hypermedia`), disable empty wiki | 🔴 `TODO`    | Low    | 10min  | `gh` CLI works; topics not set, wiki enabled but empty            |
 | Address `nestif` complexity in `ReadSignals` (complexity 6)                                | 🔴 `TODO`    | Low    | 30min  | `inbound.go` — `ReadSignals` has nested conditionals               |
 | Verify pkg.go.dev docs are rendered for latest version                                     | 🔴 `TODO`    | Low    | 10min  | Badge links there but rendering unconfirmed                        |
 | Add coverage badge to README                                                               | 🔴 `TODO`    | Low    | 20min  | README has CI/GoRef/GoReport/License badges; no coverage badge     |
@@ -65,3 +64,4 @@ All items below were resolved during the Pareto hardening session. See CHANGELOG
 | Tag v0.0.3 release — annotated tag pushed, GitHub release created                                                                  | F8/F9   |
 | Add CHANGELOG comparison links (Keep a Changelog convention)                                                                       | F10     |
 | Remove false "blocked on gh CLI" claims — gh works fine                                                                            | F11     |
+| GitHub repo polish — 6 topics set (datastar, sse, go, hypermedia, htmx, server-sent-events), wiki disabled                         | F11     |
