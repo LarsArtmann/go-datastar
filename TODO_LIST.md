@@ -15,11 +15,11 @@
 
 ## Open items
 
-| Task                                                                                       | Status       | Impact | Effort | Evidence                                                           |
-| ------------------------------------------------------------------------------------------ | ------------ | ------ | ------ | ------------------------------------------------------------------ |
-| Address `nestif` complexity in `ReadSignals` (complexity 6)                                | 🔴 `TODO`    | Low    | 30min  | `inbound.go` — `ReadSignals` has nested conditionals               |
-| Verify pkg.go.dev docs are rendered for latest version                                     | 🔴 `TODO`    | Low    | 10min  | Badge links there but rendering unconfirmed                        |
-| Add coverage badge to README                                                               | 🔴 `TODO`    | Low    | 20min  | README has CI/GoRef/GoReport/License badges; no coverage badge     |
+| Task                                                        | Status    | Impact | Effort | Evidence                                                       |
+| ----------------------------------------------------------- | --------- | ------ | ------ | -------------------------------------------------------------- |
+| Address `nestif` complexity in `ReadSignals` (complexity 6) | 🔴 `TODO` | Low    | 30min  | `inbound.go` — `ReadSignals` has nested conditionals           |
+| Verify pkg.go.dev docs are rendered for latest version      | 🔴 `TODO` | Low    | 10min  | Badge links there but rendering unconfirmed                    |
+| Add coverage badge to README                                | 🔴 `TODO` | Low    | 20min  | README has CI/GoRef/GoReport/License badges; no coverage badge |
 
 ## Completed this session (2026-08-08)
 
