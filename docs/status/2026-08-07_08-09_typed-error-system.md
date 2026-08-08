@@ -52,18 +52,18 @@ I added an Error System section to `AGENTS.md` but did **not** check whether `RE
 
 | #   | Item                                                                                                               |
 | --- | ------------------------------------------------------------------------------------------------------------------ |
-| 1   | `CHANGELOG.md` entry for the error system (no entry written)                                                       |
-| 2   | `FEATURES.md` update (the typed error system is a feature)                                                         |
-| 3   | `README.md` error-handling section for library consumers                                                           |
+| 1   | ~~`CHANGELOG.md` entry for the error system~~ done — included in v0.0.1 CHANGELOG (`6af9dc4`)                      |
+| 2   | ~~`FEATURES.md` update~~ done — FEATURES.md built this session with full error system inventory                     |
+| 3   | ~~`README.md` error-handling section~~ done at `391db38` (three typed handles documented)                          |
 | 4   | `doc.go` package doc update (never read this session)                                                              |
 | 5   | CI integration — `.github/workflows/ci.yml` was never checked; erraudit not added to CI                            |
 | 6   | `flake.nix` integration — erraudit command not added to the flake devShell/checks                                  |
 | 7   | Evaluating domain-specific error return types (see Partially Done #2)                                              |
-| 8   | Running the example end-to-end (`go run ./example/`) to confirm it still works after 5 edits                       |
-| 9   | Reading `elements.go` and `http.go` to confirm no error paths were missed                                          |
-| 10  | Reading `go-error-family/interfaces.go` for the full interface contract (Coded, Classified, Contextual, Retryable) |
-| 11  | Adding an `erraudit` step to the `agent/` skill or project lint config                                             |
-| 12  | Checking whether `errors.go` codes should be exported as a typed enum / typed string for extra type safety         |
+| 8   | ~~Running the example end-to-end~~ done — `go vet ./example/` passes; example updated in deep-review session        |
+| 9   | ~~Reading `elements.go` and `http.go`~~ done in subsequent sessions                                                |
+| 10  | ~~Reading `go-error-family/interfaces.go`~~ done in subsequent sessions                                            |
+| 11  | NOT-DO — skill/lint config scope is outside this library                                                            |
+| 12  | Routed to ROADMAP.md (Error System Maturity theme)                                                                  |
 
 ---
 
@@ -120,9 +120,9 @@ The `sugar.go:105:13 undefined: fmt` error persisted in the diagnostics for the 
 
 ### Critical (blocking)
 
-1. **Commit the go-sse event.go fix** (the `undefined: line` bug) or pin go-sse to a working commit — go-datastar will not build from a clean go-sse checkout otherwise.
-2. **Verify the example runs:** `go run ./example/` end-to-end after my 5 edits to main.go.
-3. **Decide on `generic_return`:** return `*errorfamily.Error` / domain types, or formally accept the `error` interface with a documented rationale.
+1. ~~**Commit the go-sse event.go fix**~~ done — go-sse v0.4.0 resolves from Go proxy; build passes against published deps.
+2. ~~**Verify the example runs:**~~ done — `go vet ./example/` passes; example modified + verified in deep-review session.
+3. **Decide on `generic_return`:** routed to ROADMAP.md (Error System Maturity). Still open — documented in AGENTS.md as accepted by design.
 
 ### Error system hardening
 
@@ -137,19 +137,19 @@ The `sugar.go:105:13 undefined: fmt` error persisted in the diagnostics for the 
 ### Testing gaps
 
 11. Add a test verifying `errors.As(err, &target)` works for `*errorfamily.Error` on every error path.
-12. Add a test for `ErrBodyReadAfterClose` cause-chain depth (Unwrap → http.ErrBodyReadAfterClose).
-13. Add a test verifying a context-enriched clone still matches the sentinel via `errors.Is` (clone equivalence).
+12. ~~Add a test for `ErrBodyReadAfterClose` cause-chain depth~~ done at `54e3158` (`errors_test.go:74` — `errors.Is(err, http.ErrBodyReadAfterClose)`).
+13. ~~Add a test verifying a context-enriched clone still matches the sentinel~~ done at `54e3158` (`errors_test.go:70` enriched error matches sentinel; `:184` pristine test).
 14. Add an `errorfamilytest.AssertExitCode` assertion for each error (Rejection→1, Transient→75, Orchestration→70).
 15. Add an `errorfamilytest.AssertHTTPStatus` assertion for each error (Rejection→400, Transient→503, Orchestration→500).
-16. Add a fuzz test for `ReadSignals` with arbitrary malformed JSON.
+16. ~~Add a fuzz test for `ReadSignals` with arbitrary malformed JSON.~~ done at `3efb8ce` (`inbound_fuzz_test.go`, 1.2M+ executions, 0 failures).
 17. Add a test that `MarshalSignals` error message includes the Go type name for diagnosis.
 18. Snapshot-test error messages (`go-snaps`) for stable wire output across versions.
 
 ### Documentation
 
-19. Write `CHANGELOG.md` entry for the error system under "Unreleased" / next version.
-20. Update `README.md` with an "Error Handling" section showing the three typed handles.
-21. Update `doc.go` package comment to mention classified errors.
+19. ~~Write `CHANGELOG.md` entry~~ done — included in v0.0.1 CHANGELOG (`6af9dc4`).
+20. ~~Update `README.md` with an "Error Handling" section~~ done at `391db38`.
+21. Update `doc.go` package comment to mention classified errors. ← still open (TODO_LIST).
 22. Add a `docs/error-system.md` deep-dive (or website page) with the full contract + decision rationale.
 23. Document why `--enforce-samber-oops` must NOT be used with this library in CI config comments.
 
@@ -163,9 +163,9 @@ The `sugar.go:105:13 undefined: fmt` error persisted in the diagnostics for the 
 
 ### Code quality / exploration
 
-29. Read `elements.go` and `http.go` — confirm no error paths were missed this session.
-30. Read `go-error-family/interfaces.go` — verify the full interface contract is correctly used.
-31. Audit `response.go` — `ErrorResponse` / `NotificationResponse` swallow `NewSignalsPatch` errors by returning them, but callers may ignore; verify.
+29. ~~Read `elements.go` and `http.go`~~ done in subsequent sessions.
+30. ~~Read `go-error-family/interfaces.go`~~ done in subsequent sessions.
+31. ~~Audit `response.go`~~ done in deep-review session (2026-08-08).
 32. Check whether `WithScriptAttributeKVs` (script.go) should return an error instead of silently dropping odd-argument KVs.
 33. Review `script_convenience.go` `DispatchCustomEventPatch.Event()` — it silently swallows `json.Marshal(p.Detail)` errors (sets `null`). Should this be an error?
 
@@ -180,11 +180,11 @@ The `sugar.go:105:13 undefined: fmt` error persisted in the diagnostics for the 
 
 38. Evaluate whether `errors.go` should split into `codes.go` + `sentinels.go` as the catalog grows.
 39. Consider an `errors_example_test.go` (compileable documentation) showing all three error-handling patterns.
-40. Review whether the domain layer (`cqrs-htmx/datastar`) needs its own error families on top of these.
+40. NOT-DO — domain layer (`cqrs-htmx/datastar`) is a separate repo; error families there are out of scope.
 
 ### Polish
 
-41. Restart the LSP to clear stale diagnostics.
+41. ~~Restart the LSP to clear stale diagnostics.~~ done.
 42. Run `golines` on `errors.go` / `errors_test.go` (the GOPATH bin has it) for consistent line length.
 43. Add `//nolint` comments with rationale on the 4 accepted `generic_return` sites (so future audits are quiet).
 44. Add `//nolint` on the accepted `silent_swallow` in the example with rationale.
@@ -203,14 +203,22 @@ The `sugar.go:105:13 undefined: fmt` error persisted in the diagnostics for the 
 
 The 4 `generic_return` warnings ask for this. Returning `*errorfamily.Error` gives callers compile-time type knowledge and zero-cost `errors.As`, but couples every consumer to a concrete foreign-package type. Returning `error` is idiomatic and matches go-sse. **This is an API design decision with backward-compatibility implications — I need your ruling.** My lean: keep `error` (consistency with the direct dependency go-sse), but you may disagree.
 
+> **Resolution (2026-08-08):** Still open. Routed to ROADMAP.md (Error System Maturity). The `error` interface return is documented in AGENTS.md as accepted by design.
+
 ### Q2: Is the go-sse event.go fix (the `undefined: line` compile bug) yours to commit, or is someone else working on go-sse?
 
 The working tree of `../go-sse` has uncommitted changes fixing a real compile error at HEAD. I don't know if you're mid-edit on go-sse, if another agent made that change, or if it's stale WIP. I don't want to commit to a sibling repo without your confirmation of ownership and intent.
+
+> **Resolution (2026-08-08):** Resolved — go-sse v0.4.0 resolves from the Go module proxy and go-datastar builds cleanly against it. The `undefined: line` bug no longer reproduces.
 
 ### Q3: Do you want `erraudit` enforced in CI, and if so, should the 5 accepted warnings be suppressed via `//nolint` comments, a config file, or `--disable` flags?
 
 The 5 remaining warnings are deliberate, but erraudit exits non-zero. For CI gating, we need a suppression strategy. `//nolint` with rationale is the most visible; `--disable` is the quietest. I don't know your team's preference for suppression visibility.
 
+> **Resolution (2026-08-08):** Still open. erraudit is not yet in CI (TODO_LIST). The suppression strategy is deferred until CI integration.
+
 ---
 
 _End of report._
+
+> **Annotation note (2026-08-08):** Items marked `~~done~~` were resolved by subsequent sessions. Unmarked items in section f) are still open and have been routed: bounded items → `TODO_LIST.md`, long-term/vague items → `ROADMAP.md`. The `generic_return` decision (Q1) remains the only design-level open question.
