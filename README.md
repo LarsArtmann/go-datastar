@@ -195,6 +195,7 @@ Convenience constructors:
 - `NewResponse(stream)` — wrap an existing stream
 - `NewResponseFromHTTP(w, r)` — create stream + response in one call
 - `ErrorResponse(stream, message, code)` — signals patch with error info
+- `ErrorResponseFromError(stream, err)` — signals patch with errorfamily metadata extracted from a Go error (code, family, retryable, httpStatus)
 - `NotificationResponse(stream, message, kind)` — signals patch with notification
 
 ## Inbound: reading signals

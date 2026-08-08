@@ -11,6 +11,10 @@ import (
 	"github.com/larsartmann/go-sse"
 )
 
+// maxInputPreviewLen is the maximum number of bytes included in the
+// input_preview error context field for debugging malformed signals.
+const maxInputPreviewLen = 200
+
 // ReadSignals extracts DataStar signals from an HTTP request and unmarshals
 // them into the signals target (a pointer to a struct).
 //
@@ -31,7 +35,7 @@ func ReadSignals(req *http.Request, signals any) error {
 
 	if err := json.Unmarshal(input, signals); err != nil {
 		preview := string(input)
-		if len(preview) > 200 {
+		if len(preview) > maxInputPreviewLen {
 			preview = preview[:200]
 		}
 

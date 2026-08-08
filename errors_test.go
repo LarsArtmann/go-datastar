@@ -209,59 +209,48 @@ func TestError_Sentinels_AreContextPristine(t *testing.T) {
 func TestError_AllPaths_AreErrorFamilyType(t *testing.T) {
 	t.Parallel()
 
-	var ef *errorfamily.Error
+	// Compute one error from each path that returns an error.
+	_, templErr := datastar.ElementsFromTempl(fakeTemplComponent{err: io.ErrUnexpectedEOF})
+	_, gostarErr := datastar.ElementsFromGostar(fakeGoStarRenderer{err: io.ErrUnexpectedEOF})
+
+	closeReq := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/", nil)
+	closeReq.Body = afterCloseBody{}
+	bodyCloseErr := datastar.ReadSignals(closeReq, new(map[string]any))
+
+	failReq := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/", nil)
+	failReq.Body = failingBody{err: errConnReset}
+	bodyReadErr := datastar.ReadSignals(failReq, new(map[string]any))
+
+	badReq := httptest.NewRequestWithContext(
+		context.Background(), http.MethodPost, "/", strings.NewReader("{bad"))
+	unmarshalErr := datastar.ReadSignals(badReq, new(map[string]any))
+
+	_, marshalErr := datastar.MarshalSignals(make(chan int))
+	_, emptyNameErr := datastar.NewDispatchCustomEventPatch("", nil)
+	_, badDetailErr := datastar.NewDispatchCustomEventPatch("test", make(chan int))
+	_, modeErr := datastar.ElementPatchModeFromString("bogus")
+	_, nsErr := datastar.NamespaceFromString("bogus")
 
 	cases := []struct {
 		name string
 		err  error
 	}{
-		{"ElementsFromTempl", func() error {
-			_, e := datastar.ElementsFromTempl(fakeTemplComponent{err: io.ErrUnexpectedEOF})
-			return e
-		}()},
-		{"ElementsFromGostar", func() error {
-			_, e := datastar.ElementsFromGostar(fakeGoStarRenderer{err: io.ErrUnexpectedEOF})
-			return e
-		}()},
-		{"ReadSignals_BodyReadAfterClose", func() error {
-			r := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/", nil)
-			r.Body = afterCloseBody{}
-			return datastar.ReadSignals(r, new(map[string]any))
-		}()},
-		{"ReadSignals_BodyReadFailed", func() error {
-			r := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/", nil)
-			r.Body = failingBody{err: errConnReset}
-			return datastar.ReadSignals(r, new(map[string]any))
-		}()},
-		{"ReadSignals_UnmarshalFailed", func() error {
-			req := httptest.NewRequestWithContext(
-				context.Background(), http.MethodPost, "/", strings.NewReader("{bad"))
-			return datastar.ReadSignals(req, new(map[string]any))
-		}()},
-		{"MarshalSignals", func() error {
-			_, e := datastar.MarshalSignals(make(chan int))
-			return e
-		}()},
-		{"NewDispatchCustomEventPatch_EmptyName", func() error {
-			_, e := datastar.NewDispatchCustomEventPatch("", nil)
-			return e
-		}()},
-		{"NewDispatchCustomEventPatch_UnmarshallableDetail", func() error {
-			_, e := datastar.NewDispatchCustomEventPatch("test", make(chan int))
-			return e
-		}()},
-		{"ElementPatchModeFromString", func() error {
-			_, e := datastar.ElementPatchModeFromString("bogus")
-			return e
-		}()},
-		{"NamespaceFromString", func() error {
-			_, e := datastar.NamespaceFromString("bogus")
-			return e
-		}()},
+		{"ElementsFromTempl", templErr},
+		{"ElementsFromGostar", gostarErr},
+		{"ReadSignals_BodyReadAfterClose", bodyCloseErr},
+		{"ReadSignals_BodyReadFailed", bodyReadErr},
+		{"ReadSignals_UnmarshalFailed", unmarshalErr},
+		{"MarshalSignals", marshalErr},
+		{"NewDispatchCustomEventPatch_EmptyName", emptyNameErr},
+		{"NewDispatchCustomEventPatch_UnmarshallableDetail", badDetailErr},
+		{"ElementPatchModeFromString", modeErr},
+		{"NamespaceFromString", nsErr},
 	}
 
 	for _, tc := range cases {
-		if !errors.As(tc.err, &ef) {
+		var classifiedErr *errorfamily.Error
+
+		if !errors.As(tc.err, &classifiedErr) {
 			t.Errorf("%s: errors.As(err, &*errorfamily.Error) = false; want true", tc.name)
 		}
 	}

@@ -161,6 +161,8 @@ func (r *Response) Send(evt sse.Event) error {
 // Stream returns the underlying [sse.Stream].
 func (r *Response) Stream() *sse.Stream { return r.stream }
 
+const signalKeyMessage = "message"
+
 // sendSignalsMap builds a [SignalsPatch] from a key→value map and sends it on
 // the stream. It is the shared core of [ErrorResponse] and [NotificationResponse].
 func sendSignalsMap(stream *sse.Stream, signals map[string]any) error {
@@ -177,8 +179,8 @@ func sendSignalsMap(stream *sse.Stream, signals map[string]any) error {
 func ErrorResponse(stream *sse.Stream, message string, code string) error {
 	return sendSignalsMap(stream, map[string]any{
 		"error": map[string]any{
-			"message": message,
-			"code":    code,
+			signalKeyMessage: message,
+			"code":           code,
 		},
 	})
 }
@@ -194,11 +196,11 @@ func ErrorResponse(stream *sse.Stream, message string, code string) error {
 func ErrorResponseFromError(stream *sse.Stream, err error) error {
 	return sendSignalsMap(stream, map[string]any{
 		"error": map[string]any{
-			"message":    err.Error(),
-			"code":       errorfamily.Code(err),
-			"family":     errorfamily.Classify(err).String(),
-			"retryable":  errorfamily.IsRetryable(err),
-			"httpStatus": errorfamily.HTTPStatus(err),
+			signalKeyMessage: err.Error(),
+			"code":           errorfamily.Code(err),
+			"family":         errorfamily.Classify(err).String(),
+			"retryable":      errorfamily.IsRetryable(err),
+			"httpStatus":     errorfamily.HTTPStatus(err),
 		},
 	})
 }
@@ -207,9 +209,9 @@ func ErrorResponseFromError(stream *sse.Stream, err error) error {
 func NotificationResponse(stream *sse.Stream, message string, kind string) error {
 	return sendSignalsMap(stream, map[string]any{
 		"notification": map[string]any{
-			"message": message,
-			"kind":    kind,
-			"time":    time.Now().Unix(),
+			signalKeyMessage: message,
+			"kind":           kind,
+			"time":           time.Now().Unix(),
 		},
 	})
 }
