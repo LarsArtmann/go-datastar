@@ -18,9 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Fuzz test for `ReadSignals`** (`inbound_fuzz_test.go`) — 10-seed corpus
   covering valid payloads, truncated JSON, null, arrays, control characters,
   invalid UTF-8. 1.2M+ executions, 0 failures. Seeds run as regression cases.
-- **Coverage tests** (`coverage_test.go`) — option-application loop,
-  construction error branches, and stream-send failure paths. Coverage 96.9% →
-  98.7%.
 
 ### Fixed
 
@@ -28,13 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `resp.Close()` (should be `stream.Close()`) and `resp.PatchSignals(map)` (wrong
   signature; should be `MarshalAndPatchSignals`). Same bug class as the README
   fix in v0.0.1, but the godoc copy was never synced.
-
-### Changed
-
-- Migrated test HTTP requests to `http.NewRequestWithContext` (noctx linter
-  compliance).
-- Example application updated to demonstrate error handling and explicit stream
-  lifecycle management.
 
 ## [0.0.2] - 2026-08-07
 

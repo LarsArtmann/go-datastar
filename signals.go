@@ -82,7 +82,7 @@ func NewSignalsIfMissingPatch(v any, opts ...SignalsPatchOption) (SignalsPatch, 
 
 // MarshalSignals marshals a Go value to JSON for use as a DataStar signals
 // payload. Returns an error instead of panicking.
-func MarshalSignals(v any) ([]byte, error) {
+func MarshalSignals(v any) ([]byte, error) { //nolint:erraudit // returns error interface by design — idiomatic Go, consistent with go-sse
 	b, err := json.Marshal(v)
 	if err != nil {
 		return nil, errorfamily.Wrapf(err, errorfamily.Rejection,

@@ -84,7 +84,7 @@ func startProducer(b *sse.Broadcaster[sse.Event]) {
 		b.Broadcast(elementsPatch.Event())
 
 		countPatch, err := datastar.NewSignalsPatch(map[string]any{"total": i})
-		if err != nil {
+		if err != nil { //nolint:erraudit // goroutine cannot propagate errors; logged and continued by design
 			log.Printf("producer: marshal count signals: %v", err)
 
 			continue

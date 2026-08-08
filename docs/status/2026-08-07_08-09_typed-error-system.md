@@ -53,15 +53,15 @@ I added an Error System section to `AGENTS.md` but did **not** check whether `RE
 | #   | Item                                                                                                               |
 | --- | ------------------------------------------------------------------------------------------------------------------ |
 | 1   | ~~`CHANGELOG.md` entry for the error system~~ done — included in v0.0.1 CHANGELOG (`6af9dc4`)                      |
-| 2   | ~~`FEATURES.md` update~~ done — FEATURES.md built this session with full error system inventory                     |
+| 2   | ~~`FEATURES.md` update~~ done at `b1e2063` — FEATURES.md built with full error system inventory                    |
 | 3   | ~~`README.md` error-handling section~~ done at `391db38` (three typed handles documented)                          |
 | 4   | `doc.go` package doc update (never read this session)                                                              |
 | 5   | CI integration — `.github/workflows/ci.yml` was never checked; erraudit not added to CI                            |
 | 6   | `flake.nix` integration — erraudit command not added to the flake devShell/checks                                  |
 | 7   | Evaluating domain-specific error return types (see Partially Done #2)                                              |
-| 8   | ~~Running the example end-to-end~~ done — `go vet ./example/` passes; example updated in deep-review session        |
-| 9   | ~~Reading `elements.go` and `http.go`~~ done in subsequent sessions                                                |
-| 10  | ~~Reading `go-error-family/interfaces.go`~~ done in subsequent sessions                                            |
+| 8   | ~~Running the example end-to-end~~ done at `a8ba8be` — example updated and verified; `go vet ./example/` passes     |
+| 9   | ~~Reading `elements.go` and `http.go`~~ done — reviewed during deep-review session (`0d30c94`)                     |
+| 10  | ~~Reading `go-error-family/interfaces.go`~~ done — reviewed during deep-review session (`0d30c94`)                |
 | 11  | NOT-DO — skill/lint config scope is outside this library                                                            |
 | 12  | Routed to ROADMAP.md (Error System Maturity theme)                                                                  |
 
@@ -121,7 +121,7 @@ The `sugar.go:105:13 undefined: fmt` error persisted in the diagnostics for the 
 ### Critical (blocking)
 
 1. ~~**Commit the go-sse event.go fix**~~ done — go-sse v0.4.0 resolves from Go proxy; build passes against published deps.
-2. ~~**Verify the example runs:**~~ done — `go vet ./example/` passes; example modified + verified in deep-review session.
+2. ~~**Verify the example runs:**~~ done at `a8ba8be` — example modified and verified; `go vet ./example/` passes.
 3. **Decide on `generic_return`:** routed to ROADMAP.md (Error System Maturity). Still open — documented in AGENTS.md as accepted by design.
 
 ### Error system hardening
@@ -163,9 +163,9 @@ The `sugar.go:105:13 undefined: fmt` error persisted in the diagnostics for the 
 
 ### Code quality / exploration
 
-29. ~~Read `elements.go` and `http.go`~~ done in subsequent sessions.
-30. ~~Read `go-error-family/interfaces.go`~~ done in subsequent sessions.
-31. ~~Audit `response.go`~~ done in deep-review session (2026-08-08).
+29. ~~Read `elements.go` and `http.go`~~ done — reviewed during deep-review session (`0d30c94`).
+30. ~~Read `go-error-family/interfaces.go`~~ done — reviewed during deep-review session (`0d30c94`).
+31. ~~Audit `response.go`~~ done at `a8ba8be` — response.go audited during deep-review session (`0d30c94`).
 32. Check whether `WithScriptAttributeKVs` (script.go) should return an error instead of silently dropping odd-argument KVs.
 33. Review `script_convenience.go` `DispatchCustomEventPatch.Event()` — it silently swallows `json.Marshal(p.Detail)` errors (sets `null`). Should this be an error?
 

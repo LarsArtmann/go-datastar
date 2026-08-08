@@ -19,7 +19,7 @@ import (
 //
 // Returns nil (with no data written) if no signals are present (empty query
 // param or empty body).
-func ReadSignals(req *http.Request, signals any) error {
+func ReadSignals(req *http.Request, signals any) error { //nolint:erraudit // returns error interface by design — idiomatic Go, consistent with go-sse
 	input, err := readSignalsInput(req)
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func readSignalsFromQuery(req *http.Request) ([]byte, error) {
 
 // readSignalsFromBody reads and returns the full request body, or nil for an
 // empty body. Returns an errorfamily-classified error for I/O failures.
-func readSignalsFromBody(req *http.Request) ([]byte, error) {
+func readSignalsFromBody(req *http.Request) ([]byte, error) { //nolint:erraudit // returns error interface by design — idiomatic Go, consistent with go-sse
 	body, err := io.ReadAll(req.Body)
 	if err != nil {
 		if errors.Is(err, http.ErrBodyReadAfterClose) {
