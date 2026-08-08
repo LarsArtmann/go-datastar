@@ -183,6 +183,26 @@ func ErrorResponse(stream *sse.Stream, message string, code string) error {
 	})
 }
 
+// ErrorResponseFromError sends a signals patch with error metadata extracted
+// from a Go error using [errorfamily] classification. The payload includes the
+// error message, stable code, behavioral family, retryability, and the HTTP
+// status code that the family maps to — giving the DataStar client enough
+// context to render an appropriate error UI.
+//
+// For non-errorfamily errors, code and family will be empty, and HTTPStatus
+// defaults to 400 (Rejection).
+func ErrorResponseFromError(stream *sse.Stream, err error) error {
+	return sendSignalsMap(stream, map[string]any{
+		"error": map[string]any{
+			"message":    err.Error(),
+			"code":       errorfamily.Code(err),
+			"family":     errorfamily.Classify(err).String(),
+			"retryable":  errorfamily.IsRetryable(err),
+			"httpStatus": errorfamily.HTTPStatus(err),
+		},
+	})
+}
+
 // NotificationResponse sends a signals patch with a notification message.
 func NotificationResponse(stream *sse.Stream, message string, kind string) error {
 	return sendSignalsMap(stream, map[string]any{

@@ -30,10 +30,16 @@ func ReadSignals(req *http.Request, signals any) error {
 	}
 
 	if err := json.Unmarshal(input, signals); err != nil {
-		return errorfamily.Wrapf(err, errorfamily.Rejection,
+		preview := string(input)
+		if len(preview) > 200 {
+			preview = preview[:200]
+		}
+
+		return errorfamily.WrapOncef(err, errorfamily.Rejection,
 			CodeSignalsUnmarshalFailed, "unmarshal signals JSON into %T", signals).
 			WithContext("method", req.Method).
-			WithContext("input_bytes", strconv.Itoa(len(input)))
+			WithContext("input_bytes", strconv.Itoa(len(input))).
+			WithContext("input_preview", preview)
 	}
 
 	return nil
@@ -77,7 +83,7 @@ func readSignalsFromBody(req *http.Request) ([]byte, error) {
 			return nil, ErrBodyReadAfterClose
 		}
 
-		return nil, errorfamily.Wrapf(err, errorfamily.Transient,
+		return nil, errorfamily.WrapOncef(err, errorfamily.Transient,
 			CodeBodyReadFailed, "read request body").
 			WithContext("method", req.Method)
 	}

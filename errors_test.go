@@ -118,6 +118,7 @@ func TestError_ReadSignals_UnmarshalFailed_Rejection(t *testing.T) {
 	errorfamilytest.AssertRetryable(t, err, false)
 	errorfamilytest.AssertContext(t, err, "method", http.MethodPost)
 	errorfamilytest.AssertContext(t, err, "input_bytes", "9") // len("{bad json")
+	errorfamilytest.AssertContext(t, err, "input_preview", "{bad json")
 }
 
 // --- MarshalSignals failure (Rejection: unmarshallable value) ---
@@ -157,6 +158,16 @@ func TestError_NewDispatchCustomEventPatch_EmptyName(t *testing.T) {
 	}
 }
 
+func TestError_NewDispatchCustomEventPatch_UnmarshallableDetail(t *testing.T) {
+	t.Parallel()
+
+	_, err := datastar.NewDispatchCustomEventPatch("test", make(chan int))
+
+	errorfamilytest.AssertFamily(t, err, errorfamily.Rejection)
+	errorfamilytest.AssertCode(t, err, datastar.CodeCustomEventDetailMarshalFailed)
+	errorfamilytest.AssertRetryable(t, err, false)
+}
+
 // --- Parse failures (Rejection: unrecognized input string) ---
 
 func TestError_ElementPatchModeFromString_Invalid(t *testing.T) {
@@ -191,4 +202,67 @@ func TestError_Sentinels_AreContextPristine(t *testing.T) {
 
 	errorfamilytest.AssertContextMissing(t, datastar.ErrEventNameRequired, "anything")
 	errorfamilytest.AssertContextMissing(t, datastar.ErrBodyReadAfterClose, "anything")
+}
+
+// --- errors.As coverage: every error path must be an *errorfamily.Error ---
+
+func TestError_AllPaths_AreErrorFamilyType(t *testing.T) {
+	t.Parallel()
+
+	var ef *errorfamily.Error
+
+	cases := []struct {
+		name string
+		err  error
+	}{
+		{"ElementsFromTempl", func() error {
+			_, e := datastar.ElementsFromTempl(fakeTemplComponent{err: io.ErrUnexpectedEOF})
+			return e
+		}()},
+		{"ElementsFromGostar", func() error {
+			_, e := datastar.ElementsFromGostar(fakeGoStarRenderer{err: io.ErrUnexpectedEOF})
+			return e
+		}()},
+		{"ReadSignals_BodyReadAfterClose", func() error {
+			r := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/", nil)
+			r.Body = afterCloseBody{}
+			return datastar.ReadSignals(r, new(map[string]any))
+		}()},
+		{"ReadSignals_BodyReadFailed", func() error {
+			r := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/", nil)
+			r.Body = failingBody{err: errConnReset}
+			return datastar.ReadSignals(r, new(map[string]any))
+		}()},
+		{"ReadSignals_UnmarshalFailed", func() error {
+			req := httptest.NewRequestWithContext(
+				context.Background(), http.MethodPost, "/", strings.NewReader("{bad"))
+			return datastar.ReadSignals(req, new(map[string]any))
+		}()},
+		{"MarshalSignals", func() error {
+			_, e := datastar.MarshalSignals(make(chan int))
+			return e
+		}()},
+		{"NewDispatchCustomEventPatch_EmptyName", func() error {
+			_, e := datastar.NewDispatchCustomEventPatch("", nil)
+			return e
+		}()},
+		{"NewDispatchCustomEventPatch_UnmarshallableDetail", func() error {
+			_, e := datastar.NewDispatchCustomEventPatch("test", make(chan int))
+			return e
+		}()},
+		{"ElementPatchModeFromString", func() error {
+			_, e := datastar.ElementPatchModeFromString("bogus")
+			return e
+		}()},
+		{"NamespaceFromString", func() error {
+			_, e := datastar.NamespaceFromString("bogus")
+			return e
+		}()},
+	}
+
+	for _, tc := range cases {
+		if !errors.As(tc.err, &ef) {
+			t.Errorf("%s: errors.As(err, &*errorfamily.Error) = false; want true", tc.name)
+		}
+	}
 }

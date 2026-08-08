@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"strings"
 
+	errorfamily "github.com/larsartmann/go-error-family"
 	"github.com/larsartmann/go-sse"
 )
 
@@ -40,8 +41,8 @@ func NewConsoleErrorPatch(err error, opts ...ScriptPatchOption) ScriptPatch {
 }
 
 // DispatchCustomEventPatch dispatches a custom DOM event on the client via
-// script execution. The detail value is marshaled to JSON and passed as the
-// event's detail property.
+// script execution. The detail value is marshaled to JSON in
+// [NewDispatchCustomEventPatch] and passed as the event's detail property.
 type DispatchCustomEventPatch struct {
 	EventName string
 	Detail    any
@@ -53,6 +54,8 @@ type DispatchCustomEventPatch struct {
 
 	EventID       string
 	RetryDuration int64 // milliseconds; 0 = default
+
+	detailJSON []byte // pre-marshaled in constructor; nil if Detail is nil
 }
 
 // DispatchCustomEventOption configures a [DispatchCustomEventPatch].
@@ -97,9 +100,17 @@ func NewDispatchCustomEventPatch(
 		return DispatchCustomEventPatch{}, ErrEventNameRequired
 	}
 
+	detailJSON, err := json.Marshal(detail)
+	if err != nil {
+		return DispatchCustomEventPatch{}, errorfamily.Wrapf(err, errorfamily.Rejection,
+			CodeCustomEventDetailMarshalFailed,
+			"marshal custom event detail of type %T", detail)
+	}
+
 	patch := DispatchCustomEventPatch{
 		EventName:  eventName,
 		Detail:     detail,
+		detailJSON: detailJSON,
 		Selector:   defaultCustomEventSelector,
 		Bubbles:    true,
 		Cancelable: true,
@@ -114,8 +125,8 @@ func NewDispatchCustomEventPatch(
 
 // Event returns the [sse.Event] for this custom event dispatch.
 func (p DispatchCustomEventPatch) Event() sse.Event {
-	detailsJSON, err := json.Marshal(p.Detail)
-	if err != nil {
+	detailsJSON := p.detailJSON
+	if detailsJSON == nil {
 		detailsJSON = []byte("null")
 	}
 

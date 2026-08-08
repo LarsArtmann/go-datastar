@@ -23,6 +23,14 @@ import (
 //	Orchestration — an internal operation failed to produce output (rendering). Not retryable.
 //
 // Codes follow the convention "datastar.<operation>_<failure>".
+//
+// Naming convention:
+//   - _failed: an operation could not produce output (marshal, render, send).
+//   - _invalid: an input value was recognized but not accepted (wrong mode, bad namespace).
+//   - _required: a required input was missing (empty event name).
+//   - _after_close: a resource was accessed after its lifecycle ended (body after close).
+//
+// New codes MUST use one of these suffixes and be documented above their const declaration.
 
 // Error codes for go-datastar. Each is a stable string accessible via
 // [errorfamily.Code], enabling programmatic handling, metrics, and structured
@@ -52,6 +60,10 @@ const (
 	// CodeEventNameRequired: [NewDispatchCustomEventPatch] was called with an
 	// empty event name.
 	CodeEventNameRequired = "datastar.event_name_required"
+
+	// CodeCustomEventDetailMarshalFailed: [NewDispatchCustomEventPatch] could not
+	// marshal the detail value to JSON (e.g. a channel, function, or cyclic reference).
+	CodeCustomEventDetailMarshalFailed = "datastar.custom_event_detail_marshal_failed"
 
 	// CodeElementPatchModeInvalid: [ElementPatchModeFromString] received an
 	// unrecognized mode string.
