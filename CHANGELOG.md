@@ -33,6 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **CI Actions upgraded** — `actions/checkout` v4→v5 and `actions/setup-go`
+  v5→v6 across all 4 CI jobs (test, lint, erraudit, govulncheck).
 - **`WithScriptAttributeKVs` doc corrected** — the doc comment incorrectly
   claimed it "returns an error via the patch if the argument count is odd"; the
   code silently drops the unpaired key. Doc now matches the code.

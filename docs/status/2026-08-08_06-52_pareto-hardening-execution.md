@@ -1,5 +1,11 @@
 # Status Report — Pareto Hardening Execution
 
+> **Resolution note (2026-08-08 07:04):** All 4 fuckups listed in section d
+> below (F1–F3) have been **resolved**. See
+> [`2026-08-08_07-04_fuckup-fix-session.md`](2026-08-08_07-04_fuckup-fix-session.md)
+> for details. This report is preserved as a point-in-time snapshot; the items
+> below reflect the state at 06:52 and are no longer current.
+
 **Date:** 2026-08-08 06:52
 **Session scope:** Executed the Pareto hardening plan (`docs/planning/2026-08-08_03-16_pareto-hardening-plan.md`). 13 of 15 tasks (T01-T13, T15). T12 and T14 BLOCKED. Discovered 4 fuckups during execution and in self-review.
 
