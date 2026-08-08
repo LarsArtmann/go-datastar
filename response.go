@@ -18,11 +18,18 @@ import (
 //
 //	func handler(w http.ResponseWriter, r *http.Request) {
 //	    stream := sse.NewStream(w, r)
-//	    resp := datastar.NewResponse(stream)
-//	    defer resp.Close()
+//	    defer func() { _ = stream.Close() }()
 //
-//	    resp.PatchElements("<div>Hello</div>", datastar.WithSelector("#feed"))
-//	    resp.PatchSignals(map[string]any{"count": 1})
+//	    resp := datastar.NewResponse(stream)
+//
+//	    if err := resp.PatchElements("<div>Hello</div>", datastar.WithSelector("#feed")); err != nil {
+//	        log.Printf("patch elements: %v", err)
+//	        return
+//	    }
+//
+//	    if err := resp.MarshalAndPatchSignals(map[string]any{"count": 1}); err != nil {
+//	        log.Printf("patch signals: %v", err)
+//	    }
 //	}
 type Response struct {
 	stream *sse.Stream
