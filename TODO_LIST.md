@@ -17,15 +17,14 @@
 
 | Task                                                                                       | Status       | Impact | Effort | Evidence                                                           |
 | ------------------------------------------------------------------------------------------ | ------------ | ------ | ------ | ------------------------------------------------------------------ |
-| GitHub repo polish: set topics (`datastar`, `sse`, `go`, `hypermedia`), disable empty wiki | 🔵 `BLOCKED` | Low    | 10min  | Requires `gh` CLI access; topics not set, wiki enabled but empty   |
+| GitHub repo polish: set topics (`datastar`, `sse`, `go`, `hypermedia`), disable empty wiki | 🔴 `TODO`    | Low    | 10min  | `gh` CLI works; topics not set, wiki enabled but empty            |
 | Address `nestif` complexity in `ReadSignals` (complexity 6)                                | 🔴 `TODO`    | Low    | 30min  | `inbound.go` — `ReadSignals` has nested conditionals               |
 | Verify pkg.go.dev docs are rendered for latest version                                     | 🔴 `TODO`    | Low    | 10min  | Badge links there but rendering unconfirmed                        |
 | Add coverage badge to README                                                               | 🔴 `TODO`    | Low    | 20min  | README has CI/GoRef/GoReport/License badges; no coverage badge     |
-| Tag v0.0.3 release                                                                         | 🔵 `BLOCKED` | High   | 30min  | All code changes stable; waiting for user release cadence decision |
 
 ## Completed this session (2026-08-08)
 
-All items below were resolved during the Pareto hardening session. See CHANGELOG `[Unreleased]` for details.
+All items below were resolved during the Pareto hardening session. See CHANGELOG `[0.0.3]` for details.
 
 | Task                                                                                                                               | Task ID |
 | ---------------------------------------------------------------------------------------------------------------------------------- | ------- |
@@ -63,3 +62,6 @@ All items below were resolved during the Pareto hardening session. See CHANGELOG
 | Annotate prior status report (06-52) with resolution pointer                                                                       | F5      |
 | Run `actionlint` on ci.yml — 0 violations, YAML valid                                                                              | F6      |
 | Verify checkout@v5/setup-go@v6 breaking changes — none affect this CI config                                                       | F7      |
+| Tag v0.0.3 release — annotated tag pushed, GitHub release created                                                                  | F8/F9   |
+| Add CHANGELOG comparison links (Keep a Changelog convention)                                                                       | F10     |
+| Remove false "blocked on gh CLI" claims — gh works fine                                                                            | F11     |

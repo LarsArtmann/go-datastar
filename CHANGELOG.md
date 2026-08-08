@@ -148,3 +148,8 @@ values producing `sse.Event`, built on [go-sse](https://github.com/LarsArtmann/g
 
 - Removed local `replace` directive — the module now resolves `go-sse v0.4.0`
   and `go-error-family v0.10.0` from the Go module proxy.
+
+[Unreleased]: https://github.com/LarsArtmann/go-datastar/compare/v0.0.3...HEAD
+[0.0.3]: https://github.com/LarsArtmann/go-datastar/compare/v0.0.2...v0.0.3
+[0.0.2]: https://github.com/LarsArtmann/go-datastar/compare/v0.0.1...v0.0.2
+[0.0.1]: https://github.com/LarsArtmann/go-datastar/releases/tag/v0.0.1
