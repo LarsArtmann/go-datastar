@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **HEAD request support in `ScriptHandler`** — HEAD now returns `200 OK` with
+  headers (Content-Type, ETag, Cache-Control, Content-Length) but **no message
+  body**, complying with RFC 7231 §4.3.2. Previously HEAD wrote the full JS body.
+- **Testable examples** (`example_test.go`) — three `Example` functions with
+  `// Output:` assertions verifying wire format for `ElementsPatch`,
+  `SignalsPatch`, and `ReadSignals`. Compile-checked by `go test`.
+- **Fuzz test for `ReadSignals`** (`inbound_fuzz_test.go`) — 10-seed corpus
+  covering valid payloads, truncated JSON, null, arrays, control characters,
+  invalid UTF-8. 1.2M+ executions, 0 failures. Seeds run as regression cases.
+- **Coverage tests** (`coverage_test.go`) — option-application loop,
+  construction error branches, and stream-send failure paths. Coverage 96.9% →
+  98.7%.
+
+### Fixed
+
+- **Broken godoc example on `Response`** (`response.go`) — called non-existent
+  `resp.Close()` (should be `stream.Close()`) and `resp.PatchSignals(map)` (wrong
+  signature; should be `MarshalAndPatchSignals`). Same bug class as the README
+  fix in v0.0.1, but the godoc copy was never synced.
+
+### Changed
+
+- Migrated test HTTP requests to `http.NewRequestWithContext` (noctx linter
+  compliance).
+- Example application updated to demonstrate error handling and explicit stream
+  lifecycle management.
+
 ## [0.0.2] - 2026-08-07
 
 ### Fixed
