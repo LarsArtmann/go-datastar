@@ -43,25 +43,25 @@ Every DataStar protocol message is a value that produces an `sse.Event`. This ma
 
 ### File layout
 
-| File                    | Role                                                                        |
-| ----------------------- | --------------------------------------------------------------------------- |
-| `patch.go`              | `Patch` interface                                                           |
-| `errors.go`             | Error catalog: stable codes, sentinel errors, family mapping                |
-| `constants.go`          | EventType, ElementPatchMode, Namespace, dataline keys, DefaultRetryDuration |
-| `elements.go`           | `ElementsPatch` struct + `Event()` + options                                |
-| `signals.go`            | `SignalsPatch` struct + `Event()` + marshal helpers                         |
-| `script.go`             | `ScriptPatch` struct + `Event()` + options                                  |
-| `script_convenience.go` | Redirect, ConsoleLog/Error, DispatchCustomEvent, ReplaceURL, Prefetch       |
-| `sugar.go`              | Mode helpers, RemovePatch, validation, namespace helpers                    |
-| `adapters.go`           | ElementsFromTempl, ElementsFromGostar                                       |
-| `http.go`               | GetSSE/PostSSE/PutSSE/PatchSSE/DeleteSSE                                    |
-| `inbound.go`            | ReadSignals, LastEventID                                                    |
-| `script_handler.go`     | Embedded datastar.js, ScriptHandler, ScriptTag, Version                     |
-| `response.go`           | Response (fluent SSE builder), ErrorResponse, ErrorResponseFromError, NotificationResponse |
-| `example_test.go`       | Testable examples (Example functions with `// Output:` assertions)           |
-| `inbound_fuzz_test.go`  | Fuzz test for ReadSignals (10-seed corpus, regression-guarded)               |
-| `coverage_test.go`      | Option-application, construction error branches, stream-send failure paths   |
-| `errors_example_test.go`| Example functions showing all three error-handling patterns                |
+| File                     | Role                                                                                       |
+| ------------------------ | ------------------------------------------------------------------------------------------ |
+| `patch.go`               | `Patch` interface                                                                          |
+| `errors.go`              | Error catalog: stable codes, sentinel errors, family mapping                               |
+| `constants.go`           | EventType, ElementPatchMode, Namespace, dataline keys, DefaultRetryDuration                |
+| `elements.go`            | `ElementsPatch` struct + `Event()` + options                                               |
+| `signals.go`             | `SignalsPatch` struct + `Event()` + marshal helpers                                        |
+| `script.go`              | `ScriptPatch` struct + `Event()` + options                                                 |
+| `script_convenience.go`  | Redirect, ConsoleLog/Error, DispatchCustomEvent, ReplaceURL, Prefetch                      |
+| `sugar.go`               | Mode helpers, RemovePatch, validation, namespace helpers                                   |
+| `adapters.go`            | ElementsFromTempl, ElementsFromGostar                                                      |
+| `http.go`                | GetSSE/PostSSE/PutSSE/PatchSSE/DeleteSSE                                                   |
+| `inbound.go`             | ReadSignals, LastEventID                                                                   |
+| `script_handler.go`      | Embedded datastar.js, ScriptHandler, ScriptTag, Version                                    |
+| `response.go`            | Response (fluent SSE builder), ErrorResponse, ErrorResponseFromError, NotificationResponse |
+| `example_test.go`        | Testable examples (Example functions with `// Output:` assertions)                         |
+| `inbound_fuzz_test.go`   | Fuzz test for ReadSignals (10-seed corpus, regression-guarded)                             |
+| `coverage_test.go`       | Option-application, construction error branches, stream-send failure paths                 |
+| `errors_example_test.go` | Example functions showing all three error-handling patterns                                |
 
 ## Wire-Format Parity Requirements
 

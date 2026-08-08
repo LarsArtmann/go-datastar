@@ -24,6 +24,7 @@ Evidence: `FEATURES.md` — each row cites `file:line`.
 ### 2. Built TODO_LIST.md (32 items, harvested + verified)
 
 Created `TODO_LIST.md` from:
+
 - Harvesting forward-looking items from the 4 most recent `docs/status/2026-08-*` reports
 - Verifying each item against code before adding (CONTRIBUTING.md broken, WithScriptAttributeKVs mismatch, AGENTS.md missing entries, CI gaps — all confirmed)
 - Routing: 5 High Impact, 18 Medium Impact, 9 Low Impact
@@ -66,13 +67,13 @@ Evidence: commits `760ce82`, annotations visible inline with `~~strikethrough~~`
 
 ### 6. Quality gates verified
 
-| Gate                                       | Result                                                   |
-| ------------------------------------------ | -------------------------------------------------------- |
-| `go test ./... -race -count=1`             | ✓ (110 tests pass)                                       |
-| `golangci-lint run ./...`                  | ✓ (0 issues)                                             |
+| Gate                                       | Result                                                                      |
+| ------------------------------------------ | --------------------------------------------------------------------------- |
+| `go test ./... -race -count=1`             | ✓ (110 tests pass)                                                          |
+| `golangci-lint run ./...`                  | ✓ (0 issues)                                                                |
 | `erraudit ./... --enforce-go-error-family` | ✓ (6 WARNINGs, all accepted by design: 5 generic_return + 1 silent_swallow) |
-| `nix flake check`                          | ✓ (all checks passed)                                    |
-| Test coverage                              | 98.7%                                                    |
+| `nix flake check`                          | ✓ (all checks passed)                                                       |
+| Test coverage                              | 98.7%                                                                       |
 
 ---
 
@@ -106,13 +107,14 @@ The AUDIT mode says: "Report using the health report format — two independent 
 
 **This is the biggest miss.** CONTRIBUTING.md says `go test ./... -race` without `GOEXPERIMENT=jsonv2` or `GOWORK=off`. Anyone following it fails immediately. Verified broken. Put in TODO_LIST. Moved on.
 
-The deep-review report (2026-08-08) literally says: *"Fix CONTRIBUTING.md when you see it's broken. I read the v0.0.2 retrospective which explicitly called CONTRIBUTING.md 'embarrassingly skeletal'... I had the context. I should have fixed it on the spot — it's a 2-minute fix."*
+The deep-review report (2026-08-08) literally says: _"Fix CONTRIBUTING.md when you see it's broken. I read the v0.0.2 retrospective which explicitly called CONTRIBUTING.md 'embarrassingly skeletal'... I had the context. I should have fixed it on the spot — it's a 2-minute fix."_
 
 I then did the **exact same thing**. This is now a three-session pattern of documenting a known-broken onboarding doc without fixing it.
 
 ### 2. AGENTS.md updates — missing entries, documented, NOT FIXED
 
 Two 10-minute edits identified and verified:
+
 - File layout table missing `example_test.go` and `inbound_fuzz_test.go` rows
 - Wire-format parity section missing HEAD/RFC 7231 compliance (requirement #12)
 
@@ -132,7 +134,7 @@ Identified in reports. Routed to TODO_LIST. Not attempted (requires `gh` CLI acc
 
 ### F1: Repeated the EXACT anti-pattern from the prior report
 
-The deep-review report criticizes itself for not fixing CONTRIBUTING.md despite having full context. The exact words: *"I should have fixed it on the spot — it's a 2-minute fix. Instead I focused on code and left a known-broken onboarding doc for the next contributor to hit."*
+The deep-review report criticizes itself for not fixing CONTRIBUTING.md despite having full context. The exact words: _"I should have fixed it on the spot — it's a 2-minute fix. Instead I focused on code and left a known-broken onboarding doc for the next contributor to hit."_
 
 I then did **precisely** the same thing: verified it's broken, documented it in TODO_LIST, and moved on. This is now a **three-session chain** (v0.0.1 retro → v0.0.2 retro → deep-review → this session) where CONTRIBUTING.md is identified as broken and not fixed. The fix is literally adding three lines to one file.
 
@@ -156,6 +158,7 @@ AGENTS.md lists 4 quality gates. I ran `go test` and `nix flake check` during th
 ### F4: CHANGELOG mixed internal test improvements with user-facing changes
 
 The `[Unreleased]` section includes:
+
 - "Coverage tests" as an `Added` entry — this is a test improvement, not a user-facing feature
 - "Migrated test HTTP requests to `http.NewRequestWithContext`" under `Changed` — this is internal lint compliance
 

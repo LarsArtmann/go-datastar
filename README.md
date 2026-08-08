@@ -275,19 +275,19 @@ if errorfamily.Classify(err) == errorfamily.Transient { /* backoff + retry */ }
 
 ### Error codes
 
-| Code                                                | Family        | Retryable |
-| -------------------------------------------------- | ------------- | --------- |
-| `datastar.templ_render_failed`                     | Orchestration | no        |
-| `datastar.gostar_render_failed`                    | Orchestration | no        |
-| `datastar.body_read_after_close`                   | Rejection     | no        |
-| `datastar.body_read_failed`                        | Transient     | yes       |
-| `datastar.signals_unmarshal_failed`                | Rejection     | no        |
-| `datastar.signals_marshal_failed`                  | Rejection     | no        |
-| `datastar.custom_event_detail_marshal_failed`      | Rejection     | no        |
-| `datastar.event_name_required`                     | Rejection     | no        |
-| `datastar.element_patch_mode_invalid`              | Rejection     | no        |
-| `datastar.namespace_invalid`                       | Rejection     | no        |
-| `datastar.stream_send_failed`                      | Transient     | yes       |
+| Code                                          | Family        | Retryable |
+| --------------------------------------------- | ------------- | --------- |
+| `datastar.templ_render_failed`                | Orchestration | no        |
+| `datastar.gostar_render_failed`               | Orchestration | no        |
+| `datastar.body_read_after_close`              | Rejection     | no        |
+| `datastar.body_read_failed`                   | Transient     | yes       |
+| `datastar.signals_unmarshal_failed`           | Rejection     | no        |
+| `datastar.signals_marshal_failed`             | Rejection     | no        |
+| `datastar.custom_event_detail_marshal_failed` | Rejection     | no        |
+| `datastar.event_name_required`                | Rejection     | no        |
+| `datastar.element_patch_mode_invalid`         | Rejection     | no        |
+| `datastar.namespace_invalid`                  | Rejection     | no        |
+| `datastar.stream_send_failed`                 | Transient     | yes       |
 
 ## Wire format parity
 
