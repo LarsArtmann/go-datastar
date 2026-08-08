@@ -164,7 +164,10 @@ func TestResponse_ConstructionErrors(t *testing.T) {
 		err  error
 	}{
 		{"MarshalAndPatchSignals unmarshalable value", resp.MarshalAndPatchSignals(make(chan int))},
-		{"PatchElementsTempl render failure", resp.PatchElementsTempl(fakeTemplComponent{err: io.ErrUnexpectedEOF})},
+		{
+			"PatchElementsTempl render failure",
+			resp.PatchElementsTempl(fakeTemplComponent{err: io.ErrUnexpectedEOF}),
+		},
 		{"DispatchCustomEvent empty name", resp.DispatchCustomEvent("", nil)},
 	}
 

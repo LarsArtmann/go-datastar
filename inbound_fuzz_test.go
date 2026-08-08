@@ -15,32 +15,35 @@ import (
 // datastar query parameter (GET/DELETE). The invariant: it must never panic for
 // any input — it returns nil (no signals) or a classified error.
 //
-// The seed corpus runs as ordinary regression cases under `go test`; use
-// `go test -fuzz=FuzzReadSignals` to explore the input space.
+// The useQuery bool selects the query-param path (GET) vs the body path (POST),
+// exercising both code paths in ReadSignals. The seed corpus runs as ordinary
+// regression cases under `go test`; use `go test -fuzz=FuzzReadSignals` to
+// explore the input space.
 func FuzzReadSignals(f *testing.F) {
-	// Valid payloads.
-	f.Add(http.MethodPost, []byte(`{"count":1}`))
-	f.Add(http.MethodPost, []byte(`{"deep":{"a":{"b":{"c":1}}}}`))
-	f.Add(http.MethodGet, []byte(`{"x":"y"}`))
+	// Valid payloads — body path.
+	f.Add(false, []byte(`{"count":1}`))
+	f.Add(false, []byte(`{"deep":{"a":{"b":{"c":1}}}}`))
+	f.Add(false, []byte(`null`))
+	f.Add(false, []byte(`[]`))
+
+	// Valid payload — query path.
+	f.Add(true, []byte(`{"x":"y"}`))
 
 	// Malformed / edge-case payloads.
-	f.Add(http.MethodPost, []byte(`{`))            // truncated object
-	f.Add(http.MethodPost, []byte(`{"k":`))        // truncated value
-	f.Add(http.MethodPost, []byte(``))             // empty body → nil
-	f.Add(http.MethodPost, []byte(`null`))         // JSON null
-	f.Add(http.MethodPost, []byte(`[]`))           // not an object
-	f.Add(http.MethodPost, []byte(`"\u0000"`))     // control character
-	f.Add(http.MethodPost, []byte(`{"k":"`+string(rune(0x80))+`"}`)) // invalid UTF-8
+	f.Add(false, []byte(`{`))                              // truncated object
+	f.Add(false, []byte(`{"k":`))                          // truncated value
+	f.Add(false, []byte(``))                               // empty body → nil
+	f.Add(false, []byte(`"\u0000"`))                       // control character
+	f.Add(false, []byte(`{"k":"`+string(rune(0x80))+`"}`)) // invalid UTF-8
 
-	f.Fuzz(func(t *testing.T, method string, body []byte) {
+	f.Fuzz(func(t *testing.T, useQuery bool, body []byte) {
 		var req *http.Request
 
-		if method == http.MethodGet || method == http.MethodDelete {
-			// Query-param path: signals travel as ?datastar=<json>.
+		if useQuery {
 			rawURL := "/api?datastar=" + url.QueryEscape(string(body))
-			req = httptest.NewRequest(method, rawURL, nil)
+			req = httptest.NewRequest(http.MethodGet, rawURL, nil)
 		} else {
-			req = httptest.NewRequest(method, "/api", bytes.NewReader(body))
+			req = httptest.NewRequest(http.MethodPost, "/api", bytes.NewReader(body))
 		}
 
 		var target map[string]any

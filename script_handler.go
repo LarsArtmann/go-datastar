@@ -52,6 +52,14 @@ func ScriptHandlerWith(scriptBytes []byte, _ string) http.Handler {
 
 		responseWriter.Header().Set("Content-Length", strconv.Itoa(len(scriptBytes)))
 
+		// HEAD requests receive the same headers (including Content-Length) but no
+		// message body, per RFC 7231 §4.3.2.
+		if request.Method == http.MethodHead {
+			responseWriter.WriteHeader(http.StatusOK)
+
+			return
+		}
+
 		if _, err := responseWriter.Write(scriptBytes); err != nil {
 			return // client disconnected or write failed; nothing more to send
 		}

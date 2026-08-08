@@ -178,6 +178,53 @@ func TestScriptHandler_RejectsPost(t *testing.T) {
 	}
 }
 
+func TestScriptHandler_HEADReturnsNoBody(t *testing.T) {
+	t.Parallel()
+
+	handler := datastar.ScriptHandler()
+
+	// GET to learn the expected Content-Length and ETag.
+	getRec := httptest.NewRecorder()
+	getReq := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodGet,
+		"/datastar.js",
+		nil,
+	)
+	handler.ServeHTTP(getRec, getReq)
+
+	// HEAD must return 200, the same Content-Length and ETag, but no body
+	// (RFC 7231 §4.3.2).
+	headRec := httptest.NewRecorder()
+	headReq := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodHead,
+		"/datastar.js",
+		nil,
+	)
+	handler.ServeHTTP(headRec, headReq)
+
+	if headRec.Code != http.StatusOK {
+		t.Errorf("status: got %d, want %d", headRec.Code, http.StatusOK)
+	}
+
+	if headRec.Body.Len() != 0 {
+		t.Errorf("HEAD must not return a body; got %d bytes", headRec.Body.Len())
+	}
+
+	if got := headRec.Header().Get("Content-Length"); got == "" || got != getRec.Header().Get("Content-Length") {
+		t.Errorf(
+			"Content-Length: got %q, want %q (non-empty, matching GET)",
+			got,
+			getRec.Header().Get("Content-Length"),
+		)
+	}
+
+	if headRec.Header().Get("ETag") == "" {
+		t.Error("HEAD must include ETag")
+	}
+}
+
 func TestScriptHandlerWith(t *testing.T) {
 	t.Parallel()
 

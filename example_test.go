@@ -44,6 +44,7 @@ func ExampleResponse() {
 	var buf mockFlushWriter
 
 	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events", nil)
+
 	stream := sse.NewStream(&buf, req)
 	defer func() { _ = stream.Close() }()
 
