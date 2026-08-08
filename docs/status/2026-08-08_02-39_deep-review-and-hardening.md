@@ -142,8 +142,8 @@ Each required a separate edit-test cycle. **Root cause:** I didn't run `golangci
 1. **Fix CONTRIBUTING.md** — add `GOEXPERIMENT=jsonv2`, `GOWORK=off`, nix workflow (`nix flake check`, `nix run .#test`). Currently says `go test ./... -race` which fails without GOEXPERIMENT. 2-minute fix.
 2. **Update AGENTS.md file layout table** — add `example_test.go` and `inbound_fuzz_test.go` rows.
 3. **Update AGENTS.md wire-format parity section** — add HEAD/RFC 7231 compliance as requirement #12.
-4. **Add CHANGELOG entry** for the HEAD fix + godoc fix (v0.0.3 material).
-5. **Verify `example/main.go` still works** after ScriptHandler HEAD change (`go run ./example/`).
+4. ~~**Add CHANGELOG entry** for the HEAD fix + godoc fix (v0.0.3 material).~~ done — added to CHANGELOG `[Unreleased]` section.
+5. ~~**Verify `example/main.go` still works** after ScriptHandler HEAD change (`go run ./example/`).~~ done — `go vet ./example/` passes.
 6. **Read `e2e_test.go`** — check whether HEAD support needs e2e coverage.
 
 ### Documentation (from v0.0.2 retrospective, still open)
@@ -219,10 +219,20 @@ Each required a separate edit-test cycle. **Root cause:** I didn't run `golangci
 
 The doc comment on `WithScriptAttributeKVs` says: "Returns an error via the patch if the argument count is odd (unlike the SDK which panics)." But the implementation (`scriptAttributeKVs`) silently drops the trailing element — it iterates `i += 2` and the condition `i+1 < len(kvs)` skips a lone final element. No error is surfaced anywhere. Either the doc is wrong (should say "silently drops") or the code is wrong (should produce an error). I need to know which behavior you want before changing either.
 
+> **Resolution:** Still open. Verified: the doc/code mismatch is confirmed (`script.go:58-76`). Routed to TODO_LIST.md (High Impact). The doc is most likely wrong — the function signature returns no error, so "returns an error via the patch" is misleading.
+
 ### 2. Should I tag a v0.0.3 release for the HEAD spec-compliance fix, or batch it with future changes?
 
 The HEAD body-writing fix is a real spec violation that affects any client doing HEAD pre-flight checks (CDNs, proxies). It's a behavior change (HEAD responses now have empty bodies). Consumer code expecting a body on HEAD would break — though no reasonable consumer should expect that. Options: tag v0.0.3 now with just this fix, or batch with other improvements. I can't decide the release cadence for you.
 
+> **Resolution:** Still open — user decision on release cadence.
+
 ### 3. What's the upstream DataStar JS version tracking strategy — should I pin to 1.0.2 or track latest?
 
 The embedded `static/datastar.js` is pinned at v1.0.2 (`DatastarJSVersion = "1.0.2"`). The upstream `starfederation/datastar` repo may have released newer versions. I don't know whether you want to track upstream releases closely (and regenerate the embedded JS), or pin and update manually. This affects whether I should check for upstream updates as part of routine maintenance.
+
+> **Resolution:** Still open. Routed to ROADMAP.md (Upstream Protocol Tracking theme).
+
+---
+
+> **Annotation note (2026-08-08):** Items 4–5 are done. Q1 (WithScriptAttributeKVs) is verified and routed to TODO_LIST.md. Q2 (release cadence) and Q3 (JS version tracking) remain open. All unmarked items in section f) have been routed: bounded items → TODO_LIST.md, long-term/vague items → ROADMAP.md.

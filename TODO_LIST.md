@@ -42,6 +42,9 @@
 | Create issue templates (bug, feature) and PR template                                              | 🔴 `TODO` | Med    | 30min  | `.github/ISSUE_TEMPLATE/` and `PULL_REQUEST_TEMPLATE.md` do not exist                       |
 | Add Dependabot or Renovate config                                                                  | 🔴 `TODO` | Med    | 20min  | No `.github/dependabot.yml` or `renovate.json`                                              |
 | Add `//nolint` comments with rationale on accepted `generic_return` / `silent_swallow` sites       | 🔴 `TODO` | Med    | 20min  | 4 `generic_return` + 1 `silent_swallow` warnings accepted by design (`AGENTS.md`)           |
+| Add `errorfamily.WrapOnce` at `ReadSignals` boundary to prevent double-classification             | 🔴 `TODO` | Med    | 20min  | `inbound.go` — `ReadSignals` wraps raw errors without checking if already classified         |
+| Add `errors.As(err, &target)` test for `*errorfamily.Error` on every error path                    | 🔴 `TODO` | Med    | 30min  | `errors_test.go` — has `errors.Is` but no `errors.As` assertions                             |
+| Document error-code naming convention (`_invalid` vs `_required` vs `_failed`) in `errors.go`      | 🔴 `TODO` | Med    | 15min  | `errors.go` — 9 codes use inconsistent suffixes with no documented rule                      |
 
 ## Low Impact
 
