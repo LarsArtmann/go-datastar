@@ -104,7 +104,8 @@ func NewDispatchCustomEventPatch(
 	if err != nil {
 		return DispatchCustomEventPatch{}, errorfamily.Wrapf(err, errorfamily.Rejection,
 			CodeCustomEventDetailMarshalFailed,
-			"marshal custom event detail of type %T", detail)
+			"marshal custom event detail of type %T", detail).
+			WithContext("eventName", eventName)
 	}
 
 	patch := DispatchCustomEventPatch{

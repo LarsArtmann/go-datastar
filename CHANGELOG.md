@@ -18,6 +18,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Fuzz test for `ReadSignals`** (`inbound_fuzz_test.go`) — 10-seed corpus
   covering valid payloads, truncated JSON, null, arrays, control characters,
   invalid UTF-8. 1.2M+ executions, 0 failures. Seeds run as regression cases.
+- **Error-handling examples** (`errors_example_test.go`) — three `Example`
+  functions showing all three typed error-handling patterns (by code, by
+  sentinel, by family).
+- **`ErrorResponseFromError`** — new helper that sends a signals patch with
+  errorfamily metadata (code, family, retryable, httpStatus) extracted from a
+  Go error via `errorfamily.HTTPStatus`, `errorfamily.Code`, etc.
+- **CI hardening** — erraudit (`--severity-threshold error`) and govulncheck
+  jobs added to CI. golangci-lint pinned to v2.12.2 (was `@latest`).
+- **Community files** — `SECURITY.md`, `CODE_OF_CONDUCT.md`, issue templates,
+  and PR template added.
+- **Error codes table in README** — all 11 error codes with their families and
+  retryability, visible in the main documentation.
+
+### Changed
+
+- **`WithScriptAttributeKVs` doc corrected** — the doc comment incorrectly
+  claimed it "returns an error via the patch if the argument count is odd"; the
+  code silently drops the unpaired key. Doc now matches the code.
+- **`DispatchCustomEventPatch` no longer silently swallows marshal errors** —
+  the detail value is now marshaled in `NewDispatchCustomEventPatch`, which
+  returns a classified error instead of emitting `null` in `Event()`.
+- **`ReadSignals` error context enriched** — unmarshal failures now include
+  `input_preview` (first 200 bytes of the offending input) in addition to
+  `input_bytes`.
+- **`WrapOncef` replaces `Wrapf`** at the `ReadSignals` boundary to prevent
+  double-classification when a caller's error flows through.
+- **Error-code naming convention documented** — `_failed`, `_invalid`,
+  `_required`, `_after_close` suffix rules defined in `errors.go`.
 
 ### Fixed
 
@@ -25,6 +53,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `resp.Close()` (should be `stream.Close()`) and `resp.PatchSignals(map)` (wrong
   signature; should be `MarshalAndPatchSignals`). Same bug class as the README
   fix in v0.0.1, but the godoc copy was never synced.
+- **CONTRIBUTING.md missing required environment variables** — `GOEXPERIMENT=jsonv2`
+  and `GOWORK=off` are now documented with both Nix and manual workflow sections.
+- **AGENTS.md stale file layout** — `example_test.go`, `inbound_fuzz_test.go`,
+  and `coverage_test.go` rows added. HEAD/RFC 7231 compliance added as
+  wire-format parity requirement #12.
 
 ## [0.0.2] - 2026-08-07
 

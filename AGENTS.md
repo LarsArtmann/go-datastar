@@ -57,10 +57,11 @@ Every DataStar protocol message is a value that produces an `sse.Event`. This ma
 | `http.go`               | GetSSE/PostSSE/PutSSE/PatchSSE/DeleteSSE                                    |
 | `inbound.go`            | ReadSignals, LastEventID                                                    |
 | `script_handler.go`     | Embedded datastar.js, ScriptHandler, ScriptTag, Version                     |
-| `response.go`           | Response (fluent SSE builder), ErrorResponse, NotificationResponse          |
+| `response.go`           | Response (fluent SSE builder), ErrorResponse, ErrorResponseFromError, NotificationResponse |
 | `example_test.go`       | Testable examples (Example functions with `// Output:` assertions)           |
 | `inbound_fuzz_test.go`  | Fuzz test for ReadSignals (10-seed corpus, regression-guarded)               |
 | `coverage_test.go`      | Option-application, construction error branches, stream-send failure paths   |
+| `errors_example_test.go`| Example functions showing all three error-handling patterns                |
 
 ## Wire-Format Parity Requirements
 
@@ -111,8 +112,9 @@ if errorfamily.IsRetryable(err) { /* backoff + retry */ }
 `datastar.templ_render_failed`, `datastar.gostar_render_failed`,
 `datastar.body_read_after_close`, `datastar.body_read_failed`,
 `datastar.signals_unmarshal_failed`, `datastar.signals_marshal_failed`,
-`datastar.event_name_required`, `datastar.element_patch_mode_invalid`,
-`datastar.namespace_invalid`.
+`datastar.custom_event_detail_marshal_failed`, `datastar.event_name_required`,
+`datastar.element_patch_mode_invalid`, `datastar.namespace_invalid`,
+`datastar.stream_send_failed`.
 
 ### Sentinels
 
