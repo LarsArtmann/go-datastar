@@ -55,3 +55,7 @@ All items below were resolved during the Pareto hardening session. See CHANGELOG
 | Fix vague annotations in typed-error-system status report with commit hashes | T02 |
 | Verify `go-error-family` v0.10.0 is the latest release (confirmed latest) | T13 |
 | Verify DataStar JS v1.0.2 is the latest release (confirmed latest) | T13 |
+| Upgrade CI Actions versions: `checkout@v4→v5`, `setup-go@v5→v6` (8 references) | F1 |
+| Add `TestErrorResponseFromError` — Rejection, Transient, non-errorfamily paths | F2 |
+| Fix `ErrorResponseFromError` doc — Classify defaults to Transient (503), not Rejection (400) | F2 |
+| Lower go.mod from `go 1.26.5` to `go 1.26` (matching v0.0.2 CHANGELOG claim) | F3 |
