@@ -58,6 +58,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **AGENTS.md stale file layout** — `example_test.go`, `inbound_fuzz_test.go`,
   and `coverage_test.go` rows added. HEAD/RFC 7231 compliance added as
   wire-format parity requirement #12.
+- **go.mod `go` directive lowered** from `1.26.5` to `1.26` — the v0.0.2
+  changelog claimed this was done but the change was never applied to go.mod.
+  Patch versions in go.mod are unusual and reduce consumer compatibility.
+- **`ErrorResponseFromError` doc corrected** — the comment claimed
+  non-errorfamily errors default to Rejection (400); in reality Classify
+  defaults to Transient (503, fail-open for retry).
 
 ## [0.0.2] - 2026-08-07
 

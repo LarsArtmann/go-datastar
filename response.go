@@ -191,8 +191,9 @@ func ErrorResponse(stream *sse.Stream, message string, code string) error {
 // status code that the family maps to — giving the DataStar client enough
 // context to render an appropriate error UI.
 //
-// For non-errorfamily errors, code and family will be empty, and HTTPStatus
-// defaults to 400 (Rejection).
+// For non-errorfamily errors, code will be empty and Classify defaults to
+// Transient (fail-open for retry), so family will be "transient", retryable
+// will be true, and HTTPStatus will be 503.
 func ErrorResponseFromError(stream *sse.Stream, err error) error {
 	return sendSignalsMap(stream, map[string]any{
 		"error": map[string]any{

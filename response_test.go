@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-datastar"
+	errorfamily "github.com/larsartmann/go-error-family"
 	"github.com/larsartmann/go-sse"
 )
 
@@ -422,6 +423,70 @@ func TestResponse_Actions(t *testing.T) {
 			tt.assert(t, buf.String())
 		})
 	}
+}
+
+func TestErrorResponseFromError(t *testing.T) {
+	t.Parallel()
+
+	t.Run("Rejection", func(t *testing.T) {
+		t.Parallel()
+
+		err := errorfamily.NewRejection("test.bad_input", "invalid input")
+		stream, buf := newTestStream()
+
+		if sendErr := datastar.ErrorResponseFromError(stream, err); sendErr != nil {
+			t.Fatalf("ErrorResponseFromError: %v", sendErr)
+		}
+
+		check := assertContains(
+			"event: datastar-patch-signals",
+			"invalid input",
+			"test.bad_input",
+			`"rejection"`,
+			`"retryable":false`,
+		)
+		check(t, buf.String())
+	})
+
+	t.Run("Transient", func(t *testing.T) {
+		t.Parallel()
+
+		err := errorfamily.NewTransient("test.io_failed", "connection reset")
+		stream, buf := newTestStream()
+
+		if sendErr := datastar.ErrorResponseFromError(stream, err); sendErr != nil {
+			t.Fatalf("ErrorResponseFromError: %v", sendErr)
+		}
+
+		check := assertContains(
+			"event: datastar-patch-signals",
+			"connection reset",
+			"test.io_failed",
+			`"transient"`,
+			`"retryable":true`,
+		)
+		check(t, buf.String())
+	})
+
+	t.Run("NonErrorFamilyError", func(t *testing.T) {
+		t.Parallel()
+
+		// Classify defaults to Transient (fail-open) for non-errorfamily errors.
+		err := errors.New("something went wrong")
+		stream, buf := newTestStream()
+
+		if sendErr := datastar.ErrorResponseFromError(stream, err); sendErr != nil {
+			t.Fatalf("ErrorResponseFromError: %v", sendErr)
+		}
+
+		check := assertContains(
+			"event: datastar-patch-signals",
+			"something went wrong",
+			`"transient"`,
+			`"retryable":true`,
+		)
+		check(t, buf.String())
+	})
 }
 
 func TestResponse_Stream(t *testing.T) {
