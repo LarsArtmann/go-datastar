@@ -61,5 +61,5 @@ All items below were resolved during the Pareto hardening session. See CHANGELOG
 | Lower go.mod from `go 1.26.5` to `go 1.26` (matching v0.0.2 CHANGELOG claim)                                                       | F3      |
 | Add CHANGELOG entry for CI Actions upgrade (`checkout@v5`, `setup-go@v6`)                                                          | F4      |
 | Annotate prior status report (06-52) with resolution pointer                                                                       | F5      |
-| Run `actionlint` on ci.yml — 0 violations, YAML valid                                                                             | F6      |
-| Verify checkout@v5/setup-go@v6 breaking changes — none affect this CI config                                                        | F7      |
+| Run `actionlint` on ci.yml — 0 violations, YAML valid                                                                              | F6      |
+| Verify checkout@v5/setup-go@v6 breaking changes — none affect this CI config                                                       | F7      |
