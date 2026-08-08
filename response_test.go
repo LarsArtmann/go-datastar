@@ -472,16 +472,15 @@ func TestErrorResponseFromError(t *testing.T) {
 		t.Parallel()
 
 		// Classify defaults to Transient (fail-open) for non-errorfamily errors.
-		err := errors.New("something went wrong")
 		stream, buf := newTestStream()
 
-		if sendErr := datastar.ErrorResponseFromError(stream, err); sendErr != nil {
+		if sendErr := datastar.ErrorResponseFromError(stream, errSomethingFailed); sendErr != nil {
 			t.Fatalf("ErrorResponseFromError: %v", sendErr)
 		}
 
 		check := assertContains(
 			"event: datastar-patch-signals",
-			"something went wrong",
+			"something failed",
 			`"transient"`,
 			`"retryable":true`,
 		)
