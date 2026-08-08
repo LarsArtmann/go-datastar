@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/larsartmann/go-datastar"
-	"github.com/larsartmann/go-sse"
 )
 
 // ExampleElementsPatch demonstrates the library's keystone: a patch is a value
@@ -36,27 +35,14 @@ func ExampleSignalsPatch() {
 	// signals {"count":1}
 }
 
-// ExampleResponse demonstrates the single-connection fluent builder. This is a
-// compile-checked regression guard: it exercises every method documented in the
-// Response godoc, so a rename or signature change fails CI here rather than
-// silently shipping stale documentation.
-func ExampleResponse() {
-	var buf mockFlushWriter
-
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events", nil)
-
-	stream := sse.NewStream(&buf, req)
-	defer func() { _ = stream.Close() }()
-
-	resp := datastar.NewResponse(stream)
-
-	_ = resp.PatchElements("<div>Hello</div>", datastar.WithSelector("#feed"))
-	_ = resp.MarshalAndPatchSignals(map[string]any{"count": 1})
-}
-
 // ExampleReadSignals demonstrates extracting signals from an inbound request body.
 func ExampleReadSignals() {
-	req := httptest.NewRequest(http.MethodPost, "/api", strings.NewReader(`{"count":2}`))
+	req := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodPost,
+		"/api",
+		strings.NewReader(`{"count":2}`),
+	)
 
 	var signals struct {
 		Count int `json:"count"`

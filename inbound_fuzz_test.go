@@ -2,6 +2,7 @@ package datastar_test
 
 import (
 	"bytes"
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -41,9 +42,14 @@ func FuzzReadSignals(f *testing.F) {
 
 		if useQuery {
 			rawURL := "/api?datastar=" + url.QueryEscape(string(body))
-			req = httptest.NewRequest(http.MethodGet, rawURL, nil)
+			req = httptest.NewRequestWithContext(context.Background(), http.MethodGet, rawURL, nil)
 		} else {
-			req = httptest.NewRequest(http.MethodPost, "/api", bytes.NewReader(body))
+			req = httptest.NewRequestWithContext(
+				context.Background(),
+				http.MethodPost,
+				"/api",
+				bytes.NewReader(body),
+			)
 		}
 
 		var target map[string]any
