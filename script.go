@@ -56,8 +56,7 @@ func WithScriptAttributes(attrs ...string) ScriptPatchOption {
 }
 
 // WithScriptAttributeKVs sets script attributes from key-value pairs.
-// Returns an error via the patch if the argument count is odd (unlike the SDK
-// which panics). The error is surfaced when [ScriptPatch.Event] is called.
+// If the argument count is odd, the final unpaired key is silently dropped.
 //
 // Prefer [WithScriptAttributes] for pre-formatted attributes.
 func WithScriptAttributeKVs(kvs ...string) ScriptPatchOption {

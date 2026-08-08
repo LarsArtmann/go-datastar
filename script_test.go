@@ -86,6 +86,43 @@ func TestScriptPatch_WithAttributeKVs(t *testing.T) {
 	}
 }
 
+func TestScriptPatch_WithAttributeKVs_OddArgs(t *testing.T) {
+	t.Parallel()
+
+	// Odd number of args: the trailing unpaired key is silently dropped.
+	patch := datastar.NewScriptPatch("x",
+		datastar.WithScriptAutoRemove(false),
+		datastar.WithScriptAttributeKVs("type", "module", "async"),
+	)
+	got := patch.Event()
+
+	if !strings.Contains(got.Data, `type="module"`) {
+		t.Errorf("should contain paired attr type=%q; got %q", "module", got.Data)
+	}
+
+	if strings.Contains(got.Data, "async") {
+		t.Errorf("should NOT contain dropped unpaired key 'async'; got %q", got.Data)
+	}
+}
+
+func TestScriptPatch_WithAttributeKVs_MultiplePairs(t *testing.T) {
+	t.Parallel()
+
+	patch := datastar.NewScriptPatch("x",
+		datastar.WithScriptAutoRemove(false),
+		datastar.WithScriptAttributeKVs("type", "module", "defer", ""),
+	)
+	got := patch.Event()
+
+	if !strings.Contains(got.Data, `type="module"`) {
+		t.Errorf("should contain type=%q; got %q", "module", got.Data)
+	}
+
+	if !strings.Contains(got.Data, `defer=""`) {
+		t.Errorf("should contain defer=%q; got %q", "", got.Data)
+	}
+}
+
 func TestScriptPatch_MultipleAttributes(t *testing.T) {
 	t.Parallel()
 

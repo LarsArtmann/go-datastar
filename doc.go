@@ -45,6 +45,24 @@
 // DataStar JavaScript client. The data-line construction order, mode/namespace
 // gating, retry logic, and script wrapping all match the upstream SDK behavior.
 //
+// # Classified errors
+//
+// Every error returned by this library is a classified *errorfamily.Error
+// carrying a stable machine-readable code, a behavioral family (Rejection,
+// Transient, Orchestration), and structured context. Consumers can match by
+// code, sentinel, or family:
+//
+//	// By stable code:
+//	if errorfamily.Code(err) == datastar.CodeSignalsMarshalFailed { ... }
+//
+//	// By sentinel (errors.Is matches by code+family):
+//	if errors.Is(err, datastar.ErrEventNameRequired) { ... }
+//
+//	// By behavioral family (retryable? whose fault?):
+//	if errorfamily.IsRetryable(err) { /* backoff + retry */ }
+//
+// See the Error System section in AGENTS.md for the full catalog.
+//
 // # Companion to go-sse
 //
 // go-datastar depends on go-sse for the SSE transport layer (Stream,

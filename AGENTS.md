@@ -58,6 +58,9 @@ Every DataStar protocol message is a value that produces an `sse.Event`. This ma
 | `inbound.go`            | ReadSignals, LastEventID                                                    |
 | `script_handler.go`     | Embedded datastar.js, ScriptHandler, ScriptTag, Version                     |
 | `response.go`           | Response (fluent SSE builder), ErrorResponse, NotificationResponse          |
+| `example_test.go`       | Testable examples (Example functions with `// Output:` assertions)           |
+| `inbound_fuzz_test.go`  | Fuzz test for ReadSignals (10-seed corpus, regression-guarded)               |
+| `coverage_test.go`      | Option-application, construction error branches, stream-send failure paths   |
 
 ## Wire-Format Parity Requirements
 
@@ -74,6 +77,7 @@ These behaviors reproduce the upstream SDK exactly:
 9. Dataline keys have trailing space: `"selector "`, `"elements "`, etc.
 10. ConsoleLog/Error use `%q` for JS string quoting
 11. DispatchCustomEvent defaults: bubbles/cancelable/composed=true, selector=document
+12. HEAD requests to ScriptHandler return `200 OK` with headers but no message body (RFC 7231 §4.3.2)
 
 ## Error System
 
