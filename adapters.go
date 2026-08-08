@@ -19,7 +19,7 @@ type TemplComponent interface {
 
 // ElementsFromTempl renders a [TemplComponent] to HTML and creates an
 // [ElementsPatch] from the result.
-func ElementsFromTempl(c TemplComponent, opts ...ElementPatchOption) (ElementsPatch, error) { //nolint:erraudit // returns error interface by design — idiomatic Go, consistent with go-sse
+func ElementsFromTempl(c TemplComponent, opts ...ElementPatchOption) (ElementsPatch, error) {
 	var buf strings.Builder
 	if err := c.Render(context.Background(), &buf); err != nil {
 		return ElementsPatch{}, errorfamily.Wrapf(err, errorfamily.Orchestration,
@@ -40,9 +40,6 @@ type GoStarElementRenderer interface {
 // ElementsFromGostar renders a [GoStarElementRenderer] to HTML and creates an
 // [ElementsPatch] from the result.
 func ElementsFromGostar(
-	r GoStarElementRenderer,
-	opts ...ElementPatchOption,
-) (ElementsPatch, error) { //nolint:erraudit // returns error interface by design — idiomatic Go, consistent with go-sse
 	r GoStarElementRenderer,
 	opts ...ElementPatchOption,
 ) (ElementsPatch, error) {
