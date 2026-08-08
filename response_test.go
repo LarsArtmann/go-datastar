@@ -212,12 +212,11 @@ func TestScriptHandler_HEADReturnsNoBody(t *testing.T) {
 		t.Errorf("HEAD must not return a body; got %d bytes", headRec.Body.Len())
 	}
 
-	if got := headRec.Header().Get("Content-Length"); got == "" || got != getRec.Header().Get("Content-Length") {
-		t.Errorf(
-			"Content-Length: got %q, want %q (non-empty, matching GET)",
-			got,
-			getRec.Header().Get("Content-Length"),
-		)
+	gotLen := headRec.Header().Get("Content-Length")
+	wantLen := getRec.Header().Get("Content-Length")
+
+	if gotLen == "" || gotLen != wantLen {
+		t.Errorf("Content-Length: got %q, want %q (non-empty, matching GET)", gotLen, wantLen)
 	}
 
 	if headRec.Header().Get("ETag") == "" {
