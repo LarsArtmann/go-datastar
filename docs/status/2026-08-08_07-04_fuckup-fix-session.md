@@ -1,5 +1,13 @@
 # Status Report: Fuckup Fix Session — 2026-08-08 07:04
 
+> **Resolution note (2026-08-08):** All 4 fuckups listed in section d below
+> (F4–F7) have been **resolved**. F4: CHANGELOG entry added. F5: prior report
+> annotated. F6: `actionlint` run clean (exit 0). F7: verified no breaking
+> changes affect this CI config (checkout@v5 = Node 24 runtime only;
+> setup-go@v6 GOTOOLCHAIN=local, but go.mod `go 1.26` matches CI `go-version:
+> "1.26"`). Quality gates all green: 119 tests, 98.4% coverage, 0 lint issues.
+> This report is preserved as a point-in-time snapshot.
+
 > Resuming from the Pareto hardening execution (T01–T15) to fix the 4 fuckups
 > identified in the self-critique at `2026-08-08_06-52_pareto-hardening-execution.md`.
 
