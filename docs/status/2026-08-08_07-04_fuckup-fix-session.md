@@ -7,24 +7,24 @@
 
 ## a) FULLY DONE
 
-| Fix | What | Evidence |
-|-----|------|----------|
-| **F1** | Upgraded all 8 CI Actions references: `checkout@v4→v5`, `setup-go@v5→v6` across test/lint/erraudit/govulncheck jobs | `.github/workflows/ci.yml` — verified via grep (8/8 references updated) |
-| **F2** | Added `TestErrorResponseFromError` with 3 subtests: Rejection, Transient, non-errorfamily. Also fixed incorrect doc comment that claimed non-errorfamily defaults to Rejection/400 (actually Transient/503 per `errorfamily.Classify`) | `response_test.go:427-483`, `response.go:194-196` |
-| **F3** | Lowered `go.mod` from `go 1.26.5` to `go 1.26` to match the v0.0.2 CHANGELOG claim. Added CHANGELOG [Unreleased] entries for the fix and the doc correction | `go.mod:3`, `CHANGELOG.md:60-65` |
-| **LSP** | Investigated `wsl_v5` and `noctx` warnings on `errors_example_test.go`. Confirmed stale — `golangci-lint run ./...` reports 0 issues | golangci-lint clean output |
+| Fix     | What                                                                                                                                                                                                                                   | Evidence                                                                |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **F1**  | Upgraded all 8 CI Actions references: `checkout@v4→v5`, `setup-go@v5→v6` across test/lint/erraudit/govulncheck jobs                                                                                                                    | `.github/workflows/ci.yml` — verified via grep (8/8 references updated) |
+| **F2**  | Added `TestErrorResponseFromError` with 3 subtests: Rejection, Transient, non-errorfamily. Also fixed incorrect doc comment that claimed non-errorfamily defaults to Rejection/400 (actually Transient/503 per `errorfamily.Classify`) | `response_test.go:427-483`, `response.go:194-196`                       |
+| **F3**  | Lowered `go.mod` from `go 1.26.5` to `go 1.26` to match the v0.0.2 CHANGELOG claim. Added CHANGELOG [Unreleased] entries for the fix and the doc correction                                                                            | `go.mod:3`, `CHANGELOG.md:60-65`                                        |
+| **LSP** | Investigated `wsl_v5` and `noctx` warnings on `errors_example_test.go`. Confirmed stale — `golangci-lint run ./...` reports 0 issues                                                                                                   | golangci-lint clean output                                              |
 
 ### Quality gates — all green
 
-| Command | Result |
-|---------|--------|
-| `go build ./...` | PASS |
-| `go vet ./...` | PASS |
-| `go test ./... -race -count=1` | PASS — 119 tests (was 118) |
-| `go test ./... -cover` | 98.4% coverage (was 98.0%) |
-| `golangci-lint run ./...` | 0 issues |
-| `erraudit --severity-threshold error` | 0 violations |
-| `nix flake check` | all checks passed |
+| Command                               | Result                     |
+| ------------------------------------- | -------------------------- |
+| `go build ./...`                      | PASS                       |
+| `go vet ./...`                        | PASS                       |
+| `go test ./... -race -count=1`        | PASS — 119 tests (was 118) |
+| `go test ./... -cover`                | 98.4% coverage (was 98.0%) |
+| `golangci-lint run ./...`             | 0 issues                   |
+| `erraudit --severity-threshold error` | 0 violations               |
+| `nix flake check`                     | all checks passed          |
 
 ### What I did well
 
@@ -43,13 +43,13 @@ Nothing partially done. All 4 fixes were binary: either fixed or not.
 
 ## c) NOT STARTED (from prior session's open items)
 
-| Item | Why not started | Blocked? |
-|------|----------------|----------|
-| Tag v0.0.3 | User release cadence decision | YES — needs user input |
-| GitHub repo polish (topics, wiki) | No `gh` CLI access | YES — needs credentials |
-| `nestif` refactor of `ReadSignals` | Low priority, no bugs | NO — just deprioritized |
-| Coverage badge in README | Cosmetic | NO — just deprioritized |
-| pkg.go.dev rendering verification | Needs a published version | YES — blocked on v0.0.3 tag |
+| Item                               | Why not started               | Blocked?                    |
+| ---------------------------------- | ----------------------------- | --------------------------- |
+| Tag v0.0.3                         | User release cadence decision | YES — needs user input      |
+| GitHub repo polish (topics, wiki)  | No `gh` CLI access            | YES — needs credentials     |
+| `nestif` refactor of `ReadSignals` | Low priority, no bugs         | NO — just deprioritized     |
+| Coverage badge in README           | Cosmetic                      | NO — just deprioritized     |
+| pkg.go.dev rendering verification  | Needs a published version     | YES — blocked on v0.0.3 tag |
 
 ---
 
