@@ -153,10 +153,16 @@ in this repo's own `e2e_test.go`.
 | Export | Purpose |
 | --- | --- |
 | `Collect(t, handler)` | Spin up httptest.Server, GET, parse SSE, return decoded events |
+| `CollectPost(t, handler, jsonBody)` | POST with JSON body, parse SSE, return decoded events |
+| `CollectWithRequest(t, handler, method, body, ct)` | Custom method/body/content-type, parse SSE |
+| `CollectN(t, handler, count)` | Read exactly N events (streaming handlers), then close |
 | `ReadEvents(io.Reader)` | Parse SSE wire format from any reader |
 | `MustReadEvents(t, io.Reader)` | ReadEvents with t.Fatal on error |
 | `Event.Selector()` / `.Mode()` / `.Elements()` | Typed dataline accessors |
+| `Event.ScriptContent()` | Strip `<script>` wrapper, return inner JS source |
 | `Event.SignalsJSON()` / `.UnmarshalSignals(&v)` | Decode signals JSON |
+| `Event.DataValue(key)` | Generic dataline lookup (escape hatch) |
+| `Event.String()` | Human-readable debug representation |
 | `FilterElements(events)` / `FilterSignals(events)` | Filter by event type |
 | `RequireElements(t, evt, sel, mode, html)` | One-liner element assertion |
 | `RequireElementsContains(t, evt, sel, mode, htmlSubstr)` | Substring match (scripts) |
