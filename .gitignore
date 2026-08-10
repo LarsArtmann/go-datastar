@@ -63,6 +63,8 @@ workflow-audit-log.*
 reports/
 
 ## Go
+go.work
+go.work.sum
 /go-datastar
 
 ## Javascript and typescript
