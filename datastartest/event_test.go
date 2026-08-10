@@ -624,3 +624,58 @@ func TestEventsString_Empty(t *testing.T) {
 		t.Errorf("EventsString(nil): got %q, want %q", got, "(no events)")
 	}
 }
+
+func TestEvent_DataValue_MultiLineReturnsFirst(t *testing.T) {
+	t.Parallel()
+
+	// DataValue returns only the first match for multi-line keys.
+	// The typed accessors (Elements(), SignalsJSON()) use allValues + join.
+	evt := datastartest.Event{
+		Type: "datastar-patch-elements",
+		DataLines: []string{
+			"elements <div>first</div>",
+			"elements <div>second</div>",
+			"elements <div>third</div>",
+		},
+	}
+
+	got := evt.DataValue("elements ")
+	if got != "<div>first</div>" {
+		t.Errorf("DataValue multi-line should return first match; got %q, want %q", got, "<div>first</div>")
+	}
+
+	// Elements() rejoins all lines.
+	all := evt.Elements()
+	want := "<div>first</div>\n<div>second</div>\n<div>third</div>"
+	if all != want {
+		t.Errorf("Elements multi-line: got %q, want %q", all, want)
+	}
+}
+
+func TestEvent_ConcurrentCollect(t *testing.T) {
+	t.Parallel()
+
+	// Multiple Collect calls in parallel should not race.
+	const goroutines = 8
+
+	done := make(chan struct{})
+
+	for range goroutines {
+		go func() {
+			defer func() { done <- struct{}{} }()
+
+			handler := helperHandler(func(resp *datastar.Response) {
+				_ = resp.PatchElements("<div>concurrent</div>", datastar.WithSelector("#feed"))
+			})
+
+			events := datastartest.Collect(t, handler)
+			if len(events) != 1 {
+				t.Errorf("concurrent Collect: got %d events, want 1", len(events))
+			}
+		}()
+	}
+
+	for range goroutines {
+		<-done
+	}
+}

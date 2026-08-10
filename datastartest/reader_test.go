@@ -234,3 +234,59 @@ func TestParseSSEField_EmptyData(t *testing.T) {
 		t.Errorf("empty data: got %q, want empty", events[0].DataLines[0])
 	}
 }
+
+func TestParseSSEField_ColonOnlyLine(t *testing.T) {
+	t.Parallel()
+
+	// A line with just ":" is a comment per the SSE spec.
+	input := ":\nevent:datastar-patch-signals\ndata:{\"ok\":true}\n\n"
+
+	events, err := datastartest.ReadEvents(strings.NewReader(input))
+	if err != nil {
+		t.Fatalf("ReadEvents: %v", err)
+	}
+
+	if len(events) != 1 {
+		t.Fatalf("got %d events, want 1 (colon-only line is a comment)", len(events))
+	}
+}
+
+func TestReadEvents_CRLFLineEndings(t *testing.T) {
+	t.Parallel()
+
+	// Windows-style CRLF line endings should be handled transparently.
+	input := "event: datastar-patch-elements\r\n" +
+		"data: selector #feed\r\n" +
+		"data: elements <div>hello</div>\r\n" +
+		"\r\n"
+
+	events, err := datastartest.ReadEvents(strings.NewReader(input))
+	if err != nil {
+		t.Fatalf("ReadEvents CRLF: %v", err)
+	}
+
+	if len(events) != 1 {
+		t.Fatalf("got %d events, want 1", len(events))
+	}
+
+	if got := events[0].Selector(); got != "#feed" {
+		t.Errorf("selector with CRLF: got %q, want %q", got, "#feed")
+	}
+}
+
+func TestReadEvents_ExceedsMaxLineSize(t *testing.T) {
+	t.Parallel()
+
+	// A single data line exceeding the 1 MiB scanner buffer should error.
+	huge := strings.Repeat("x", 1024*1024+1)
+	input := "data: " + huge + "\n\n"
+
+	events, err := datastartest.ReadEvents(strings.NewReader(input))
+	if err == nil {
+		t.Fatal("expected error for line exceeding max size")
+	}
+
+	if events != nil {
+		t.Errorf("expected nil events on error; got %d", len(events))
+	}
+}
