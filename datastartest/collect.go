@@ -162,6 +162,10 @@ func CollectWithTimeout(t *testing.T, handler http.Handler, timeout time.Duratio
 // A scanner error after events have been collected is treated as a clean
 // connection close, not a failure.
 func ReadNEvents(r io.Reader, count int) ([]Event, error) {
+	if count <= 0 {
+		return nil, nil
+	}
+
 	scanner := newSSEScanner(r)
 
 	var (

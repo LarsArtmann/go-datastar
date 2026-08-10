@@ -449,3 +449,178 @@ func TestDatalineConstants_TableDriven(t *testing.T) {
 		})
 	}
 }
+
+func TestEvent_IsScript_ExecuteScript(t *testing.T) {
+	t.Parallel()
+
+	events := datastartest.Collect(t, helperHandler(func(resp *datastar.Response) {
+		_ = resp.ExecuteScript("console.log('test')")
+	}))
+
+	if !events[0].IsScript() {
+		t.Errorf("ExecuteScript event should be a script; got %q", events[0].Elements())
+	}
+}
+
+func TestEvent_IsScript_RegularElements(t *testing.T) {
+	t.Parallel()
+
+	events := datastartest.Collect(t, helperHandler(func(resp *datastar.Response) {
+		_ = resp.PatchElements("<div>not a script</div>", datastar.WithSelector("#feed"))
+	}))
+
+	if events[0].IsScript() {
+		t.Errorf("regular elements event should not be a script; got %q", events[0].Elements())
+	}
+}
+
+func TestEvent_ScriptContent_DispatchCustomEvent(t *testing.T) {
+	t.Parallel()
+
+	events := datastartest.Collect(t, helperHandler(func(resp *datastar.Response) {
+		_ = resp.DispatchCustomEvent("item-added", map[string]any{"id": 1})
+	}))
+
+	evt := events[0]
+	if !evt.IsScript() {
+		t.Fatalf("DispatchCustomEvent should produce a script patch; got %q", evt.Elements())
+	}
+
+	got := evt.ScriptContent()
+	if !strings.Contains(got, "CustomEvent") {
+		t.Errorf("ScriptContent for DispatchCustomEvent should contain CustomEvent; got %q", got)
+	}
+
+	if !strings.Contains(got, "item-added") {
+		t.Errorf("ScriptContent should contain event name; got %q", got)
+	}
+}
+
+func TestEvent_ScriptContent_Prefetch(t *testing.T) {
+	t.Parallel()
+
+	events := datastartest.Collect(t, helperHandler(func(resp *datastar.Response) {
+		_ = resp.Prefetch("https://example.com/page1")
+	}))
+
+	evt := events[0]
+	if !evt.IsScript() {
+		t.Fatalf("Prefetch should produce a script patch; got %q", evt.Elements())
+	}
+
+	got := evt.ScriptContent()
+	if !strings.Contains(got, "example.com") {
+		t.Errorf("ScriptContent for Prefetch should contain URL; got %q", got)
+	}
+}
+
+func TestEvent_ScriptContent_AttributeWithGreaterThan(t *testing.T) {
+	t.Parallel()
+
+	evt := datastartest.Event{
+		Type: "datastar-patch-elements",
+		DataLines: []string{
+			"elements <script type=\"speculationrules\" data-x=\"a>b\">console.log('inner')</script>",
+		},
+	}
+
+	got := evt.ScriptContent()
+	if !strings.Contains(got, "console.log('inner')") {
+		t.Errorf("ScriptContent should handle > in attribute value; got %q", got)
+	}
+
+	if strings.Contains(got, "b\">") {
+		t.Errorf("ScriptContent should not include attribute fragment; got %q", got)
+	}
+}
+
+func TestFindElement(t *testing.T) {
+	t.Parallel()
+
+	events := datastartest.Collect(t, helperHandler(func(resp *datastar.Response) {
+		_ = resp.PatchElements("<div>1</div>", datastar.WithSelector("#a"))
+		_ = resp.MarshalAndPatchSignals(map[string]any{"step": 1})
+		_ = resp.PatchElements("<div>2</div>", datastar.WithSelector("#b"))
+	}))
+
+	evt, ok := datastartest.FindElement(events, "#b")
+	if !ok {
+		t.Fatal("FindElement should find #b")
+	}
+
+	if got := evt.Elements(); got != "<div>2</div>" {
+		t.Errorf("FindElement #b elements: got %q, want %q", got, "<div>2</div>")
+	}
+
+	if _, ok := datastartest.FindElement(events, "#nonexistent"); ok {
+		t.Error("FindElement should return false for missing selector")
+	}
+}
+
+func TestFindSignals(t *testing.T) {
+	t.Parallel()
+
+	events := datastartest.Collect(t, helperHandler(func(resp *datastar.Response) {
+		_ = resp.PatchElements("<div>1</div>", datastar.WithSelector("#a"))
+		_ = resp.MarshalAndPatchSignals(map[string]any{"step": 1})
+	}))
+
+	evt, ok := datastartest.FindSignals(events)
+	if !ok {
+		t.Fatal("FindSignals should find a signals event")
+	}
+
+	if !evt.IsSignals() {
+		t.Errorf("FindSignals should return a signals event; got type %q", evt.Type)
+	}
+}
+
+func TestFindSignals_NotFound(t *testing.T) {
+	t.Parallel()
+
+	events := datastartest.Collect(t, helperHandler(func(resp *datastar.Response) {
+		_ = resp.PatchElements("<div>1</div>", datastar.WithSelector("#a"))
+	}))
+
+	if _, ok := datastartest.FindSignals(events); ok {
+		t.Error("FindSignals should return false when no signals events exist")
+	}
+}
+
+func TestRequireSignalsContain(t *testing.T) {
+	t.Parallel()
+
+	events := datastartest.Collect(t, helperHandler(func(resp *datastar.Response) {
+		_ = resp.MarshalAndPatchSignals(map[string]any{"count": 42, "name": "alice"})
+	}))
+
+	datastartest.RequireSignalsContain(t, events[0], "count")
+	datastartest.RequireSignalsContain(t, events[0], "name")
+}
+
+func TestEventsString(t *testing.T) {
+	t.Parallel()
+
+	events := datastartest.Collect(t, helperHandler(func(resp *datastar.Response) {
+		_ = resp.PatchElements("<div>1</div>", datastar.WithSelector("#a"))
+		_ = resp.MarshalAndPatchSignals(map[string]any{"x": 1})
+	}))
+
+	got := datastartest.EventsString(events)
+	if !strings.Contains(got, "datastar-patch-elements") {
+		t.Errorf("EventsString should contain event type; got %q", got)
+	}
+
+	if !strings.Contains(got, "datastar-patch-signals") {
+		t.Errorf("EventsString should contain second event type; got %q", got)
+	}
+}
+
+func TestEventsString_Empty(t *testing.T) {
+	t.Parallel()
+
+	got := datastartest.EventsString(nil)
+	if got != "(no events)" {
+		t.Errorf("EventsString(nil): got %q, want %q", got, "(no events)")
+	}
+}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/larsartmann/go-datastar"
 	"github.com/larsartmann/go-datastar/datastartest"
@@ -128,5 +129,69 @@ func TestReadEvents_FailingReader(t *testing.T) {
 
 	if len(events) != 0 {
 		t.Errorf("failing reader should return 0 events; got %d", len(events))
+	}
+}
+
+func TestCollectN_ZeroCount(t *testing.T) {
+	t.Parallel()
+
+	handler := helperHandler(func(resp *datastar.Response) {
+		_ = resp.PatchElements("<div>1</div>", datastar.WithSelector("#a"))
+	})
+
+	events := datastartest.CollectN(t, handler, 0)
+
+	if len(events) != 0 {
+		t.Errorf("CollectN(0): got %d events, want 0", len(events))
+	}
+}
+
+func TestCollectN_FewerThanRequested(t *testing.T) {
+	t.Parallel()
+
+	handler := helperHandler(func(resp *datastar.Response) {
+		_ = resp.PatchElements("<div>1</div>", datastar.WithSelector("#a"))
+		_ = resp.PatchElements("<div>2</div>", datastar.WithSelector("#b"))
+	})
+
+	events := datastartest.CollectN(t, handler, 10)
+
+	if len(events) != 2 {
+		t.Errorf("CollectN(10) with 2-event handler: got %d events, want 2", len(events))
+	}
+}
+
+func TestCollectWithTimeout(t *testing.T) {
+	t.Parallel()
+
+	handler := helperHandler(func(resp *datastar.Response) {
+		_ = resp.PatchElements("<div>hi</div>", datastar.WithSelector("#feed"))
+	})
+
+	events := datastartest.CollectWithTimeout(t, handler, 5*time.Second)
+	datastartest.RequireEventCount(t, events, 1)
+
+	if got := events[0].Elements(); got != "<div>hi</div>" {
+		t.Errorf("elements: got %q, want %q", got, "<div>hi</div>")
+	}
+}
+
+func TestCollectWithTimeout_StreamingReturnsPartial(t *testing.T) {
+	t.Parallel()
+
+	handler := http.HandlerFunc(func(writer http.ResponseWriter, r *http.Request) {
+		stream := sse.NewStream(writer, r)
+		defer func() { _ = stream.Close() }()
+
+		resp := datastar.NewResponse(stream)
+		_ = resp.PatchElements("<div>1</div>", datastar.WithSelector("#a"))
+
+		<-r.Context().Done()
+	})
+
+	events := datastartest.CollectWithTimeout(t, handler, 200*time.Millisecond)
+
+	if len(events) != 1 {
+		t.Errorf("expected 1 event before timeout; got %d", len(events))
 	}
 }
