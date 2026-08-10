@@ -4,31 +4,34 @@ DataStar protocol library for Go. Patches as first-class values producing `sse.E
 
 ## Module Structure
 
-Two Go modules in a go.work workspace:
+Three Go modules in a go.work workspace:
 
-| Module | Path | Purpose |
-| --- | --- | --- |
-| Root | `github.com/larsartmann/go-datastar` | Protocol library |
-| datastartest | `github.com/larsartmann/go-datastar/datastartest` | Consumer E2E test helpers |
+| Module | Path | Purpose | Dependencies |
+| --- | --- | --- | --- |
+| Root | `github.com/larsartmann/go-datastar` | Protocol library | go-sse, go-error-family |
+| static | `github.com/larsartmann/go-datastar/static` | Embedded DataStar JS client bundle | zero (stdlib only) |
+| datastartest | `github.com/larsartmann/go-datastar/datastartest` | Consumer E2E test helpers | go-datastar, go-sse |
 
-Mutual replace directives: root go.mod replaces `datastartest => ./datastartest`,
-datastartest go.mod replaces `go-datastar => ..`. Both resolve locally for
-`GOWORK=off` builds (CI, Nix, consumers).
+Replace directives: root go.mod replaces `datastartest => ./datastartest` and
+`static => ./static`; datastartest go.mod replaces `go-datastar => ..` and
+`static => ../static`. All resolve locally for `GOWORK=off` builds (CI, Nix,
+consumers).
 
 ## Commands
 
 ```bash
-# Workspace mode (default, uses go.work) — covers both modules:
-GOEXPERIMENT=jsonv2 go test ./... ./datastartest/... -race -count=1
-GOEXPERIMENT=jsonv2 go vet ./... ./datastartest/...
-GOEXPERIMENT=jsonv2 golangci-lint run ./... ./datastartest/...
+# Workspace mode (default, uses go.work) — covers all three modules:
+GOEXPERIMENT=jsonv2 go test ./... ./datastartest/... ./static/... -race -count=1
+GOEXPERIMENT=jsonv2 go vet ./... ./datastartest/... ./static/...
+GOEXPERIMENT=jsonv2 golangci-lint run ./... ./datastartest/... ./static/...
 
 # Isolation mode (GOWORK=off, per-module) — verifies replace directives:
 GOWORK=off GOEXPERIMENT=jsonv2 go test ./...                      # root only
 GOWORK=off GOEXPERIMENT=jsonv2 go test ./...                      # datastartest (run from datastartest/)
+GOWORK=off GOEXPERIMENT=jsonv2 go test ./...                      # static (run from static/)
 
-# Error audit (both modules):
-GOEXPERIMENT=jsonv2 erraudit ./... ./datastartest/... --type-aware --enforce-go-error-family --no-suppress
+# Error audit (all modules):
+GOEXPERIMENT=jsonv2 erraudit ./... ./datastartest/... ./static/... --type-aware --enforce-go-error-family --no-suppress
 ```
 
 **`GOEXPERIMENT=jsonv2` is required** (transitively via go-branded-id through go-sse).
@@ -77,7 +80,7 @@ Every DataStar protocol message is a value that produces an `sse.Event`. This ma
 | `http.go`                | GetSSE/PostSSE/PutSSE/PatchSSE/DeleteSSE                                                   |
 | `inbound.go`             | ReadSignals, LastEventID                                                                   |
 | `script_handler.go`      | ScriptHandler, ScriptTag, Version (HTTP serving of the `static` asset bundle)              |
-| `static/`                | Dedicated asset package: `//go:embed datastar.js`, `Bytes()`, `Version`                    |
+| `static/`                | **Separate Go module** (zero deps). `//go:embed datastar.js`, `Bytes()`, `Version`         |
 | `response.go`            | Response (fluent SSE builder), ErrorResponse, ErrorResponseFromError, NotificationResponse |
 | `example_test.go`        | Testable examples (Example functions with `// Output:` assertions)                         |
 | `inbound_fuzz_test.go`   | Fuzz test for ReadSignals (10-seed corpus, regression-guarded)                             |

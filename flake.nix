@@ -121,43 +121,43 @@
           apps = {
             test = mkApp "test" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              go test ./... ./datastartest/... -count=1 "$@"
+              go test ./... ./datastartest/... ./static/... -count=1 "$@"
             '';
 
             test-race = mkApp "test-race" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              go test ./... ./datastartest/... -race -count=1 "$@"
+              go test ./... ./datastartest/... ./static/... -race -count=1 "$@"
             '';
 
             build = mkApp "build" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              go build ./... ./datastartest/...
+              go build ./... ./datastartest/... ./static/...
             '';
 
             vet = mkApp "vet" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              go vet ./... ./datastartest/...
+              go vet ./... ./datastartest/... ./static/...
             '';
 
             lint = mkApp "lint" [ pkgs.golangci-lint ] ''
               export GOEXPERIMENT=jsonv2
-              golangci-lint run ./... ./datastartest/...
+              golangci-lint run ./... ./datastartest/... ./static/...
             '';
 
             erraudit = mkApp "erraudit" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
               go install github.com/larsartmann/erraudit/cmd/erraudit@v0.3.0
-              "$HOME/go/bin/erraudit" ./... ./datastartest/... --type-aware --enforce-go-error-family --severity-threshold error
+              "$HOME/go/bin/erraudit" ./... ./datastartest/... ./static/... --type-aware --enforce-go-error-family --severity-threshold error
             '';
 
             govulncheck = mkApp "govulncheck" [ pkgs.govulncheck goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              govulncheck ./... ./datastartest/...
+              govulncheck ./... ./datastartest/... ./static/...
             '';
 
             coverage = mkApp "coverage" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              go test ./... ./datastartest/... -coverprofile=coverage.out -covermode=atomic "$@"
+              go test ./... ./datastartest/... ./static/... -coverprofile=coverage.out -covermode=atomic "$@"
               go tool cover -func=coverage.out
             '';
           };
