@@ -388,13 +388,13 @@ func TestEvent_RetryEventIDRoundTrip(t *testing.T) {
 		t.Errorf("Retry: got %d, want 5000", evt.Retry)
 	}
 
-	s := evt.String()
-	if !strings.Contains(s, "id=evt-42") {
-		t.Errorf("String should contain event ID; got %q", s)
+	desc := evt.String()
+	if !strings.Contains(desc, "id=evt-42") {
+		t.Errorf("String should contain event ID; got %q", desc)
 	}
 
-	if !strings.Contains(s, "retry=5000") {
-		t.Errorf("String should contain retry; got %q", s)
+	if !strings.Contains(desc, "retry=5000") {
+		t.Errorf("String should contain retry; got %q", desc)
 	}
 }
 

@@ -14,17 +14,18 @@ import (
 func TestCollectPost_JSONSignals(t *testing.T) {
 	t.Parallel()
 
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := http.HandlerFunc(func(writer http.ResponseWriter, r *http.Request) {
 		var signals struct {
 			Name string `json:"name"`
 		}
 
 		if err := datastar.ReadSignals(r, &signals); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+
 			return
 		}
 
-		stream := sse.NewStream(w, r)
+		stream := sse.NewStream(writer, r)
 		defer func() { _ = stream.Close() }()
 
 		resp := datastar.NewResponse(stream)
@@ -42,13 +43,14 @@ func TestCollectPost_JSONSignals(t *testing.T) {
 func TestCollectWithRequest_PutWithBody(t *testing.T) {
 	t.Parallel()
 
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := http.HandlerFunc(func(writer http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPut {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			http.Error(writer, "method not allowed", http.StatusMethodNotAllowed)
+
 			return
 		}
 
-		stream := sse.NewStream(w, r)
+		stream := sse.NewStream(writer, r)
 		defer func() { _ = stream.Close() }()
 
 		resp := datastar.NewResponse(stream)
@@ -68,12 +70,13 @@ func TestCollectN_StreamingHandler(t *testing.T) {
 	t.Parallel()
 
 	totalEvents := 10
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		stream := sse.NewStream(w, r)
+
+	handler := http.HandlerFunc(func(writer http.ResponseWriter, r *http.Request) {
+		stream := sse.NewStream(writer, r)
 		defer func() { _ = stream.Close() }()
 
 		resp := datastar.NewResponse(stream)
-		for i := 0; i < totalEvents; i++ {
+		for i := range totalEvents {
 			_ = resp.PatchElements(
 				fmt.Sprintf("<div>%d</div>", i),
 				datastar.WithSelector("#feed"),
@@ -107,10 +110,12 @@ func TestCollectN_AllEvents(t *testing.T) {
 	datastartest.RequireEventCount(t, events, 2)
 }
 
+var errTestReadFailure = errors.New("test: simulated read failure")
+
 type failingReader struct{}
 
 func (failingReader) Read(p []byte) (int, error) {
-	return 0, errors.New("simulated read failure")
+	return 0, errTestReadFailure
 }
 
 func TestReadEvents_FailingReader(t *testing.T) {

@@ -93,7 +93,7 @@ func CollectPost(t *testing.T, handler http.Handler, jsonBody string) []Event {
 // streaming handlers that keep the connection open (e.g., broadcasting through
 // a Broadcaster). Unlike [Collect], this does not wait for the handler to
 // finish — it returns as soon as n events have been received.
-func CollectN(t *testing.T, handler http.Handler, n int) []Event {
+func CollectN(t *testing.T, handler http.Handler, count int) []Event {
 	t.Helper()
 
 	srv := httptest.NewServer(handler)
@@ -111,9 +111,9 @@ func CollectN(t *testing.T, handler http.Handler, n int) []Event {
 
 	defer func() { _ = resp.Body.Close() }()
 
-	events, err := readNEvents(resp.Body, n)
+	events, err := readNEvents(resp.Body, count)
 	if err != nil {
-		t.Fatalf("read %d events: %v", n, err)
+		t.Fatalf("read %d events: %v", count, err)
 	}
 
 	return events
@@ -123,7 +123,7 @@ func CollectN(t *testing.T, handler http.Handler, n int) []Event {
 // been dispatched, without waiting for EOF. This is used by CollectN for
 // streaming handlers. A scanner error after events have been collected is
 // treated as a clean connection close, not a failure.
-func readNEvents(r io.Reader, n int) ([]Event, error) {
+func readNEvents(r io.Reader, count int) ([]Event, error) {
 	scanner := bufio.NewScanner(r)
 	scanner.Buffer(make([]byte, 0, initialLineCap), maxLineBytes)
 
@@ -142,7 +142,7 @@ func readNEvents(r io.Reader, n int) ([]Event, error) {
 				current = Event{}
 				started = false
 
-				if len(events) >= n {
+				if len(events) >= count {
 					return events, nil
 				}
 			}
