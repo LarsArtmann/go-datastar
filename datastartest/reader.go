@@ -26,8 +26,7 @@ const (
 // key prefixes intact (e.g., "selector #feed"), so typed accessors like
 // [Event.Selector] and [Event.Elements] can decode them.
 func ReadEvents(r io.Reader) ([]Event, error) {
-	scanner := bufio.NewScanner(r)
-	scanner.Buffer(make([]byte, 0, initialLineCap), maxLineBytes)
+	scanner := newSSEScanner(r)
 
 	var (
 		events  []Event
@@ -96,6 +95,16 @@ func applySSELine(evt *Event, line string) {
 			evt.Retry = uint(ms)
 		}
 	}
+}
+
+// newSSEScanner creates a bufio.Scanner configured for SSE wire-format parsing
+// with the package's standard buffer sizes. Shared by ReadEvents and readNEvents
+// to keep scanner setup in one place.
+func newSSEScanner(r io.Reader) *bufio.Scanner {
+	scanner := bufio.NewScanner(r)
+	scanner.Buffer(make([]byte, 0, initialLineCap), maxLineBytes)
+
+	return scanner
 }
 
 // parseSSEField splits an SSE line into field name and value. Per the SSE spec,

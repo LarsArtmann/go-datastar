@@ -1,7 +1,6 @@
 package datastartest
 
 import (
-	"bufio"
 	"context"
 	"fmt"
 	"io"
@@ -124,8 +123,7 @@ func CollectN(t *testing.T, handler http.Handler, count int) []Event {
 // streaming handlers. A scanner error after events have been collected is
 // treated as a clean connection close, not a failure.
 func readNEvents(r io.Reader, count int) ([]Event, error) {
-	scanner := bufio.NewScanner(r)
-	scanner.Buffer(make([]byte, 0, initialLineCap), maxLineBytes)
+	scanner := newSSEScanner(r)
 
 	var (
 		events  []Event

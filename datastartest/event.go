@@ -110,10 +110,12 @@ func (e Event) ScriptContent() string {
 		return ""
 	}
 
-	_, content, found := strings.Cut(afterTag, ">")
-	if !found {
+	idx := indexTagEnd(afterTag)
+	if idx < 0 {
 		return ""
 	}
+
+	content := afterTag[idx+1:]
 
 	if inner, ok := strings.CutSuffix(content, "</script>"); ok {
 		return inner
@@ -141,6 +143,37 @@ func (e Event) String() string {
 	}
 
 	return fmt.Sprintf("Event{type=%s datalines=%d}", e.Type, len(e.DataLines))
+}
+
+// indexTagEnd finds the index of the closing '>' of an HTML opening tag,
+// skipping '>' characters that appear inside quoted attribute values.
+// Returns -1 if no closing '>' is found.
+func indexTagEnd(s string) int {
+	var quote byte
+
+	for i := range len(s) {
+		c := s[i]
+
+		if quote != 0 {
+			if c == quote {
+				quote = 0
+			}
+
+			continue
+		}
+
+		if c == '"' || c == '\'' {
+			quote = c
+
+			continue
+		}
+
+		if c == '>' {
+			return i
+		}
+	}
+
+	return -1
 }
 
 // firstValue returns the value after the first dataline matching the given key
