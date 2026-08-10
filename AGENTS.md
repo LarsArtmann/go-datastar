@@ -92,6 +92,7 @@ Every DataStar protocol message is a value that produces an `sse.Event`. This ma
 | `coverage_test.go`       | Option-application, construction error branches, stream-send failure paths                 |
 | `errors_example_test.go` | Example functions showing all three error-handling patterns                |
 | `e2e_test.go`             | `TestE2E_SSEHeaders` — transport header verification (go-sse owned). The full DataStar wire-format E2E test was relocated to `datastartest/e2e_test.go` |
+| `module_boundary_test.go` | Regression guard: asserts root go.mod never requires datastartest (circular dependency prevention) |
 | `datastartest/`           | **Separate Go module** (`go.work` workspace). Consumer E2E test helpers: SSE parsing, DataStar decoding, Collect, CollectPost, CollectN, CollectWithTimeout, FindElement, FindSignals, assertions, fuzz test. Also contains `e2e_test.go` (dogfood integration test) |
 
 ## Wire-Format Parity Requirements
