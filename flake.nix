@@ -109,7 +109,6 @@
               pkgs.templ
             ];
 
-            GOWORK = "off";
             GOTOOLCHAIN = "local";
             GOEXPERIMENT = "jsonv2";
 
@@ -122,45 +121,43 @@
           apps = {
             test = mkApp "test" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              go test ./... -count=1 "$@"
+              go test ./... ./datastartest/... -count=1 "$@"
             '';
 
             test-race = mkApp "test-race" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              go test ./... -race -count=1 "$@"
+              go test ./... ./datastartest/... -race -count=1 "$@"
             '';
 
             build = mkApp "build" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              go build ./...
+              go build ./... ./datastartest/...
             '';
 
             vet = mkApp "vet" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              go vet ./...
+              go vet ./... ./datastartest/...
             '';
 
             lint = mkApp "lint" [ pkgs.golangci-lint ] ''
               export GOEXPERIMENT=jsonv2
-              golangci-lint run ./...
+              golangci-lint run ./... ./datastartest/...
             '';
 
             erraudit = mkApp "erraudit" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              export GOWORK=off
               go install github.com/larsartmann/erraudit/cmd/erraudit@v0.3.0
-              "$HOME/go/bin/erraudit" ./... --type-aware --enforce-go-error-family --severity-threshold error
+              "$HOME/go/bin/erraudit" ./... ./datastartest/... --type-aware --enforce-go-error-family --severity-threshold error
             '';
 
             govulncheck = mkApp "govulncheck" [ pkgs.govulncheck goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              export GOWORK=off
-              govulncheck ./...
+              govulncheck ./... ./datastartest/...
             '';
 
             coverage = mkApp "coverage" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              go test ./... -coverprofile=coverage.out -covermode=atomic "$@"
+              go test ./... ./datastartest/... -coverprofile=coverage.out -covermode=atomic "$@"
               go tool cover -func=coverage.out
             '';
           };
