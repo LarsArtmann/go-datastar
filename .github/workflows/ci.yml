@@ -41,8 +41,17 @@ jobs:
         run: |
           cp go.work go.work.bak
           go work sync
-          diff go.work go.work.bak && echo "go.work is idempotent" || { echo "::error::go.work changed after 'go work sync' — run locally and commit"; rm go.work.bak; exit 1; }
-          rm go.work.bak
+          diff go.work go.work.bak; rc=$?
+          rm -f go.work.bak
+          if [ "$rc" -eq 0 ]; then
+            echo "go.work is idempotent"
+          elif [ "$rc" -eq 1 ]; then
+            echo "::error::go.work changed after 'go work sync' — run locally and commit"
+            exit 1
+          else
+            echo "::error::diff exited with code $rc (trouble)"
+            exit 1
+          fi
 
       - name: Replace directive audit
         run: |

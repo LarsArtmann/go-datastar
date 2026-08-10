@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `GOWORK=off go test` in each module directory (`.`, `./datastartest`,
   `./static`) to verify replace directives are sufficient for standalone
   builds.
+- **Workspace sync idempotency check** — CI copies `go.work`, runs `go work sync`,
+  and fails if the file changed, catching stale workspace state before merge.
+- **Replace directive audit** — CI greps all `go.mod` files for absolute paths in
+  replace directives, enforcing relative-path-only conventions.
 
 ## [0.1.0] - 2026-08-10
 

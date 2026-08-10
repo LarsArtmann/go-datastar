@@ -33,6 +33,10 @@ GOWORK=off GOEXPERIMENT=jsonv2 go test ./...                      # static (run 
 
 # Error audit (all modules):
 GOEXPERIMENT=jsonv2 erraudit ./... ./datastartest/... ./static/... --type-aware --enforce-go-error-family --no-suppress
+
+# CI also enforces (run locally to pre-empt CI failures):
+GOEXPERIMENT=jsonv2 go work sync  # go.work must not change after sync (idempotency)
+grep -rn 'replace.*=>/' go.mod datastartest/go.mod static/go.mod  # must find nothing (relative paths only)
 ```
 
 **`GOEXPERIMENT=jsonv2` is required** (transitively via go-branded-id through go-sse).
