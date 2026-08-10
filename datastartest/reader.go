@@ -75,6 +75,19 @@ func MustReadEvents(t *testing.T, r io.Reader) []Event {
 	return events
 }
 
+// MustReadNEvents is like [ReadNEvents] but calls t.Fatal on error.
+// Use this with streaming SSE connections that do not close on their own.
+func MustReadNEvents(t *testing.T, r io.Reader, count int) []Event {
+	t.Helper()
+
+	events, err := ReadNEvents(r, count)
+	if err != nil {
+		t.Fatalf("read %d SSE events: %v", count, err)
+	}
+
+	return events
+}
+
 // applySSELine parses a single SSE wire line and folds it into the event.
 func applySSELine(evt *Event, line string) {
 	if strings.HasPrefix(line, ":") {

@@ -95,3 +95,23 @@ func RequireSignals(t *testing.T, evt Event, wantJSON string) {
 		t.Errorf("signals JSON: got %q, want %q", got, wantJSON)
 	}
 }
+
+// RequireSignalsContain fails the test unless evt is a patch-signals event whose
+// JSON payload contains key as a top-level property. This is a convenience for
+// checking individual signal keys without decoding the full payload.
+func RequireSignalsContain(t *testing.T, evt Event, key string) {
+	t.Helper()
+
+	if evt.Type != string(datastar.EventTypePatchSignals) {
+		t.Fatalf("expected patch-signals event, got %q", evt.Type)
+
+		return
+	}
+
+	jsonStr := string(evt.SignalsJSON())
+	needle := `"` + key + `":`
+
+	if !strings.Contains(jsonStr, needle) {
+		t.Errorf("signals JSON should contain key %q; got %s", key, jsonStr)
+	}
+}

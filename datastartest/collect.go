@@ -110,7 +110,7 @@ func CollectN(t *testing.T, handler http.Handler, count int) []Event {
 
 	defer func() { _ = resp.Body.Close() }()
 
-	events, err := readNEvents(resp.Body, count)
+	events, err := ReadNEvents(resp.Body, count)
 	if err != nil {
 		t.Fatalf("read %d events: %v", count, err)
 	}
@@ -118,11 +118,14 @@ func CollectN(t *testing.T, handler http.Handler, count int) []Event {
 	return events
 }
 
-// readNEvents reads up to n events from r. Returns as soon as n events have
-// been dispatched, without waiting for EOF. This is used by CollectN for
-// streaming handlers. A scanner error after events have been collected is
-// treated as a clean connection close, not a failure.
-func readNEvents(r io.Reader, count int) ([]Event, error) {
+// ReadNEvents reads up to n events from r. Returns as soon as n events have
+// been dispatched, without waiting for EOF. This is the streaming-reader
+// counterpart to [ReadEvents]: use it with a live SSE connection body that does
+// not close on its own (e.g., a handler broadcasting through a Broadcaster).
+//
+// A scanner error after events have been collected is treated as a clean
+// connection close, not a failure.
+func ReadNEvents(r io.Reader, count int) ([]Event, error) {
 	scanner := newSSEScanner(r)
 
 	var (

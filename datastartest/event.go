@@ -30,6 +30,14 @@ func (e Event) IsElements() bool { return e.Type == string(datastar.EventTypePat
 // IsSignals reports whether the event type is datastar-patch-signals.
 func (e Event) IsSignals() bool { return e.Type == string(datastar.EventTypePatchSignals) }
 
+// IsScript reports whether the event is a patch-elements event whose HTML
+// content starts with a <script> tag. Script patches (ExecuteScript, Redirect,
+// ConsoleLog, ConsoleError, DispatchCustomEvent, ReplaceURL, Prefetch) all
+// produce elements patches wrapping JavaScript in <script> tags.
+func (e Event) IsScript() bool {
+	return e.IsElements() && strings.HasPrefix(e.Elements(), "<script")
+}
+
 // Selector returns the CSS selector from a patch-elements event.
 // Returns empty if not present (the client defaults to the merging element).
 func (e Event) Selector() string {
@@ -73,8 +81,16 @@ func (e Event) SignalsJSON() []byte {
 // UnmarshalSignals decodes the signals JSON payload from a patch-signals event
 // into the target. The target must be a pointer.
 func (e Event) UnmarshalSignals(target any) error {
-	if err := json.Unmarshal(e.SignalsJSON(), target); err != nil {
-		return fmt.Errorf("unmarshal signals JSON: %w", err)
+	raw := e.SignalsJSON()
+
+	if err := json.Unmarshal(raw, target); err != nil {
+		preview := string(raw)
+
+		if len(preview) > 200 {
+			preview = preview[:200] + "..."
+		}
+
+		return fmt.Errorf("unmarshal signals JSON %q: %w", preview, err)
 	}
 
 	return nil
@@ -143,6 +159,27 @@ func (e Event) String() string {
 	}
 
 	return fmt.Sprintf("Event{type=%s datalines=%d}", e.Type, len(e.DataLines))
+}
+
+// EventsString returns a multi-line debug representation of an event slice,
+// with one Event per line. Useful for logging test failures involving
+// multiple events.
+func EventsString(events []Event) string {
+	if len(events) == 0 {
+		return "(no events)"
+	}
+
+	var b strings.Builder
+
+	for i, evt := range events {
+		if i > 0 {
+			b.WriteString("\n")
+		}
+
+		b.WriteString(evt.String())
+	}
+
+	return b.String()
 }
 
 // indexTagEnd finds the index of the closing '>' of an HTML opening tag,
