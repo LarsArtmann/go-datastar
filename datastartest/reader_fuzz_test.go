@@ -47,7 +47,9 @@ func BenchmarkReadEvents(b *testing.B) {
 		builder.WriteString("data: elements <div class=\"item\">" + idx + "</div>\n\n")
 
 		builder.WriteString("event: datastar-patch-signals\n")
-		builder.WriteString("data: signals {\"count\":" + idx + ",\"name\":\"item-" + idx + "\"}\n\n")
+		builder.WriteString(
+			"data: signals {\"count\":" + idx + ",\"name\":\"item-" + idx + "\"}\n\n",
+		)
 	}
 
 	input := builder.String()

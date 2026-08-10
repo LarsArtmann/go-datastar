@@ -85,7 +85,13 @@ func CollectWithRequest(
 func CollectPost(t *testing.T, handler http.Handler, jsonBody string) []Event {
 	t.Helper()
 
-	return CollectWithRequest(t, handler, http.MethodPost, strings.NewReader(jsonBody), "application/json")
+	return CollectWithRequest(
+		t,
+		handler,
+		http.MethodPost,
+		strings.NewReader(jsonBody),
+		"application/json",
+	)
 }
 
 // CollectN starts a test server, sends a GET request, and reads exactly n

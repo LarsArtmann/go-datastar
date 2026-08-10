@@ -641,7 +641,11 @@ func TestEvent_DataValue_MultiLineReturnsFirst(t *testing.T) {
 
 	got := evt.DataValue("elements ")
 	if got != "<div>first</div>" {
-		t.Errorf("DataValue multi-line should return first match; got %q, want %q", got, "<div>first</div>")
+		t.Errorf(
+			"DataValue multi-line should return first match; got %q, want %q",
+			got,
+			"<div>first</div>",
+		)
 	}
 
 	// Elements() rejoins all lines.
