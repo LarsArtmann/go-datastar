@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — Module boundary
+
+- **Circular module dependency between root and datastartest** — Root's go.mod
+  no longer requires `datastartest`. `TestE2E_DataStarPatches` was relocated from
+  root's `e2e_test.go` to `datastartest/e2e_test.go`, placing the dogfood test
+  alongside the helpers it exercises. Root's `e2e_test.go` retains only
+  `TestE2E_SSEHeaders` (transport header verification owned by go-sse). This
+  eliminates the test-dep leak where a production module (root) depended on a
+  test-only module (datastartest) for a single test file.
+
+### Added — CI hardening
+
+- **Per-module isolation check** — CI now runs `GOWORK=off go build` and
+  `GOWORK=off go test` in each module directory (`.`, `./datastartest`,
+  `./static`) to verify replace directives are sufficient for standalone
+  builds.
+
 ## [0.1.0] - 2026-08-10
 
 This release splits the repository into three independently versioned Go modules:

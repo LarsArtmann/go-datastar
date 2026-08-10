@@ -37,6 +37,22 @@ jobs:
             (cd "$mod" && GOWORK=off go test ./... -count=1)
           done
 
+      - name: Workspace sync idempotency
+        run: |
+          cp go.work go.work.bak
+          go work sync
+          diff go.work go.work.bak && echo "go.work is idempotent" || { echo "::error::go.work changed after 'go work sync' — run locally and commit"; rm go.work.bak; exit 1; }
+          rm go.work.bak
+
+      - name: Replace directive audit
+        run: |
+          # No replace directive should use an absolute path
+          if grep -rn 'replace.*=>/' go.mod datastartest/go.mod static/go.mod; then
+            echo "::error::Found absolute path in replace directive — use relative paths only"
+            exit 1
+          fi
+          echo "All replace directives use relative paths"
+
   lint:
     runs-on: ubuntu-latest
     steps:

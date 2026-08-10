@@ -12,10 +12,11 @@ Three Go modules in a go.work workspace:
 | static | `github.com/larsartmann/go-datastar/static` | Embedded DataStar JS client bundle | zero (stdlib only) |
 | datastartest | `github.com/larsartmann/go-datastar/datastartest` | Consumer E2E test helpers | go-datastar, go-sse |
 
-Replace directives: root go.mod replaces `datastartest => ./datastartest` and
-`static => ./static`; datastartest go.mod replaces `go-datastar => ..` and
-`static => ../static`. All resolve locally for `GOWORK=off` builds (CI, Nix,
-consumers).
+Replace directives: root go.mod replaces `static => ./static`; datastartest
+go.mod replaces `go-datastar => ..` and `static => ../static`. All resolve locally
+for `GOWORK=off` builds (CI, Nix, consumers). Root no longer depends on
+datastartest — the E2E test that used datastartest helpers was relocated to
+`datastartest/e2e_test.go` to break a circular module dependency.
 
 ## Commands
 
@@ -86,7 +87,8 @@ Every DataStar protocol message is a value that produces an `sse.Event`. This ma
 | `inbound_fuzz_test.go`   | Fuzz test for ReadSignals (10-seed corpus, regression-guarded)                             |
 | `coverage_test.go`       | Option-application, construction error branches, stream-send failure paths                 |
 | `errors_example_test.go` | Example functions showing all three error-handling patterns                |
-| `datastartest/`           | **Separate Go module** (`go.work` workspace). Consumer E2E test helpers: SSE parsing, DataStar decoding, Collect, CollectPost, CollectN, CollectWithTimeout, FindElement, FindSignals, assertions, fuzz test |
+| `e2e_test.go`             | `TestE2E_SSEHeaders` — transport header verification (go-sse owned). The full DataStar wire-format E2E test was relocated to `datastartest/e2e_test.go` |
+| `datastartest/`           | **Separate Go module** (`go.work` workspace). Consumer E2E test helpers: SSE parsing, DataStar decoding, Collect, CollectPost, CollectN, CollectWithTimeout, FindElement, FindSignals, assertions, fuzz test. Also contains `e2e_test.go` (dogfood integration test) |
 
 ## Wire-Format Parity Requirements
 
@@ -168,8 +170,11 @@ No CQRS, no event bus, no domain opinions. It is a pure protocol layer. Consumer
 
 The `datastartest` subpackage gives consumers reusable helpers for E2E testing
 their DataStar handlers without hand-rolling SSE parsing or DataStar dataline
-decoding. It replaces ~260 lines of private parsing code that previously lived
-in this repo's own `e2e_test.go`.
+decoding. The full wire-format E2E test (`TestE2E_DataStarPatches`) lives in
+`datastartest/e2e_test.go` — it dogfoods the helpers against real HTTP server
+output. Root's `e2e_test.go` retains only `TestE2E_SSEHeaders` (transport-level
+header checks owned by go-sse). This separation breaks what was otherwise a
+circular module dependency: root must never require datastartest in its go.mod.
 
 ### API surface
 
