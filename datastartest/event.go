@@ -86,8 +86,10 @@ func (e Event) UnmarshalSignals(target any) error {
 	if err := json.Unmarshal(raw, target); err != nil {
 		preview := string(raw)
 
-		if len(preview) > 200 {
-			preview = preview[:200] + "..."
+		const maxPreviewLen = 200
+
+		if len(preview) > maxPreviewLen {
+			preview = preview[:maxPreviewLen] + "..."
 		}
 
 		return fmt.Errorf("unmarshal signals JSON %q: %w", preview, err)
@@ -189,23 +191,23 @@ func indexTagEnd(s string) int {
 	var quote byte
 
 	for i := range len(s) {
-		c := s[i]
+		char := s[i]
 
 		if quote != 0 {
-			if c == quote {
+			if char == quote {
 				quote = 0
 			}
 
 			continue
 		}
 
-		if c == '"' || c == '\'' {
-			quote = c
+		if char == '"' || char == '\'' {
+			quote = char
 
 			continue
 		}
 
-		if c == '>' {
+		if char == '>' {
 			return i
 		}
 	}

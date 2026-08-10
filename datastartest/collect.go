@@ -146,7 +146,10 @@ func CollectWithTimeout(t *testing.T, handler http.Handler, timeout time.Duratio
 
 	defer func() { _ = resp.Body.Close() }()
 
-	events, err := ReadNEvents(resp.Body, 1<<30)
+	// A large count so ReadNEvents reads everything; the timeout enforces the deadline.
+	const maxEvents = 1 << 30
+
+	events, err := ReadNEvents(resp.Body, maxEvents)
 	if err != nil {
 		t.Fatalf("read events within %v: %v", timeout, err)
 	}

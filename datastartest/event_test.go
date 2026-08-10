@@ -647,6 +647,7 @@ func TestEvent_DataValue_MultiLineReturnsFirst(t *testing.T) {
 	// Elements() rejoins all lines.
 	all := evt.Elements()
 	want := "<div>first</div>\n<div>second</div>\n<div>third</div>"
+
 	if all != want {
 		t.Errorf("Elements multi-line: got %q, want %q", all, want)
 	}
