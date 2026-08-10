@@ -88,3 +88,61 @@ func ExampleRequireElements() {
 	fmt.Println("Assert helpers: RequireElements, RequireElementsContains, RequireSignals")
 	// Output: Assert helpers: RequireElements, RequireElementsContains, RequireSignals
 }
+
+// ExampleEvent_scriptContent demonstrates extracting JavaScript from a script patch.
+// Script patches (ExecuteScript, Redirect, ConsoleLog, etc.) wrap JS in <script> tags
+// inside a patch-elements event. ScriptContent strips the wrapper and returns the JS.
+func ExampleEvent_scriptContent() {
+	sseOutput := "event: datastar-patch-elements\n" +
+		"data: selector body\n" +
+		"data: mode append\n" +
+		"data: elements <script>console.log('hello')</script>\n\n"
+
+	events, _ := datastartest.ReadEvents(strings.NewReader(sseOutput))
+
+	fmt.Println(events[0].IsScript())
+	fmt.Println(events[0].ScriptContent())
+	// Output:
+	// true
+	// console.log('hello')
+}
+
+// ExampleFindElement demonstrates finding a specific elements patch by selector
+// when a handler sends multiple patches.
+func ExampleFindElement() {
+	sseOutput := "event: datastar-patch-elements\ndata: selector #header\ndata: elements <h1>Title</h1>\n\n" +
+		"event: datastar-patch-signals\ndata: signals {\"count\":1}\n\n" +
+		"event: datastar-patch-elements\ndata: selector #body\ndata: elements <p>Content</p>\n\n"
+
+	events, _ := datastartest.ReadEvents(strings.NewReader(sseOutput))
+
+	evt, ok := datastartest.FindElement(events, "#body")
+	fmt.Printf("found=%v elements=%s", ok, evt.Elements())
+	// Output: found=true elements=<p>Content</p>
+}
+
+// ExampleFindSignals demonstrates finding the first signals event in a stream.
+func ExampleFindSignals() {
+	sseOutput := "event: datastar-patch-elements\ndata: elements <div>1</div>\n\n" +
+		"event: datastar-patch-signals\ndata: signals {\"step\":2}\n\n"
+
+	events, _ := datastartest.ReadEvents(strings.NewReader(sseOutput))
+
+	evt, ok := datastartest.FindSignals(events)
+	fmt.Printf("found=%v type=%s", ok, evt.Type)
+	// Output: found=true type=datastar-patch-signals
+}
+
+// ExampleEventsString demonstrates the multi-event debug representation.
+// Useful for logging when a test assertion fails on a specific event.
+func ExampleEventsString() {
+	sseOutput := "event: datastar-patch-elements\ndata: elements <div>1</div>\n\n" +
+		"event: datastar-patch-signals\ndata: signals {\"x\":1}\n\n"
+
+	events, _ := datastartest.ReadEvents(strings.NewReader(sseOutput))
+
+	fmt.Println(datastartest.EventsString(events))
+	// Output:
+	// Event{type=datastar-patch-elements datalines=1}
+	// Event{type=datastar-patch-signals datalines=1}
+}

@@ -268,16 +268,49 @@ func TestFeedHandler(t *testing.T) {
 }
 ```
 
-For non-GET requests, use `ReadEvents` with your own test server:
+### POST requests
+
+For POST/PUT/PATCH handlers with request bodies, use `CollectPost` or `CollectWithRequest`:
 
 ```go
-srv := httptest.NewServer(handler)
-defer srv.Close()
+// POST with JSON body (most common pattern)
+events := datastartest.CollectPost(t, handler, `{"name":"alice"}`)
 
-resp, _ := http.Post(srv.URL, "application/json", body)
-defer resp.Body.Close()
+// Or any method with custom content type
+events := datastartest.CollectWithRequest(t, handler, http.MethodPut, body, "application/json")
+```
 
-events := datastartest.MustReadEvents(t, resp.Body)
+### Streaming handlers
+
+For handlers that keep the connection open (e.g., broadcasting), use `CollectN` to read exactly N events, or `CollectWithTimeout` for a time-bounded read:
+
+```go
+// Read exactly 3 events then close
+events := datastartest.CollectN(t, streamingHandler, 3)
+
+// Or read everything within a deadline (defensive against hung handlers)
+events := datastartest.CollectWithTimeout(t, handler, 5*time.Second)
+```
+
+### Script patches
+
+Script patches (ExecuteScript, Redirect, ConsoleLog, etc.) wrap JS in `<script>` tags. Use `IsScript()` and `ScriptContent()` to extract and assert on the JavaScript:
+
+```go
+events := datastartest.Collect(t, handler)
+
+if events[0].IsScript() {
+    js := events[0].ScriptContent() // "console.log('hello')"
+}
+```
+
+### Search helpers
+
+When a handler sends multiple patches, use `FindElement` and `FindSignals` to locate specific events without indexing by position:
+
+```go
+evt, ok := datastartest.FindElement(events, "#header")
+sigEvt, ok := datastartest.FindSignals(events)
 ```
 
 ## Error handling
