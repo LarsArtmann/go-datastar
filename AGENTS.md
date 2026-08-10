@@ -1,14 +1,34 @@
 # AGENTS.md — go-datastar
 
-DataStar protocol library for Go. Patches as first-class values producing `sse.Event`. Built on go-sse. Single package (`datastar`), flat layout.
+DataStar protocol library for Go. Patches as first-class values producing `sse.Event`. Built on go-sse. Single package (`datastar`), flat layout. The `datastartest/` subpackage is a separate Go module for consumer E2E testing.
+
+## Module Structure
+
+Two Go modules in a go.work workspace:
+
+| Module | Path | Purpose |
+| --- | --- | --- |
+| Root | `github.com/larsartmann/go-datastar` | Protocol library |
+| datastartest | `github.com/larsartmann/go-datastar/datastartest` | Consumer E2E test helpers |
+
+Mutual replace directives: root go.mod replaces `datastartest => ./datastartest`,
+datastartest go.mod replaces `go-datastar => ..`. Both resolve locally for
+`GOWORK=off` builds (CI, Nix, consumers).
 
 ## Commands
 
 ```bash
-GOWORK=off GOEXPERIMENT=jsonv2 go test ./... -race -count=1   # tests
-GOWORK=off GOEXPERIMENT=jsonv2 go vet ./...                    # vet
-GOWORK=off GOEXPERIMENT=jsonv2 golangci-lint run ./...         # lint
-erraudit ./... --type-aware --enforce-go-error-family --no-suppress  # error audit
+# Workspace mode (default, uses go.work) — covers both modules:
+GOEXPERIMENT=jsonv2 go test ./... ./datastartest/... -race -count=1
+GOEXPERIMENT=jsonv2 go vet ./... ./datastartest/...
+GOEXPERIMENT=jsonv2 golangci-lint run ./... ./datastartest/...
+
+# Isolation mode (GOWORK=off, per-module) — verifies replace directives:
+GOWORK=off GOEXPERIMENT=jsonv2 go test ./...                      # root only
+GOWORK=off GOEXPERIMENT=jsonv2 go test ./...                      # datastartest (run from datastartest/)
+
+# Error audit (both modules):
+GOEXPERIMENT=jsonv2 erraudit ./... ./datastartest/... --type-aware --enforce-go-error-family --no-suppress
 ```
 
 **`GOEXPERIMENT=jsonv2` is required** (transitively via go-branded-id through go-sse).
@@ -63,7 +83,7 @@ Every DataStar protocol message is a value that produces an `sse.Event`. This ma
 | `inbound_fuzz_test.go`   | Fuzz test for ReadSignals (10-seed corpus, regression-guarded)                             |
 | `coverage_test.go`       | Option-application, construction error branches, stream-send failure paths                 |
 | `errors_example_test.go` | Example functions showing all three error-handling patterns                |
-| `datastartest/`           | Consumer E2E test helpers: SSE parsing, DataStar decoding, Collect, CollectPost, CollectN, CollectWithTimeout, FindElement, FindSignals, assertions, fuzz test |
+| `datastartest/`           | **Separate Go module** (`go.work` workspace). Consumer E2E test helpers: SSE parsing, DataStar decoding, Collect, CollectPost, CollectN, CollectWithTimeout, FindElement, FindSignals, assertions, fuzz test |
 
 ## Wire-Format Parity Requirements
 
