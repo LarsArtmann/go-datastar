@@ -279,6 +279,7 @@ func TestEvent_ScriptContent_ExecuteScript(t *testing.T) {
 	}))
 
 	evt := events[0]
+
 	got := evt.ScriptContent()
 	if !strings.Contains(got, "console.log('test')") {
 		t.Errorf("ScriptContent should contain JS; got %q", got)
@@ -293,6 +294,7 @@ func TestEvent_ScriptContent_Redirect(t *testing.T) {
 	}))
 
 	evt := events[0]
+
 	got := evt.ScriptContent()
 	if !strings.Contains(got, "https://example.com") {
 		t.Errorf("ScriptContent for redirect should contain URL; got %q", got)
@@ -307,6 +309,7 @@ func TestEvent_ScriptContent_ConsoleLog(t *testing.T) {
 	}))
 
 	evt := events[0]
+
 	got := evt.ScriptContent()
 	if !strings.Contains(got, "console.log") {
 		t.Errorf("ScriptContent for ConsoleLog should contain console.log; got %q", got)

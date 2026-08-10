@@ -53,13 +53,25 @@
 //
 // # Non-GET requests
 //
-// [Collect] sends a GET request. For POST/PUT/PATCH with a request body, use
-// [ReadEvents] with your own test server:
+// For POST/PUT/PATCH with request bodies, use [CollectPost] or
+// [CollectWithRequest]:
 //
-//	srv := httptest.NewServer(handler)
-//	defer srv.Close()
-//	resp, err := http.Post(srv.URL, "application/json", body)
-//	if err != nil { t.Fatal(err) }
-//	defer resp.Body.Close()
-//	events := datastartest.MustReadEvents(t, resp.Body)
+//	events := datastartest.CollectPost(t, handler, `{"name":"alice"}`)
+//	events := datastartest.CollectWithRequest(t, handler, http.MethodPut, body, "application/json")
+//
+// # Streaming handlers
+//
+// For handlers that keep the connection open (e.g., broadcasting through a
+// [Broadcaster]), use [CollectN] to read exactly N events then close:
+//
+//	events := datastartest.CollectN(t, handler, 3)
+//
+// # Script patches
+//
+// Script patches (ExecuteScript, Redirect, ConsoleLog, etc.) produce
+// patch-elements events with JS wrapped in <script> tags. Use
+// [Event.ScriptContent] to extract the inner JavaScript source:
+//
+//	events := datastartest.Collect(t, handler)
+//	js := events[0].ScriptContent() // "console.log('hello')"
 package datastartest

@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-datastar"
+	"github.com/larsartmann/go-datastar/static"
 	errorfamily "github.com/larsartmann/go-error-family"
 	"github.com/larsartmann/go-sse"
 )
@@ -538,3 +539,49 @@ func (m *mockFlushWriter) Header() http.Header { return http.Header{} }
 func (m *mockFlushWriter) Flush() {}
 
 func (m *mockFlushWriter) String() string { return string(m.bytes) }
+
+func TestStaticVersionConsistency(t *testing.T) {
+	t.Parallel()
+
+	if datastar.DatastarJSVersion != static.Version {
+		t.Errorf("DatastarJSVersion (%q) != static.Version (%q)",
+			datastar.DatastarJSVersion, static.Version)
+	}
+}
+
+func TestScriptHandler_ServesStaticBytes(t *testing.T) {
+	t.Parallel()
+
+	handler := datastar.ScriptHandler()
+	srv := httptest.NewServer(handler)
+
+	defer srv.Close()
+
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL, nil)
+	if err != nil {
+		t.Fatalf("build request: %v", err)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("GET ScriptHandler: %v", err)
+	}
+
+	defer func() { _ = resp.Body.Close() }()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatalf("read body: %v", err)
+	}
+
+	staticBytes := static.Bytes()
+	if len(body) != len(staticBytes) {
+		t.Fatalf("body length: got %d, want %d (static.Bytes)", len(body), len(staticBytes))
+	}
+
+	for i, b := range body {
+		if b != staticBytes[i] {
+			t.Fatalf("byte %d: got %x, want %x", i, b, staticBytes[i])
+		}
+	}
+}
