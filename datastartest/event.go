@@ -95,6 +95,56 @@ func (e Event) OnlyIfMissing() bool {
 	return e.firstValue(datastar.OnlyIfMissingDatalineKey) == "true"
 }
 
+// ScriptContent extracts the JavaScript source from a script-bearing patch.
+// Script patches (ExecuteScript, Redirect, ConsoleLog, ConsoleError,
+// DispatchCustomEvent, ReplaceURL, Prefetch) wrap JS inside <script> tags
+// within a patch-elements event. This method strips the <script ...> wrapper
+// and returns the inner source code.
+//
+// Returns empty string if the event is not a script-bearing elements patch.
+func (e Event) ScriptContent() string {
+	el := e.Elements()
+
+	afterTag, ok := strings.CutPrefix(el, "<script")
+	if !ok {
+		return ""
+	}
+
+	gtIdx := strings.IndexByte(afterTag, '>')
+	if gtIdx < 0 {
+		return ""
+	}
+
+	content := afterTag[gtIdx+1:]
+
+	if inner, ok := strings.CutSuffix(content, "</script>"); ok {
+		return inner
+	}
+
+	return content
+}
+
+// DataValue returns the value after the first dataline matching the given key
+// prefix (e.g., "selector ", "mode "). This is a generic escape hatch when no
+// typed accessor covers a specific dataline key. Returns empty if not found.
+func (e Event) DataValue(key string) string {
+	return e.firstValue(key)
+}
+
+// String returns a human-readable debug representation of the event, showing
+// the type, event ID (if any), retry (if non-zero), and dataline count.
+// Useful for debugging test failures and logging.
+func (e Event) String() string {
+	if e.ID != "" || e.Retry > 0 {
+		return fmt.Sprintf(
+			"Event{type=%s id=%s retry=%d datalines=%d}",
+			e.Type, e.ID, e.Retry, len(e.DataLines),
+		)
+	}
+
+	return fmt.Sprintf("Event{type=%s datalines=%d}", e.Type, len(e.DataLines))
+}
+
 // firstValue returns the value after the first dataline matching the given key
 // prefix. The key includes the trailing space (e.g., "selector ").
 func (e Event) firstValue(key string) string {
