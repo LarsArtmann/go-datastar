@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 )
 
 // Collect starts a test server for the handler, sends a GET request, reads the
@@ -113,6 +114,41 @@ func CollectN(t *testing.T, handler http.Handler, count int) []Event {
 	events, err := ReadNEvents(resp.Body, count)
 	if err != nil {
 		t.Fatalf("read %d events: %v", count, err)
+	}
+
+	return events
+}
+
+// CollectWithTimeout is like [Collect] but enforces a maximum duration. If the
+// handler does not close the stream within timeout, the context cancels and
+// whatever events were received so far are returned. If no events were received
+// before the timeout, the test fails.
+//
+// Use this for defensive testing against handlers that might hang.
+func CollectWithTimeout(t *testing.T, handler http.Handler, timeout time.Duration) []Event {
+	t.Helper()
+
+	srv := httptest.NewServer(handler)
+	defer srv.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, srv.URL, nil)
+	if err != nil {
+		t.Fatalf("build request: %v", err)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("GET test server: %v", err)
+	}
+
+	defer func() { _ = resp.Body.Close() }()
+
+	events, err := ReadNEvents(resp.Body, 1<<30)
+	if err != nil {
+		t.Fatalf("read events within %v: %v", timeout, err)
 	}
 
 	return events
