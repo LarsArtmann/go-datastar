@@ -185,3 +185,52 @@ func TestParseSSEField_NoSpaceAfterColon(t *testing.T) {
 		t.Errorf("data: got %v", events[0].DataLines)
 	}
 }
+
+func TestParseSSEField_MultiColon(t *testing.T) {
+	t.Parallel()
+
+	// A data line with multiple colons: the value is everything after the
+	// first colon, with a single leading space stripped.
+	input := `event:datastar-patch-signals
+data:{"json":"with:colons"}
+
+`
+
+	events, err := datastartest.ReadEvents(strings.NewReader(input))
+	if err != nil {
+		t.Fatalf("ReadEvents: %v", err)
+	}
+
+	if len(events) != 1 {
+		t.Fatalf("got %d events, want 1", len(events))
+	}
+
+	want := `{"json":"with:colons"}`
+	if got := events[0].DataLines[0]; got != want {
+		t.Errorf("multi-colon data: got %q, want %q", got, want)
+	}
+}
+
+func TestParseSSEField_EmptyData(t *testing.T) {
+	t.Parallel()
+
+	// "data:" with nothing after it (no space, no value) → empty data line
+	input := "event:datastar-patch-signals\ndata:\n\n"
+
+	events, err := datastartest.ReadEvents(strings.NewReader(input))
+	if err != nil {
+		t.Fatalf("ReadEvents: %v", err)
+	}
+
+	if len(events) != 1 {
+		t.Fatalf("got %d events, want 1", len(events))
+	}
+
+	if len(events[0].DataLines) != 1 {
+		t.Fatalf("data lines: got %d, want 1", len(events[0].DataLines))
+	}
+
+	if events[0].DataLines[0] != "" {
+		t.Errorf("empty data: got %q, want empty", events[0].DataLines[0])
+	}
+}

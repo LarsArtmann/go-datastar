@@ -110,12 +110,10 @@ func (e Event) ScriptContent() string {
 		return ""
 	}
 
-	gtIdx := strings.IndexByte(afterTag, '>')
-	if gtIdx < 0 {
+	_, content, found := strings.Cut(afterTag, ">")
+	if !found {
 		return ""
 	}
-
-	content := afterTag[gtIdx+1:]
 
 	if inner, ok := strings.CutSuffix(content, "</script>"); ok {
 		return inner

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/larsartmann/go-datastar"
 	"github.com/larsartmann/go-datastar/datastartest"
@@ -267,5 +268,181 @@ func TestFilter_Elements(t *testing.T) {
 	sigs := datastartest.FilterSignals(events)
 	if len(sigs) != 1 {
 		t.Fatalf("FilterSignals: got %d, want 1", len(sigs))
+	}
+}
+
+func TestEvent_ScriptContent_ExecuteScript(t *testing.T) {
+	t.Parallel()
+
+	events := datastartest.Collect(t, helperHandler(func(resp *datastar.Response) {
+		_ = resp.ExecuteScript("console.log('test')")
+	}))
+
+	evt := events[0]
+	got := evt.ScriptContent()
+	if !strings.Contains(got, "console.log('test')") {
+		t.Errorf("ScriptContent should contain JS; got %q", got)
+	}
+}
+
+func TestEvent_ScriptContent_Redirect(t *testing.T) {
+	t.Parallel()
+
+	events := datastartest.Collect(t, helperHandler(func(resp *datastar.Response) {
+		_ = resp.Redirect("https://example.com")
+	}))
+
+	evt := events[0]
+	got := evt.ScriptContent()
+	if !strings.Contains(got, "https://example.com") {
+		t.Errorf("ScriptContent for redirect should contain URL; got %q", got)
+	}
+}
+
+func TestEvent_ScriptContent_ConsoleLog(t *testing.T) {
+	t.Parallel()
+
+	events := datastartest.Collect(t, helperHandler(func(resp *datastar.Response) {
+		_ = resp.ConsoleLog("hello world")
+	}))
+
+	evt := events[0]
+	got := evt.ScriptContent()
+	if !strings.Contains(got, "console.log") {
+		t.Errorf("ScriptContent for ConsoleLog should contain console.log; got %q", got)
+	}
+}
+
+func TestEvent_ScriptContent_NonScriptReturnsEmpty(t *testing.T) {
+	t.Parallel()
+
+	events := datastartest.Collect(t, helperHandler(func(resp *datastar.Response) {
+		_ = resp.PatchElements("<div>not a script</div>", datastar.WithSelector("#feed"))
+	}))
+
+	evt := events[0]
+	if got := evt.ScriptContent(); got != "" {
+		t.Errorf("ScriptContent for non-script elements should be empty; got %q", got)
+	}
+}
+
+func TestEvent_DataValue(t *testing.T) {
+	t.Parallel()
+
+	events := datastartest.Collect(t, helperHandler(func(resp *datastar.Response) {
+		_ = resp.PatchElements("<div>hi</div>",
+			datastar.WithSelector("#feed"),
+			datastar.WithMode(datastar.ElementPatchModeAppend),
+		)
+	}))
+
+	evt := events[0]
+	if got := evt.DataValue("selector "); got != "#feed" {
+		t.Errorf("DataValue selector: got %q, want %q", got, "#feed")
+	}
+
+	if got := evt.DataValue("mode "); got != "append" {
+		t.Errorf("DataValue mode: got %q, want %q", got, "append")
+	}
+
+	if got := evt.DataValue("nonexistent "); got != "" {
+		t.Errorf("DataValue for missing key should be empty; got %q", got)
+	}
+}
+
+func TestEvent_String(t *testing.T) {
+	t.Parallel()
+
+	events := datastartest.Collect(t, helperHandler(func(resp *datastar.Response) {
+		_ = resp.PatchElements("<div>hi</div>", datastar.WithSelector("#feed"))
+	}))
+
+	got := events[0].String()
+	if !strings.Contains(got, "datastar-patch-elements") {
+		t.Errorf("String should contain event type; got %q", got)
+	}
+
+	if !strings.Contains(got, "datalines=") {
+		t.Errorf("String should contain dataline count; got %q", got)
+	}
+}
+
+func TestEvent_RetryEventIDRoundTrip(t *testing.T) {
+	t.Parallel()
+
+	events := datastartest.Collect(t, helperHandler(func(resp *datastar.Response) {
+		patch := datastar.NewElementsPatch("<div>retry test</div>",
+			datastar.WithSelector("#feed"),
+			datastar.WithElementsEventID("evt-42"),
+			datastar.WithElementsRetryDuration(5000*time.Millisecond),
+		)
+		_ = resp.ApplyPatches(patch)
+	}))
+
+	evt := events[0]
+	if evt.ID != "evt-42" {
+		t.Errorf("Event ID: got %q, want %q", evt.ID, "evt-42")
+	}
+
+	if evt.Retry != 5000 {
+		t.Errorf("Retry: got %d, want 5000", evt.Retry)
+	}
+
+	s := evt.String()
+	if !strings.Contains(s, "id=evt-42") {
+		t.Errorf("String should contain event ID; got %q", s)
+	}
+
+	if !strings.Contains(s, "retry=5000") {
+		t.Errorf("String should contain retry; got %q", s)
+	}
+}
+
+func TestEvent_EmptyHandler(t *testing.T) {
+	t.Parallel()
+
+	events := datastartest.Collect(t, helperHandler(func(resp *datastar.Response) {
+		// Send nothing
+	}))
+
+	if len(events) != 0 {
+		t.Errorf("empty handler: got %d events, want 0", len(events))
+	}
+}
+
+func TestDatalineConstants_TableDriven(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		dataline string
+	}{
+		{"selector", datastar.SelectorDatalineKey},
+		{"mode", datastar.ModeDatalineKey},
+		{"namespace", datastar.NamespaceDatalineKey},
+		{"elements", datastar.ElementsDatalineKey},
+		{"signals", datastar.SignalsDatalineKey},
+		{"onlyIfMissing", datastar.OnlyIfMissingDatalineKey},
+		{"useViewTransition", datastar.UseViewTransitionDatalineKey},
+		{"viewTransitionSelector", datastar.ViewTransitionSelectorDatalineKey},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			if !strings.HasSuffix(tt.dataline, " ") {
+				t.Errorf("dataline key %q should have trailing space", tt.dataline)
+			}
+
+			evt := datastartest.Event{
+				Type:      "datastar-patch-elements",
+				DataLines: []string{tt.dataline + "test-value"},
+			}
+
+			if got := evt.DataValue(tt.dataline); got != "test-value" {
+				t.Errorf("DataValue(%q): got %q, want %q", tt.dataline, got, "test-value")
+			}
+		})
 	}
 }
