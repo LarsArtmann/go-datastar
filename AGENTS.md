@@ -156,17 +156,22 @@ in this repo's own `e2e_test.go`.
 | `CollectPost(t, handler, jsonBody)` | POST with JSON body, parse SSE, return decoded events |
 | `CollectWithRequest(t, handler, method, body, ct)` | Custom method/body/content-type, parse SSE |
 | `CollectN(t, handler, count)` | Read exactly N events (streaming handlers), then close |
+| `CollectWithTimeout(t, handler, timeout)` | GET with deadline; returns events received before timeout |
 | `ReadEvents(io.Reader)` | Parse SSE wire format from any reader |
+| `ReadNEvents(io.Reader, count)` | Streaming SSE reader; returns at N events or clean close |
 | `MustReadEvents(t, io.Reader)` | ReadEvents with t.Fatal on error |
+| `Event.IsElements()` / `.IsSignals()` / `.IsScript()` | Type predicates |
 | `Event.Selector()` / `.Mode()` / `.Elements()` | Typed dataline accessors |
 | `Event.ScriptContent()` | Strip `<script>` wrapper, return inner JS source |
 | `Event.SignalsJSON()` / `.UnmarshalSignals(&v)` | Decode signals JSON |
 | `Event.DataValue(key)` | Generic dataline lookup (escape hatch) |
-| `Event.String()` | Human-readable debug representation |
+| `Event.String()` / `EventsString(events)` | Human-readable debug representation |
+| `FindElement(events, selector)` / `FindSignals(events)` | Search by selector/type |
 | `FilterElements(events)` / `FilterSignals(events)` | Filter by event type |
 | `RequireElements(t, evt, sel, mode, html)` | One-liner element assertion |
 | `RequireElementsContains(t, evt, sel, mode, htmlSubstr)` | Substring match (scripts) |
 | `RequireSignals(t, evt, json)` | Exact signals JSON assertion |
+| `RequireSignalsContain(t, evt, key)` | Check signal key exists |
 | `RequireEventCount(t, events, n)` | Event count assertion |
 
 ### Consumer usage

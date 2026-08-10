@@ -17,9 +17,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `FilterSignals`), and assertion helpers (`RequireElements`,
   `RequireElementsContains`, `RequireSignals`, `RequireEventCount`). Includes
   `ScriptContent()` (strip `<script>` wrapper), `CollectWithRequest` /
-  `CollectPost` (non-GET requests), and `CollectN` (streaming handlers). 24+
-  tests, 4 testable examples. The library's own `e2e_test.go` was refactored
-  from 261 → 109 lines using this package.
+  `CollectPost` (non-GET requests), and `CollectN` (streaming handlers). The
+  library's own `e2e_test.go` was refactored from 261 to 109 lines using this
+  package.
+- **`datastartest/` expanded API** — `CollectWithTimeout` (defensive
+  time-bounded GET), `ReadNEvents` (exported streaming reader),
+  `Event.IsScript()` (script-patch predicate), `FindElement` /
+  `FindSignals` (search by selector/type), `EventsString` (multi-event debug
+  dump), `RequireSignalsContain` (signal key existence assertion),
+  `UnmarshalSignals` error now includes JSON preview. Fuzz test
+  (`FuzzReadEvents`, 9-seed corpus) and benchmark (`BenchmarkReadEvents`,
+  ~131 MB/s) added. 60+ tests, 8 testable examples.
 - **`static/` subpackage** — Dedicated asset package owning the embedded
   DataStar JavaScript client bundle. Exports `Bytes() []byte` and
   `Version` const (`"1.0.2"`). Extracted from `script_handler.go` so the
@@ -33,6 +41,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `ScriptHandler()` delegates to `ScriptHandlerWith(static.Bytes(),
   static.Version)`. `DatastarJSVersion` is a backward-compatible const alias
   for `static.Version`. No behavioral change.
+- **`ScriptContent()` robustness** — Now uses quote-aware tag-end detection
+  instead of `strings.Cut(s, ">")`, correctly handling `>` characters inside
+  quoted attribute values (e.g., `<script data-x="a>b">`).
+- **`ReadNEvents` early return** — `count <= 0` now returns immediately with
+  nil instead of reading one event before checking the threshold.
 
 ## [0.0.3] - 2026-08-08
 

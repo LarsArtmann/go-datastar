@@ -115,10 +115,16 @@
 | `CollectWithRequest`  | 🟢 `FULLY_FUNCTIONAL` | Non-GET requests with custom method, body, content-type (`datastartest/collect.go`)       |
 | `CollectPost`         | 🟢 `FULLY_FUNCTIONAL` | POST with JSON body — thin wrapper over CollectWithRequest (`datastartest/collect.go`)    |
 | `CollectN`            | 🟢 `FULLY_FUNCTIONAL` | Streaming handlers — read N events then close (`datastartest/collect.go`)                 |
+| `CollectWithTimeout`  | 🟢 `FULLY_FUNCTIONAL` | GET with deadline; returns partial events on timeout (`datastartest/collect.go`)          |
 | `ReadEvents`          | 🟢 `FULLY_FUNCTIONAL` | SSE wire-format parser for any `io.Reader` (`datastartest/reader.go`)                     |
-| `Event` accessors     | 🟢 `FULLY_FUNCTIONAL` | 15+ typed accessors: Selector, Mode, Elements, ScriptContent, SignalsJSON, etc.           |
-| Assertion helpers     | 🟢 `FULLY_FUNCTIONAL` | RequireElements, RequireElementsContains, RequireSignals, RequireEventCount (`assert.go`) |
-| Filter helpers        | 🟢 `FULLY_FUNCTIONAL` | FilterElements, FilterSignals (`filter.go`)                                               |
+| `ReadNEvents`         | 🟢 `FULLY_FUNCTIONAL` | Streaming SSE reader; returns at N events or clean close (`datastartest/collect.go`)      |
+| `Event` accessors     | 🟢 `FULLY_FUNCTIONAL` | 20+ typed accessors: Selector, Mode, Elements, ScriptContent, IsScript, SignalsJSON, etc. |
+| Search helpers        | 🟢 `FULLY_FUNCTIONAL` | FindElement, FindSignals (`datastartest/search.go`)                                       |
+| Assertion helpers     | 🟢 `FULLY_FUNCTIONAL` | RequireElements, RequireElementsContains, RequireSignals, RequireSignalsContain, Count    |
+| Filter helpers        | 🟢 `FULLY_FUNCTIONAL` | FilterElements, FilterSignals (`datastartest/filter.go`)                                  |
+| Debug helpers         | 🟢 `FULLY_FUNCTIONAL` | Event.String(), EventsString, DataValue (`datastartest/event.go`)                         |
+| Fuzz test             | 🟢 `FULLY_FUNCTIONAL` | FuzzReadEvents with 9-seed corpus (`datastartest/reader_fuzz_test.go`)                    |
+| Benchmark             | 🟢 `FULLY_FUNCTIONAL` | BenchmarkReadEvents: ~131 MB/s, 108 allocs/op (`datastartest/reader_fuzz_test.go`)        |
 
 ## Build & CI
 
