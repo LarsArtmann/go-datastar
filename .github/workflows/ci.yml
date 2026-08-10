@@ -28,6 +28,15 @@ jobs:
       - name: Test
         run: go test ./... ./datastartest/... ./static/... -race -count=1
 
+      - name: Per-module isolation (GOWORK=off)
+        run: |
+          for mod in . ./datastartest ./static; do
+            echo "::group::GOWORK=off build $mod"
+            (cd "$mod" && GOWORK=off go build ./...)
+            echo "::group::GOWORK=off test $mod"
+            (cd "$mod" && GOWORK=off go test ./... -count=1)
+          done
+
   lint:
     runs-on: ubuntu-latest
     steps:
