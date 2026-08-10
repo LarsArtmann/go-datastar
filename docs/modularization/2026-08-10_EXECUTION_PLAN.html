@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>go-datastar Modularization Execution Plan</title>
+    <style>
+      :root {
+        --color-graphite: #0e0e10; --color-graphite-2: #18181d; --color-graphite-3: #16161a;
+        --color-bone: #f4f4f0; --color-red: #ff6b6b; --color-blue: #6eb5ff; --color-yellow: #f4d35e; --color-amber: #ffb347;
+        --color-hairline: rgba(244, 244, 240, 0.12); --color-hairline-strong: rgba(244, 244, 240, 0.25);
+        --surface: var(--color-graphite); --surface-raised: var(--color-graphite-2); --surface-sunken: var(--color-graphite-3);
+        --text: var(--color-bone); --text-muted: rgba(244, 244, 240, 0.72); --text-faint: rgba(244, 244, 240, 0.45);
+        --border: var(--color-hairline); --border-strong: var(--color-hairline-strong);
+        --accent: var(--color-amber); --problem: var(--color-red); --solution: var(--color-blue); --warning: var(--color-yellow);
+        --radius: 0px;
+        --font-heading: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --font-body: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas, monospace;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      section[id], [id] { scroll-margin-top: 60px; }
+      body { background: var(--surface); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+      .top-bar { background: var(--text); color: var(--surface); padding: 0.6rem 2rem; font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+      .layout { display: flex; gap: 2.5rem; padding: 2rem; }
+      .sidebar { width: 220px; flex-shrink: 0; position: sticky; top: 1rem; align-self: flex-start; height: calc(100vh - 2rem); overflow-y: auto; display: none; }
+      .sidebar nav { display: flex; flex-direction: column; }
+      .sidebar .label { font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent); margin-bottom: 0.75rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--border-strong); }
+      .sidebar a { font-size: 0.85rem; color: var(--text-muted); text-decoration: none; padding: 0.45rem 0.75rem; border-left: 2px solid transparent; transition: all 0.15s ease; font-weight: 500; }
+      .sidebar a:hover, .sidebar a.active { color: var(--accent); border-left-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+      .main { flex: 1; min-width: 0; }
+      h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 800; letter-spacing: -0.02em; }
+      h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.1; margin: 0 0 0.6rem; }
+      h2 { font-size: 1.4rem; margin: 2.5rem 0 1rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--border-strong); display: flex; align-items: baseline; gap: 0.6rem; }
+      h2 .num { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); font-weight: 700; }
+      h3 { font-size: 1.1rem; margin: 0 0 0.4rem; font-weight: 700; }
+      h4 { font-size: 0.98rem; margin: 0 0 0.3rem; font-weight: 700; }
+      p { margin: 0 0 1rem; }
+      .hero { padding: 1.5rem 0 1.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-strong); }
+      .hero-badge { display: inline-block; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--surface); background: var(--accent); padding: 0.3rem 0.7rem; margin-bottom: 0.9rem; }
+      .hero-subtitle { font-size: 1.05rem; color: var(--text-muted); max-width: 70ch; margin: 0; }
+      pre { background: var(--surface-sunken); border: 1px solid var(--border); padding: 1rem 1.2rem; margin: 1rem 0; font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.65; overflow-x: auto; }
+      code { font-family: var(--font-mono); }
+      p code, li code { font-size: 0.88em; background: var(--surface-sunken); padding: 0.1rem 0.35rem; }
+      .migration-step { display: grid; grid-template-columns: 48px 1fr; gap: 1rem; margin: 1rem 0; padding: 1rem; background: var(--surface-raised); border: 1px solid var(--border); border-left: 3px solid var(--accent); }
+      .migration-num { font-family: var(--font-mono); font-weight: 800; font-size: 1.5rem; color: var(--accent); line-height: 1; }
+      .migration-content p { margin-bottom: 0.3rem; color: var(--text-muted); font-size: 0.92rem; }
+      .migration-content .verify { margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--border); font-size: 0.85rem; }
+      .migration-content .verify strong { color: var(--solution); }
+      .migration-content .rollback { font-size: 0.85rem; color: var(--text-faint); }
+      .migration-content .rollback strong { color: var(--warning); }
+      table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.9rem; }
+      th { text-align: left; padding: 0.6rem 0.9rem; background: var(--surface-raised); color: var(--text-faint); font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border-bottom: 1px solid var(--border-strong); }
+      td { padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--border); }
+      .footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-faint); font-family: var(--font-mono); }
+      @media (min-width: 1024px) { .sidebar { display: block; } }
+      @media (max-width: 768px) { .layout { flex-direction: column; padding: 1rem; } .top-bar { padding: 0.6rem 1rem; flex-wrap: wrap; gap: 0.3rem; } .migration-step { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="top-bar">
+      <span>Execution Plan</span>
+      <span>2026-08-10</span>
+      <span>go-datastar</span>
+    </div>
+
+    <div class="layout">
+      <aside class="sidebar" data-nav>
+        <nav>
+          <div class="label">Contents</div>
+          <a href="#overview">Overview</a>
+          <a href="#tier1">Tier 1: Domain</a>
+          <a href="#tier2">Tier 2: Untangle</a>
+          <a href="#tier3">Tier 3: Infrastructure</a>
+          <a href="#tier4">Tier 4: Polish</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <div class="hero">
+          <div class="hero-badge">Execution Plan</div>
+          <h1>go-datastar Modularization Steps</h1>
+          <p class="hero-subtitle">
+            Five steps to break the circular dependency, eliminate the test-dep
+            leak, and add per-module CI isolation. Each step is independently
+            revertable via a single commit.
+          </p>
+        </div>
+
+        <h2 id="overview"><span class="num">00</span>Overview</h2>
+        <table>
+          <thead>
+            <tr><th>Step</th><th>Tier</th><th>Impact</th><th>Revertable</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1. Relocate E2E test</td><td>1: Domain</td><td>Breaks circular dep</td><td>Yes (git revert)</td></tr>
+            <tr><td>2. Clean root go.mod</td><td>2: Untangle</td><td>Eliminates test-dep leak</td><td>Yes (git revert)</td></tr>
+            <tr><td>3. Sync workspace</td><td>2: Untangle</td><td>Verifies go.work consistency</td><td>Yes (git revert)</td></tr>
+            <tr><td>4. Update flake.nix</td><td>3: Infrastructure</td><td>Fixes Nix vendorHash</td><td>Yes (git revert)</td></tr>
+            <tr><td>5. Add CI isolation</td><td>4: Polish</td><td>GOWORK=off per-module tests</td><td>Yes (git revert)</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="tier1"><span class="num">01</span>Tier 1: Domain</h2>
+
+        <div class="migration-step">
+          <div class="migration-num">1</div>
+          <div class="migration-content">
+            <h4>Relocate TestE2E_DataStarPatches to datastartest</h4>
+            <p>
+              Create <code>datastartest/e2e_test.go</code> with
+              <code>TestE2E_DataStarPatches</code> (adapted to
+              <code>package datastartest_test</code>). Remove
+              <code>TestE2E_DataStarPatches</code> from root's
+              <code>e2e_test.go</code>, keeping only
+              <code>TestE2E_SSEHeaders</code> (which does not import datastartest).
+            </p>
+            <div class="verify">
+              <strong>Verify:</strong>
+              <code>GOWORK=off GOEXPERIMENT=jsonv2 go test ./datastartest/... -run TestE2E_DataStarPatches -count=1 -v</code> passes.<br>
+              <code>GOWORK=off GOEXPERIMENT=jsonv2 go test ./... -run TestE2E_SSEHeaders -count=1 -v</code> passes.
+            </div>
+            <div class="rollback">
+              <strong>Rollback:</strong> <code>git revert HEAD</code> restores the test to its original location.
+            </div>
+          </div>
+        </div>
+
+        <h2 id="tier2"><span class="num">02</span>Tier 2: Untangle</h2>
+
+        <div class="migration-step">
+          <div class="migration-num">2</div>
+          <div class="migration-content">
+            <h4>Clean root go.mod: remove datastartest require + replace</h4>
+            <p>
+              Run <code>GOWORK=off GOEXPERIMENT=jsonv2 go mod tidy</code> on root.
+              Since no file in root imports datastartest anymore, the require and
+              replace lines for datastartest are removed automatically. Verify that
+              <code>static</code> remains in the require block (it is a production
+              dependency via <code>script_handler.go</code>).
+            </p>
+            <div class="verify">
+              <strong>Verify:</strong>
+              <code>GOWORK=off GOEXPERIMENT=jsonv2 go build ./...</code> passes.<br>
+              <code>GOWORK=off GOEXPERIMENT=jsonv2 go test ./... -count=1</code> passes.<br>
+              <code>GOWORK=off GOEXPERIMENT=jsonv2 go vet ./...</code> passes.<br>
+              <code>grep datastartest go.mod</code> returns nothing.
+            </div>
+            <div class="rollback">
+              <strong>Rollback:</strong> <code>git revert HEAD</code> restores the datastartest require.
+            </div>
+          </div>
+        </div>
+
+        <div class="migration-step">
+          <div class="migration-num">3</div>
+          <div class="migration-content">
+            <h4>Sync go.work and verify all modules</h4>
+            <p>
+              Run <code>go work sync</code> to ensure the workspace is consistent
+              with the updated go.mod files. Verify go.work still lists all 3
+              modules. Run the full workspace test suite to confirm nothing broke.
+            </p>
+            <div class="verify">
+              <strong>Verify:</strong>
+              <code>go work sync</code> produces no changes.<br>
+              <code>GOEXPERIMENT=jsonv2 go test ./... ./datastartest/... ./static/... -race -count=1</code> passes.<br>
+              <code>GOEXPERIMENT=jsonv2 golangci-lint run ./... ./datastartest/... ./static/...</code> passes.
+            </div>
+            <div class="rollback">
+              <strong>Rollback:</strong> <code>git revert HEAD</code> restores go.work and go.work.sum.
+            </div>
+          </div>
+        </div>
+
+        <h2 id="tier3"><span class="num">03</span>Tier 3: Infrastructure</h2>
+
+        <div class="migration-step">
+          <div class="migration-num">4</div>
+          <div class="migration-content">
+            <h4>Update flake.nix vendorHash</h4>
+            <p>
+              Root's go.mod changed (datastartest removed from require). The Nix
+              build will fail with a vendorHash mismatch. Run
+              <code>nix build</code> to get the error, copy the new hash, and update
+              <code>flake.nix</code>.
+            </p>
+            <div class="verify">
+              <strong>Verify:</strong>
+              <code>nix build .#checks.x86_64-linux.build</code> succeeds.<br>
+              <code>nix run .#test</code> passes.
+            </div>
+            <div class="rollback">
+              <strong>Rollback:</strong> <code>git revert HEAD</code> restores the old vendorHash.
+            </div>
+          </div>
+        </div>
+
+        <h2 id="tier4"><span class="num">04</span>Tier 4: Polish</h2>
+
+        <div class="migration-step">
+          <div class="migration-num">5</div>
+          <div class="migration-content">
+            <h4>Add per-module GOWORK=off CI isolation tests</h4>
+            <p>
+              Add a CI step to <code>.github/workflows/ci.yml</code> that tests
+              each module independently with <code>GOWORK=off</code>. This catches
+              version drift and missing replace directives that workspace mode
+              masks.
+            </p>
+            <div class="verify">
+              <strong>Verify:</strong>
+              CI YAML is valid. The new steps run <code>GOWORK=off go build</code> and
+              <code>GOWORK=off go test</code> in each module directory.
+            </div>
+            <div class="rollback">
+              <strong>Rollback:</strong> <code>git revert HEAD</code> removes the CI step.
+            </div>
+          </div>
+        </div>
+
+        <footer class="footer">
+          Generated 2026-08-10 &middot; Companion to 2026-08-10_PROPOSAL.html
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        if (!("IntersectionObserver" in window)) return;
+        var nav = document.querySelector("[data-nav]");
+        if (!nav) return;
+        var links = nav.querySelectorAll('a[href^="#"]');
+        var ids = Array.from(links).map(function (l) { return l.getAttribute("href").slice(1); });
+        var sections = ids.map(function (id) { return document.getElementById(id); }).filter(Boolean);
+        if (!sections.length) return;
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              links.forEach(function (link) {
+                link.classList.toggle("active", link.getAttribute("href") === "#" + entry.target.id);
+              });
+            }
+          });
+        }, { rootMargin: "-80px 0px -60% 0px", threshold: 0 });
+        sections.forEach(function (s) { observer.observe(s); });
+      })();
+    </script>
+  </body>
+</html>
