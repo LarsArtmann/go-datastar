@@ -63,7 +63,7 @@ Every DataStar protocol message is a value that produces an `sse.Event`. This ma
 | `inbound_fuzz_test.go`   | Fuzz test for ReadSignals (10-seed corpus, regression-guarded)                             |
 | `coverage_test.go`       | Option-application, construction error branches, stream-send failure paths                 |
 | `errors_example_test.go` | Example functions showing all three error-handling patterns                |
-| `datastartest/`           | Consumer E2E test helpers: SSE parsing, DataStar decoding, Collect, assertions |
+| `datastartest/`           | Consumer E2E test helpers: SSE parsing, DataStar decoding, Collect, CollectPost, CollectN, CollectWithTimeout, FindElement, FindSignals, assertions, fuzz test |
 
 ## Wire-Format Parity Requirements
 
