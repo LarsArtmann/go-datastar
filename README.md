@@ -36,6 +36,13 @@ GOEXPERIMENT=jsonv2 go test ./... -race -count=1
 go get github.com/larsartmann/go-datastar
 ```
 
+Optional sub-modules (separately versioned):
+
+```bash
+go get github.com/larsartmann/go-datastar/static        # embedded JS client bundle (zero deps)
+go get github.com/larsartmann/go-datastar/datastartest  # E2E test helpers for consumer handlers
+```
+
 ## Quick start
 
 ### Patches as values — broadcast to many connections

@@ -63,7 +63,7 @@
 
 | Feature                     | Status                | Notes                                                                               |
 | --------------------------- | --------------------- | ----------------------------------------------------------------------------------- |
-| Embedded DataStar JS client | 🟢 `FULLY_FUNCTIONAL` | v1.0.2 embedded in `static/` subpackage. `ScriptHandler()` with ETag + Cache-Control (`script_handler.go`). |
+| Embedded DataStar JS client | 🟢 `FULLY_FUNCTIONAL` | v1.0.2 embedded in `static/` separate module. `ScriptHandler()` with ETag + Cache-Control (`script_handler.go`). |
 | HEAD request support        | 🟢 `FULLY_FUNCTIONAL` | RFC 7231 §4.3.2 compliant — headers only, no body (`script_handler.go`). Tested.    |
 | `static.Bytes()` / `Version` | 🟢 `FULLY_FUNCTIONAL` | Direct access to the embedded JS bundle and version (`static/static.go`).      |
 
@@ -107,7 +107,7 @@
 | Test coverage     | 🟢 `FULLY_FUNCTIONAL` | 98.7% of statements covered                                        |
 | Benchmark tests   | ⚪ `PLANNED`          | No benchmarks exist yet                                            |
 
-## Consumer Test Helpers (`datastartest/`)
+## Consumer Test Helpers (`datastartest/` — separate module)
 
 | Feature               | Status                | Notes                                                                                     |
 | --------------------- | --------------------- | ----------------------------------------------------------------------------------------- |

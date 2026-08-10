@@ -111,7 +111,7 @@ func applySSELine(evt *Event, line string) {
 }
 
 // newSSEScanner creates a bufio.Scanner configured for SSE wire-format parsing
-// with the package's standard buffer sizes. Shared by ReadEvents and readNEvents
+// with the package's standard buffer sizes. Shared by ReadEvents and ReadNEvents
 // to keep scanner setup in one place.
 func newSSEScanner(r io.Reader) *bufio.Scanner {
 	scanner := bufio.NewScanner(r)

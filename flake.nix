@@ -42,6 +42,9 @@
           version = self.rev or self.dirtyRev or "dev";
           vendorHash = "sha256-+BcQ1X/Jz/P8dkvfy+kQOU8LPYAxOB1I5ST5lpvTjFk=";
 
+          # TODO: add hermeticCheckStatic and hermeticCheckDatastartest
+          # buildGoModule derivations for full multi-module Nix CI.
+          # The GitHub Actions CI already covers all three modules.
           hermeticCheck = buildGoModule {
             pname = "go-datastar";
             inherit version vendorHash;

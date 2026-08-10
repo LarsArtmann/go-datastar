@@ -7,9 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [0.1.0] - 2026-08-10
 
-- **`datastartest/` subpackage** — Consumer-facing E2E test helpers for
+This release splits the repository into three independently versioned Go modules:
+`go-datastar` (root protocol library), `go-datastar/static` (embedded JS client,
+zero dependencies), and `go-datastar/datastartest` (consumer E2E test helpers).
+A committed `go.work` workspace ties them together for local development.
+
+### Added — Multi-module architecture
+
+- **`static/` is now a separate Go module** (`github.com/larsartmann/go-datastar/static`).
+  Zero dependencies, embeds the DataStar JS client bundle. Consumers can import
+  just the JS bytes without pulling the protocol library's dependency tree.
+- **`datastartest/` is now a separate Go module** (`github.com/larsartmann/go-datastar/datastartest`).
+  Consumer E2E test helpers with their own dependency surface (go-sse, go-datastar).
+- **Committed `go.work`** — workspace mode is now the default. `go.work` removed
+  from `.gitignore`; fresh clones work immediately without manual `go work init`.
+- **CI covers all three modules** — test, vet, lint, erraudit, govulncheck all run
+  against `./... ./datastartest/... ./static/...` in workspace mode.
+- **Dependabot monitors all three modules** — separate gomod entries for `/`,
+  `/datastartest`, and `/static`.
+
+### Added — datastartest API
+
+- **`datastartest/` package** — Consumer-facing E2E test helpers for
   DataStar handlers. Provides `Collect(t, handler)` (one-liner test server +
   GET + decode), `ReadEvents(io.Reader)` (SSE wire-format parser), `Event` type
   with typed accessors (`Selector()`, `Mode()`, `Elements()`, `SignalsJSON()`,
@@ -28,7 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `UnmarshalSignals` error now includes JSON preview. Fuzz test
   (`FuzzReadEvents`, 9-seed corpus) and benchmark (`BenchmarkReadEvents`,
   ~131 MB/s) added. 60+ tests, 8 testable examples.
-- **`static/` subpackage** — Dedicated asset package owning the embedded
+- **`static/` subpackage** — Dedicated asset module owning the embedded
   DataStar JavaScript client bundle. Exports `Bytes() []byte` and
   `Version` const (`"1.0.2"`). Extracted from `script_handler.go` so the
   protocol package no longer owns the raw bytes. Public API unchanged
@@ -46,6 +67,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   quoted attribute values (e.g., `<script data-x="a>b">`).
 - **`ReadNEvents` early return** — `count <= 0` now returns immediately with
   nil instead of reading one event before checking the threshold.
+- **`RequireSignalsContain` doc corrected** — was documented as checking
+  "top-level property" but actually matches at any nesting level. Doc now
+  reflects the substring-matching behavior honestly.
 
 ## [0.0.3] - 2026-08-08
 
@@ -189,7 +213,8 @@ values producing `sse.Event`, built on [go-sse](https://github.com/LarsArtmann/g
 - Removed local `replace` directive — the module now resolves `go-sse v0.4.0`
   and `go-error-family v0.10.0` from the Go module proxy.
 
-[Unreleased]: https://github.com/LarsArtmann/go-datastar/compare/v0.0.3...HEAD
+[Unreleased]: https://github.com/LarsArtmann/go-datastar/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/LarsArtmann/go-datastar/compare/v0.0.3...v0.1.0
 [0.0.3]: https://github.com/LarsArtmann/go-datastar/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/LarsArtmann/go-datastar/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/LarsArtmann/go-datastar/releases/tag/v0.0.1

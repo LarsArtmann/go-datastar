@@ -6,8 +6,6 @@
 *.test
 *.out
 vendor/
-go.work
-go.work.sum
 
 # Nix
 result

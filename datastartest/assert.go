@@ -96,9 +96,9 @@ func RequireSignals(t *testing.T, evt Event, wantJSON string) {
 	}
 }
 
-// RequireSignalsContain fails the test unless evt is a patch-signals event whose
-// JSON payload contains key as a top-level property. This is a convenience for
-// checking individual signal keys without decoding the full payload.
+// RequireSignalsContain fails the test unless evt is a patch-signals event
+// whose JSON payload contains key at any nesting level. This is a convenience
+// for checking individual signal keys without decoding the full payload.
 func RequireSignalsContain(t *testing.T, evt Event, key string) {
 	t.Helper()
 
