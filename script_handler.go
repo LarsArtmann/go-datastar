@@ -2,17 +2,16 @@ package datastar
 
 import (
 	"crypto/sha256"
-	_ "embed"
 	"encoding/hex"
 	"net/http"
 	"strconv"
+
+	"github.com/larsartmann/go-datastar/static"
 )
 
-//go:embed static/datastar.js
-var embeddedDatastarJS []byte
-
 // DatastarJSVersion is the version of the embedded DataStar JavaScript client.
-const DatastarJSVersion = "1.0.2"
+// It re-exports [static.Version] for backward compatibility with the root API.
+const DatastarJSVersion = static.Version
 
 func computeETag(data []byte) string {
 	h := sha256.Sum256(data)
@@ -24,7 +23,7 @@ func computeETag(data []byte) string {
 // JavaScript client bundle with correct Content-Type, ETag, and Cache-Control
 // headers. Only GET and HEAD requests are allowed; all others return 405.
 func ScriptHandler() http.Handler {
-	return ScriptHandlerWith(embeddedDatastarJS, DatastarJSVersion)
+	return ScriptHandlerWith(static.Bytes(), static.Version)
 }
 
 // ScriptHandlerWith returns an [http.Handler] that serves a custom JavaScript

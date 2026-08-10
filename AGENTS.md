@@ -56,12 +56,14 @@ Every DataStar protocol message is a value that produces an `sse.Event`. This ma
 | `adapters.go`            | ElementsFromTempl, ElementsFromGostar                                                      |
 | `http.go`                | GetSSE/PostSSE/PutSSE/PatchSSE/DeleteSSE                                                   |
 | `inbound.go`             | ReadSignals, LastEventID                                                                   |
-| `script_handler.go`      | Embedded datastar.js, ScriptHandler, ScriptTag, Version                                    |
+| `script_handler.go`      | ScriptHandler, ScriptTag, Version (HTTP serving of the `static` asset bundle)              |
+| `static/`                | Dedicated asset package: `//go:embed datastar.js`, `Bytes()`, `Version`                    |
 | `response.go`            | Response (fluent SSE builder), ErrorResponse, ErrorResponseFromError, NotificationResponse |
 | `example_test.go`        | Testable examples (Example functions with `// Output:` assertions)                         |
 | `inbound_fuzz_test.go`   | Fuzz test for ReadSignals (10-seed corpus, regression-guarded)                             |
 | `coverage_test.go`       | Option-application, construction error branches, stream-send failure paths                 |
-| `errors_example_test.go` | Example functions showing all three error-handling patterns                                |
+| `errors_example_test.go` | Example functions showing all three error-handling patterns                |
+| `datastartest/`           | Consumer E2E test helpers: SSE parsing, DataStar decoding, Collect, assertions |
 
 ## Wire-Format Parity Requirements
 
@@ -138,3 +140,44 @@ if errorfamily.IsRetryable(err) { /* backoff + retry */ }
 ## What This Library Is NOT
 
 No CQRS, no event bus, no domain opinions. It is a pure protocol layer. Consumers build domain adapters on top (e.g., cqrs-htmx/datastar's EventBridge).
+
+## E2E Testing for Consumers: `datastartest/`
+
+The `datastartest` subpackage gives consumers reusable helpers for E2E testing
+their DataStar handlers without hand-rolling SSE parsing or DataStar dataline
+decoding. It replaces ~260 lines of private parsing code that previously lived
+in this repo's own `e2e_test.go`.
+
+### API surface
+
+| Export | Purpose |
+| --- | --- |
+| `Collect(t, handler)` | Spin up httptest.Server, GET, parse SSE, return decoded events |
+| `ReadEvents(io.Reader)` | Parse SSE wire format from any reader |
+| `MustReadEvents(t, io.Reader)` | ReadEvents with t.Fatal on error |
+| `Event.Selector()` / `.Mode()` / `.Elements()` | Typed dataline accessors |
+| `Event.SignalsJSON()` / `.UnmarshalSignals(&v)` | Decode signals JSON |
+| `FilterElements(events)` / `FilterSignals(events)` | Filter by event type |
+| `RequireElements(t, evt, sel, mode, html)` | One-liner element assertion |
+| `RequireElementsContains(t, evt, sel, mode, htmlSubstr)` | Substring match (scripts) |
+| `RequireSignals(t, evt, json)` | Exact signals JSON assertion |
+| `RequireEventCount(t, events, n)` | Event count assertion |
+
+### Consumer usage
+
+```go
+import (
+    "github.com/larsartmann/go-datastar"
+    "github.com/larsartmann/go-datastar/datastartest"
+)
+
+func TestFeedHandler(t *testing.T) {
+    events := datastartest.Collect(t, myHandler)
+    datastartest.RequireEventCount(t, events, 2)
+
+    datastartest.RequireElements(t, events[0], "#feed", "append", "<div>hello</div>")
+
+    var data struct{ Count int `json:"count"` }
+    events[1].UnmarshalSignals(&data) // data.Count == 1
+}
+```

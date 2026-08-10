@@ -248,6 +248,38 @@ store.Append(patch.Event())
 
 For multi-instance deployments, implement `sse.EventStore` against a shared backend (Redis, Postgres).
 
+## Testing your handlers
+
+The `datastartest` subpackage provides E2E test helpers that parse SSE responses and decode DataStar datalines into typed values — so you can assert on patches without hand-rolling wire-format parsing:
+
+```go
+import "github.com/larsartmann/go-datastar/datastartest"
+
+func TestFeedHandler(t *testing.T) {
+    events := datastartest.Collect(t, myHandler)
+    datastartest.RequireEventCount(t, events, 2)
+
+    // Elements: typed accessors decode the datalines
+    datastartest.RequireElements(t, events[0], "#feed", "append", "<div>hello</div>")
+
+    // Signals: unmarshal JSON into a struct
+    var data struct{ Count int `json:"count"` }
+    _ = events[1].UnmarshalSignals(&data)
+}
+```
+
+For non-GET requests, use `ReadEvents` with your own test server:
+
+```go
+srv := httptest.NewServer(handler)
+defer srv.Close()
+
+resp, _ := http.Post(srv.URL, "application/json", body)
+defer resp.Body.Close()
+
+events := datastartest.MustReadEvents(t, resp.Body)
+```
+
 ## Error handling
 
 Every error returned by go-datastar is a classified [`*errorfamily.Error`](https://github.com/LarsArtmann/go-error-family) carrying a stable **code**, a behavioral **family**, and structured **context**.
