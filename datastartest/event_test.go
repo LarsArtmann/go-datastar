@@ -212,7 +212,10 @@ func TestEvent_OnlyIfMissingFlag(t *testing.T) {
 	t.Parallel()
 
 	events := datastartest.Collect(t, helperHandler(func(resp *datastar.Response) {
-		patch, err := datastar.NewSignalsPatch(map[string]any{"x": 1}, datastar.WithOnlyIfMissing(true))
+		patch, err := datastar.NewSignalsPatch(
+			map[string]any{"x": 1},
+			datastar.WithOnlyIfMissing(true),
+		)
 		if err != nil {
 			return
 		}

@@ -21,27 +21,30 @@ import (
 func TestE2E_DataStarPatches(t *testing.T) {
 	t.Parallel()
 
-	events := datastartest.Collect(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		stream := sse.NewStream(w, r)
-		defer func() { _ = stream.Close() }()
+	events := datastartest.Collect(
+		t,
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			stream := sse.NewStream(w, r)
+			defer func() { _ = stream.Close() }()
 
-		resp := datastar.NewResponse(stream)
+			resp := datastar.NewResponse(stream)
 
-		// 1. Patch elements with selector + mode
-		_ = resp.PatchElements("<div>hello</div>",
-			datastar.WithSelector("#feed"),
-			datastar.WithMode(datastar.ElementPatchModeAppend),
-		)
+			// 1. Patch elements with selector + mode
+			_ = resp.PatchElements("<div>hello</div>",
+				datastar.WithSelector("#feed"),
+				datastar.WithMode(datastar.ElementPatchModeAppend),
+			)
 
-		// 2. Patch signals
-		_ = resp.MarshalAndPatchSignals(map[string]any{"count": 1})
+			// 2. Patch signals
+			_ = resp.MarshalAndPatchSignals(map[string]any{"count": 1})
 
-		// 3. Execute script (emits patch-elements, NOT execute-script)
-		_ = resp.ExecuteScript("console.log('hi')")
+			// 3. Execute script (emits patch-elements, NOT execute-script)
+			_ = resp.ExecuteScript("console.log('hi')")
 
-		// 4. Remove element
-		_ = resp.RemoveElement("#stale")
-	}))
+			// 4. Remove element
+			_ = resp.RemoveElement("#stale")
+		}),
+	)
 
 	datastartest.RequireEventCount(t, events, 4)
 

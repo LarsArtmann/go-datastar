@@ -54,7 +54,11 @@ func RequireElements(t *testing.T, evt Event, wantSelector, wantMode, wantHTML s
 // with the exact selector and mode, and Elements() contains wantHTMLContains
 // as a substring. Useful for script patches where the HTML includes wrapper
 // elements (e.g., <script>) around the content you want to verify.
-func RequireElementsContains(t *testing.T, evt Event, wantSelector, wantMode, wantHTMLContains string) {
+func RequireElementsContains(
+	t *testing.T,
+	evt Event,
+	wantSelector, wantMode, wantHTMLContains string,
+) {
 	t.Helper()
 
 	if !evt.IsElements() {
