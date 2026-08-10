@@ -63,8 +63,9 @@
 
 | Feature                     | Status                | Notes                                                                               |
 | --------------------------- | --------------------- | ----------------------------------------------------------------------------------- |
-| Embedded DataStar JS client | 🟢 `FULLY_FUNCTIONAL` | v1.0.2 embedded. `ScriptHandler()` with ETag + Cache-Control (`script_handler.go`). |
+| Embedded DataStar JS client | 🟢 `FULLY_FUNCTIONAL` | v1.0.2 embedded in `static/` subpackage. `ScriptHandler()` with ETag + Cache-Control (`script_handler.go`). |
 | HEAD request support        | 🟢 `FULLY_FUNCTIONAL` | RFC 7231 §4.3.2 compliant — headers only, no body (`script_handler.go`). Tested.    |
+| `static.Bytes()` / `Version` | 🟢 `FULLY_FUNCTIONAL` | Direct access to the embedded JS bundle and version (`static/static.go`).      |
 
 ## Inbound Helpers
 
@@ -100,11 +101,24 @@
 
 | Feature           | Status                | Notes                                                              |
 | ----------------- | --------------------- | ------------------------------------------------------------------ |
-| E2E HTTP test     | 🟢 `FULLY_FUNCTIONAL` | Wire-format round-trip verification (`e2e_test.go`, 260 lines)     |
+| E2E HTTP test     | 🟢 `FULLY_FUNCTIONAL` | Wire-format round-trip verification (`e2e_test.go`, 109 lines)     |
 | Fuzz testing      | 🟢 `FULLY_FUNCTIONAL` | `ReadSignals` panic-proof, 10-seed corpus (`inbound_fuzz_test.go`) |
 | Testable examples | 🟢 `FULLY_FUNCTIONAL` | Wire-format `// Output:` assertions (`example_test.go`)            |
 | Test coverage     | 🟢 `FULLY_FUNCTIONAL` | 98.7% of statements covered                                        |
 | Benchmark tests   | ⚪ `PLANNED`          | No benchmarks exist yet                                            |
+
+## Consumer Test Helpers (`datastartest/`)
+
+| Feature               | Status                | Notes                                                                                     |
+| --------------------- | --------------------- | ----------------------------------------------------------------------------------------- |
+| `Collect`             | 🟢 `FULLY_FUNCTIONAL` | One-liner: test server + GET + decode (`datastartest/collect.go`)                          |
+| `CollectWithRequest`  | 🟢 `FULLY_FUNCTIONAL` | Non-GET requests with custom method, body, content-type (`datastartest/collect.go`)       |
+| `CollectPost`         | 🟢 `FULLY_FUNCTIONAL` | POST with JSON body — thin wrapper over CollectWithRequest (`datastartest/collect.go`)    |
+| `CollectN`            | 🟢 `FULLY_FUNCTIONAL` | Streaming handlers — read N events then close (`datastartest/collect.go`)                 |
+| `ReadEvents`          | 🟢 `FULLY_FUNCTIONAL` | SSE wire-format parser for any `io.Reader` (`datastartest/reader.go`)                     |
+| `Event` accessors     | 🟢 `FULLY_FUNCTIONAL` | 15+ typed accessors: Selector, Mode, Elements, ScriptContent, SignalsJSON, etc.           |
+| Assertion helpers     | 🟢 `FULLY_FUNCTIONAL` | RequireElements, RequireElementsContains, RequireSignals, RequireEventCount (`assert.go`) |
+| Filter helpers        | 🟢 `FULLY_FUNCTIONAL` | FilterElements, FilterSignals (`filter.go`)                                               |
 
 ## Build & CI
 

@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`datastartest/` subpackage** — Consumer-facing E2E test helpers for
+  DataStar handlers. Provides `Collect(t, handler)` (one-liner test server +
+  GET + decode), `ReadEvents(io.Reader)` (SSE wire-format parser), `Event` type
+  with typed accessors (`Selector()`, `Mode()`, `Elements()`, `SignalsJSON()`,
+  `UnmarshalSignals()`, etc.), filter helpers (`FilterElements`,
+  `FilterSignals`), and assertion helpers (`RequireElements`,
+  `RequireElementsContains`, `RequireSignals`, `RequireEventCount`). Includes
+  `ScriptContent()` (strip `<script>` wrapper), `CollectWithRequest` /
+  `CollectPost` (non-GET requests), and `CollectN` (streaming handlers). 24+
+  tests, 4 testable examples. The library's own `e2e_test.go` was refactored
+  from 261 → 109 lines using this package.
+- **`static/` subpackage** — Dedicated asset package owning the embedded
+  DataStar JavaScript client bundle. Exports `Bytes() []byte` and
+  `Version` const (`"1.0.2"`). Extracted from `script_handler.go` so the
+  protocol package no longer owns the raw bytes. Public API unchanged
+  (`ScriptHandler`, `ScriptHandlerWith`, `ScriptTag`, `Version`,
+  `DatastarJSVersion` all still work via re-exports).
+
+### Changed
+
+- **`script_handler.go` refactored** — Now imports the `static` subpackage.
+  `ScriptHandler()` delegates to `ScriptHandlerWith(static.Bytes(),
+  static.Version)`. `DatastarJSVersion` is a backward-compatible const alias
+  for `static.Version`. No behavioral change.
+
 ## [0.0.3] - 2026-08-08
 
 ### Added
