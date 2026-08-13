@@ -10,7 +10,7 @@ require (
 
 require (
 	github.com/larsartmann/go-branded-id v0.5.1 // indirect
-	github.com/larsartmann/go-datastar/static v0.1.0 // indirect
+	github.com/larsartmann/go-datastar/static v0.2.0 // indirect
 )
 
 replace github.com/larsartmann/go-datastar => ..
