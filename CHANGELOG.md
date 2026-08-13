@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — go-sse v0.5.0
+
+- **go-sse bumped from v0.4.0 to v0.5.0** across the root module and
+  `datastartest`. go-sse v0.5.0 ships its own `go-error-family` classification
+  (codes like `sse.send_failed`), drop observability (`WithOnDrop`), and
+  multi-line SSE data helpers (`JoinLines`/`KeyedLines`). go-datastar's
+  `wrapStreamError` wraps go-sse's classified errors as
+  `datastar.stream_send_failed` (Transient). Because `errorfamily.Classify`
+  returns the outermost family, go-datastar's classification wins — which is
+  correct since Send failures are transient I/O errors. `errors.Is` still
+  traverses the chain, so callers matching go-sse codes work transparently.
+- **`datastartest` errors now use `go-error-family`** — Three `fmt.Errorf` call
+  sites (SSE scanner errors in `reader.go` and `collect.go`, signals unmarshaler
+  in `event.go`) now return `errorfamily`-classified errors with stable codes
+  (`datastartest.sse_scan_failed`, `datastartest.signals_unmarshal_failed`).
+  `go-error-family` promoted from indirect to direct in `datastartest/go.mod`.
+  Consumers can now distinguish test-helper failures by code instead of
+  message-matching.
+- **Example adopts `WithOnDrop`** — `example/main.go` now registers a drop
+  callback on the broadcaster, logging when subscriber buffers overflow. This
+  demonstrates go-sse v0.5.0's drop observability feature in a real serving
+  context.
+- **`JoinLines`/`KeyedLines` not adopted** — go-sse v0.5.0's `splitLines`
+  normalizes CRLF to LF, while the upstream DataStar SDK splits on `\n` only
+  (wire-format parity items 6-7). Its key convention (`key + " "`) also conflicts
+  with go-datastar's trailing-space dataline constants (`"selector "`,
+  `"elements "`). Revisit if upstream adopts CRLF normalization. Documented in
+  `AGENTS.md`.
+
+### Added — Tooling and supply-chain hardening
+
+- **CI GitHub Actions pinned to commit SHAs** — `actions/checkout` and
+  `actions/setup-go` are pinned to specific v7 commit SHAs (verified against the
+  `v7` tags) to harden the supply chain against tag-mutation attacks. Version
+  comments preserved for reviewer readability.
+- **`dprint.json` formatter config** — Centralized formatting for JSON, YAML,
+  Markdown, and Dockerfile across editors and CI. Excludes `vendor/`, `.git/`,
+  and `CHANGELOG.md`.
+
 ### Fixed — Module boundary
 
 - **Circular module dependency between root and datastartest** — Root's go.mod

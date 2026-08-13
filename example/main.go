@@ -26,7 +26,11 @@ const (
 )
 
 func main() {
-	broadcaster := sse.NewBroadcaster[sse.Event]()
+	broadcaster := sse.NewBroadcaster[sse.Event](
+		sse.WithOnDrop(func(evt sse.Event) {
+			log.Printf("broadcaster: dropped event %q (subscriber buffer full)", evt.Event)
+		}),
+	)
 	defer broadcaster.Close()
 
 	go startProducer(broadcaster)

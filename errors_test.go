@@ -12,6 +12,7 @@ import (
 	"github.com/larsartmann/go-datastar"
 	errorfamily "github.com/larsartmann/go-error-family"
 	"github.com/larsartmann/go-error-family/errorfamilytest"
+	"github.com/larsartmann/go-sse"
 )
 
 // These tests verify the strongly typed error contract: every failure path
@@ -202,6 +203,41 @@ func TestError_Sentinels_AreContextPristine(t *testing.T) {
 
 	errorfamilytest.AssertContextMissing(t, datastar.ErrEventNameRequired, "anything")
 	errorfamilytest.AssertContextMissing(t, datastar.ErrBodyReadAfterClose, "anything")
+}
+
+// --- Cross-layer composition: go-datastar wraps go-sse's classified errors ---
+
+// TestWrapStreamError_DoubleWrapComposition verifies that when go-sse v0.5.0
+// returns an errorfamily-classified Send error, go-datastar's wrapStreamError
+// adds a second classification layer that wins (outermost family/code), while
+// errors.Is still traverses the full chain to the original cause.
+func TestWrapStreamError_DoubleWrapComposition(t *testing.T) {
+	t.Parallel()
+
+	r := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events", nil)
+	stream := sse.NewStream(failingWriter{}, r)
+	resp := datastar.NewResponse(stream)
+
+	err := resp.PatchElements("<div>hi</div>")
+	if err == nil {
+		t.Fatal("expected error from failing writer")
+	}
+
+	// Outermost layer is go-datastar's classification.
+	errorfamilytest.AssertCode(t, err, datastar.CodeStreamSendFailed)
+	errorfamilytest.AssertFamily(t, err, errorfamily.Transient)
+	errorfamilytest.AssertRetryable(t, err, true)
+
+	// errors.Is traverses through both errorfamily wraps to the original cause.
+	if !errors.Is(err, errWriteFailed) {
+		t.Errorf("errors.Is(err, errWriteFailed) = false; want true (chain traversal)")
+	}
+
+	// The error is an *errorfamily.Error (extractable via errors.As).
+	var classifiedErr *errorfamily.Error
+	if !errors.As(err, &classifiedErr) {
+		t.Errorf("errors.As(err, &*errorfamily.Error) = false; want true")
+	}
 }
 
 // --- errors.As coverage: every error path must be an *errorfamily.Error ---

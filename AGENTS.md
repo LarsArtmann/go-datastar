@@ -222,6 +222,8 @@ circular module dependency: root must never require datastartest in its go.mod.
 | `RequireSignals(t, evt, json)` | Exact signals JSON assertion |
 | `RequireSignalsContain(t, evt, key)` | Check signal key exists |
 | `RequireEventCount(t, events, n)` | Event count assertion |
+| `CodeSSEScanFailed` | Error code for SSE scanner I/O failures (`datastartest.sse_scan_failed`) |
+| `CodeSignalsUnmarshalFailed` | Error code for signals JSON decode failures (`datastartest.signals_unmarshal_failed`) |
 
 ### Consumer usage
 
