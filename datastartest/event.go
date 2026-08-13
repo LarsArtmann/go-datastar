@@ -93,7 +93,12 @@ func (e Event) UnmarshalSignals(target any) error {
 			preview = preview[:maxPreviewLen] + "..."
 		}
 
-		return errorfamily.WrapRejectionf(err, CodeSignalsUnmarshalFailed, "unmarshal signals JSON %q", preview)
+		return errorfamily.WrapRejectionf(
+			err,
+			CodeSignalsUnmarshalFailed,
+			"unmarshal signals JSON %q",
+			preview,
+		)
 	}
 
 	return nil
