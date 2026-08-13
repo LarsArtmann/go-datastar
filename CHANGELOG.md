@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Nothing yet.
+
+### Fixed
+
+- Nothing yet.
+
+## [0.2.0] - 2026-08-13
+
 ### Changed — go-sse v0.5.0
 
 - **go-sse bumped from v0.4.0 to v0.5.0** across the root module and
