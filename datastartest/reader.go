@@ -2,11 +2,12 @@ package datastartest
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"strconv"
 	"strings"
 	"testing"
+
+	errorfamily "github.com/larsartmann/go-error-family"
 )
 
 const (
@@ -53,7 +54,7 @@ func ReadEvents(r io.Reader) ([]Event, error) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, fmt.Errorf("scan SSE stream: %w", err)
+		return nil, errorfamily.WrapTransient(err, CodeSSEScanFailed, "scan SSE stream")
 	}
 
 	if started {

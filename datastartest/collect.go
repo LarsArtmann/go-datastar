@@ -2,13 +2,14 @@ package datastartest
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
+
+	errorfamily "github.com/larsartmann/go-error-family"
 )
 
 // Collect starts a test server for the handler, sends a GET request, reads the
@@ -210,7 +211,7 @@ func ReadNEvents(r io.Reader, count int) ([]Event, error) {
 			return events, nil
 		}
 
-		return nil, fmt.Errorf("scan SSE stream: %w", err)
+		return nil, errorfamily.WrapTransient(err, CodeSSEScanFailed, "scan SSE stream")
 	}
 
 	if started {

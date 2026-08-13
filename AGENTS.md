@@ -112,6 +112,12 @@ These behaviors reproduce the upstream SDK exactly:
 11. DispatchCustomEvent defaults: bubbles/cancelable/composed=true, selector=document
 12. HEAD requests to ScriptHandler return `200 OK` with headers but no message body (RFC 7231 §4.3.2)
 
+> **Note:** go-sse v0.5.0 added `JoinLines`/`KeyedLines` helpers for multi-line
+> SSE data. go-datastar does NOT adopt them because `KeyedLines` normalizes
+> CRLF to LF (items 6-7 split on `\n` only, matching upstream), and its key
+> convention (`key + " "`) conflicts with go-datastar's trailing-space dataline
+> constants (item 9). Revisit if upstream adopts CRLF normalization.
+
 ## Error System
 
 Every error returned by go-datastar is a classified `*errorfamily.Error` carrying
@@ -148,6 +154,9 @@ if errorfamily.IsRetryable(err) { /* backoff + retry */ }
 `datastar.element_patch_mode_invalid`, `datastar.namespace_invalid`,
 `datastar.stream_send_failed`.
 
+datastartest codes: `datastartest.sse_scan_failed`,
+`datastartest.signals_unmarshal_failed`.
+
 ### Sentinels
 
 - `ErrBodyReadAfterClose` (wraps `http.ErrBodyReadAfterClose`, preserving the cause)
@@ -166,6 +175,13 @@ if errorfamily.IsRetryable(err) { /* backoff + retry */ }
    sentinels never leak caller-specific context.
 4. **Context loss is a bug.** Wrapping errors include relevant in-scope values
    (HTTP method, input byte length, value type) so diagnosis needs no re-run.
+5. **Layered composition with go-sse v0.5+.** Since go-sse v0.5.0, the
+   transport also classifies its errors via go-error-family (codes like
+   `sse.send_failed`). `wrapStreamError` wraps Send errors as
+   `datastar.stream_send_failed` (Transient). Because `errorfamily.Classify`
+   returns the outermost family, go-datastar's classification wins — correct,
+   since Send failures are transient I/O errors. `errors.Is` traverses the
+   chain, so callers matching go-sse codes work transparently through the wrap.
 
 ## What This Library Is NOT
 

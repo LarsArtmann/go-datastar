@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/larsartmann/go-datastar"
+	errorfamily "github.com/larsartmann/go-error-family"
 )
 
 // Event is a DataStar SSE event decoded from the wire format. It preserves
@@ -92,7 +93,7 @@ func (e Event) UnmarshalSignals(target any) error {
 			preview = preview[:maxPreviewLen] + "..."
 		}
 
-		return fmt.Errorf("unmarshal signals JSON %q: %w", preview, err)
+		return errorfamily.WrapRejectionf(err, CodeSignalsUnmarshalFailed, "unmarshal signals JSON %q", preview)
 	}
 
 	return nil
