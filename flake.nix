@@ -97,6 +97,10 @@
         {
           treefmt = {
             projectRootFile = "go.mod";
+            # treefmt-nix's built-in flakeCheck would add an UNGUARDED
+            # checks.treefmt without goPkg on PATH; checks.format below is the
+            # guarded equivalent (goimports shells out to `go env` per file).
+            flakeCheck = false;
             programs = {
               gofumpt.enable = true;
               goimports.enable = true;
