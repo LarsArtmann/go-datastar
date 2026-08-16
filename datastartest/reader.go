@@ -258,11 +258,11 @@ func (b *bomStripReader) Read(p []byte) (int, error) {
 	}
 
 	n, err := b.r.Read(p)
-	if err != nil {
+	if err != nil && !errors.Is(err, io.EOF) {
 		return n, fmt.Errorf("read after BOM probe: %w", err)
 	}
 
-	return n, nil
+	return n, err
 }
 
 // probe reads up to three bytes and decides whether they are a BOM. Short
