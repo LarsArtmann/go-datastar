@@ -186,6 +186,7 @@ linters:
         - ok
         - tt
         - fn
+        - tb
         - t
         - i
         - m

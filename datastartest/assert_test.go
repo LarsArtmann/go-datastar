@@ -107,7 +107,13 @@ func TestRequireElementsContains_FailurePaths(t *testing.T) {
 		t.Parallel()
 
 		tb := &recordingTB{}
-		datastartest.RequireElementsContains(tb, datastartest.Event{Type: "message"}, "#f", "outer", "x")
+		datastartest.RequireElementsContains(
+			tb,
+			datastartest.Event{Type: "message"},
+			"#f",
+			"outer",
+			"x",
+		)
 
 		if len(tb.fatals) != 1 {
 			t.Errorf("expected wrong-type fatal; got %v", tb.fatals)

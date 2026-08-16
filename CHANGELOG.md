@@ -26,9 +26,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **All public helpers now accept `testing.TB`** instead of `*testing.T`, so
   they work with `*testing.T`, `*testing.B`, and Ginkgo's `GinkgoT()`.
   Backward compatible for existing `*testing.T` callers.
-- Test coverage raised from 82.2% to 94.1% (assertion failure paths,
+- Test coverage raised from 82.2% to 92.9% (assertion failure paths,
   `RequireSignals`, `MustReadNEvents`, option plumbing, and a full
   EventStore replay dogfood E2E via `WithLastEventID`).
+- **Response-body Close errors now surface as test errors.** The `Collect*`
+  helpers previously ignored `resp.Body.Close()` failures with `_ =`; they now
+  report them via `tb.Errorf` instead of silently discarding them. Clears the
+  erraudit audit (0 violations with `--enforce-go-error-family`).
 
 ### Fixed
 

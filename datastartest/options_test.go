@@ -187,6 +187,11 @@ func TestCollectWithTimeout_WithOptions(t *testing.T) {
 		_ = resp.PatchElements("<div>timed</div>", datastar.WithSelector("#feed"))
 	})
 
-	events := datastartest.CollectWithTimeout(t, mux, 5*time.Second, datastartest.WithPath("/events"))
+	events := datastartest.CollectWithTimeout(
+		t,
+		mux,
+		5*time.Second,
+		datastartest.WithPath("/events"),
+	)
 	datastartest.RequireEventCount(t, events, 1)
 }

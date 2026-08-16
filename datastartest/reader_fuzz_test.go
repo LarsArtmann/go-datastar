@@ -27,6 +27,13 @@ func FuzzReadEvents(f *testing.F) {
 	f.Add([]byte("retry: not-a-number\n\n")) // invalid retry
 	f.Add([]byte("event:\ndata:\n\n"))       // empty field values
 
+	// Dataless frames must never dispatch (SSE spec): heartbeats, id-only,
+	// retry-only, and fully-named-but-empty events.
+	f.Add([]byte(": heartbeat\n\n"))
+	f.Add([]byte("id: 1\n\nid: 2\n\n"))
+	f.Add([]byte("retry: 3000\n\n"))
+	f.Add([]byte("event: named\nid: 9\nretry: 100\n\n"))
+
 	f.Fuzz(func(t *testing.T, input []byte) {
 		// The only invariant under fuzz: never panic.
 		_, _ = datastartest.ReadEvents(strings.NewReader(string(input)))
