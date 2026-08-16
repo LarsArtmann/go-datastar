@@ -1,6 +1,6 @@
 module github.com/larsartmann/go-datastar/datastartest
 
-go 1.26.5
+go 1.26.6
 
 require (
 	github.com/larsartmann/go-datastar v0.2.0

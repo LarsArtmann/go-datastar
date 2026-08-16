@@ -37,7 +37,17 @@
           ...
         }:
         let
-          goPkg = pkgs.go_1_26;
+          # TODO(go-1.26.6): drop this override when nixpkgs ships go_1_26 >= 1.26.6.
+          # The go.mod directives pin 1.26.6 to clear stdlib CVEs
+          # (GO-2026-5972/6089/6090/6218) and GOTOOLCHAIN=local forbids
+          # auto-downloading a newer toolchain in hermetic builds.
+          goPkg = pkgs.go_1_26.overrideAttrs (old: rec {
+            version = "1.26.6";
+            src = pkgs.fetchurl {
+              url = "https://go.dev/dl/go${version}.src.tar.gz";
+              hash = "sha256-oHIcVMaIkBRI13rZs+x+p8R0cwdV/4kTgukuy5P/LLE=";
+            };
+          });
           buildGoModule = pkgs.buildGoModule.override { go = goPkg; };
           version = self.rev or self.dirtyRev or "dev";
           vendorHash = "sha256-+BcQ1X/Jz/P8dkvfy+kQOU8LPYAxOB1I5ST5lpvTjFk=";
@@ -100,7 +110,13 @@
             };
           };
 
-          checks.format = config.treefmt.build.check self;
+          # goimports shells out to `go env` per file; the `go` on its PATH
+          # must satisfy the go.mod directive or the sandbox tries a
+          # toolchain download (no network). The gotools wrapper only
+          # APPENDS its build-time go, so a goPkg first on PATH wins.
+          checks.format = (config.treefmt.build.check self).overrideAttrs (old: {
+            buildInputs = old.buildInputs ++ [ goPkg ];
+          });
           checks.build = hermeticCheck;
 
           devShells.default = pkgs.mkShellNoCC {
