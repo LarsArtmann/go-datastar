@@ -257,14 +257,14 @@ func (b *bomStripReader) Read(p []byte) (int, error) {
 		return 0, err
 	}
 
-	n, err := b.r.Read(p)
+	bytesRead, err := b.r.Read(p)
 	if err != nil && !errors.Is(err, io.EOF) {
-		return n, fmt.Errorf("read after BOM probe: %w", err)
+		return bytesRead, fmt.Errorf("read after BOM probe: %w", err)
 	}
 
 	// EOF must pass through unwrapped so bufio.Scanner recognises a clean
 	// end-of-stream and reports scanner.Err() == nil.
-	return n, err //nolint:wrapcheck
+	return bytesRead, err //nolint:wrapcheck
 }
 
 // probe reads up to three bytes and decides whether they are a BOM. Short
