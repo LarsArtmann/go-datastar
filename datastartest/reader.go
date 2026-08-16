@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"strconv"
 	"strings"
@@ -17,9 +18,11 @@ const (
 	initialLineCap = 64 * 1024   // 64 KiB initial buffer
 )
 
-// utf8BOM is the UTF-8 byte-order mark (U+FEFF). The SSE spec decodes the
-// stream with UTF-8 decode, which strips exactly one leading BOM.
-var utf8BOM = [...]byte{0xEF, 0xBB, 0xBF}
+// utf8BOMBytes returns the UTF-8 byte-order mark (U+FEFF). The SSE spec decodes
+// the stream with UTF-8 decode, which strips exactly one leading BOM.
+func utf8BOMBytes() []byte {
+	return []byte{0xEF, 0xBB, 0xBF}
+}
 
 // ReadEvents parses the SSE wire format from r and returns all decoded events.
 // It reads until EOF, so the source must close or end the stream (e.g., an HTTP
@@ -111,6 +114,7 @@ type streamParser struct {
 func (p *streamParser) acceptLine(line string) {
 	if line == "" {
 		p.dispatchFrame()
+
 		return
 	}
 
@@ -181,12 +185,12 @@ func newSSEScanner(r io.Reader) *bufio.Scanner {
 //
 // A CR as the last buffered byte is held back until one more byte arrives (or
 // EOF) so a CRLF pair is always recognized as a single terminator.
-func splitSSELines(data []byte, atEOF bool) (advance int, token []byte, err error) {
+func splitSSELines(data []byte, atEOF bool) (int, []byte, error) {
 	if atEOF && len(data) == 0 {
 		return 0, nil, nil
 	}
 
-	for i := range len(data) {
+	for i := range data {
 		switch data[i] {
 		case '\n':
 			return i + 1, data[:i], nil
@@ -251,7 +255,12 @@ func (b *bomStripReader) Read(p []byte) (int, error) {
 		return 0, err
 	}
 
-	return b.r.Read(p)
+	n, err := b.r.Read(p)
+	if err != nil {
+		return n, fmt.Errorf("read after BOM probe: %w", err)
+	}
+
+	return n, nil
 }
 
 // probe reads up to three bytes and decides whether they are a BOM. Short
@@ -261,12 +270,14 @@ func (b *bomStripReader) Read(p []byte) (int, error) {
 func (b *bomStripReader) probe() {
 	b.checked = true
 
-	var head [len(utf8BOM)]byte
+	bom := utf8BOMBytes()
+
+	var head [len(bom)]byte
 
 	n, err := io.ReadFull(b.r, head[:])
 	b.pending = append(b.pending, head[:n]...)
 
-	if n == len(utf8BOM) && bytes.Equal(head[:], utf8BOM[:]) {
+	if n == len(bom) && bytes.Equal(head[:], bom) {
 		b.pending = b.pending[:0] // drop the BOM
 	}
 
