@@ -19,10 +19,13 @@ datastartest — the E2E test that used datastartest helpers was relocated to
 `datastartest/e2e_test.go` to break a circular module dependency.
 
 `go.work` is force-added to git (workspace development); `go.work.sum` is
-intentionally gitignored — the replace directives make workspace-local
-checksums advisory, and committing `go.work.sum` would add diff noise on every
-dependency update. Sibling requires use real published versions (not `v0.0.0`)
-so consumers testing without replaces resolve to a real published module.
+intentionally gitignored — it is advisory (the go toolchain regenerates it on
+demand), the committed per-module `go.sum` files are the source of truth for
+reproducibility, and the replace directives make sibling-module checksums
+unnecessary (they resolve to local paths). Committing `go.work.sum` would add
+diff noise on every dependency update. Sibling requires use real published
+versions (not `v0.0.0`) so consumers testing without replaces resolve to a real
+published module.
 
 ## Commands
 
@@ -140,8 +143,11 @@ These behaviors reproduce the upstream SDK exactly:
   module files, run `git check-ignore -v <file>` and `git ls-files <file>` —
   `git status` alone lies when a global ignore is in play.
 - `dprint.json` exists in the repo root but is NOT wired into treefmt/flake —
-  canonical formatting is treefmt (gofumpt/goimports/golines/nixfmt) via
-  `nix flake check`.
+  it documents the project's intent for non-Go files (JSON, YAML, Markdown,
+  Dockerfile) and supports editor/external integrations. Canonical formatting
+  is treefmt (gofumpt/goimports/golines/nixfmt) via `nix flake check`; wiring
+  dprint into the hermetic check would make it depend on network-fetched WASM
+  plugins.
 
 ## Error System
 

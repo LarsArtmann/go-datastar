@@ -1,0 +1,59 @@
+name: coverage
+
+# Generates a live coverage badge from the same three-module set as
+# `nix run .#coverage` (root, datastartest, static) and publishes a
+# shields.io endpoint JSON to the orphan `coverage` branch via the
+# built-in GITHUB_TOKEN — no external service or secret required.
+# Runs only on pushes to master so the badge always reflects merged
+# code (PR runs from forks cannot push and would overwrite the badge
+# with unmerged coverage).
+
+on:
+  push:
+    branches: [master]
+
+env:
+  GOEXPERIMENT: jsonv2
+
+permissions:
+  contents: write
+
+jobs:
+  update-coverage-badge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version: "1.26.6"
+
+      - name: Generate coverage report
+        run: go test ./... ./datastartest/... ./static/... -coverprofile=coverage.out -covermode=atomic -count=1
+
+      - name: Compute coverage and publish badge
+        run: |
+          set -eu
+          PCT=$(go tool cover -func=coverage.out | awk '/^total:/ {v=$NF; gsub("%","",v); print v}')
+          case "$PCT" in
+            ''|*[!0-9.]*) echo "::error::could not parse coverage percentage from: $(go tool cover -func=coverage.out | tail -1)"; exit 1;;
+          esac
+          awk -v p="$PCT" 'BEGIN {
+            if (p+0 >= 90)      color="brightgreen"
+            else if (p+0 >= 75) color="yellow"
+            else if (p+0 >= 50) color="orange"
+            else                color="red"
+            printf "{\"schemaVersion\":1,\"label\":\"coverage\",\"message\":\"%.1f%%\",\"color\":\"%s\",\"cacheSeconds\":300}\n", p, color
+          }' > /tmp/coverage-badge.json
+          cat /tmp/coverage-badge.json
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+
+          git checkout --orphan coverage
+          git rm -rf . >/dev/null 2>&1 || true
+          cp /tmp/coverage-badge.json coverage-badge.json
+          git add coverage-badge.json
+          git commit -m "chore(coverage): update badge to ${PCT}% [skip ci]"
+          git push origin coverage --force
