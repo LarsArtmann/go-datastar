@@ -18,8 +18,10 @@ const (
 	initialLineCap = 64 * 1024   // 64 KiB initial buffer
 )
 
-// utf8BOMBytes returns the UTF-8 byte-order mark (U+FEFF). The SSE spec decodes
-// the stream with UTF-8 decode, which strips exactly one leading BOM.
+// utf8BOM is the UTF-8 byte-order mark (U+FEFF). The SSE spec decodes the
+// stream with UTF-8 decode, which strips exactly one leading BOM.
+const utf8BOMSize = 3
+
 func utf8BOMBytes() []byte {
 	return []byte{0xEF, 0xBB, 0xBF}
 }
@@ -270,14 +272,12 @@ func (b *bomStripReader) Read(p []byte) (int, error) {
 func (b *bomStripReader) probe() {
 	b.checked = true
 
-	bom := utf8BOMBytes()
-
-	var head [len(bom)]byte
+	var head [utf8BOMSize]byte
 
 	n, err := io.ReadFull(b.r, head[:])
 	b.pending = append(b.pending, head[:n]...)
 
-	if n == len(bom) && bytes.Equal(head[:], bom) {
+	if n == utf8BOMSize && bytes.Equal(head[:], utf8BOMBytes()) {
 		b.pending = b.pending[:0] // drop the BOM
 	}
 
