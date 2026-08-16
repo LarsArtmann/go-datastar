@@ -103,6 +103,10 @@ Decisions awaiting the owner (not tasks — do not action without a ruling):
 - **`v0.0.0` vs real versions for sibling requires:** the replace directives
   make the version irrelevant locally, but `go mod tidy` can emit
   pseudo-versions if replaces are ever removed.
-- **`go` directive policy:** go.mod/go.work say `go 1.26.5`; the v0.0.2/v0.0.3
-  CHANGELOG entries claim a lowering to `go 1.26` that never landed. Either
-  apply the lowering or accept `1.26.5` and stop claiming otherwise.
+- **`go` directive policy (decided 2026-08-16, Full Execution Mode):**
+  directives pin the exact patch release — `go 1.26.6` across go.mod ×3,
+  go.work, and the CI `go-version`, clearing stdlib CVEs GO-2026-5972,
+  GO-2026-6089, GO-2026-6090, GO-2026-6218 and superseding the v0.0.2/v0.0.3
+  "lowered to `go 1.26`" CHANGELOG ghost. Nix stays hermetic through a
+  `go_1_26.overrideAttrs` pin (marked TODO for removal) until nixpkgs ships
+  ≥ 1.26.6.

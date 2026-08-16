@@ -31,8 +31,10 @@ GOWORK=off GOEXPERIMENT=jsonv2 go test ./...                      # root only
 GOWORK=off GOEXPERIMENT=jsonv2 go test ./...                      # datastartest (run from datastartest/)
 GOWORK=off GOEXPERIMENT=jsonv2 go test ./...                      # static (run from static/)
 
-# Error audit (all modules):
-GOEXPERIMENT=jsonv2 erraudit ./... ./datastartest/... ./static/... --type-aware --enforce-go-error-family --no-suppress
+# Error audit (all modules — erraudit v0.3.0 takes ONE directory per run, never package patterns):
+for mod in . ./datastartest ./static; do
+  (cd "$mod" && GOEXPERIMENT=jsonv2 erraudit . --type-aware --enforce-go-error-family --no-suppress)
+done
 
 # CI also enforces (run locally to pre-empt CI failures):
 GOEXPERIMENT=jsonv2 go work sync  # go.work must not change after sync (idempotency)

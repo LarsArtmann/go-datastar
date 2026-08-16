@@ -41,6 +41,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   has been marshaled in the constructor (with a classified error on failure)
   since v0.0.3. The doc now matches the code.
 
+### Security — CI and toolchain
+
+- **Go directives pinned to 1.26.6 across all modules** (go.mod ×3, go.work,
+  CI `go-version`) — clears the four stdlib vulnerabilities that kept the
+  govulncheck job red on master (GO-2026-5972, GO-2026-6089, GO-2026-6090,
+  GO-2026-6218; all "Fixed in go1.26.6"). The Nix flake pins
+  `go_1_26` to 1.26.6 via `overrideAttrs` until nixpkgs ships it, so
+  `nix flake check` stays hermetic and green alongside CI.
+- **erraudit CI job probe-gated and un-red-X'd** — the job now probes
+  `go list -m github.com/larsartmann/erraudit@v0.3.0` first: when resolvable
+  (erraudit is public as of 2026-08-16) the audit runs as a hard gate over
+  each module in turn; when not, the job skips with a visible notice instead
+  of failing at install. Also fixes the latent broken invocation: erraudit
+  accepts one directory argument, not three package patterns — the old
+  command could never have passed even with the repo public.
+
 ## [0.2.0] - 2026-08-13
 
 ### Changed — go-sse v0.5.0

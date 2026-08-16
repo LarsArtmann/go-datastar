@@ -41,7 +41,7 @@
           # The go.mod directives pin 1.26.6 to clear stdlib CVEs
           # (GO-2026-5972/6089/6090/6218) and GOTOOLCHAIN=local forbids
           # auto-downloading a newer toolchain in hermetic builds.
-          goPkg = pkgs.go_1_26.overrideAttrs (old: rec {
+          goPkg = pkgs.go_1_26.overrideAttrs (_old: rec {
             version = "1.26.6";
             src = pkgs.fetchurl {
               url = "https://go.dev/dl/go${version}.src.tar.gz";
