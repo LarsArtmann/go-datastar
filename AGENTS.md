@@ -148,12 +148,15 @@ These behaviors reproduce the upstream SDK exactly:
   is treefmt (gofumpt/goimports/golines/nixfmt) via `nix flake check`; wiring
   dprint into the hermetic check would make it depend on network-fetched WASM
   plugins.
-- `origin/master` is protected: 4 required status checks (test, lint,
-  actionlint, govulncheck), enforced for admins, no force pushes, and merge
-  commits ARE allowed (linear history not required). A direct `git push` to
-  master fails with GH006. Land local master commits via a PR merged with a
-  merge commit, which preserves the original SHAs so open PRs that share
-  those commits recalibrate cleanly.
+- `origin/master` branch protection was **removed on 2026-08-16** (owner
+  decision). Direct `git push` to master now works; `git sync` no longer
+  fails. CI still runs on master pushes but is informational only — nothing
+  blocks a bad push, so run tests locally before pushing.
+  Historical note (pre-2026-08-16): 4 required status checks (test, lint,
+  actionlint, govulncheck) enforced for admins; a direct push failed with
+  GH006 and commits had to land via a PR merged with a merge commit. To
+  restore, see repo Settings → Branches (or the GitHub API
+  `branches/master/protection` endpoint).
 - Multiple crush sessions share this checkout, plus an auto-commit daemon
   that commits dirty files to whatever branch is checked out. Branch tips
   can move or lose commits at any moment (for example a hard reset by a
