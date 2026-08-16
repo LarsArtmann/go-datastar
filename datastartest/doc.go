@@ -59,6 +59,18 @@
 //	events := datastartest.CollectPost(t, handler, `{"name":"alice"}`)
 //	events := datastartest.CollectWithRequest(t, handler, http.MethodPut, body, "application/json")
 //
+// # Request options
+//
+// Every Collect helper accepts [RequestOption]s. Use [WithPath] to target a
+// route on a mux (query strings allowed), [WithDatastarSignals] to submit
+// inbound signals the way DataStar clients do with GET/DELETE (see
+// datastar.ReadSignals), [WithLastEventID] to simulate a reconnecting browser
+// for replay testing, and [WithHeader] for any custom header:
+//
+//	events := datastartest.Collect(t, mux, datastartest.WithPath("/events?filter=alerts"))
+//	events := datastartest.Collect(t, h, datastartest.WithDatastarSignals(`{"filter":"alerts"}`))
+//	events := datastartest.Collect(t, h, datastartest.WithLastEventID("42"))
+//
 // # Streaming handlers
 //
 // For handlers that keep the connection open (e.g., broadcasting through a
@@ -73,12 +85,14 @@
 //
 // Script patches (ExecuteScript, Redirect, ConsoleLog, etc.) produce
 // patch-elements events with JS wrapped in <script> tags. Use [Event.IsScript]
-// to check and [Event.ScriptContent] to extract the inner JavaScript source:
+// to check, [Event.ScriptContent] to extract the inner JavaScript source, and
+// [RequireScript] to assert the exact source in one call:
 //
 //	events := datastartest.Collect(t, handler)
 //	if events[0].IsScript() {
 //	    js := events[0].ScriptContent() // "console.log('hello')"
 //	}
+//	datastartest.RequireScript(t, events[0], "console.log('hello')")
 //
 // # Finding events
 //
@@ -87,6 +101,11 @@
 //
 //	evt, ok := datastartest.FindElement(events, "#header")
 //	sigEvt, ok := datastartest.FindSignals(events)
+//
+// # Ginkgo and benchmarks
+//
+// All helpers that take a `t` accept [testing.TB], not *testing.T, so they
+// work with *testing.T, *testing.B, and Ginkgo's GinkgoT().
 //
 // # Debugging
 //

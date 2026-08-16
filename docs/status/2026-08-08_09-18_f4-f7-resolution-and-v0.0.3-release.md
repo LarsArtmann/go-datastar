@@ -208,21 +208,21 @@ gap that I perpetuated rather than introduced.
 
 ### Immediate (fixing this session's fuckups)
 
-1. **Create GitHub release for v0.0.3** — `gh release create v0.0.3` with
-   formatted notes from the CHANGELOG.
-2. **Update TODO_LIST.md** — move "Tag v0.0.3" from open BLOCKED to completed.
-3. **Update "Completed this session" header** — change "See CHANGELOG
-   `[Unreleased]`" to "See CHANGELOG `[0.0.3]`".
-4. **Add CHANGELOG comparison links** — Keep a Changelog footer convention.
-5. **Verify `go install github.com/larsartmann/go-datastar@v0.0.3`** works.
-6. **Check CI status** — verify the pipeline passes with checkout@v5/setup-go@v6.
+1. ~~**Create GitHub release for v0.0.3** — `gh release create v0.0.3` with
+   formatted notes from the CHANGELOG.~~ done in the 09-36 session
+2. ~~**Update TODO_LIST.md** — move "Tag v0.0.3" from open BLOCKED to completed.~~ done
+3. ~~**Update "Completed this session" header** — change "See CHANGELOG
+   `[Unreleased]`" to "See CHANGELOG `[0.0.3]`".~~ done
+4. ~~**Add CHANGELOG comparison links** — Keep a Changelog footer convention.~~ done in the 09-36 session (F10)
+5. ~~**Verify `go install github.com/larsartmann/go-datastar@v0.0.3`** works.~~ done — verified from the module proxy in the 09-36 session
+6. ~~**Check CI status** — verify the pipeline passes with checkout@v5/setup-go@v6.~~ done — CI green (erraudit later made non-blocking, `a1aaa15`)
 
 ### Release follow-up
 
 7. Verify pkg.go.dev picks up v0.0.3 (may take minutes to hours).
 8. Add coverage badge to README (once a coverage service is configured).
-9. GitHub repo polish: set topics (`datastar`, `sse`, `go`, `hypermedia`).
-10. GitHub repo polish: disable empty wiki.
+9. ~~GitHub repo polish: set topics (`datastar`, `sse`, `go`, `hypermedia`).~~ done (`cfe328d`)
+10. ~~GitHub repo polish: disable empty wiki.~~ done (`cfe328d`)
 11. Consider adding release automation (`gh release create` on tag push).
 
 ### CI / tooling
@@ -234,8 +234,8 @@ gap that I perpetuated rather than introduced.
 16. Consider matrix testing across Go 1.26.x patch versions.
 17. Add `go test -short` / `go test -long` separation for faster CI feedback.
 18. Consider a `release` GitHub Action that creates releases on tag push.
-19. Pin all GitHub Actions to commit SHAs (not just version tags) for supply
-    chain security.
+19. ~~Pin all GitHub Actions to commit SHAs (not just version tags) for supply
+    chain security.~~ done at `01a1c5d` (v7 SHAs, verified against tags)
 
 ### Documentation
 
@@ -247,7 +247,7 @@ gap that I perpetuated rather than introduced.
 24. Review all godoc comments for accuracy (the doc bugs prove this is needed).
 25. Add CODEOWNERS file.
 26. Add `docs/error-system.md` deep-dive with full contract + decision rationale.
-27. Document why `--enforce-samber-oops` must NOT be used with this library.
+27. ~~Document why `--enforce-samber-oops` must NOT be used with this library.~~ done — documented in `AGENTS.md` (Error System)
 28. Update CONTRIBUTING.md to mention erraudit and govulncheck commands.
 29. Add architecture diagram (D2 or mermaid) showing the layer relationships.
 
@@ -257,7 +257,7 @@ gap that I perpetuated rather than introduced.
 31. Add benchmark for `ErrorResponseFromError` (measures `errorfamily.Classify`
     overhead).
 32. Add test for concurrent `Response` method calls (thread safety).
-33. Add test for `MemoryStore` at capacity (ring buffer behavior).
+33. ~~Add test for `MemoryStore` at capacity (ring buffer behavior).~~ done (`TestMemoryStore_RingBufferEviction`, `store_test.go:106`)
 34. Add E2E test for SSE reconnection replay with DataStar patches.
 35. Add test for `ScriptHandler` with custom bundle (`ScriptHandlerWith`).
 36. Add test for very large elements patches (multi-line splitting at scale).
@@ -268,15 +268,15 @@ gap that I perpetuated rather than introduced.
 
 ### Code quality
 
-40. Refactor `ReadSignals` to reduce `nestif` complexity (currently 6).
+40. ~~Refactor `ReadSignals` to reduce `nestif` complexity (currently 6).~~ done at `5bab343`
 41. Consider making `ErrorResponse`/`NotificationResponse`/`ErrorResponseFromError`
     into `Response` methods for fluent API consistency.
 42. Review whether `signalKeyMessage` should be renamed to something clearer.
 43. Consider extracting a `signalsMap` type for the signals-patch pattern.
-44. Audit `response.go` for `ApplyPatches` error handling (stop on first error?).
-45. Review whether `sendSignalsMap` defensive branch is reachable.
+44. ~~Audit `response.go` for `ApplyPatches` error handling (stop on first error?).~~ done — stops on first error (`response.go:146-153`)
+45. ~~Review whether `sendSignalsMap` defensive branch is reachable.~~ done — accepted as unreachable defensive branch
 46. Consider splitting `errors.go` into `codes.go` + `sentinels.go`.
-47. Run `gosec ./...` as a baseline security scan.
+47. ~~Run `gosec ./...` as a baseline security scan.~~ done — `gosec` enabled in `.golangci.yml`, 0 issues
 48. Review all exported function signatures for API stability before v1.0.
 49. Add `renovate.json` or keep Dependabot (evaluate which is better).
 50. Consider adding a CHANGELOG generator tool (e.g., `changie`).
@@ -285,7 +285,7 @@ gap that I perpetuated rather than introduced.
 
 ## g) Questions I CANNOT figure out myself
 
-### Q1: Should I create the GitHub release for v0.0.3 and do the repo polish now?
+### Q1: ~~Should I create the GitHub release for v0.0.3 and do the repo polish now?~~ Resolved — executed in the 09-36 session.
 
 The tag is pushed. `gh` CLI works. I can (a) create the GitHub release with
 formatted notes, (b) set repo topics, (c) disable the empty wiki, (d) verify
@@ -300,7 +300,7 @@ This is functionally harmless (diff is docs-only whitespace), but it means I
 can't control exactly which commit a tag points to. Is this expected behavior,
 or should tags be excluded from the daemon's auto-push scope?
 
-### Q3: Should I add CHANGELOG comparison links for all versions or just future ones?
+### Q3: ~~Should I add CHANGELOG comparison links for all versions or just future ones?~~ Resolved — added retroactively for all versions on master (09-36 session, F10).
 
 The Keep a Changelog convention has footer links like
 `[0.0.3]: https://github.com/.../compare/v0.0.2...v0.0.3`. Neither v0.0.1 nor

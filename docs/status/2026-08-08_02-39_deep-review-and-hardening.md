@@ -88,12 +88,12 @@ I fixed a real bug (godoc example) and a spec violation (HEAD body-writing), but
 
 ## c) NOT STARTED
 
-- **CONTRIBUTING.md is broken** — says `go test ./... -race` without `GOEXPERIMENT=jsonv2`. Anyone following it fails immediately. Explicitly called out in the v0.0.2 retrospective (item e4) as "embarrassingly skeletal." I read that retrospective and still didn't fix it.
-- **AGENTS.md HEAD compliance documentation** — the wire-format parity section lists 11 requirements but doesn't mention HEAD/RFC 7231 compliance.
-- **Benchmark tests** — the retrospective suggested these (item 21). I had the context open and didn't do it.
+- ~~**CONTRIBUTING.md is broken** — says `go test ./... -race` without `GOEXPERIMENT=jsonv2`. Anyone following it fails immediately. Explicitly called out in the v0.0.2 retrospective (item e4) as "embarrassingly skeletal." I read that retrospective and still didn't fix it.~~ done at `4f7595e` (v0.0.3)
+- ~~**AGENTS.md HEAD compliance documentation** — the wire-format parity section lists 11 requirements but doesn't mention HEAD/RFC 7231 compliance.~~ done at `4f7595e` (requirement #12)
+- ~~**Benchmark tests** — the retrospective suggested these (item 21). I had the context open and didn't do it.~~ done at `32d36a7`
 - **`example/main.go` verification** — I changed `ScriptHandler` behavior but didn't run the example to confirm it still works end-to-end.
-- **`WithScriptAttributeKVs` silent truncation** — noticed while reading `script.go`: it silently drops odd-numbered arguments. The doc comment says "Returns an error via the patch if the argument count is odd" but the implementation (`scriptAttributeKVs`) silently truncates. Did not flag or fix.
-- **e2e_test.go review** — 260-line e2e test file exists. I never read it to check whether HEAD support needs integration coverage there.
+- ~~**`WithScriptAttributeKVs` silent truncation** — noticed while reading `script.go`: it silently drops odd-numbered arguments. The doc comment says "Returns an error via the patch if the argument count is odd" but the implementation (`scriptAttributeKVs`) silently truncates. Did not flag or fix.~~ resolved at `4f7595e` — doc corrected to match the silent drop (API change rejected)
+- ~~**e2e_test.go review** — 260-line e2e test file exists. I never read it to check whether HEAD support needs integration coverage there.~~ done — e2e fully reworked into `datastartest/e2e_test.go` (`a4712ab`)
 
 ---
 
@@ -139,60 +139,60 @@ Each required a separate edit-test cycle. **Root cause:** I didn't run `golangci
 
 ### Immediate (this session's gaps)
 
-1. **Fix CONTRIBUTING.md** — add `GOEXPERIMENT=jsonv2`, `GOWORK=off`, nix workflow (`nix flake check`, `nix run .#test`). Currently says `go test ./... -race` which fails without GOEXPERIMENT. 2-minute fix.
-2. **Update AGENTS.md file layout table** — add `example_test.go` and `inbound_fuzz_test.go` rows.
-3. **Update AGENTS.md wire-format parity section** — add HEAD/RFC 7231 compliance as requirement #12.
+1. ~~**Fix CONTRIBUTING.md** — add `GOEXPERIMENT=jsonv2`, `GOWORK=off`, nix workflow (`nix flake check`, `nix run .#test`). Currently says `go test ./... -race` which fails without GOEXPERIMENT. 2-minute fix.~~ done at `4f7595e`
+2. ~~**Update AGENTS.md file layout table** — add `example_test.go` and `inbound_fuzz_test.go` rows.~~ done at `4f7595e`
+3. ~~**Update AGENTS.md wire-format parity section** — add HEAD/RFC 7231 compliance as requirement #12.~~ done at `4f7595e`
 4. ~~**Add CHANGELOG entry** for the HEAD fix + godoc fix (v0.0.3 material).~~ done — added to CHANGELOG `[Unreleased]` section.
 5. ~~**Verify `example/main.go` still works** after ScriptHandler HEAD change (`go run ./example/`).~~ done — `go vet ./example/` passes.
-6. **Read `e2e_test.go`** — check whether HEAD support needs e2e coverage.
+6. ~~**Read `e2e_test.go`** — check whether HEAD support needs e2e coverage.~~ done — relocated and reworked into `datastartest/e2e_test.go` (`a4712ab`)
 
 ### Documentation (from v0.0.2 retrospective, still open)
 
-7. Add GitHub repo topics (`datastar`, `sse`, `go`, `hypermedia`, `htmx`, `dom-patching`)
+7. ~~Add GitHub repo topics (`datastar`, `sse`, `go`, `hypermedia`, `htmx`, `dom-patching`)~~ done — 6 topics set in the 09-36 session (`cfe328d`)
 8. Verify pkg.go.dev docs rendered for latest version
-9. Disable GitHub wiki (empty wiki looks unfinished)
-10. Add error codes table to README (9 codes from AGENTS.md, also in errors.go)
+9. ~~Disable GitHub wiki (empty wiki looks unfinished)~~ done (`cfe328d`)
+10. ~~Add error codes table to README (9 codes from AGENTS.md, also in errors.go)~~ done at `eb8bf29` (11 codes)
 11. Add "Migrating from starfederation/datastar-go" guide
 12. Add architecture diagram (D2 or mermaid) showing three-layer architecture
-13. Create issue templates (bug report, feature request)
-14. Create PR template
-15. Add SECURITY.md
-16. Add CODE_OF_CONDUCT.md
+13. ~~Create issue templates (bug report, feature request)~~ done at `3cebe14`
+14. ~~Create PR template~~ done at `3cebe14`
+15. ~~Add SECURITY.md~~ done at `3cebe14`
+16. ~~Add CODE_OF_CONDUCT.md~~ done at `3cebe14`
 17. Add coverage badge (codecov or similar)
 
 ### CI/CD improvements (from v0.0.2 retrospective)
 
 18. Set up branch protection on master (require CI pass)
-19. Pin golangci-lint version instead of `@latest` in CI
-20. Upgrade `actions/checkout` to v5
-21. Upgrade `actions/setup-go` to v6
-22. Add `govulncheck` step to CI
-23. Add Dependabot or Renovate config
-24. Consider adding `erraudit` to CI
+19. ~~Pin golangci-lint version instead of `@latest` in CI~~ done in v0.0.3 — pinned v2.12.2
+20. ~~Upgrade `actions/checkout` to v5~~ done in v0.0.3 — later superseded by SHA-pinned v7 (`01a1c5d`)
+21. ~~Upgrade `actions/setup-go` to v6~~ done in v0.0.3 — later superseded by SHA-pinned v7 (`01a1c5d`)
+22. ~~Add `govulncheck` step to CI~~ done in v0.0.3
+23. ~~Add Dependabot or Renovate config~~ done in v0.0.3
+24. ~~Consider adding `erraudit` to CI~~ done in v0.0.3 (non-blocking until the repo is public)
 25. Consider adding fuzz testing to CI (`go test -fuzz` on a schedule)
 
 ### Testing improvements
 
-26. Add benchmark tests for patch `Event()` generation (ElementsPatch, SignalsPatch, ScriptPatch)
-27. Add fuzz test for `MarshalSignals` (untrusted Go value → JSON)
+26. ~~Add benchmark tests for patch `Event()` generation (ElementsPatch, SignalsPatch, ScriptPatch)~~ done at `32d36a7`
+27. ~~Add fuzz test for `MarshalSignals` (untrusted Go value → JSON)~~ done at `32d36a7` (`FuzzMarshalSignalsRoundtrip`)
 28. Add integration test that runs the DataStar JS client (headless browser via chromedp)
-29. Cover `sendSignalsMap` defensive branch (currently 75%, unreachable via public API — consider testing via internal test or accepting)
-30. Add `WithScriptAttributeKVs` odd-argument test — the doc says it errors, but it silently truncates. Either fix the doc or fix the code.
+29. ~~Cover `sendSignalsMap` defensive branch (currently 75%, unreachable via public API — consider testing via internal test or accepting)~~ done — accepted as unreachable defensive branch (documented)
+30. ~~Add `WithScriptAttributeKVs` odd-argument test — the doc says it errors, but it silently truncates. Either fix the doc or fix the code.~~ done — doc corrected (`4f7595e`) + odd-args test (`script_test.go`)
 
 ### Code quality
 
-31. **Fix `WithScriptAttributeKVs` doc/code mismatch** — doc says "Returns an error via the patch if the argument count is odd" but `scriptAttributeKVs` silently drops the trailing element. Either make it error or fix the doc.
-32. **Audit `DispatchCustomEventPatch.Event()` silent error swallowing** — marshal failure sets `detailsJSON = []byte("null")` with no logging. Consider whether this masks real bugs.
-33. Address `nestif` complexity in `inbound.go` `ReadSignals` (complexity 6, from retrospective)
+31. ~~**Fix `WithScriptAttributeKVs` doc/code mismatch** — doc says "Returns an error via the patch if the argument count is odd" but `scriptAttributeKVs` silently drops the trailing element. Either make it error or fix the doc.~~ **Won't implement** (error return) — doc corrected instead (`4f7595e`)
+32. ~~**Audit `DispatchCustomEventPatch.Event()` silent error swallowing** — marshal failure sets `detailsJSON = []byte("null")` with no logging. Consider whether this masks real bugs.~~ done at `eb8bf29` — marshaled in constructor, classified error
+33. ~~Address `nestif` complexity in `inbound.go` `ReadSignals` (complexity 6, from retrospective)~~ done at `5bab343`
 34. Consider splitting `response.go` — 195 lines with 18 methods (from retrospective)
 35. Add `Broadcaster[datastar.Patch]` typed-filtering example
 36. Add `SubscribeFilter` usage example
 
 ### Nix flake improvements
 
-37. Add `golangci-lint` as a nix check (hermetic lint in `nix flake check`)
-38. Add `erraudit` as a nix check
-39. Add `govulncheck` as a nix check
+37. ~~Add `golangci-lint` as a nix check (hermetic lint in `nix flake check`)~~ done as a nix **app** (`nix run .#lint`), not a check
+38. ~~Add `erraudit` as a nix check~~ done as a nix **app** (`nix run .#erraudit`), not a check
+39. ~~Add `govulncheck` as a nix check~~ done as a nix **app** + devShell package
 40. Add markdown formatter to treefmt (currently only Go + Nix)
 41. Add `erraudit` to the devShell
 
@@ -206,9 +206,9 @@ Each required a separate edit-test cycle. **Root cause:** I didn't run `golangci
 ### Future features
 
 46. Consider website launch (Astro + Starlight pattern)
-47. Consider comparison table vs upstream SDK in README
+47. ~~Consider comparison table vs upstream SDK in README~~ done at `cf3683e` (verified vs datastar-go v1.2.2)
 48. Add more DataStar examples (toasts, progress bars, merge modes)
-49. Add `WithScriptRetryDuration` documentation
+49. ~~Add `WithScriptRetryDuration` documentation~~ done — documented (`script.go:82-85`)
 50. Consider playground/example repo link
 
 ---
@@ -219,13 +219,13 @@ Each required a separate edit-test cycle. **Root cause:** I didn't run `golangci
 
 The doc comment on `WithScriptAttributeKVs` says: "Returns an error via the patch if the argument count is odd (unlike the SDK which panics)." But the implementation (`scriptAttributeKVs`) silently drops the trailing element — it iterates `i += 2` and the condition `i+1 < len(kvs)` skips a lone final element. No error is surfaced anywhere. Either the doc is wrong (should say "silently drops") or the code is wrong (should produce an error). I need to know which behavior you want before changing either.
 
-> **Resolution:** Still open. Verified: the doc/code mismatch is confirmed (`script.go:58-76`). Routed to TODO_LIST.md (High Impact). The doc is most likely wrong — the function signature returns no error, so "returns an error via the patch" is misleading.
+> **Resolution:** ~~Still open. Verified: the doc/code mismatch is confirmed (`script.go:58-76`). Routed to TODO_LIST.md (High Impact). The doc is most likely wrong — the function signature returns no error, so "returns an error via the patch" is misleading.~~ Resolved at `4f7595e` — doc corrected to describe the silent drop; the API-change option was rejected.
 
 ### 2. Should I tag a v0.0.3 release for the HEAD spec-compliance fix, or batch it with future changes?
 
 The HEAD body-writing fix is a real spec violation that affects any client doing HEAD pre-flight checks (CDNs, proxies). It's a behavior change (HEAD responses now have empty bodies). Consumer code expecting a body on HEAD would break — though no reasonable consumer should expect that. Options: tag v0.0.3 now with just this fix, or batch with other improvements. I can't decide the release cadence for you.
 
-> **Resolution:** Still open — user decision on release cadence.
+> **Resolution:** ~~Still open — user decision on release cadence.~~ Resolved — v0.0.3 tagged 2026-08-08 (followed by v0.1.0 and v0.2.0).
 
 ### 3. What's the upstream DataStar JS version tracking strategy — should I pin to 1.0.2 or track latest?
 
@@ -235,4 +235,4 @@ The embedded `static/datastar.js` is pinned at v1.0.2 (`DatastarJSVersion = "1.0
 
 ---
 
-> **Annotation note (2026-08-08):** Items 4–5 are done. Q1 (WithScriptAttributeKVs) is verified and routed to TODO_LIST.md. Q2 (release cadence) and Q3 (JS version tracking) remain open. All unmarked items in section f) have been routed: bounded items → TODO_LIST.md, long-term/vague items → ROADMAP.md.
+> **Annotation note (2026-08-08, updated 2026-08-16):** Items 4–6 and every other resolved item are marked inline with commit hashes. Still open: pkg.go.dev verification (TODO_LIST), coverage badge (TODO_LIST), branch protection (TODO_LIST), migrating guide / architecture diagram / more examples / Broadcaster+SubscribeFilter examples / release automation / website / scheduled fuzz (ROADMAP), markdown-formatter wiring (TODO_LIST), erraudit in devShell (TODO_LIST), headless-browser E2E (ROADMAP).

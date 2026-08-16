@@ -38,6 +38,13 @@ Raw ideas:
 - Comparison table vs upstream SDK in README
 - `Broadcaster[datastar.Patch]` typed-filtering example
 - `SubscribeFilter` usage example
+- Headless-browser E2E test (chromedp or Playwright) exercising the real
+  DataStar JS client — the current E2E stops at wire-format verification
+- Typed script-patch accessors in `datastartest` (`RedirectURL`,
+  `CustomEventName`/`CustomEventDetail`, `ScriptAttributes`) — structured
+  extraction instead of `strings.Contains` on `ScriptContent()`
+- Extract the generic SSE parser (`datastartest/reader.go`, `event.go`) into
+  a reusable `ssetest` package, usable beyond DataStar
 
 ### 3. CI/CD & Hermeticity
 
@@ -85,3 +92,17 @@ Things we are deliberately NOT pursuing and why:
   values; it does not manage user sessions, authentication, or application state.
 - **No bundling beyond DataStar JS:** The embedded client is the DataStar SDK
   only. No CSS frameworks, no JS runtimes, no opinionated frontend stack.
+
+## Open questions
+
+Decisions awaiting the owner (not tasks — do not action without a ruling):
+
+- **`go.work.sum` tracking:** gitignored today while `go.work` is committed.
+  Committing both strengthens checksum verification for workspace-local
+  replaces at the cost of diff noise on every dependency update.
+- **`v0.0.0` vs real versions for sibling requires:** the replace directives
+  make the version irrelevant locally, but `go mod tidy` can emit
+  pseudo-versions if replaces are ever removed.
+- **`go` directive policy:** go.mod/go.work say `go 1.26.5`; the v0.0.2/v0.0.3
+  CHANGELOG entries claim a lowering to `go 1.26` that never landed. Either
+  apply the lowering or accept `1.26.5` and stop claiming otherwise.

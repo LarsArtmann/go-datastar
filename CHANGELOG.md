@@ -7,13 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+### Added — datastartest
 
-- Nothing yet.
+- **Request options on every `Collect*` helper** — `WithPath` (target a mux
+  route, query strings allowed), `WithHeader`, `WithLastEventID` (simulates a
+  reconnecting browser for replay testing), and `WithDatastarSignals`
+  (submits the `?datastar=` query parameter the way DataStar clients do with
+  GET/DELETE). Previously every helper hard-requested `GET /`, making
+  multi-route handlers, GET-signal submissions, and reconnection replay
+  untestable through the helpers.
+- **`RequireScript`** — one-call assertion on a script patch's inner
+  JavaScript source (strips the `<script>` wrapper).
+- **`RequireEventID`** — event-ID assertion for replay/reconnection tests.
+- **`datastartest/README.md`** — consumer-facing quick start and API tour.
+
+### Changed — datastartest
+
+- **All public helpers now accept `testing.TB`** instead of `*testing.T`, so
+  they work with `*testing.T`, `*testing.B`, and Ginkgo's `GinkgoT()`.
+  Backward compatible for existing `*testing.T` callers.
+- Test coverage raised from 82.2% to 94.1% (assertion failure paths,
+  `RequireSignals`, `MustReadNEvents`, option plumbing, and a full
+  EventStore replay dogfood E2E via `WithLastEventID`).
 
 ### Fixed
 
-- Nothing yet.
+- **`NewDispatchCustomEventPatch` godoc corrected** — the constructor comment
+  claimed the detail value was marshaled lazily when `Event()` is called; it
+  has been marshaled in the constructor (with a classified error on failure)
+  since v0.0.3. The doc now matches the code.
 
 ## [0.2.0] - 2026-08-13
 
@@ -283,7 +305,8 @@ values producing `sse.Event`, built on [go-sse](https://github.com/LarsArtmann/g
 - Removed local `replace` directive — the module now resolves `go-sse v0.4.0`
   and `go-error-family v0.10.0` from the Go module proxy.
 
-[Unreleased]: https://github.com/LarsArtmann/go-datastar/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/LarsArtmann/go-datastar/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/LarsArtmann/go-datastar/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/LarsArtmann/go-datastar/compare/v0.0.3...v0.1.0
 [0.0.3]: https://github.com/LarsArtmann/go-datastar/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/LarsArtmann/go-datastar/compare/v0.0.1...v0.0.2

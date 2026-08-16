@@ -104,13 +104,13 @@ The `sugar.go:105:13 undefined: fmt` error persisted in the diagnostics for the 
 
 1. **`generic_return` deserves a real decision, not a dismissal.** The `errorfamily` README explicitly supports domain-specific error types implementing the four interfaces. Returning `*errorfamily.Error` (or typed wrappers) would give callers compile-time knowledge and zero-cost `errors.As`. The tradeoff: coupling consumers to a concrete type. This needs a deliberate ruling, not "idiomatic Go" hand-waving.
 
-2. **Context values are thin.** I added `method` and `input_bytes` to ReadSignals, and value-type to MarshalSignals. But I did not include the offending value / JSON snippet for unmarshal failures (where it would be most diagnostic). A truncated `input_preview` (first 200 bytes) would be far more useful than `input_bytes` for debugging malformed signals.
+2. ~~**Context values are thin.** I added `method` and `input_bytes` to ReadSignals, and value-type to MarshalSignals. But I did not include the offending value / JSON snippet for unmarshal failures (where it would be most diagnostic). A truncated `input_preview` (first 200 bytes) would be far more useful than `input_bytes` for debugging malformed signals.~~ done — `input_preview` added in v0.0.3 (`eb8bf29`).
 
-3. **No HTTP-status mapping in practice.** `errorfamily.Family.HTTPStatus()` exists (Rejection→400, Transient→503, Orchestration→500). The library classifies errors but the `Response` / `ErrorResponse` helpers in `response.go` don't use `errorfamily.HTTPStatus(err)` to pick status codes. That integration is missing.
+3. ~~**No HTTP-status mapping in practice.** `errorfamily.Family.HTTPStatus()` exists (Rejection→400, Transient→503, Orchestration→500). The library classifies errors but the `Response` / `ErrorResponse` helpers in `response.go` don't use `errorfamily.HTTPStatus(err)` to pick status codes. That integration is missing.~~ done — `ErrorResponseFromError` uses `errorfamily.HTTPStatus` (v0.0.3, `eb8bf29`).
 
-4. **No `WrapOnce` at the API boundary.** `ReadSignals` wraps raw errors, but if a caller already classified an error and it flows through, double-wrapping could occur. `errorfamily.WrapOnce` exists for exactly this. I didn't use it.
+4. ~~**No `WrapOnce` at the API boundary.** `ReadSignals` wraps raw errors, but if a caller already classified an error and it flows through, double-wrapping could occur. `errorfamily.WrapOnce` exists for exactly this. I didn't use it.~~ done — `WrapOncef` at the boundary since v0.0.3 (`eb8bf29`).
 
-5. **Error code naming is slightly inconsistent.** Most use `datastar.<noun>_<failure>` (`signals_marshal_failed`), but two use `datastar.<noun>_invalid` (`element_patch_mode_invalid`) and one uses `datastar.<noun>_required` (`event_name_required`). A single convention (`_invalid` for bad values, `_required` for missing) is defensible, but I didn't document the rule.
+5. ~~**Error code naming is slightly inconsistent.** Most use `datastar.<noun>_<failure>` (`signals_marshal_failed`), but two use `datastar.<noun>_invalid` (`element_patch_mode_invalid`) and one uses `datastar.<noun>_required` (`event_name_required`). A single convention (`_invalid` for bad values, `_required` for missing) is defensible, but I didn't document the rule.~~ done — suffix rules documented in `errors.go` since v0.0.3 (`eb8bf29`).
 
 6. **No retry integration.** `Transient` family is retryable, but there is no example or helper showing how a caller should actually retry a `CodeBodyReadFailed` error. The classification is correct but the ergonomics are unproven.
 
@@ -126,74 +126,74 @@ The `sugar.go:105:13 undefined: fmt` error persisted in the diagnostics for the 
 
 ### Error system hardening
 
-4. Add truncated `input_preview` (first ~200 bytes) to `CodeSignalsUnmarshalFailed` context instead of just byte length.
-5. Add `errorfamily.WrapOnce` at `ReadSignals` boundary to prevent double-classification.
-6. Integrate `errorfamily.HTTPStatus(err)` into `ErrorResponse` / `response.go` so HTTP handlers pick status codes from families automatically.
+4. ~~Add truncated `input_preview` (first ~200 bytes) to `CodeSignalsUnmarshalFailed` context instead of just byte length.~~ done at `eb8bf29`
+5. ~~Add `errorfamily.WrapOnce` at `ReadSignals` boundary to prevent double-classification.~~ done at `eb8bf29`
+6. ~~Integrate `errorfamily.HTTPStatus(err)` into `ErrorResponse` / `response.go` so HTTP handlers pick status codes from families automatically.~~ done at `eb8bf29` (`ErrorResponseFromError`)
 7. Add a `Retry` helper or example showing how to retry `Transient` (`CodeBodyReadFailed`) errors with backoff.
-8. Define and document the error-code naming convention (`_invalid` vs `_required` vs `_failed`) in `errors.go`.
+8. ~~Define and document the error-code naming convention (`_invalid` vs `_required` vs `_failed`) in `errors.go`.~~ done at `eb8bf29`
 9. Consider exporting codes as a typed string (`type Code string`) for compile-time safety instead of untyped `string` constants.
 10. Add a `Code(err) Code` accessor that returns the typed code, complementing `errorfamily.Code(err) string`.
 
 ### Testing gaps
 
-11. Add a test verifying `errors.As(err, &target)` works for `*errorfamily.Error` on every error path.
+11. ~~Add a test verifying `errors.As(err, &target)` works for `*errorfamily.Error` on every error path.~~ done at `eb8bf29` (`errors_test.go`, all 10 paths)
 12. ~~Add a test for `ErrBodyReadAfterClose` cause-chain depth~~ done at `54e3158` (`errors_test.go:74` — `errors.Is(err, http.ErrBodyReadAfterClose)`).
 13. ~~Add a test verifying a context-enriched clone still matches the sentinel~~ done at `54e3158` (`errors_test.go:70` enriched error matches sentinel; `:184` pristine test).
 14. Add an `errorfamilytest.AssertExitCode` assertion for each error (Rejection→1, Transient→75, Orchestration→70).
 15. Add an `errorfamilytest.AssertHTTPStatus` assertion for each error (Rejection→400, Transient→503, Orchestration→500).
 16. ~~Add a fuzz test for `ReadSignals` with arbitrary malformed JSON.~~ done at `3efb8ce` (`inbound_fuzz_test.go`, 1.2M+ executions, 0 failures).
-17. Add a test that `MarshalSignals` error message includes the Go type name for diagnosis.
+17. ~~Add a test that `MarshalSignals` error message includes the Go type name for diagnosis.~~ done — `signals.go:89` marshals `"of type %T"` (`d2a9580`)
 18. Snapshot-test error messages (`go-snaps`) for stable wire output across versions.
 
 ### Documentation
 
 19. ~~Write `CHANGELOG.md` entry~~ done — included in v0.0.1 CHANGELOG (`6af9dc4`).
 20. ~~Update `README.md` with an "Error Handling" section~~ done at `391db38`.
-21. Update `doc.go` package comment to mention classified errors. ← still open (TODO_LIST).
+21. ~~Update `doc.go` package comment to mention classified errors. ← still open (TODO_LIST).~~ done at `4f7595e`
 22. Add a `docs/error-system.md` deep-dive (or website page) with the full contract + decision rationale.
-23. Document why `--enforce-samber-oops` must NOT be used with this library in CI config comments.
+23. ~~Document why `--enforce-samber-oops` must NOT be used with this library in CI config comments.~~ done — documented in `AGENTS.md` (Error System, decision 1)
 
 ### CI / tooling
 
-24. Add `erraudit ./... --enforce-go-error-family` (without `--enforce-samber-oops`) to `.github/workflows/ci.yml`.
-25. Add `erraudit` to `flake.nix` checks (`nix run .#lint` should include it).
+24. ~~Add `erraudit ./... --enforce-go-error-family` (without `--enforce-samber-oops`) to `.github/workflows/ci.yml`.~~ done at `eb8bf29` (v0.0.3 CI job)
+25. ~~Add `erraudit` to `flake.nix` checks (`nix run .#lint` should include it).~~ done as a nix **app** (`nix run .#erraudit`, `flake.nix`), not a check
 26. Add an `erraudit` pre-commit hook.
 27. Add `erraudit --format sarif` output for GitHub code scanning.
-28. Pin the `erraudit` version in CI to prevent surprise breaking changes.
+28. ~~Pin the `erraudit` version in CI to prevent surprise breaking changes.~~ done — pinned `@v0.3.0` (`ci.yml:91`)
 
 ### Code quality / exploration
 
 29. ~~Read `elements.go` and `http.go`~~ done — reviewed during deep-review session (`0d30c94`).
 30. ~~Read `go-error-family/interfaces.go`~~ done — reviewed during deep-review session (`0d30c94`).
 31. ~~Audit `response.go`~~ done at `a8ba8be` — response.go audited during deep-review session (`0d30c94`).
-32. Check whether `WithScriptAttributeKVs` (script.go) should return an error instead of silently dropping odd-argument KVs.
-33. Review `script_convenience.go` `DispatchCustomEventPatch.Event()` — it silently swallows `json.Marshal(p.Detail)` errors (sets `null`). Should this be an error?
+32. ~~Check whether `WithScriptAttributeKVs` (script.go) should return an error instead of silently dropping odd-argument KVs.~~ **Won't implement** — doc corrected to match the silent drop instead (`4f7595e`, v0.0.3); odd-args behavior tested (`script_test.go`)
+33. ~~Review `script_convenience.go` `DispatchCustomEventPatch.Event()` — it silently swallows `json.Marshal(p.Detail)` errors (sets `null`). Should this be an error?~~ done at `eb8bf29` — detail marshaled in the constructor, returns `CodeCustomEventDetailMarshalFailed`
 
 ### Dependency hygiene
 
-34. Run `govulncheck ./...` to confirm no CVEs in the new direct dependency surface.
-35. Run `gosec ./...` as a baseline security scan.
-36. Verify `go-error-family` version (v0.10.0) is the latest; update if a newer one exists.
+34. ~~Run `govulncheck ./...` to confirm no CVEs in the new direct dependency surface.~~ done — govulncheck CI job since v0.0.3 (`ci.yml:96`), green
+35. ~~Run `gosec ./...` as a baseline security scan.~~ done — `gosec` enabled in `.golangci.yml`, 0 issues
+36. ~~Verify `go-error-family` version (v0.10.0) is the latest; update if a newer one exists.~~ done — confirmed latest in the v0.0.3 session (T13)
 37. Consider whether `go-branded-id` should also become a direct dependency (it's used transitively but go-datastar's API may surface branded IDs via go-sse).
 
 ### Architecture
 
 38. Evaluate whether `errors.go` should split into `codes.go` + `sentinels.go` as the catalog grows.
-39. Consider an `errors_example_test.go` (compileable documentation) showing all three error-handling patterns.
+39. ~~Consider an `errors_example_test.go` (compileable documentation) showing all three error-handling patterns.~~ done at `eb8bf29`
 40. NOT-DO — domain layer (`cqrs-htmx/datastar`) is a separate repo; error families there are out of scope.
 
 ### Polish
 
 41. ~~Restart the LSP to clear stale diagnostics.~~ done.
-42. Run `golines` on `errors.go` / `errors_test.go` (the GOPATH bin has it) for consistent line length.
-43. Add `//nolint` comments with rationale on the 4 accepted `generic_return` sites (so future audits are quiet).
-44. Add `//nolint` on the accepted `silent_swallow` in the example with rationale.
+42. ~~Run `golines` on `errors.go` / `errors_test.go` (the GOPATH bin has it) for consistent line length.~~ done — `golines` runs via treefmt (`flake.nix`)
+43. ~~Add `//nolint` comments with rationale on the 4 accepted `generic_return` sites (so future audits are quiet).~~ **Won't implement** — superseded by the `--severity-threshold error` CI strategy (T09, v0.0.3)
+44. ~~Add `//nolint` on the accepted `silent_swallow` in the example with rationale.~~ **Won't implement** — superseded by the `--severity-threshold error` CI strategy (T09, v0.0.3)
 45. Verify the `input_bytes` context value type — string-ified int via `strconv.Itoa` may be better as a structured numeric field if errorfamily supported it.
 46. Consider adding `WithExitCode` overrides if any error needs a non-default exit code.
 47. Add a benchmark for error creation overhead (hot path: `NewSignalsPatch` marshaling + error path).
 48. Review whether the `example/` directory should have its own `CHANGELOG` or be excluded from versioning.
-49. Check if the embedded `datastar.js` version (`1.0.2`) is outdated; update if a newer client exists.
-50. Confirm the `flake.nix` `devShell` includes `erraudit` so contributors have it available.
+49. ~~Check if the embedded `datastar.js` version (`1.0.2`) is outdated; update if a newer client exists.~~ done — confirmed latest in the v0.0.3 session (T13)
+50. ~~Confirm the `flake.nix` `devShell` includes `erraudit` so contributors have it available.~~ still open — devShell has golangci-lint + govulncheck but not erraudit (TODO_LIST)
 
 ---
 
@@ -215,7 +215,7 @@ The working tree of `../go-sse` has uncommitted changes fixing a real compile er
 
 The 5 remaining warnings are deliberate, but erraudit exits non-zero. For CI gating, we need a suppression strategy. `//nolint` with rationale is the most visible; `--disable` is the quietest. I don't know your team's preference for suppression visibility.
 
-> **Resolution (2026-08-08):** Still open. erraudit is not yet in CI (TODO_LIST). The suppression strategy is deferred until CI integration.
+> **Resolution (2026-08-08, updated 2026-08-16):** ~~Still open. erraudit is not yet in CI (TODO_LIST). The suppression strategy is deferred until CI integration.~~ Resolved — erraudit is in CI pinned at v0.3.0 with `--severity-threshold error` (accepted warnings don't gate); the job is `continue-on-error` until the erraudit repo goes public.
 
 ---
 

@@ -7,6 +7,11 @@
 > setup-go@v6 GOTOOLCHAIN=local, but go.mod `go 1.26` matches CI `go-version:
 "1.26"`). Quality gates all green: 119 tests, 98.4% coverage, 0 lint issues.
 > This report is preserved as a point-in-time snapshot.
+>
+> **Correction (2026-08-16):** the F3 claim in the table below (go.mod lowered
+> to `go 1.26`) never committed — every tag through v0.2.0 still says
+> `go 1.26.5`. The F7 note above was written against that uncommitted
+> working-tree state.
 
 > Resuming from the Pareto hardening execution (T01–T15) to fix the 4 fuckups
 > identified in the self-critique at `2026-08-08_06-52_pareto-hardening-execution.md`.
@@ -19,7 +24,7 @@
 | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | **F1**  | Upgraded all 8 CI Actions references: `checkout@v4→v5`, `setup-go@v5→v6` across test/lint/erraudit/govulncheck jobs                                                                                                                    | `.github/workflows/ci.yml` — verified via grep (8/8 references updated) |
 | **F2**  | Added `TestErrorResponseFromError` with 3 subtests: Rejection, Transient, non-errorfamily. Also fixed incorrect doc comment that claimed non-errorfamily defaults to Rejection/400 (actually Transient/503 per `errorfamily.Classify`) | `response_test.go:427-483`, `response.go:194-196`                       |
-| **F3**  | Lowered `go.mod` from `go 1.26.5` to `go 1.26` to match the v0.0.2 CHANGELOG claim. Added CHANGELOG [Unreleased] entries for the fix and the doc correction                                                                            | `go.mod:3`, `CHANGELOG.md:60-65`                                        |
+| **F3**  | ~~Lowered `go.mod` from `go 1.26.5` to `go 1.26` to match the v0.0.2 CHANGELOG claim. Added CHANGELOG [Unreleased] entries for the fix and the doc correction~~ **never landed** — `git show` at every tag (v0.0.3 → v0.2.0) still says `go 1.26.5`; the working-tree edit was never committed. Routed to TODO_LIST (2026-08-16)                                                                                                                                            | `go.mod:3` (still `1.26.5`)                                       |
 | **LSP** | Investigated `wsl_v5` and `noctx` warnings on `errors_example_test.go`. Confirmed stale — `golangci-lint run ./...` reports 0 issues                                                                                                   | golangci-lint clean output                                              |
 
 ### Quality gates — all green
@@ -53,11 +58,11 @@ Nothing partially done. All 4 fixes were binary: either fixed or not.
 
 | Item                               | Why not started               | Blocked?                    |
 | ---------------------------------- | ----------------------------- | --------------------------- |
-| Tag v0.0.3                         | User release cadence decision | YES — needs user input      |
-| GitHub repo polish (topics, wiki)  | No `gh` CLI access            | YES — needs credentials     |
-| `nestif` refactor of `ReadSignals` | Low priority, no bugs         | NO — just deprioritized     |
-| Coverage badge in README           | Cosmetic                      | NO — just deprioritized     |
-| pkg.go.dev rendering verification  | Needs a published version     | YES — blocked on v0.0.3 tag |
+| Tag v0.0.3                         | ~~User release cadence decision~~ done — tagged 2026-08-08      |
+| GitHub repo polish (topics, wiki)  | ~~No `gh` CLI access~~ done in the 09-36 session (`cfe328d`)    |
+| `nestif` refactor of `ReadSignals` | done at `5bab343`                                               |
+| Coverage badge in README           | Cosmetic                                                        |
+| pkg.go.dev rendering verification  | Needs a published version — still open                          |
 
 ---
 
@@ -119,18 +124,18 @@ Nothing partially done. All 4 fixes were binary: either fixed or not.
 
 ### High priority
 
-1. Add CHANGELOG entry for CI Actions upgrade (F4 above)
-2. Update prior status report to mark F1–F3 resolved (F5 above)
-3. Tag v0.0.3 — all code changes are stable, tested, and lint-clean
-4. Push to remote and verify CI passes with the new Actions versions
-5. GitHub repo polish: set topics (`datastar`, `sse`, `go`, `hypermedia`)
-6. GitHub repo polish: disable empty wiki
+1. ~~Add CHANGELOG entry for CI Actions upgrade (F4 above)~~ done
+2. ~~Update prior status report to mark F1–F3 resolved (F5 above)~~ done
+3. ~~Tag v0.0.3 — all code changes are stable, tested, and lint-clean~~ done
+4. ~~Push to remote and verify CI passes with the new Actions versions~~ done — CI green
+5. ~~GitHub repo polish: set topics (`datastar`, `sse`, `go`, `hypermedia`)~~ done (`cfe328d`)
+6. ~~GitHub repo polish: disable empty wiki~~ done (`cfe328d`)
 7. Verify pkg.go.dev renders docs for the published version
 8. Add coverage badge to README (once v0.0.3 is tagged)
 
 ### Code quality
 
-9. Refactor `ReadSignals` to reduce `nestif` complexity (currently 6)
+9. ~~Refactor `ReadSignals` to reduce `nestif` complexity (currently 6)~~ done at `5bab343`
 10. Add `actionlint` to nix flake checks or CI pipeline
 11. Consider making `ErrorResponse`/`NotificationResponse`/`ErrorResponseFromError` into `Response` methods for fluent API consistency
 12. Parse JSON in `TestErrorResponseFromError` instead of substring matching
@@ -148,14 +153,14 @@ Nothing partially done. All 4 fixes were binary: either fixed or not.
 21. Add ARCHITECTURE.md or architecture section to README explaining the 3-layer design
 22. Document the CI pipeline in CONTRIBUTING.md (what jobs run, what they check)
 23. Add CODEOWNERS file
-24. Review LICENSE year (2026 current?)
+24. ~~Review LICENSE year (2026 current?)~~ done — LICENSE says 2026 (current)
 
 ### Testing
 
 25. Add fuzz test for `ErrorResponseFromError` with random error types
 26. Add benchmark for `ErrorResponseFromError` (measures `errorfamily.Classify` overhead)
 27. Add test for concurrent `Response` method calls (thread safety)
-28. Add test for `MemoryStore` at capacity (ring buffer behavior)
+28. ~~Add test for `MemoryStore` at capacity (ring buffer behavior)~~ done (`TestMemoryStore_RingBufferEviction`, `store_test.go:106`)
 29. Add E2E test for SSE reconnection replay with DataStar patches
 30. Add test for `ScriptHandler` with custom bundle (`ScriptHandlerWith`)
 31. Add test for very large elements patches (multi-line splitting at scale)
@@ -166,8 +171,8 @@ Nothing partially done. All 4 fixes were binary: either fixed or not.
 ### Dependencies & security
 
 35. Run `govulncheck` locally and verify clean
-36. Check if `go-error-family` v0.10.0 has any advisories
-37. Check if `go-sse` v0.4.0 has any advisories
+36. ~~Check if `go-error-family` v0.10.0 has any advisories~~ done — govulncheck CI job green
+37. ~~Check if `go-sse` v0.4.0 has any advisories~~ done — govulncheck CI job green
 38. Review transitive dependencies for minimum version selection issues
 39. Consider adding `renovate.json` as alternative to Dependabot
 40. Pin `go.sum` and verify reproducibility with `go mod verify`
@@ -192,14 +197,14 @@ Nothing partially done. All 4 fixes were binary: either fixed or not.
 
 ## g) Questions I cannot answer myself
 
-### Q1: Should I tag v0.0.3 now, or wait?
+### Q1: ~~Should I tag v0.0.3 now, or wait?~~ Resolved — v0.0.3 tagged 2026-08-08 (v0.1.0 and v0.2.0 followed).
 
 All code changes are stable: 119 tests pass, 0 lint issues, 0 erraudit violations, nix checks pass, go.mod is consistent with CHANGELOG. The remaining open items (nestif refactor, coverage badge, GitHub repo polish) are not blockers. But tagging is a release decision — it signals API stability to consumers. I don't know your release cadence preferences.
 
-### Q2: Should I update the prior status report (`06-52_pareto-hardening-execution.md`) inline, or leave it as a point-in-time snapshot?
+### Q2: ~~Should I update the prior status report (`06-52_pareto-hardening-execution.md`) inline, or leave it as a point-in-time snapshot?~~ Resolved — resolution pointer added at the top (F5).
 
 The docs-health skill says status reports are "point-in-time, not living documents." But leaving a report that says "F1 is a fuckup" when F1 is now fixed creates status drift. Should I add a resolution note at the top, or leave it frozen and let this report supersede it?
 
-### Q3: Do you want me to squash the empty auto-git commits?
+### Q3: ~~Do you want me to squash the empty auto-git commits?~~ **Won't implement** — history rewrite requires force-push; not approved.
 
 The recent history has empty-message commits (`092682f`, `de6abaf`, `eb8bf29`, `17325c2`) created by the auto-git daemon. These add noise to `git log`. I can't control the daemon, but I could rebase to squash them — however, that rewrites history, which violates the safety rules unless you explicitly approve.

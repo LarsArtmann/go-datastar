@@ -64,13 +64,14 @@ func ReadEvents(r io.Reader) ([]Event, error) {
 	return events, nil
 }
 
-// MustReadEvents is like [ReadEvents] but calls t.Fatal on error.
-func MustReadEvents(t *testing.T, r io.Reader) []Event {
-	t.Helper()
+// MustReadEvents is like [ReadEvents] but calls t.Fatal on error. Accepts
+// [testing.TB], so it works with *testing.T, *testing.B, and GinkgoT().
+func MustReadEvents(tb testing.TB, r io.Reader) []Event {
+	tb.Helper()
 
 	events, err := ReadEvents(r)
 	if err != nil {
-		t.Fatalf("read SSE events: %v", err)
+		tb.Fatalf("read SSE events: %v", err)
 	}
 
 	return events
@@ -78,12 +79,13 @@ func MustReadEvents(t *testing.T, r io.Reader) []Event {
 
 // MustReadNEvents is like [ReadNEvents] but calls t.Fatal on error.
 // Use this with streaming SSE connections that do not close on their own.
-func MustReadNEvents(t *testing.T, r io.Reader, count int) []Event {
-	t.Helper()
+// Accepts [testing.TB], so it works with *testing.T, *testing.B, and GinkgoT().
+func MustReadNEvents(tb testing.TB, r io.Reader, count int) []Event {
+	tb.Helper()
 
 	events, err := ReadNEvents(r, count)
 	if err != nil {
-		t.Fatalf("read %d SSE events: %v", count, err)
+		tb.Fatalf("read %d SSE events: %v", count, err)
 	}
 
 	return events

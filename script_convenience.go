@@ -89,8 +89,9 @@ func WithCustomEventEventID(id string) DispatchCustomEventOption {
 const defaultCustomEventSelector = "document"
 
 // NewDispatchCustomEventPatch creates a [DispatchCustomEventPatch] with the
-// given event name and detail value. The detail is marshaled to JSON when
-// [DispatchCustomEventPatch.Event] is called.
+// given event name and detail value. The detail is marshaled to JSON here, in
+// the constructor; marshal failures return a classified error immediately
+// instead of surfacing at send time.
 func NewDispatchCustomEventPatch(
 	eventName string,
 	detail any,

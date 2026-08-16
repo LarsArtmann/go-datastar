@@ -9,6 +9,23 @@ import (
 	"github.com/larsartmann/go-sse"
 )
 
+// sliceStore is a minimal sse.EventStore for the replay dogfood test: it
+// returns every stored event whose ID sorts strictly after the request's
+// Last-Event-ID, mirroring what a real replay store does on reconnection.
+type sliceStore []sse.Event
+
+func (s sliceStore) EventsAfter(lastID sse.EventID) ([]sse.Event, error) {
+	var after []sse.Event
+
+	for _, evt := range s {
+		if evt.ID.Get() > lastID.Get() {
+			after = append(after, evt)
+		}
+	}
+
+	return after, nil
+}
+
 // TestE2E_DataStarPatches verifies the complete SSE wire format produced by
 // go-datastar through a real HTTP server and client — using the datastartest
 // helper package to parse and decode the SSE response.
@@ -74,4 +91,65 @@ func TestE2E_DataStarPatches(t *testing.T) {
 
 	// 4. RemoveElement → patch-elements with selector=#stale, mode=remove
 	datastartest.RequireElements(t, events[3], "#stale", "remove", "")
+}
+
+// TestE2E_ReplayWithLastEventID dogfoods the full reconnection story: the
+// handler replays missed events from an EventStore based on the Last-Event-ID
+// header, and the test drives the reconnect with [WithLastEventID] — no
+// browser required.
+func TestE2E_ReplayWithLastEventID(t *testing.T) {
+	t.Parallel()
+
+	store := sliceStore{
+		{
+			Event: string(datastar.EventTypePatchElements),
+			Data:  "selector #feed\nelements <div>1</div>",
+			ID:    sse.NewEventID("1"),
+		},
+		{
+			Event: string(datastar.EventTypePatchElements),
+			Data:  "selector #feed\nelements <div>2</div>",
+			ID:    sse.NewEventID("2"),
+		},
+		{
+			Event: string(datastar.EventTypePatchElements),
+			Data:  "selector #feed\nelements <div>3</div>",
+			ID:    sse.NewEventID("3"),
+		},
+	}
+
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		stream := sse.NewStream(w, r)
+		defer func() { _ = stream.Close() }()
+
+		if _, err := sse.Replay(stream, store, datastar.LastEventID(r)); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+
+			return
+		}
+
+		resp := datastar.NewResponse(stream)
+		_ = resp.PatchElements("<div>live</div>", datastar.WithSelector("#feed"))
+	})
+
+	t.Run("fresh connection replays everything", func(t *testing.T) {
+		t.Parallel()
+
+		events := datastartest.Collect(t, handler)
+		datastartest.RequireEventCount(t, events, 4) // 3 replayed + 1 live
+
+		datastartest.RequireEventID(t, events[0], "1")
+		datastartest.RequireEventID(t, events[2], "3")
+		datastartest.RequireElements(t, events[3], "#feed", "outer", "<div>live</div>")
+	})
+
+	t.Run("reconnect from ID 2 replays only missed events", func(t *testing.T) {
+		t.Parallel()
+
+		events := datastartest.Collect(t, handler, datastartest.WithLastEventID("2"))
+		datastartest.RequireEventCount(t, events, 2) // event 3 + live
+
+		datastartest.RequireEventID(t, events[0], "3")
+		datastartest.RequireElements(t, events[1], "#feed", "outer", "<div>live</div>")
+	})
 }

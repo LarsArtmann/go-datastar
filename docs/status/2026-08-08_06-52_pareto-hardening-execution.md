@@ -1,10 +1,11 @@
 # Status Report — Pareto Hardening Execution
 
-> **Resolution note (2026-08-08 07:04):** All 4 fuckups listed in section d
-> below (F1–F3) have been **resolved**. See
-> [`2026-08-08_07-04_fuckup-fix-session.md`](2026-08-08_07-04_fuckup-fix-session.md)
-> for details. This report is preserved as a point-in-time snapshot; the items
-> below reflect the state at 06:52 and are no longer current.
+> **Resolution note (2026-08-08 07:04, corrected 2026-08-16):** The fuckups
+> listed in section d below (F1–F3) were *reported* as resolved by the 07-04
+> session. F1 and F2 genuinely landed; **F3 (go.mod lowering) never committed**
+> — every tag through v0.2.0 still says `go 1.26.5`. See the correction at
+> section d.3 and TODO_LIST. This report is preserved as a point-in-time
+> snapshot; the items below reflect the state at 06:52 and are no longer current.
 
 **Date:** 2026-08-08 06:52
 **Session scope:** Executed the Pareto hardening plan (`docs/planning/2026-08-08_03-16_pareto-hardening-plan.md`). 13 of 15 tasks (T01-T13, T15). T12 and T14 BLOCKED. Discovered 4 fuckups during execution and in self-review.
@@ -61,11 +62,11 @@
 
 ## b) PARTIALLY DONE
 
-### 1. T05: CI hardening — Actions NOT upgraded
+### 1. ~~T05: CI hardening — Actions NOT upgraded~~ resolved in the 07-04 session (F1): all 8 references upgraded; later superseded by SHA-pinned v7 (`01a1c5d`)
 
-The plan said upgrade `actions/checkout@v4` → `v5` and `actions/setup-go@v5` → `v6`. I did NOT do this. The CI still uses `checkout@v4` and `setup-go@v5` across all 4 jobs. I pinned golangci-lint and added erraudit/govulncheck but skipped the Actions version upgrades entirely. This is a miss, not a deferral — I had the context and forgot.
+The plan said upgrade `actions/checkout@v4` → `v5` and `actions/setup-go@v5` → `v6`. I did NOT do this. The CI still uses `checkout@v4` and `setup-go@v5` across all 4 jobs. I pinned golangci-lint and added erraudit/govulncheck but skipped the Actions version upgrades entirely. This is a miss, not a deferral — I had the context and forgot. (Fixed in the 07-04 session, F1.)
 
-### 2. T06: ErrorResponseFromError — UNTESTED
+### 2. ~~T06: ErrorResponseFromError — UNTESTED~~ resolved in the 07-04 session (F2): `TestErrorResponseFromError` (`response_test.go:429`)
 
 I added `ErrorResponseFromError` to `response.go` and documented it in the README, but there is NO test for it anywhere. `grep -rn "ErrorResponseFromError" *_test.go` returns nothing. The function calls `errorfamily.HTTPStatus(err)`, `errorfamily.Code(err)`, `errorfamily.Classify(err).String()`, and `errorfamily.IsRetryable(err)` — all of which need verification. This is a gap in the "test after changes" principle.
 
@@ -79,11 +80,11 @@ Tried adding `mdformat` to treefmt. It reformatted status reports and other docs
 
 | #   | Task                                   | Why                                                           | Status    |
 | --- | -------------------------------------- | ------------------------------------------------------------- | --------- |
-| 1   | T12: GitHub repo polish (topics, wiki) | BLOCKED — requires `gh` CLI access                            | Cannot do |
-| 2   | T14: Tag v0.0.3                        | BLOCKED — release cadence decision (user)                     | Waiting   |
-| 3   | Nestif refactor of ReadSignals         | Lower priority than other tasks; complexity is 6 (borderline) | TODO      |
-| 4   | Coverage badge in README               | No coverage service configured                                | TODO      |
-| 5   | pkg.go.dev rendering verification      | Cannot verify without browser                                 | TODO      |
+| 1   | T12: GitHub repo polish (topics, wiki) | ~~BLOCKED — requires `gh` CLI access~~ done in the 09-36 session (`cfe328d`) |
+| 2   | T14: Tag v0.0.3                        | ~~BLOCKED — release cadence decision (user)~~ done — v0.0.3 tagged 2026-08-08 |
+| 3   | Nestif refactor of ReadSignals         | done at `5bab343`                                                            |
+| 4   | Coverage badge in README               | TODO                                                            |
+| 5   | pkg.go.dev rendering verification      | TODO                                                            |
 
 ---
 
@@ -97,9 +98,9 @@ Tried adding `mdformat` to treefmt. It reformatted status reports and other docs
 
 I preach "test after changes" and then shipped a new exported function with zero test coverage. The function has 4 distinct errorfamily calls inside it (HTTPStatus, Code, Classify, IsRetryable) and builds a complex signals map. If any of those returns unexpected values for a non-errorfamily error, the function silently sends wrong data to the client. I caught this in self-review but not during execution.
 
-### 3. go.mod version mismatch with CHANGELOG claim
+### 3. ~~go.mod version mismatch with CHANGELOG claim~~ **still open (2026-08-16)** — the claimed lowering never landed at any tag; see TODO_LIST
 
-`go.mod` says `go 1.26.5`. The CHANGELOG v0.0.2 section says: "Lowered `go.mod` from `go 1.26.5` to `go 1.26`". Either the lowering was done and later reverted, or it was never committed. The file currently contradicts the release notes. This is a pre-existing issue I didn't cause, but I SHOULD have caught it during the T02 CHANGELOG cleanup. I read the v0.0.2 section and didn't cross-reference go.mod.
+`go.mod` says `go 1.26.5`. The CHANGELOG v0.0.2 section says: "Lowered `go.mod` from `go 1.26.5` to `go 1.26`". Either the lowering was done and later reverted, or it was never committed. The file currently contradicts the release notes. This is a pre-existing issue I didn't cause, but I SHOULD have caught it during the T02 CHANGELOG cleanup. I read the v0.0.2 section and didn't cross-reference go.mod. ~~(The 07-04 session claimed to fix this as F3, but the change was never committed — see the correction above.)~~
 
 ### 4. erraudit nolint approach: burned 3 round-trips
 
@@ -136,10 +137,10 @@ Commits `de6abaf`, `eb8bf29`, and `17325c2` have empty commit messages (just whi
 
 ### Critical (fixing this session's fuckups)
 
-1. **Upgrade `actions/checkout@v4` → `@v5` in ci.yml** — all 4 jobs.
-2. **Upgrade `actions/setup-go@v5` → `@v6` in ci.yml** — all 4 jobs.
-3. **Add test for `ErrorResponseFromError`** — verify it sends correct signals for Rejection, Transient, and non-errorfamily errors.
-4. **Resolve go.mod `go 1.26.5` vs CHANGELOG claim of `go 1.26`** — either lower go.mod or correct the CHANGELOG.
+1. ~~**Upgrade `actions/checkout@v4` → `@v5` in ci.yml** — all 4 jobs.~~ done in the 07-04 session (F1); later superseded by SHA-pinned v7
+2. ~~**Upgrade `actions/setup-go@v5` → `@v6` in ci.yml** — all 4 jobs.~~ done in the 07-04 session (F1); later superseded by SHA-pinned v7
+3. ~~**Add test for `ErrorResponseFromError`** — verify it sends correct signals for Rejection, Transient, and non-errorfamily errors.~~ done in the 07-04 session (F2)
+4. **Resolve go.mod `go 1.26.5` vs CHANGELOG claim of `go 1.26`** — either lower go.mod or correct the CHANGELOG. ← still open: the F3 "fix" was never committed (verified 2026-08-16)
 
 ### Error system hardening
 
@@ -160,27 +161,27 @@ Commits `de6abaf`, `eb8bf29`, and `17325c2` have empty commit messages (just whi
 ### CI / tooling
 
 15. Add `erraudit --format sarif` output for GitHub code scanning.
-16. Pin `erraudit` version in CI to a specific tag (currently v0.3.0, but unpinned in the `go install` command — actually it IS pinned, verify).
+16. ~~Pin `erraudit` version in CI to a specific tag (currently v0.3.0, but unpinned in the `go install` command — actually it IS pinned, verify).~~ done — verified pinned `@v0.3.0` (`ci.yml:91`)
 17. Add `erraudit` to nix `checks` (not just `apps`) — hermetic check in `nix flake check`.
 18. Add govulncheck to nix `checks`.
 19. Add golangci-lint to nix `checks`.
-20. Investigate why `actions/checkout@v5` and `actions/setup-go@v6` were not released yet (verify they exist before upgrading).
+20. ~~Investigate why `actions/checkout@v5` and `actions/setup-go@v6` were not released yet (verify they exist before upgrading).~~ done in the 07-04 session (F7) — both existed; adopted, later superseded by v7
 
 ### Documentation
 
 21. Add `docs/error-system.md` deep-dive with full contract + decision rationale.
-22. Document why `--enforce-samber-oops` must NOT be used with this library in CI config comments.
+22. ~~Document why `--enforce-samber-oops` must NOT be used with this library in CI config comments.~~ done — documented in `AGENTS.md` (Error System)
 23. Update CONTRIBUTING.md to mention erraudit and govulncheck commands.
 24. Add architecture diagram (D2 or mermaid) showing go-sse → go-datastar → consumer.
 25. Write migration guide from `starfederation/datastar-go` to go-datastar.
 
 ### Code quality
 
-26. Address `nestif` complexity in `ReadSignals` (extract helpers, no logic change).
-27. Audit `response.go` for `ApplyPatches` error handling (does it stop on first error?).
-28. Review whether `sendSignalsMap` defensive branch (marshal error on a pre-built map) is reachable.
+26. ~~Address `nestif` complexity in `ReadSignals` (extract helpers, no logic change).~~ done at `5bab343`
+27. ~~Audit `response.go` for `ApplyPatches` error handling (does it stop on first error?).~~ done — stops on first error (`response.go:146-153`)
+28. ~~Review whether `sendSignalsMap` defensive branch (marshal error on a pre-built map) is reachable.~~ done — accepted as unreachable defensive branch
 29. Consider splitting `errors.go` into `codes.go` + `sentinels.go` as the catalog grows.
-30. Run `gosec ./...` as a baseline security scan.
+30. ~~Run `gosec ./...` as a baseline security scan.~~ done — `gosec` enabled in `.golangci.yml`, 0 issues
 
 ### Dependency hygiene
 
@@ -190,43 +191,43 @@ Commits `de6abaf`, `eb8bf29`, and `17325c2` have empty commit messages (just whi
 
 ### Community / repo polish
 
-34. Set GitHub repo topics via `gh repo edit`.
-35. Disable empty GitHub wiki via `gh repo edit --enable-wiki=false`.
+34. ~~Set GitHub repo topics via `gh repo edit`.~~ done (`cfe328d`)
+35. ~~Disable empty GitHub wiki via `gh repo edit --enable-wiki=false`.~~ done (`cfe328d`)
 36. Add coverage badge (codecov or similar).
 37. Verify pkg.go.dev rendering for the latest version.
-38. Create GitHub release with notes when tagging v0.0.3.
+38. ~~Create GitHub release with notes when tagging v0.0.3.~~ done in the 09-36 session
 
 ### Release
 
-39. Verify CHANGELOG `[Unreleased]` is clean and accurate before tagging.
-40. Rename `[Unreleased]` to `[0.0.3]` with date.
-41. Create annotated `v0.0.3` git tag.
-42. Verify `go install github.com/larsartmann/go-datastar@v0.0.3` works after tagging.
+39. ~~Verify CHANGELOG `[Unreleased]` is clean and accurate before tagging.~~ done
+40. ~~Rename `[Unreleased]` to `[0.0.3]` with date.~~ done
+41. ~~Create annotated `v0.0.3` git tag.~~ done
+42. ~~Verify `go install github.com/larsartmann/go-datastar@v0.0.3` works after tagging.~~ done — verified in the 09-36 session (`go get` from proxy)
 
 ### Polish
 
-43. Clean up the 3 empty commit messages (pre-existing, but noise).
-44. Run `golines` on all Go files for consistent line length.
-45. Add `//nolint` comments on the 6 accepted WARNING-level erraudit violations — for documentation, not suppression.
-46. Consider adding a `Makefile` target or `justfile` for common workflows (or rather, document `nix run .#*` as the canonical interface).
+43. ~~Clean up the 3 empty commit messages (pre-existing, but noise).~~ **Won't implement** — requires history rewrite (force-push)
+44. ~~Run `golines` on all Go files for consistent line length.~~ done — `golines` runs via treefmt (`flake.nix`)
+45. ~~Add `//nolint` comments on the 6 accepted WARNING-level erraudit violations — for documentation, not suppression.~~ **Won't implement** — superseded by `--severity-threshold error` (T09)
+46. ~~Consider adding a `Makefile` target or `justfile` for common workflows (or rather, document `nix run .#*` as the canonical interface).~~ **Won't implement** — `nix run .#*` apps are the canonical interface (`flake.nix`)
 47. Review whether the example app needs its own tests.
 48. Add a `FUNDING.yml` if the maintainer wants sponsorship.
-49. Consider adding a `CHANGELOG` entry for the empty-commit cleanup (if done).
+49. ~~Consider adding a `CHANGELOG` entry for the empty-commit cleanup (if done).~~ **Won't implement** — no cleanup done
 50. Review the entire `errors_example_test.go` output format — make sure it renders well on pkg.go.dev.
 
 ---
 
 ## g) Questions I CANNOT figure out myself
 
-### Q1: Should go.mod stay at `go 1.26.5` or be lowered to `go 1.26`?
+### Q1: ~~Should go.mod stay at `go 1.26.5` or be lowered to `go 1.26`?~~ **Still open (2026-08-16)** — the lowering claimed here and in the v0.0.2/v0.0.3 CHANGELOG never landed at any tag. Decision routed to TODO_LIST/ROADMAP.
 
 The CHANGELOG v0.0.2 entry says it was lowered to `go 1.26`, but go.mod currently says `go 1.26.5`. Was the lowering reverted intentionally (perhaps to match the local toolchain), or is this a genuine drift that needs fixing? Lowering to `go 1.26` improves consumer compatibility but the patch version is functionally irrelevant for Go modules.
 
-### Q2: Should I tag v0.0.3 now, or wait for the CI Actions upgrade and ErrorResponseFromError test to land?
+### Q2: ~~Should I tag v0.0.3 now, or wait for the CI Actions upgrade and ErrorResponseFromError test to land?~~ Resolved — fixes landed first, then v0.0.3 was tagged (except the go.mod lowering, which never actually committed).
 
 The CI Actions version bump (checkout@v4→v5, setup-go@v5→v6) and the missing `ErrorResponseFromError` test are the two remaining items I fucked up. Both are quick fixes (<15 min total). Should I fix them first, then tag? Or tag now and include them in v0.0.4?
 
-### Q3: Do `actions/checkout@v5` and `actions/setup-go@v6` actually exist?
+### Q3: ~~Do `actions/checkout@v5` and `actions/setup-go@v6` actually exist?~~ Resolved — verified in the 07-04 session (F7); adopted, later superseded by SHA-pinned v7.
 
 The plan assumed these versions exist. I didn't verify before marking T05 as done (which is how the miss happened). I can check via `gh` or web search, but I cannot create tags that don't exist. If v5/v6 don't exist yet, the upgrade should be skipped or deferred.
 

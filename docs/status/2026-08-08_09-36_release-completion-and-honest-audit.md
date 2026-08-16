@@ -71,41 +71,41 @@
 
 ### Critical (release integrity)
 
-1. Fix the go.mod lie: either lower `go 1.26.5` → `go 1.26` in go.mod, or remove the false CHANGELOG claims from v0.0.2 and v0.0.3 sections
-2. Fix CI erraudit job (make erraudit repo public OR add GOPRIVATE + PAT secret OR remove job temporarily)
-3. Commit and push the uncommitted TODO_LIST.md change
-4. Push the local commit (`0ebb270`) that's ahead of origin
+1. ~~Fix the go.mod lie: either lower `go 1.26.5` → `go 1.26` in go.mod, or remove the false CHANGELOG claims from v0.0.2 and v0.0.3 sections~~ **still open (2026-08-16)** — never landed; routed to TODO_LIST (CHANGELOG is append-only, so the likely fix is lowering go.mod)
+2. ~~Fix CI erraudit job (make erraudit repo public OR add GOPRIVATE + PAT secret OR remove job temporarily)~~ done — job made non-blocking (`continue-on-error`, `a1aaa15`)
+3. ~~Commit and push the uncommitted TODO_LIST.md change~~ done
+4. ~~Push the local commit (`0ebb270`) that's ahead of origin~~ done
 
 ### High priority (CI and repo health)
 
-5. Triage Dependabot PR #1 (checkout v5→v7) — review breaking changes, merge or close
-6. Triage Dependabot PR #2 (setup-go v6→v7) — review breaking changes, merge or close
-7. If we merged v5/v6 and dependabot wants v7, consider skipping straight to v7
-8. Verify CI passes end-to-end after erraudit fix (all 4 jobs green)
-9. Verify the CI badge in README shows green after fix
-10. Consider adding `GOPRIVATE=github.com/larsartmann/*` to CI env as a general private-dep strategy
+5. ~~Triage Dependabot PR #1 (checkout v5→v7) — review breaking changes, merge or close~~ superseded — actions bumped to SHA-pinned v7 (`01a1c5d`)
+6. ~~Triage Dependabot PR #2 (setup-go v6→v7) — review breaking changes, merge or close~~ superseded — actions bumped to SHA-pinned v7 (`01a1c5d`)
+7. ~~If we merged v5/v6 and dependabot wants v7, consider skipping straight to v7~~ done — v7 with SHA pinning (`01a1c5d`)
+8. ~~Verify CI passes end-to-end after erraudit fix (all 4 jobs green)~~ done — green (erraudit non-blocking)
+9. ~~Verify the CI badge in README shows green after fix~~ done
+10. ~~Consider adding `GOPRIVATE=github.com/larsartmann/*` to CI env as a general private-dep strategy~~ **Won't implement** — superseded by the non-blocking erraudit job
 
 ### Medium priority (documentation accuracy)
 
-11. Decide on comparison links strategy: retag v0.0.3 (destructive) or accept links start at v0.0.4
-12. Add `[0.0.1]` and `[0.0.2]` comparison links retroactively (at least on master)
+11. ~~Decide on comparison links strategy: retag v0.0.3 (destructive) or accept links start at v0.0.4~~ resolved — accepted: links live on master, not at the frozen tag
+12. ~~Add `[0.0.1]` and `[0.0.2]` comparison links retroactively (at least on master)~~ done — present in `CHANGELOG.md`
 13. Update v0.0.3 release notes on GitHub if go.mod fix is applied (remove false "lowered to 1.26" claim)
 14. Verify pkg.go.dev renders godoc for v0.0.3 (trigger re-index if needed)
 15. Add coverage badge to README (need a coverage reporting service or CI step)
 16. Update CHANGELOG `[Unreleased]` section to track the go.mod fix and CI erraudit fix
-17. Write CONTRIBUTING.md note about GOPRIVATE for contributors with private dep access
+17. ~~Write CONTRIBUTING.md note about GOPRIVATE for contributors with private dep access~~ **Won't implement** — moot since the erraudit job is non-blocking
 
 ### Low priority (polish and quality of life)
 
-18. Address `nestif` complexity in `ReadSignals` (complexity 6) — `inbound.go`
+18. ~~Address `nestif` complexity in `ReadSignals` (complexity 6) — `inbound.go`~~ done at `5bab343`
 19. Add `actionlint` to CI as a dedicated job (currently only run manually via nix)
 20. Consider adding `nix flake check` to CI
-21. Add `Makefile`-equivalent document in CONTRIBUTING for non-Nix users (or clarify flake.nix is the only path)
-22. Consider versioning the embedded DataStar JS client independently
-23. Review if go.mod `go 1.26.5` should actually be `go 1.26` for broader compatibility (patch versions in go.mod ARE unusual)
+21. ~~Add `Makefile`-equivalent document in CONTRIBUTING for non-Nix users (or clarify flake.nix is the only path)~~ done — CONTRIBUTING documents the manual workflow
+22. ~~Consider versioning the embedded DataStar JS client independently~~ done — `static/` is a separately tagged module (`static/v0.1.0`+)
+23. Review if go.mod `go 1.26.5` should actually be `go 1.26` for broader compatibility (patch versions in go.mod ARE unusual) — still open, TODO_LIST
 24. Add a `RELEASING.md` checklist (tag → CHANGELOG → release → verify go get → verify CI)
 25. Consider GitHub Discussions for Q&A (currently disabled)
-26. Review whether wiki should stay disabled permanently or be used for guides
+26. ~~Review whether wiki should stay disabled permanently or be used for guides~~ resolved — stays disabled
 27. Consider adding `go test -bench=. -benchmem` results to README or docs
 28. Review error_example_test.go LSP warnings (noctx, wsl_v5) — cosmetic but visible
 
@@ -138,14 +138,14 @@
 
 ## g) Questions (Cannot Resolve Without User Input)
 
-### Q1: Should erraudit be made public, or should I add GOPRIVATE + PAT secret to CI?
+### Q1: ~~Should erraudit be made public, or should I add GOPRIVATE + PAT secret to CI?~~ Resolved — neither: the job is `continue-on-error` until the repo goes public (`a1aaa15`).
 
 The erraudit CI job has failed on every single run since it was added because `github.com/larsartmann/erraudit` is private. I cannot make the repo public (requires your decision), and adding a PAT secret to CI requires write access to repo settings (which I may or may not have via `gh`). Which path do you want?
 
-### Q2: Should I retag v0.0.3 to include the CHANGELOG comparison links and go.mod fix?
+### Q2: ~~Should I retag v0.0.3 to include the CHANGELOG comparison links and go.mod fix?~~ Resolved — no retag; links accepted on master from the next release onward.
 
 Retagging means force-pushing the tag (destructive, updates the commit it points to). This would make the v0.0.3 release page show the correct CHANGELOG with comparison links and an accurate go.mod. The alternative is to accept that v0.0.3 ships as-is and fixes apply to v0.0.4. I cannot decide this unilaterally — retagging is an irreversible action per the safety rules.
 
-### Q3: Is the go.mod supposed to say `go 1.26` or `go 1.26.5`?
+### Q3: ~~Is the go.mod supposed to say `go 1.26` or `go 1.26.5`?~~ **Still open (2026-08-16)** — every tag through v0.2.0 says `1.26.5`; decision routed to TODO_LIST/ROADMAP.
 
 The CHANGELOG claims (twice, across v0.0.2 and v0.0.3) that it was lowered to `1.26`, but the file says `1.26.5`. I don't know if the lowering was intended and never applied, or if `1.26.5` is the correct value and the CHANGELOG is wrong. Which is it? The answer determines whether I edit go.mod or edit the CHANGELOG.

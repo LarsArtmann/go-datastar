@@ -84,11 +84,15 @@ Every DataStar protocol message is a value that produces an `sse.Event`. This ma
 | `adapters.go`            | ElementsFromTempl, ElementsFromGostar                                                      |
 | `http.go`                | GetSSE/PostSSE/PutSSE/PatchSSE/DeleteSSE                                                   |
 | `inbound.go`             | ReadSignals, LastEventID                                                                   |
+| `store.go`               | `MemoryStore` — in-memory `sse.EventStore` ring buffer for reconnection replay             |
 | `script_handler.go`      | ScriptHandler, ScriptTag, Version (HTTP serving of the `static` asset bundle)              |
 | `static/`                | **Separate Go module** (zero deps). `//go:embed datastar.js`, `Bytes()`, `Version`         |
 | `response.go`            | Response (fluent SSE builder), ErrorResponse, ErrorResponseFromError, NotificationResponse |
+| `doc.go`                 | Package documentation (design rationale, quick start, error-system contract)               |
+| `example/`               | Live-feed demo app (broadcaster + MemoryStore + ScriptHandler), zero client JS              |
 | `example_test.go`        | Testable examples (Example functions with `// Output:` assertions)                         |
 | `inbound_fuzz_test.go`   | Fuzz test for ReadSignals (10-seed corpus, regression-guarded)                             |
+| `benchmark_test.go`      | Benchmarks for patch `Event()` generation + `FuzzMarshalSignalsRoundtrip`                  |
 | `coverage_test.go`       | Option-application, construction error branches, stream-send failure paths                 |
 | `errors_example_test.go` | Example functions showing all three error-handling patterns                |
 | `e2e_test.go`             | `TestE2E_SSEHeaders` — transport header verification (go-sse owned). The full DataStar wire-format E2E test was relocated to `datastartest/e2e_test.go` |
@@ -117,6 +121,16 @@ These behaviors reproduce the upstream SDK exactly:
 > CRLF to LF (items 6-7 split on `\n` only, matching upstream), and its key
 > convention (`key + " "`) conflicts with go-datastar's trailing-space dataline
 > constants (item 9). Revisit if upstream adopts CRLF normalization.
+
+## Gotchas
+
+- `go.work` is committed, but a **global** gitignore (`~/.config/git/ignore`)
+  can still hide it on some machines. After touching `.gitignore` or creating
+  module files, run `git check-ignore -v <file>` and `git ls-files <file>` —
+  `git status` alone lies when a global ignore is in play.
+- `dprint.json` exists in the repo root but is NOT wired into treefmt/flake —
+  canonical formatting is treefmt (gofumpt/goimports/golines/nixfmt) via
+  `nix flake check`.
 
 ## Error System
 
@@ -201,11 +215,15 @@ circular module dependency: root must never require datastartest in its go.mod.
 
 | Export | Purpose |
 | --- | --- |
-| `Collect(t, handler)` | Spin up httptest.Server, GET, parse SSE, return decoded events |
-| `CollectPost(t, handler, jsonBody)` | POST with JSON body, parse SSE, return decoded events |
-| `CollectWithRequest(t, handler, method, body, ct)` | Custom method/body/content-type, parse SSE |
-| `CollectN(t, handler, count)` | Read exactly N events (streaming handlers), then close |
-| `CollectWithTimeout(t, handler, timeout)` | GET with deadline; returns events received before timeout |
+| `Collect(t, handler, opts...)` | Spin up httptest.Server, GET, parse SSE, return decoded events |
+| `CollectPost(t, handler, jsonBody, opts...)` | POST with JSON body, parse SSE, return decoded events |
+| `CollectWithRequest(t, handler, method, body, ct, opts...)` | Custom method/body/content-type, parse SSE |
+| `CollectN(t, handler, count, opts...)` | Read exactly N events (streaming handlers), then close |
+| `CollectWithTimeout(t, handler, timeout, opts...)` | GET with deadline; returns events received before timeout |
+| `WithPath(path)` | Target a route (query allowed) instead of "/" — mux-friendly |
+| `WithDatastarSignals(json)` | Send `?datastar=` query param (GET/DELETE signal submission) |
+| `WithLastEventID(id)` | Send Last-Event-ID header — replay/reconnection testing |
+| `WithHeader(key, value)` | Any custom request header |
 | `ReadEvents(io.Reader)` | Parse SSE wire format from any reader |
 | `ReadNEvents(io.Reader, count)` | Streaming SSE reader; returns at N events or clean close |
 | `MustReadEvents(t, io.Reader)` | ReadEvents with t.Fatal on error |
@@ -221,9 +239,15 @@ circular module dependency: root must never require datastartest in its go.mod.
 | `RequireElementsContains(t, evt, sel, mode, htmlSubstr)` | Substring match (scripts) |
 | `RequireSignals(t, evt, json)` | Exact signals JSON assertion |
 | `RequireSignalsContain(t, evt, key)` | Check signal key exists |
+| `RequireScript(t, evt, js)` | Exact script-content assertion |
+| `RequireEventID(t, evt, id)` | Event-ID assertion (replay tests) |
 | `RequireEventCount(t, events, n)` | Event count assertion |
 | `CodeSSEScanFailed` | Error code for SSE scanner I/O failures (`datastartest.sse_scan_failed`) |
 | `CodeSignalsUnmarshalFailed` | Error code for signals JSON decode failures (`datastartest.signals_unmarshal_failed`) |
+
+**All public helpers accept `testing.TB`** (not `*testing.T`), so they work with
+`*testing.T`, `*testing.B`, and Ginkgo's `GinkgoT()`. Keep this invariant when
+adding helpers.
 
 ### Consumer usage
 

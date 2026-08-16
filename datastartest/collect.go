@@ -18,29 +18,20 @@ import (
 // This is the simplest way to E2E test a synchronous DataStar handler. The
 // handler should send all patches and return (closing the stream).
 //
-// For non-GET requests, custom headers, or request bodies, use
-// [CollectWithRequest] or [CollectPost].
+// Options customize the request: [WithPath] targets a route other than "/",
+// [WithDatastarSignals] submits inbound signals via the query parameter, and
+// [WithLastEventID] simulates a reconnecting client for replay testing.
 //
-// For streaming handlers that keep the connection open, use [CollectN].
-func Collect(t *testing.T, handler http.Handler) []Event {
-	t.Helper()
+// For non-GET requests or request bodies, use [CollectWithRequest] or
+// [CollectPost]. For streaming handlers that keep the connection open, use
+// [CollectN].
+func Collect(tb testing.TB, handler http.Handler, opts ...RequestOption) []Event {
+	tb.Helper()
 
-	srv := httptest.NewServer(handler)
-	defer srv.Close()
-
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL, nil)
-	if err != nil {
-		t.Fatalf("build request: %v", err)
-	}
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		t.Fatalf("GET test server: %v", err)
-	}
-
+	resp := doRequest(tb, handler, http.MethodGet, nil, "", context.Background(), opts)
 	defer func() { _ = resp.Body.Close() }()
 
-	return MustReadEvents(t, resp.Body)
+	return MustReadEvents(tb, resp.Body)
 }
 
 // CollectWithRequest starts a test server, sends a request with the given
@@ -50,77 +41,55 @@ func Collect(t *testing.T, handler http.Handler) []Event {
 //
 // For the common POST-JSON case, prefer [CollectPost].
 func CollectWithRequest(
-	t *testing.T,
+	tb testing.TB,
 	handler http.Handler,
 	method string,
 	body io.Reader,
 	contentType string,
+	opts ...RequestOption,
 ) []Event {
-	t.Helper()
+	tb.Helper()
 
-	srv := httptest.NewServer(handler)
-	defer srv.Close()
-
-	req, err := http.NewRequestWithContext(context.Background(), method, srv.URL, body)
-	if err != nil {
-		t.Fatalf("build %s request: %v", method, err)
-	}
-
-	if contentType != "" {
-		req.Header.Set("Content-Type", contentType)
-	}
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		t.Fatalf("%s test server: %v", method, err)
-	}
-
+	resp := doRequest(tb, handler, method, body, contentType, context.Background(), opts)
 	defer func() { _ = resp.Body.Close() }()
 
-	return MustReadEvents(t, resp.Body)
+	return MustReadEvents(tb, resp.Body)
 }
 
 // CollectPost is a convenience wrapper around [CollectWithRequest] for POST
 // requests with a JSON body — the most common non-GET pattern for DataStar
 // handlers (e.g., submitting a form that updates signals).
-func CollectPost(t *testing.T, handler http.Handler, jsonBody string) []Event {
-	t.Helper()
+func CollectPost(tb testing.TB, handler http.Handler, jsonBody string, opts ...RequestOption) []Event {
+	tb.Helper()
 
 	return CollectWithRequest(
-		t,
+		tb,
 		handler,
 		http.MethodPost,
 		strings.NewReader(jsonBody),
 		"application/json",
+		opts...,
 	)
 }
 
-// CollectN starts a test server, sends a GET request, and reads exactly n
+// CollectN starts a test server, sends a GET request, and reads exactly count
 // events from the SSE stream before closing the connection. Use this for
 // streaming handlers that keep the connection open (e.g., broadcasting through
 // a Broadcaster). Unlike [Collect], this does not wait for the handler to
-// finish — it returns as soon as n events have been received.
-func CollectN(t *testing.T, handler http.Handler, count int) []Event {
-	t.Helper()
+// finish — it returns as soon as count events have been received.
+func CollectN(tb testing.TB, handler http.Handler, count int, opts ...RequestOption) []Event {
+	tb.Helper()
 
-	srv := httptest.NewServer(handler)
-	defer srv.Close()
-
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL, nil)
-	if err != nil {
-		t.Fatalf("build request: %v", err)
+	if count <= 0 {
+		return nil
 	}
 
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		t.Fatalf("GET test server: %v", err)
-	}
-
+	resp := doRequest(tb, handler, http.MethodGet, nil, "", context.Background(), opts)
 	defer func() { _ = resp.Body.Close() }()
 
 	events, err := ReadNEvents(resp.Body, count)
 	if err != nil {
-		t.Fatalf("read %d events: %v", count, err)
+		tb.Fatalf("read %d events: %v", count, err)
 	}
 
 	return events
@@ -132,25 +101,18 @@ func CollectN(t *testing.T, handler http.Handler, count int) []Event {
 // before the timeout, the test fails.
 //
 // Use this for defensive testing against handlers that might hang.
-func CollectWithTimeout(t *testing.T, handler http.Handler, timeout time.Duration) []Event {
-	t.Helper()
-
-	srv := httptest.NewServer(handler)
-	defer srv.Close()
+func CollectWithTimeout(
+	tb testing.TB,
+	handler http.Handler,
+	timeout time.Duration,
+	opts ...RequestOption,
+) []Event {
+	tb.Helper()
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, srv.URL, nil)
-	if err != nil {
-		t.Fatalf("build request: %v", err)
-	}
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		t.Fatalf("GET test server: %v", err)
-	}
-
+	resp := doRequest(tb, handler, http.MethodGet, nil, "", ctx, opts)
 	defer func() { _ = resp.Body.Close() }()
 
 	// A large count so ReadNEvents reads everything; the timeout enforces the deadline.
@@ -158,14 +120,59 @@ func CollectWithTimeout(t *testing.T, handler http.Handler, timeout time.Duratio
 
 	events, err := ReadNEvents(resp.Body, maxEvents)
 	if err != nil {
-		t.Fatalf("read events within %v: %v", timeout, err)
+		tb.Fatalf("read events within %v: %v", timeout, err)
 	}
 
 	return events
 }
 
-// ReadNEvents reads up to n events from r. Returns as soon as n events have
-// been dispatched, without waiting for EOF. This is the streaming-reader
+// doRequest starts an httptest server for handler, builds a request from the
+// method, body, content type, and options, sends it, and returns the response.
+// The server is closed via tb.Cleanup; closing the response body is the
+// caller's responsibility.
+func doRequest(
+	tb testing.TB,
+	handler http.Handler,
+	method string,
+	body io.Reader,
+	contentType string,
+	ctx context.Context,
+	opts []RequestOption,
+) *http.Response {
+	tb.Helper()
+
+	srv := httptest.NewServer(handler)
+	tb.Cleanup(srv.Close)
+
+	cfg := applyRequestOptions(opts)
+
+	target := srv.URL + cfg.targetPath()
+
+	req, err := http.NewRequestWithContext(ctx, method, target, body)
+	if err != nil {
+		tb.Fatalf("build %s request to %s: %v", method, target, err)
+	}
+
+	if contentType != "" {
+		req.Header.Set("Content-Type", contentType)
+	}
+
+	for key, values := range cfg.headers {
+		for _, value := range values {
+			req.Header.Add(key, value)
+		}
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		tb.Fatalf("%s test server: %v", method, err)
+	}
+
+	return resp
+}
+
+// ReadNEvents reads up to count events from r. Returns as soon as count events
+// have been dispatched, without waiting for EOF. This is the streaming-reader
 // counterpart to [ReadEvents]: use it with a live SSE connection body that does
 // not close on its own (e.g., a handler broadcasting through a Broadcaster).
 //

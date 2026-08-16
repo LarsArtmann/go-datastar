@@ -201,71 +201,71 @@ The skill says to produce two independent scores (Accuracy + Fitness) with visib
 
 ### Immediate (this session's gaps — fix-on-sight items)
 
-1. **Fix CONTRIBUTING.md** — add `GOEXPERIMENT=jsonv2`, `GOWORK=off`, nix workflow. 2-minute fix. Three sessions overdue.
-2. **Update AGENTS.md file layout table** — add `example_test.go`, `inbound_fuzz_test.go` rows. 10 minutes.
-3. **Update AGENTS.md wire-format parity** — add HEAD/RFC 7231 compliance as requirement #12. 10 minutes.
-4. **Fix vague annotations** — replace "done in subsequent sessions" with commit hashes on ~5 items in typed-error-system report.
-5. **Clean CHANGELOG [Unreleased]** — remove internal test improvements (coverage tests, RequestWithContext migration). Keep only consumer-facing entries.
-6. **Run proper VERIFY pass** — open every `file:line` citation in FEATURES.md and confirm.
+1. ~~**Fix CONTRIBUTING.md** — add `GOEXPERIMENT=jsonv2`, `GOWORK=off`, nix workflow. 2-minute fix. Three sessions overdue.~~ done at `4f7595e`
+2. ~~**Update AGENTS.md file layout table** — add `example_test.go`, `inbound_fuzz_test.go` rows. 10 minutes.~~ done at `4f7595e`
+3. ~~**Update AGENTS.md wire-format parity** — add HEAD/RFC 7231 compliance as requirement #12. 10 minutes.~~ done at `4f7595e`
+4. ~~**Fix vague annotations** — replace "done in subsequent sessions" with commit hashes on ~5 items in typed-error-system report.~~ done in the v0.0.3 session (T02) — hashes now inline in that report
+5. ~~**Clean CHANGELOG [Unreleased]** — remove internal test improvements (coverage tests, RequestWithContext migration). Keep only consumer-facing entries.~~ done in the v0.0.3 session (T02)
+6. ~~**Run proper VERIFY pass** — open every `file:line` citation in FEATURES.md and confirm.~~ done in the 2026-08-16 docs-health audit (stale rows corrected)
 
 ### Error system hardening
 
-7. Fix `WithScriptAttributeKVs` doc/code mismatch — either make it error on odd args or fix the doc (`script.go:58-76`).
-8. Fix `DispatchCustomEventPatch.Event()` silent error swallowing (`script_convenience.go:117`).
-9. Add `input_preview` (first ~200 bytes) to `CodeSignalsUnmarshalFailed` context.
-10. Integrate `errorfamily.HTTPStatus(err)` into `ErrorResponse`.
-11. Add `errorfamily.WrapOnce` at `ReadSignals` boundary.
-12. Document error-code naming convention (`_invalid` vs `_required` vs `_failed`) in `errors.go`.
-13. Add `errors.As(err, &target)` test for `*errorfamily.Error` on every error path.
+7. ~~Fix `WithScriptAttributeKVs` doc/code mismatch — either make it error on odd args or fix the doc (`script.go:58-76`).~~ done — doc corrected at `4f7595e`
+8. ~~Fix `DispatchCustomEventPatch.Event()` silent error swallowing (`script_convenience.go:117`).~~ done at `eb8bf29`
+9. ~~Add `input_preview` (first ~200 bytes) to `CodeSignalsUnmarshalFailed` context.~~ done at `eb8bf29`
+10. ~~Integrate `errorfamily.HTTPStatus(err)` into `ErrorResponse`.~~ done at `eb8bf29` (`ErrorResponseFromError`)
+11. ~~Add `errorfamily.WrapOnce` at `ReadSignals` boundary.~~ done at `eb8bf29`
+12. ~~Document error-code naming convention (`_invalid` vs `_required` vs `_failed`) in `errors.go`.~~ done at `eb8bf29`
+13. ~~Add `errors.As(err, &target)` test for `*errorfamily.Error` on every error path.~~ done at `eb8bf29`
 
 ### CI/CD
 
-14. Add `erraudit` to CI (`.github/workflows/ci.yml`).
-15. Add `govulncheck` to CI.
-16. Pin `golangci-lint` version in CI (currently `@latest`).
-17. Upgrade `actions/checkout@v4`→`v5`, `actions/setup-go@v5`→`v6`.
-18. Add `golangci-lint` / `erraudit` / `govulncheck` as nix checks in `flake.nix`.
+14. ~~Add `erraudit` to CI (`.github/workflows/ci.yml`).~~ done in v0.0.3
+15. ~~Add `govulncheck` to CI.~~ done in v0.0.3
+16. ~~Pin `golangci-lint` version in CI (currently `@latest`).~~ done in v0.0.3 — v2.12.2
+17. ~~Upgrade `actions/checkout@v4`→`v5`, `actions/setup-go@v5`→`v6`.~~ done in v0.0.3 — later superseded by SHA-pinned v7 (`01a1c5d`)
+18. ~~Add `golangci-lint` / `erraudit` / `govulncheck` as nix checks in `flake.nix`.~~ done as nix **apps**, not checks
 19. Add `erraudit` to `flake.nix` devShell.
 20. Set up branch protection on master.
-21. Add Dependabot or Renovate config.
+21. ~~Add Dependabot or Renovate config.~~ done in v0.0.3
 22. Consider scheduled fuzz testing in CI.
 
 ### Testing
 
-23. Add benchmark tests for patch `Event()` generation.
-24. Add fuzz test for `MarshalSignals`.
-25. Cover `sendSignalsMap` defensive branch (75%, unreachable via public API).
-26. Add `WithScriptAttributeKVs` odd-argument test.
+23. ~~Add benchmark tests for patch `Event()` generation.~~ done at `32d36a7`
+24. ~~Add fuzz test for `MarshalSignals`.~~ done at `32d36a7` (`FuzzMarshalSignalsRoundtrip`)
+25. ~~Cover `sendSignalsMap` defensive branch (75%, unreachable via public API).~~ done — accepted as unreachable defensive branch
+26. ~~Add `WithScriptAttributeKVs` odd-argument test.~~ done (`script_test.go`)
 
 ### Documentation
 
-27. Add error codes table (9 codes) to README.
-28. Update `doc.go` package comment to mention classified errors.
-29. Add `SECURITY.md` and `CODE_OF_CONDUCT.md`.
-30. Create issue templates and PR template.
+27. ~~Add error codes table (9 codes) to README.~~ done at `eb8bf29` (11 codes)
+28. ~~Update `doc.go` package comment to mention classified errors.~~ done at `4f7595e`
+29. ~~Add `SECURITY.md` and `CODE_OF_CONDUCT.md`.~~ done at `3cebe14`
+30. ~~Create issue templates and PR template.~~ done at `3cebe14`
 31. Add "Migrating from starfederation/datastar-go" guide.
 32. Add architecture diagram (D2 or mermaid).
 33. Add coverage badge to README.
-34. Add `errors_example_test.go` showing all three error-handling patterns.
+34. ~~Add `errors_example_test.go` showing all three error-handling patterns.~~ done at `eb8bf29`
 35. Add markdown formatter to treefmt.
 
 ### Code quality
 
-36. Address `nestif` complexity in `ReadSignals` (complexity 6).
+36. ~~Address `nestif` complexity in `ReadSignals` (complexity 6).~~ done at `5bab343`
 37. Consider splitting `response.go` (195 lines, 18 methods).
 38. Add `Broadcaster[datastar.Patch]` typed-filtering example.
 39. Add `SubscribeFilter` usage example.
-40. Add `//nolint` comments on accepted `generic_return` / `silent_swallow` sites.
+40. ~~Add `//nolint` comments on accepted `generic_return` / `silent_swallow` sites.~~ **Won't implement** — superseded by `--severity-threshold error` in CI (T09)
 
 ### GitHub repo polish
 
-41. Set GitHub repo topics (`datastar`, `sse`, `go`, `hypermedia`).
-42. Disable empty GitHub wiki.
+41. ~~Set GitHub repo topics (`datastar`, `sse`, `go`, `hypermedia`).~~ done (`cfe328d`)
+42. ~~Disable empty GitHub wiki.~~ done (`cfe328d`)
 43. Verify pkg.go.dev docs rendered.
 
 ### Release tooling
 
-44. Tag v0.0.3 with the HEAD spec-compliance fix + godoc fix.
+44. ~~Tag v0.0.3 with the HEAD spec-compliance fix + godoc fix.~~ done — v0.0.3 tagged 2026-08-08
 45. Add CHANGELOG automation.
 46. Consider goreleaser.
 47. Add `version` package or build-time variable.
@@ -273,18 +273,18 @@ The skill says to produce two independent scores (Accuracy + Fitness) with visib
 ### Upstream tracking
 
 48. Document DataStar JS version pinning strategy.
-49. Check if upstream DataStar has released beyond v1.0.2.
+49. ~~Check if upstream DataStar has released beyond v1.0.2.~~ done — confirmed latest in the v0.0.3 session (T13)
 50. Add Renovate rule for upstream DataStar JS releases.
 
 ---
 
 ## g) Questions I Cannot Answer Myself
 
-### Q1: Should I fix CONTRIBUTING.md and AGENTS.md right now, or are they correctly routed as TODO items?
+### Q1: ~~Should I fix CONTRIBUTING.md and AGENTS.md right now, or are they correctly routed as TODO items?~~ Resolved — both fixed in the v0.0.3 hardening session (`4f7595e`).
 
 I identified CONTRIBUTING.md as broken and AGENTS.md as missing entries. Both are 2-10 minute fixes. The docs-health skill says "Living docs get rewritten in place when they drift" and the fix-on-sight principle says fix them now. But the user's instruction was specifically "do the docs-health skill" (BUILD + HARVEST + VERIFY + ANNOTATE), which I interpreted as building the 4 target docs (TODO_LIST, ROADMAP, FEATURES, CHANGELOG). I'm uncertain whether fixing AGENTS.md and CONTRIBUTING.md was in scope or whether the user wanted me to stop at the 4 docs. **This determines whether I should immediately fix them or wait.**
 
-### Q2: For `WithScriptAttributeKVs` — should the doc be fixed to match the code (silent truncation), or should the code be fixed to match the doc (error on odd args)?
+### Q2: ~~For `WithScriptAttributeKVs` — should the doc be fixed to match the code (silent truncation), or should the code be fixed to match the doc (error on odd args)?~~ Resolved — doc fixed to match the code (`4f7595e`); the API change was rejected.
 
 The doc says "Returns an error via the patch if the argument count is odd." The code silently drops the trailing element. One of them is wrong. The function signature returns no error (`func WithScriptAttributeKVs(kvs ...string) ScriptPatchOption`), and `ScriptPatch` has no error field, so making the code error would require an API change (adding error return or an error field to the struct). Fixing the doc is trivial. **This is a design decision — do you want odd-argument detection (requires API change) or silent truncation (doc fix only)?**
 
