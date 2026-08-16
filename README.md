@@ -15,9 +15,66 @@ Built on [go-sse](https://github.com/LarsArtmann/go-sse).
 
 The key design principle: **patches are values, not method calls**. Every patch implements `Patch interface { Event() sse.Event }`, so you can construct one without an open connection, hand it to a `Broadcaster[T]`, persist it in an `EventStore`, or filter it through a `SubscribeFilter`.
 
-## Why not `starfederation/datastar-go`?
+## Comparison with the official SDK
 
-The upstream SDK couples patch construction to a live SSE connection (`PatchElements` is a method on `ServerSentEventGenerator`). Patches are not values — you cannot queue, filter, replay, or broadcast them. go-datastar fixes this with a one-method interface that unlocks composition with go-sse.
+The official Go SDK, [`starfederation/datastar-go`](https://github.com/starfederation/datastar-go), is the first-party reference implementation and a perfectly good choice for straightforward request/response handlers. go-datastar exists because of one architectural decision — and everything else follows from it.
+
+_Compared against [datastar-go v1.2.2](https://pkg.go.dev/github.com/starfederation/datastar-go/datastar), the current release._
+
+### The core difference: patches are values
+
+In the official SDK, every patch is a method on a `ServerSentEventGenerator` bound to a live `http.ResponseWriter`. You cannot construct a patch without an open connection:
+
+```go
+sse := datastar.NewSSE(w, r)                   // requires the ResponseWriter
+err := sse.PatchElements("<div>Update</div>")  // written to the wire immediately
+```
+
+In go-datastar, a patch is a value you can build anywhere and route anywhere:
+
+```go
+patch := datastar.NewElementsPatch("<div>Update</div>",
+    datastar.WithSelectorID("feed"),
+    datastar.WithModePrepend(),
+)
+
+evt := patch.Event()        // an sse.Event — store it, filter it, broadcast it
+broadcaster.Broadcast(evt)  // fan out to every connected client
+store.Append(evt)           // replay it when a client reconnects
+```
+
+Both libraries emit the exact same DataStar wire format. The difference is what you can do with a patch before it hits the network.
+
+### Feature comparison
+
+| Capability                                 | official datastar-go                                        | go-datastar                                                       |
+| ------------------------------------------ | ----------------------------------------------------------- | ----------------------------------------------------------------- |
+| Patch model                                | Methods on a connection-bound generator                     | First-class values (`Patch` → `sse.Event`)                        |
+| Build a patch without a live connection    | No                                                          | Yes                                                               |
+| Broadcast one patch to N connections       | Not built in                                                | Yes, via go-sse `Broadcaster`                                     |
+| Reconnection replay                        | Not built in                                                | Yes, via `sse.EventStore`, `MemoryStore`, `LastEventID(r)`        |
+| Per-subscriber event filtering             | Not built in                                                | Yes, via go-sse `SubscribeFilter`                                 |
+| Error handling                             | Standard `error` values                                     | Every error classified with a stable code, family, and retryability ([go-error-family](https://github.com/LarsArtmann/go-error-family)) |
+| E2E test helpers for your handlers         | None                                                        | `datastartest` module: SSE parsing, typed decoding, assertions    |
+| Serve the DataStar JS client               | Bring your own                                              | `ScriptHandler()` with ETag + Cache-Control, embedded zero-dep `static` module |
+| SSE compression (gzip, Brotli, Zstd)       | Yes, built in                                               | No (bring your own middleware)                                    |
+| Templ / GoStar rendering                   | Yes                                                         | Yes                                                               |
+| Printf-style variants (`…f`)               | Yes                                                         | Yes                                                               |
+
+### Where the official SDK wins
+
+Honesty first:
+
+- **Built-in SSE compression** — gzip, Brotli, Zstd, and Deflate with client- or server-priority negotiation. go-datastar leaves compression to middleware.
+- **`ReplaceURLQuerystring`** — merges query params into the current URL. go-datastar only has `ReplaceURL`.
+- **Fewer environment constraints** — works on Go 1.24+ with standard tooling. go-datastar requires Go 1.26+ and `GOEXPERIMENT=jsonv2` (transitive, via go-sse).
+- **First-party cadence** — the reference implementation, tracking DataStar client releases day one.
+
+### When to choose which
+
+Choose the **official SDK** for single-connection request/response handlers where you want the reference implementation, minimal constraints, or built-in compression.
+
+Choose **go-datastar** when patches are part of your application's state: live feeds and dashboards (broadcast), replay on reconnect (event store), per-user event filtering, machine-readable error handling, or E2E-tested DataStar handlers.
 
 ## Requirements
 
