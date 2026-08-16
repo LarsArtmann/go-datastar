@@ -1,6 +1,7 @@
 package datastartest_test
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -117,7 +118,7 @@ func TestCollect_WithLastEventID_HeaderArrives(t *testing.T) {
 	srv := httptest.NewServer(handler)
 	t.Cleanup(srv.Close)
 
-	req, err := http.NewRequest(http.MethodGet, srv.URL, nil)
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL, nil)
 	if err != nil {
 		t.Fatalf("build request: %v", err)
 	}

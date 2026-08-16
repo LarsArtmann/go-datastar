@@ -3,6 +3,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/larsartmann/go-datastar.svg)](https://pkg.go.dev/github.com/larsartmann/go-datastar)
 [![CI](https://github.com/LarsArtmann/go-datastar/actions/workflows/ci.yml/badge.svg)](https://github.com/LarsArtmann/go-datastar/actions/workflows/ci.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/larsartmann/go-datastar)](https://goreportcard.com/report/github.com/larsartmann/go-datastar)
+[![coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FLarsArtmann%2Fgo-datastar%2Fcoverage%2Fcoverage-badge.json&logo=go)](https://github.com/LarsArtmann/go-datastar/actions/workflows/coverage.yml)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 DataStar protocol library for Go. Every patch is a **first-class value** that produces an [`sse.Event`](https://pkg.go.dev/github.com/larsartmann/go-sse#Event) — so you can store, queue, filter, replay, and broadcast them through go-sse's transport infrastructure.
@@ -67,7 +68,7 @@ Honesty first:
 
 - **Built-in SSE compression** — gzip, Brotli, Zstd, and Deflate with client- or server-priority negotiation. go-datastar leaves compression to middleware.
 - **`ReplaceURLQuerystring`** — merges query params into the current URL. go-datastar only has `ReplaceURL`.
-- **Fewer environment constraints** — works on Go 1.24+ with standard tooling. go-datastar requires Go 1.26+ and `GOEXPERIMENT=jsonv2` (transitive, via go-sse).
+- **Fewer environment constraints** — works on Go 1.24+ with standard tooling. go-datastar requires Go 1.26.6+ and `GOEXPERIMENT=jsonv2` (transitive, via go-sse).
 - **First-party cadence** — the reference implementation, tracking DataStar client releases day one.
 
 ### When to choose which
@@ -78,7 +79,7 @@ Choose **go-datastar** when patches are part of your application's state: live f
 
 ## Requirements
 
-- **Go 1.26+**
+- **Go 1.26.6+**
 - **`GOEXPERIMENT=jsonv2`** environment variable (required transitively via go-branded-id through go-sse)
 
 ```bash

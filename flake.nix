@@ -56,7 +56,7 @@
           vendorHash = "sha256-J/VAO5/gm/2UJ2KPp0fhM45sXKFyTmkpYbWPoLiAukw=";
           # datastartest vendors root + static via local replaces plus its own
           # public deps, so its module set hashes differently from the root's.
-          datastartestVendorHash = "sha256-Lx0eYkKy6HNwFUa00Oo9yHAtOvhyKR7V6dIS1Knxegs=";
+          datastartestVendorHash = "sha256-/zpQvhbzQtvJISPdwN+VK7scNwa6441qLs3oYBVvbv4=";
 
           maintainer = {
             name = "Lars Artmann";

@@ -18,6 +18,15 @@ for `GOWORK=off` builds (CI, Nix, consumers). Root no longer depends on
 datastartest — the E2E test that used datastartest helpers was relocated to
 `datastartest/e2e_test.go` to break a circular module dependency.
 
+`go.work` is force-added to git (workspace development); `go.work.sum` is
+intentionally gitignored — it is advisory (the go toolchain regenerates it on
+demand), the committed per-module `go.sum` files are the source of truth for
+reproducibility, and the replace directives make sibling-module checksums
+unnecessary (they resolve to local paths). Committing `go.work.sum` would add
+diff noise on every dependency update. Sibling requires use real published
+versions (not `v0.0.0`) so consumers testing without replaces resolve to a real
+published module.
+
 ## Commands
 
 ```bash
@@ -134,8 +143,11 @@ These behaviors reproduce the upstream SDK exactly:
   module files, run `git check-ignore -v <file>` and `git ls-files <file>` —
   `git status` alone lies when a global ignore is in play.
 - `dprint.json` exists in the repo root but is NOT wired into treefmt/flake —
-  canonical formatting is treefmt (gofumpt/goimports/golines/nixfmt) via
-  `nix flake check`.
+  it documents the project's intent for non-Go files (JSON, YAML, Markdown,
+  Dockerfile) and supports editor/external integrations. Canonical formatting
+  is treefmt (gofumpt/goimports/golines/nixfmt) via `nix flake check`; wiring
+  dprint into the hermetic check would make it depend on network-fetched WASM
+  plugins.
 
 ## Error System
 
@@ -205,6 +217,30 @@ datastartest codes: `datastartest.sse_scan_failed`,
 ## What This Library Is NOT
 
 No CQRS, no event bus, no domain opinions. It is a pure protocol layer. Consumers build domain adapters on top (e.g., cqrs-htmx/datastar's EventBridge).
+
+## Nix / Build Gotchas
+
+- **erraudit v0.3.0 CLI takes ONE directory arg.** Multi-pattern invocations
+  (e.g., `erraudit ./... ./datastartest/...`) silently fail. Loop per-module:
+  `(cd $mod && erraudit . --type-aware --enforce-go-error-family)`.
+- **erraudit + go-finding are private repos** → no hermetic Nix build possible.
+  CI probe-gates with `go list -m`; the flake app go-installs with credentials.
+- **treefmt-nix `flakeCheck = true` registers its OWN unguarded `checks.treefmt`**
+  without go on PATH. goimports shells out to `go env` per file; without a
+  directive-satisfying `go` first on PATH, the sandbox tries a network
+  toolchain download. Keep `flakeCheck = false` + a guarded `checks.format`
+  that prepends `goPkg` to `buildInputs`.
+- **Go patch bumps move `vendorHash`.** `go mod vendor` output (modules.txt
+  format) changes between Go versions. Re-discover via the fakeHash dance.
+- **`buildGoModule` `modRoot` attribute** points into the repo source for
+  submodule builds. The vendor + main derivations both `cd "$modRoot"` — no
+  manual `postPatch` cd hacks needed. Available in nixpkgs at the locked rev.
+- **BOM in Go source = compile error** ("illegal byte order mark"). Use the
+  escape `"\xef\xbb\xbf"` for UTF-8 BOM in test seed data.
+- **Auto-commit daemon is active.** It commits and pushes the working tree
+  automatically. Check `git log` before assuming what's committed. Stage by
+  explicit path list; re-read files before every edit (mod-time races with
+  parallel sessions).
 
 ## E2E Testing for Consumers: `datastartest/`
 

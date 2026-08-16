@@ -162,18 +162,18 @@ func TestE2E_ReplayWithLastEventID(t *testing.T) {
 func TestE2E_CollectPostRoundTrip(t *testing.T) {
 	t.Parallel()
 
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := http.HandlerFunc(func(writer http.ResponseWriter, r *http.Request) {
 		var inbound struct {
 			Email string `json:"email"`
 		}
 
 		if err := datastar.ReadSignals(r, &inbound); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(writer, err.Error(), http.StatusBadRequest)
 
 			return
 		}
 
-		stream := sse.NewStream(w, r)
+		stream := sse.NewStream(writer, r)
 		defer func() { _ = stream.Close() }()
 
 		resp := datastar.NewResponse(stream)
