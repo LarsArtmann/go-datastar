@@ -3,6 +3,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/larsartmann/go-datastar.svg)](https://pkg.go.dev/github.com/larsartmann/go-datastar)
 [![CI](https://github.com/LarsArtmann/go-datastar/actions/workflows/ci.yml/badge.svg)](https://github.com/LarsArtmann/go-datastar/actions/workflows/ci.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/larsartmann/go-datastar)](https://goreportcard.com/report/github.com/larsartmann/go-datastar)
+[![coverage 98.4%](https://img.shields.io/badge/coverage-98.4%25-brightgreen)](https://github.com/LarsArtmann/go-datastar)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 DataStar protocol library for Go. Every patch is a **first-class value** that produces an [`sse.Event`](https://pkg.go.dev/github.com/larsartmann/go-sse#Event) — so you can store, queue, filter, replay, and broadcast them through go-sse's transport infrastructure.

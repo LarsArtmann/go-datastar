@@ -93,16 +93,18 @@ Things we are deliberately NOT pursuing and why:
 - **No bundling beyond DataStar JS:** The embedded client is the DataStar SDK
   only. No CSS frameworks, no JS runtimes, no opinionated frontend stack.
 
-## Open questions
+## Resolved questions
 
-Decisions awaiting the owner (not tasks — do not action without a ruling):
-
-- **`go.work.sum` tracking:** gitignored today while `go.work` is committed.
-  Committing both strengthens checksum verification for workspace-local
-  replaces at the cost of diff noise on every dependency update.
-- **`v0.0.0` vs real versions for sibling requires:** the replace directives
-  make the version irrelevant locally, but `go mod tidy` can emit
-  pseudo-versions if replaces are ever removed.
+- **`go.work.sum` tracking (decided 2026-08-16, Full Execution Mode):**
+  intentionally gitignored. `go.work` is force-added for workspace development;
+  `go.work.sum` stays gitignored to avoid diff noise on every dependency update.
+  The replace directives make workspace-local checksums advisory, not
+  load-bearing. Documented in AGENTS.md.
+- **`v0.0.0` vs real versions for sibling requires (decided 2026-08-16):**
+  sibling requires use real published versions (not `v0.0.0`). The replace
+  directives make versions irrelevant locally, but a consumer testing without
+  replaces must resolve to a real published module. `go mod tidy` already
+  emits the correct published versions (e.g., v0.2.0). Documented in AGENTS.md.
 - **`go` directive policy (decided 2026-08-16, Full Execution Mode):**
   directives pin the exact patch release — `go 1.26.6` across go.mod ×3,
   go.work, and the CI `go-version`, clearing stdlib CVEs GO-2026-5972,

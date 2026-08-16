@@ -18,6 +18,12 @@ for `GOWORK=off` builds (CI, Nix, consumers). Root no longer depends on
 datastartest — the E2E test that used datastartest helpers was relocated to
 `datastartest/e2e_test.go` to break a circular module dependency.
 
+`go.work` is force-added to git (workspace development); `go.work.sum` is
+intentionally gitignored — the replace directives make workspace-local
+checksums advisory, and committing `go.work.sum` would add diff noise on every
+dependency update. Sibling requires use real published versions (not `v0.0.0`)
+so consumers testing without replaces resolve to a real published module.
+
 ## Commands
 
 ```bash

@@ -92,6 +92,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   hermetic devShell: its dependency tree contains private modules (e.g.
   go-finding), which a sandboxed Nix build cannot fetch, so the app
   go-installs it instead and requires local GitHub credentials.
+- **Per-module Nix hermetic checks** — `nix flake check` now builds and tests
+  all three Go modules in isolation (`checks.build`, `checks.buildStatic`,
+  `checks.buildDatastartest`), mirroring the CI `GOWORK=off` per-module legs.
+  The `static` module uses `vendorHash = null` (zero deps); the `datastartest`
+  module uses `modRoot` so its sibling replaces resolve inside the sandbox.
+- **Release checklist** — `docs/release-checklist.md` codifies the pre-release
+  gate, version bump, tag, post-release `pkg.go.dev` verification, and quarterly
+  comparison-table re-verify against upstream datastar-go.
+- **Domain language** — `docs/DOMAIN_LANGUAGE.md` defines the ubiquitous
+  language (Patch, Signals, Dataline, Replay, Family, Code, etc.) for
+  consistent naming and documentation.
+- **Modularization docs index** — `docs/modularization/README.md` links the
+  proposal, execution plan, and ADRs 001/002. Linked from the AGENTS file
+  layout section.
+- **`go` directive policy: pin the exact patch release.** The v0.0.2/v0.0.3
+  decision to "lower to `go 1.26`" (avoiding patch versions for consumer
+  compatibility) is superseded: 1.26.6 clears four stdlib CVEs
+  (GO-2026-5972/6089/6090/6218), and `GOTOOLCHAIN=local` in hermetic builds
+  forbids auto-downloading a newer toolchain. Consumers must use Go ≥ 1.26.6.
+- **`go.work.sum` intentionally gitignored** — `go.work` is force-added for
+  workspace development; `go.work.sum` stays gitignored to avoid diff noise on
+  every dependency update. The replace directives make workspace-local
+  checksums advisory, not load-bearing.
+- **Sibling requires use real published versions** (not `v0.0.0`) — the
+  replace directives make versions irrelevant locally, but a consumer testing
+  without replaces must resolve to a real published module.
+- **`TestCollect_WithLastEventID_HeaderArrives` de-flaked** — the handler now
+  signals via a channel after writing and flushing the SSE event, eliminating
+  the theoretical race where EOF arrives before the event data under extreme
+  parallel load. No sleeps (channel-synchronized).
 
 ## [0.2.0] - 2026-08-13
 

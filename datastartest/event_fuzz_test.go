@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	errorfamily "github.com/larsartmann/go-error-family"
 	"github.com/larsartmann/go-datastar/datastartest"
+	errorfamily "github.com/larsartmann/go-error-family"
 )
 
 // FuzzUnmarshalSignals hardens the classified-error path of

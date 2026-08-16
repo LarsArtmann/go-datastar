@@ -26,7 +26,9 @@ func TestParserChunkBoundaryIndependence(t *testing.T) {
 					t.Fatalf("%s: baseline parse: %v", tc.url, err)
 				}
 
-				chunked, err := datastartest.ReadEvents(&chunkedReader{data: []byte(tc.wire), size: chunkSize})
+				chunked, err := datastartest.ReadEvents(
+					&chunkedReader{data: []byte(tc.wire), size: chunkSize},
+				)
 				if err != nil {
 					t.Fatalf("%s: chunked parse (size %d): %v", tc.url, chunkSize, err)
 				}
@@ -39,9 +41,17 @@ func TestParserChunkBoundaryIndependence(t *testing.T) {
 				for i := range whole {
 					a, b := whole[i], chunked[i]
 
-					if a.Type != b.Type || a.ID != b.ID || a.Retry != b.Retry || dataOf(a) != dataOf(b) {
-						t.Fatalf("%s: chunk size %d: event[%d] differs:\nwhole:  %+v\nchunked:%+v\nwire: %q",
-							tc.url, chunkSize, i, a, b, tc.wire)
+					if a.Type != b.Type || a.ID != b.ID || a.Retry != b.Retry ||
+						dataOf(a) != dataOf(b) {
+						t.Fatalf(
+							"%s: chunk size %d: event[%d] differs:\nwhole:  %+v\nchunked:%+v\nwire: %q",
+							tc.url,
+							chunkSize,
+							i,
+							a,
+							b,
+							tc.wire,
+						)
 					}
 				}
 			})

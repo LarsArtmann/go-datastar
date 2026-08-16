@@ -16,6 +16,8 @@ import (
 // This is the pattern to copy when a real handler needs to know that a slow
 // client is losing events (see main's broadcaster construction).
 func TestWithOnDropFiresWhenSubscriberBufferFull(t *testing.T) {
+	t.Parallel()
+
 	const bufferSize = 2
 
 	dropped := make(chan sse.Event, 16)
@@ -31,7 +33,7 @@ func TestWithOnDropFiresWhenSubscriberBufferFull(t *testing.T) {
 	defer broadcaster.Unsubscribe(subscriber)
 
 	sent := make([]sse.Event, 0, bufferSize+3)
-	for i := 0; i < bufferSize+3; i++ {
+	for i := range bufferSize + 3 {
 		patch := datastar.NewElementsPatch(
 			"<div>Item #"+string(rune('0'+i))+"</div>",
 			datastar.WithSelectorID("feed"),
@@ -68,7 +70,7 @@ func TestWithOnDropFiresWhenSubscriberBufferFull(t *testing.T) {
 		t.Fatalf("subscriber buffer: got %d events, want %d", len(subscriber), bufferSize)
 	}
 
-	for i := 0; i < bufferSize; i++ {
+	for i := range bufferSize {
 		got := <-subscriber
 		if got.Data != sent[i].Data {
 			t.Errorf("buffered event %d: got %q, want %q", i, got.Data, sent[i].Data)
