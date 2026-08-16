@@ -164,6 +164,14 @@ These behaviors reproduce the upstream SDK exactly:
   master push) leaves an unfinished run: check `git town status`, then
   `git town skip` to finish without the failing step (the checkout may end
   on another branch of the stack) or `git town continue` to retry.
+- `git town skip`/`continue` aborts non-interactively ("cannot determine
+  parent branch for X: no interactive terminal available") when a local
+  branch has no configured lineage. Fix without moving HEAD:
+  `git config --add git-town.observed-branches <branch>` for snapshot
+  branches town must never touch (town then inlines it to
+  `git-town-branch.<branch>.branchtype observed`), or
+  `git config git-town-branch.<branch>.parent master` for stack children.
+  All lineage/branchtype metadata lives in git config.
 
 ## Error System
 
