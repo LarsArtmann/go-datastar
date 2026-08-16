@@ -396,8 +396,8 @@ Nothing is broken or regressively damaged. However:
 
 ### High impact (P0)
 
-1. **Fix `RequireSignalsContain` doc comment** — says "top-level" but matches
-   any nesting. Either fix doc or implement JSON parsing.
+1. ~~**Fix `RequireSignalsContain` doc comment** — says "top-level" but matches
+   any nesting. Either fix doc or implement JSON parsing.~~ done in the v0.1.0 session — doc corrected to "any nesting level"
 2. **Add `CollectPost` error-path test** — handler returns 400,
    MustReadEvents behavior on non-SSE response.
 3. **Add `CollectPost` non-200 status test** — handler returns 500, verify
@@ -406,9 +406,9 @@ Nothing is broken or regressively damaged. However:
    empty immediately.
 5. **Replace `1 << 30` in CollectWithTimeout with `ReadAllEvents`** —
    cleaner API, no magic number.
-6. **Verify CI pipeline passes** — run the actual CI workflow or simulate
-   it locally.
-7. **Commit the uncommitted AGENTS.md change** — trivial but needs to land.
+6. ~~**Verify CI pipeline passes** — run the actual CI workflow or simulate
+   it locally.~~ done — CI green on all modules since v0.1.0
+7. ~~**Commit the uncommitted AGENTS.md change** — trivial but needs to land.~~ done
 
 ### Medium impact (P1)
 
@@ -457,8 +457,8 @@ Nothing is broken or regressively damaged. However:
 30. **Consider configurable maxLineBytes** — via Reader struct or option.
 31. **Add CI check for datastartest coverage** — ensure new tests don't
     regress coverage.
-32. **Consider separate Go module for datastartest** — opt-in test dep.
-33. **Add versioning note** — how datastartest versions vs core.
+32. ~~**Consider separate Go module for datastartest** — opt-in test dep.~~ done — separate module since v0.1.0
+33. ~~**Add versioning note** — how datastartest versions vs core.~~ done — independent versioning (`datastartest/v0.1.0`)
 34. **Review all doc comments for godoc rendering** — formatting check.
 35. **Add `Event.LogJSON() string`** — structured JSON representation for
     logging.
@@ -492,34 +492,11 @@ Nothing is broken or regressively damaged. However:
 
 ## (g) Questions I CANNOT figure out myself
 
-### Q1: Should `datastartest` be a separate Go module (`go.mod`)?
+### Q1: ~~Should `datastartest` be a separate Go module (`go.mod`)?~~ Resolved — separate module since v0.1.0.
 
-Still unanswered from prior reports. The parent package `go-datastar` has zero
-test-only dependencies today. `datastartest` stays in the same module, so
-consumers who `go get go-datastar` pull in the test helper code transitively
-(though it won't compile unless imported). Making it a separate module would
-let consumers opt-in. This is a packaging/versioning decision with tradeoffs
-I can't resolve without knowing your preference.
+### Q2: ~~Should we consolidate the 5 Collect variants into `CollectWithOptions(t, handler, opts...)`?~~ Resolved (2026-08-16) — per-helper variadic options (`WithPath`, `WithHeader`, `WithLastEventID`, `WithDatastarSignals`) landed in CHANGELOG `[Unreleased]` instead of consolidation.
 
-### Q2: Should we consolidate the 5 Collect variants into `CollectWithOptions(t, handler, opts...)`?
-
-We now have `Collect`, `CollectPost`, `CollectWithRequest`, `CollectN`,
-`CollectWithTimeout` — five functions. A functional-options pattern
-(`WithMethod`, `WithBody`, `WithCount`, `WithTimeout`) would consolidate
-these into one extensible entry point. But the current functions are
-clearer for the 80% case (each name says exactly what it does). Should I
-refactor to options, keep adding functions, or freeze the Collect API
-surface here?
-
-### Q3: Is the `RequireSignalsContain` substring-matching approach acceptable, or should it do real JSON parsing?
-
-The current implementation checks `"key":` as a raw substring in the JSON
-payload. This means it matches `{"nested":{"key":1}}` even if the consumer
-intends to check only top-level keys. The doc comment says "top-level
-property" which is inaccurate. Real JSON parsing would fix this but adds
-complexity (unmarshal into `map[string]any`, check key existence). Is the
-substring shortcut acceptable for a test helper, or should I implement proper
-JSON key checking?
+### Q3: ~~Is the `RequireSignalsContain` substring-matching approach acceptable, or should it do real JSON parsing?~~ Resolved — substring matching kept; doc comment corrected to "any nesting level" (v0.1.0).
 
 ---
 

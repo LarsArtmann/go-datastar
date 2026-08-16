@@ -52,11 +52,11 @@ Nothing is half-finished. The refactor itself is complete and verified.
 
 | # | Item | Why it matters |
 |---|---|---|
-| 1 | **CHANGELOG.md `[Unreleased]` entry** | Structural refactor (new package); the `[Unreleased]` section exists but was not updated. Clear miss. |
-| 2 | **FEATURES.md line 66** | Says "v1.0.2 embedded. ScriptHandler() ... (`script_handler.go`)." The embed now lives in `static/`. File reference is stale. |
+| 1 | **CHANGELOG.md `[Unreleased]` entry** | Structural refactor (new package); the `[Unreleased]` section exists but was not updated. Clear miss. ~~→ done at `7c18089`~~ |
+| 2 | **FEATURES.md line 66** | Says "v1.0.2 embedded. ScriptHandler() ... (`script_handler.go`)." The embed now lives in `static/`. File reference is stale. ~~→ done at `222353e` (later updated again for the module split)~~ |
 | 3 | **README.md API surface table** | Does not mention `static.Bytes()` / `static.Version` for consumers who want raw access to the JS bundle without HTTP. |
 | 4 | **Root `doc.go`** | Doesn't mention that the JS client is served from the `static` subpackage. Minor. |
-| 5 | **`.github/workflows/ci.yml` review** | Not checked for embed-path references that may now be stale. |
+| 5 | **`.github/workflows/ci.yml` review** | Not checked for embed-path references that may now be stale. ~~→ moot — CI covers all three modules since v0.1.0~~ |
 
 ## d) TOTALLY FUCKED UP
 
@@ -86,9 +86,9 @@ The closest thing to a fuckup is the **interpretation ambiguity** (see Questions
 
 ### Documentation (high priority — stale right now)
 
-1. Add `[Unreleased]` CHANGELOG entry for the `static` package extraction
-2. Update FEATURES.md line 66: replace `script_handler.go` with `static/` for the embed location
-3. Update FEATURES.md line 67: same file-reference check for HEAD support
+1. ~~Add `[Unreleased]` CHANGELOG entry for the `static` package extraction~~ done at `7c18089`
+2. ~~Update FEATURES.md line 66: replace `script_handler.go` with `static/` for the embed location~~ done at `222353e`
+3. ~~Update FEATURES.md line 67: same file-reference check for HEAD support~~ done at `222353e`
 4. Add `static.Bytes()` and `static.Version` to the README API surface table
 5. Mention the `static` subpackage in root `doc.go` package documentation
 6. Add a CONTRIBUTING.md note about how to update the embedded `datastar.js` bundle
@@ -97,16 +97,16 @@ The closest thing to a fuckup is the **interpretation ambiguity** (see Questions
 ### Correctness & Safety
 
 8. Decide whether `Bytes()` should return a defensive copy (safety) or shared slice (zero-alloc)
-9. Add a consistency test asserting `datastar.DatastarJSVersion == static.Version`
-10. Add a test that `ScriptHandler()` serves the exact bytes from `static.Bytes()` (not a stale copy)
-11. Check `.github/workflows/ci.yml` for embed-path or file-location references that are now stale
+9. ~~Add a consistency test asserting `datastar.DatastarJSVersion == static.Version`~~ done (`TestStaticVersionConsistency`, `response_test.go`)
+10. ~~Add a test that `ScriptHandler()` serves the exact bytes from `static.Bytes()` (not a stale copy)~~ done (`TestScriptHandler_ServesStaticBytes`, `response_test.go`)
+11. ~~Check `.github/workflows/ci.yml` for embed-path or file-location references that are now stale~~ moot — CI covers all three modules since v0.1.0
 12. Fix the pre-existing `erraudit` `silent_swallow` in `example/main.go:87` (noticed during this session, not caused by it)
-13. Add a CI guard that verifies `static.Version` matches the version banner in `datastar.js`
+13. ~~Add a CI guard that verifies `static.Version` matches the version banner in `datastar.js`~~ done — `static_test.go` banner-consistency guard runs in CI
 14. Review whether `ScriptHandlerWith`'s unused `_ string` parameter should be removed or used
 
 ### Upstream Asset Tracking
 
-15. Check whether upstream DataStar has released a version newer than 1.0.2
+15. ~~Check whether upstream DataStar has released a version newer than 1.0.2~~ done — confirmed latest in the v0.0.3 session (T13, 2026-08-08; re-check periodically)
 16. If newer exists, update `static/datastar.js` and `static.Version`
 17. Add a `go:generate` or flake target to download/verify the upstream bundle
 18. Consider pinning the upstream commit SHA in a comment for reproducibility
@@ -150,7 +150,7 @@ The closest thing to a fuckup is the **interpretation ambiguity** (see Questions
 41. Add a CI step that fails if `static/datastar.js` and `static.Version` are out of sync
 42. Review whether the auto-commit message (`44147a2`) accurately describes the change for future readers
 43. Add the `static` package to any coverage tracking/thresholds in CI
-44. Consider whether `erraudit` should be run on `./static/...` specifically (currently covered by `./...`)
+44. Consider whether `erraudit` should be run on `./static/...` specifically (currently covered by `./...`) — moot: CI erraudit scans all three modules
 
 ### Misc
 
@@ -165,7 +165,7 @@ The closest thing to a fuckup is the **interpretation ambiguity** (see Questions
 
 ## g) Questions (cannot figure out myself)
 
-### Q1: "Module" or "Package"?
+### Q1: ~~"Module" or "Package"?~~ Resolved — became a separate Go **module** at v0.1.0 (`github.com/larsartmann/go-datastar/static`, tagged `static/v0.1.0`).
 
 You said "dedicated module." In Go, **module** = a `go.mod` unit with independent versioning. **Package** = a directory of `.go` files within a module. I interpreted your request as **package** and created `static/` within the existing module. If you actually wanted a **separate Go module** (own `go.mod`, independent versioning, consumers importing two modules), that is a fundamentally different architecture and I need to rework this.
 

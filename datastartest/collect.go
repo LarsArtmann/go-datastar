@@ -188,27 +188,20 @@ func ReadNEvents(r io.Reader, count int) ([]Event, error) {
 	var (
 		events  []Event
 		current Event
-		started bool
 	)
 
 	for scanner.Scan() {
 		line := scanner.Text()
 
 		if line == "" {
-			if started {
-				events = append(events, current)
-				current = Event{}
-				started = false
+			dispatchFrame(&events, &current)
 
-				if len(events) >= count {
-					return events, nil
-				}
+			if len(events) >= count {
+				return events, nil
 			}
 
 			continue
 		}
-
-		started = true
 
 		applySSELine(&current, line)
 	}
@@ -221,9 +214,7 @@ func ReadNEvents(r io.Reader, count int) ([]Event, error) {
 		return nil, errorfamily.WrapTransient(err, CodeSSEScanFailed, "scan SSE stream")
 	}
 
-	if started {
-		events = append(events, current)
-	}
+	dispatchFrame(&events, &current)
 
 	return events, nil
 }

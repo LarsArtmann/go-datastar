@@ -109,28 +109,28 @@ My initial edit produced a duplicated "Note: do not pass --enforce-samber-oops" 
 
 ### P0 — Critical (broken on fresh clone)
 
-1. **Remove `go.work` and `go.work.sum` from `.gitignore`** — Commit the workspace file so fresh clones work
-2. **Verify fresh-clone behavior** — `git clone` to a temp dir, `go test ./... ./datastartest/...` without any manual `go work init`
-3. **Add dependabot entry for `datastartest/`** — `directory: /datastartest` in `.github/dependabot.yml`
+1. ~~**Remove `go.work` and `go.work.sum` from `.gitignore`** — Commit the workspace file so fresh clones work~~ done at `a73a8fb` (force-added past the global gitignore too)
+2. ~~**Verify fresh-clone behavior** — `git clone` to a temp dir, `go test ./... ./datastartest/...` without any manual `go work init`~~ done — CI exercises the committed workspace
+3. ~~**Add dependabot entry for `datastartest/`** — `directory: /datastartest` in `.github/dependabot.yml`~~ done in the v0.1.0 session (plus `/static`)
 
 ### P0 — CI gap (false green)
 
-4. **Update `flake.nix` hermeticCheck to build and test `datastartest`** — Either add a second `buildGoModule` or restructure the fileset/subPackages
-5. **Add CI workflow for `datastartest/`** if using GitHub Actions (check `.github/workflows/`)
+4. **Update `flake.nix` hermeticCheck to build and test `datastartest`** — Either add a second `buildGoModule` or restructure the fileset/subPackages ← still open (`flake.nix` TODO comment)
+5. ~~**Add CI workflow for `datastartest/`** if using GitHub Actions (check `.github/workflows/`)~~ done — CI test job covers all modules
 
 ### P1 — Documentation sync
 
-6. **Update `CHANGELOG.md`** with module split entry under `[Unreleased]`
-7. **Update `FEATURES.md`** — Change "subpackage" to "separate module" in Consumer Test Helpers section
-8. **Update `README.md`** — Add installation instructions for `datastartest` as separate module
-9. **Fix `reader.go:114` stale comment** — `readNEvents` → `ReadNEvents`
+6. ~~**Update `CHANGELOG.md`** with module split entry under `[Unreleased]`~~ done (v0.1.0 section)
+7. ~~**Update `FEATURES.md`** — Change "subpackage" to "separate module" in Consumer Test Helpers section~~ done in the v0.1.0 session
+8. ~~**Update `README.md`** — Add installation instructions for `datastartest` as separate module~~ done in the v0.1.0 session
+9. ~~**Fix `reader.go:114` stale comment** — `readNEvents` → `ReadNEvents`~~ done in the v0.1.0 session
 
 ### P1 — Awaiting user decisions (Q2 + Q3)
 
-10. **Q2 decision: Freeze or consolidate Collect variants** — I recommend freeze; user needs to confirm
-11. **Q3 decision: RequireSignalsContain substring vs JSON parsing** — I recommend fix-doc (Option A); user needs to confirm
-12. **If Q3 = Option A: Fix `RequireSignalsContain` doc comment** at `datastartest/assert.go:99-101`
-13. **If Q3 = Option C: Add `RequireSignalsHasKey`** with `map[string]any` top-level lookup
+10. ~~**Q2 decision: Freeze or consolidate Collect variants** — I recommend freeze; user needs to confirm~~ resolved (2026-08-16) — per-helper variadic options (`WithPath`, `WithHeader`, `WithLastEventID`, `WithDatastarSignals`) landed in CHANGELOG `[Unreleased]`
+11. ~~**Q3 decision: `RequireSignalsContain` substring vs JSON parsing** — I recommend fix-doc (Option A); user needs to confirm~~ resolved — doc fixed (v0.1.0)
+12. ~~**If Q3 = Option A: Fix `RequireSignalsContain` doc comment** at `datastartest/assert.go:99-101`~~ done (v0.1.0)
+13. ~~**If Q3 = Option C: Add `RequireSignalsHasKey`** with `map[string]any` top-level lookup~~ **Won't implement** — Option A chosen
 
 ### P1 — Code quality (from prior session, still open)
 
@@ -143,11 +143,11 @@ My initial edit produced a duplicated "Note: do not pass --enforce-samber-oops" 
 
 ### P1 — Multi-module infrastructure
 
-20. **Run `go work sync`** and verify go.work is stable
-21. **Add a CI check that go.work and replace directives are in sync** — prevents drift
-22. **Verify `erraudit` works with workspace mode** — `erraudit ./... ./datastartest/...`
-23. **Verify `govulncheck` works with workspace mode** — `govulncheck ./... ./datastartest/...`
-24. **Update `.golangci.yml`** if it has path-specific config that doesn't cover `datastartest/`
+20. ~~**Run `go work sync`** and verify go.work is stable~~ done — idempotent; CI-enforced
+21. ~~**Add a CI check that go.work and replace directives are in sync** — prevents drift~~ done at `dc0d6f2` (workspace-sync idempotency + replace audit)
+22. ~~**Verify `erraudit` works with workspace mode** — `erraudit ./... ./datastartest/...`~~ done — CI erraudit scans all modules
+23. ~~**Verify `govulncheck` works with workspace mode** — `govulncheck ./... ./datastartest/...`~~ done — CI govulncheck scans all modules
+24. ~~**Update `.golangci.yml`** if it has path-specific config that doesn't cover `datastartest/`~~ done — lint runs on all modules, 0 issues
 
 ### P2 — Nice to have
 
@@ -158,12 +158,12 @@ My initial edit produced a duplicated "Note: do not pass --enforce-samber-oops" 
 29. **Add `RequireSignalsHasKey` if user decides Option C** (Q3)
 30. **Document the mutual-replace pattern** in a short ADR (`docs/adr/`)
 31. **Add `go work vendor` support** if offline builds are needed
-32. **Consider `datastartest` versioning strategy** — does it version-lock with the library or independently?
+32. ~~**Consider `datastartest` versioning strategy** — does it version-lock with the library or independently?~~ resolved — independent versioning (`datastartest/v0.1.0`, `v0.2.0`)
 33. **Add integration test that imports `datastartest` as an external consumer would** — `GOWORK=off go get` in a temp module
 34. **Review whether `datastartest` should depend on go-sse directly** — currently does (for `sse.Event` type in filter.go)
-35. **Add `doc.go` package-level example** showing the most common test pattern as the first thing in godoc
+35. ~~**Add `doc.go` package-level example** showing the most common test pattern as the first thing in godoc~~ done (`datastartest/doc.go` quick start)
 36. **Consider `datastartest` as a standalone repo** in the future if it grows beyond DataStar-specific helpers
-37. **Add versioned releases for `datastartest`** — tag `datastartest/v0.1.0` separately from root module
+37. ~~**Add versioned releases for `datastartest`** — tag `datastartest/v0.1.0` separately from root module~~ done (also `static/v0.1.0`)
 38. **Audit `datastartest/go.sum` against root `go.sum`** for checksum consistency
 39. **Add `nix flake check` to CI** if not already present
 40. **Consider `go-releaser` config** for multi-module tagging
@@ -182,31 +182,8 @@ My initial edit produced a duplicated "Note: do not pass --enforce-samber-oops" 
 
 ## g) Questions I CANNOT figure out myself
 
-### Q1: Should `go.work` be committed or stay gitignored?
+### Q1: ~~Should `go.work` be committed or stay gitignored?~~ Resolved — committed (`a73a8fb`; the v0.1.0 session also handled the global-gitignore trap).
 
-This is a genuine architectural decision with no objectively correct answer:
+### Q2: ~~Should the Nix hermeticCheck build and test `datastartest`, or is that a separate CI concern?~~ Resolved by decision — Nix stays root-only for now (TODO comment in `flake.nix`); GitHub Actions covers all three modules. Per-module Nix checks remain a TODO_LIST item.
 
-- **Commit it** (Kubernetes/Helm pattern): Fresh clones work immediately. Devs don't need to `go work init`. But go.work becomes a maintained artifact that can drift.
-- **Keep it gitignored** (conservative pattern): Less maintenance. But every dev and CI must `go work init . ./datastartest` manually, and the AGENTS.md commands I wrote won't work on fresh clone.
-
-I made an assumption (workspace mode is default, go.work should exist) but didn't follow through to its logical conclusion (un-ignore go.work). I need you to decide which pattern this repo follows.
-
-### Q2: Should the Nix hermeticCheck build and test `datastartest`, or is that a separate CI concern?
-
-The current `hermeticCheck` in flake.nix builds only `subPackages = [ "." ]`. Options:
-- **Add a second `buildGoModule` for datastartest** — more Nix complexity, but Nix CI covers both modules
-- **Keep Nix for root only, use GitHub Actions for datastartest** — simpler Nix, but CI is split across two systems
-- **Use a go.work-based build that covers both** — cleanest if go.work is committed
-
-This depends on whether you want Nix to be the single source of truth for CI, or just the dev environment.
-
-### Q3: When `datastartest` gets its first tagged release, should it version-lock with the library or version independently?
-
-The module path `github.com/larsartmann/go-datastar/datastartest` allows independent versioning (`datastartest/v0.1.0`), but the tight coupling (datastartest imports the library, tracks its event types, mirrors its wire format) suggests lockstep versioning might be more honest.
-
-This affects:
-- Release process (tag one or two?)
-- Consumer upgrade path (can they upgrade datastartest without the library?)
-- Semantic versioning (if the library adds a new patch type, is that a breaking change for datastartest?)
-
-This is a product decision, not a technical one — I can't determine it from the code alone.
+### Q3: ~~When `datastartest` gets its first tagged release, should it version-lock with the library or version independently?~~ Resolved — independent versioning (`datastartest/v0.1.0`, `datastartest/v0.2.0` tagged alongside root releases).

@@ -71,9 +71,9 @@ Created a `datastartest/` subpackage with:
 ## (b) PARTIALLY DONE
 
 1. 🟡 **CHANGELOG.md** — NOT updated. The `[Unreleased]` section is empty. This
-   new package is a user-facing feature addition and should be logged.
+   new package is a user-facing feature addition and should be logged. ~~→ done at `7c18089`~~
 2. 🟡 **FEATURES.md** — NOT updated. Should have a new "Testing" section listing
-   the `datastartest` package as `FULLY_FUNCTIONAL`.
+   the `datastartest` package as `FULLY_FUNCTIONAL`. ~~→ done at `222353e`~~
 3. 🟡 **Test coverage of `datastartest` itself** — Good but not exhaustive:
    - `Collect` is tested transitively via every event test, but has no dedicated
      error-path test (e.g., handler that panics, handler that returns 500).
@@ -96,12 +96,12 @@ Created a `datastartest/` subpackage with:
 2. ❌ **CI pipeline verification** — `.github/workflows/ci.yml` was not modified.
    It should already work (runs `go test ./...`), but the new subpackage was
    never verified in the CI environment. The `GOEXPERIMENT=jsonv2` env var is
-   already set globally in CI, so this should be fine.
+   already set globally in CI, so this should be fine. ~~→ done — CI has run the package since v0.1.0 (all-module test job)~~
 3. ❌ **Integration test with cqrs-htmx/datastar** — the domain-layer consumer
    was not tested to confirm the package API works for their EventBridge pattern.
 4. ❌ **Benchmark** — no `benchmark_test.go` in `datastartest/`. The SSE parser
    is untested for performance. For a test helper this is low priority, but the
-   parent package has benchmarks so the bar is set.
+   parent package has benchmarks so the bar is set. ~~→ done — `BenchmarkReadEvents` (~131 MB/s)~~
 
 ---
 
@@ -200,35 +200,35 @@ Nothing is broken or regressively damaged. However:
 
 ### High impact (P0)
 
-1. **Update CHANGELOG.md** `[Unreleased]` section with `datastartest` package
-2. **Update FEATURES.md** with new "Testing" section
-3. **Add `ScriptContent()` accessor** — strip `<script>` wrapper, return JS source
-4. **Add `CollectPost(t, handler, body)` variant** — eliminate POST boilerplate
-5. **Add `CollectWithRequest(t, handler, req)` variant** — full custom request control
-6. **Add `CollectN(t, handler, n)` variant** — for streaming handlers (read N events, close)
-7. **Add `CollectWithTimeout(t, handler, timeout)` variant** — prevent hung-test hangs
-8. **Test `MustReadEvents`** — at least one test exercising the Fatal path
-9. **Test `Retry` field round-trip** through full Collect pipeline
-10. **Test `EventID` field round-trip** through full Collect pipeline
-11. **Test `Collect` with empty handler** (zero events returned)
+1. ~~**Update CHANGELOG.md** `[Unreleased]` section with `datastartest` package~~ done at `7c18089`
+2. ~~**Update FEATURES.md** with new "Testing" section~~ done at `222353e`
+3. ~~**Add `ScriptContent()` accessor** — strip `<script>` wrapper, return JS source~~ done at `c1ca7ce` (hardened at `5cf2f38`)
+4. ~~**Add `CollectPost(t, handler, body)` variant** — eliminate POST boilerplate~~ done at `c1ca7ce`
+5. ~~**Add `CollectWithRequest(t, handler, req)` variant** — full custom request control~~ done at `c1ca7ce`
+6. ~~**Add `CollectN(t, handler, n)` variant** — for streaming handlers (read N events, close)~~ done at `9f9b7ba`
+7. ~~**Add `CollectWithTimeout(t, handler, timeout)` variant** — prevent hung-test hangs~~ done at `22a9589`
+8. ~~**Test `MustReadEvents`** — at least one test exercising the Fatal path~~ done — `TestMustReadEvents_FailingReader` + `TestMustReadNEvents` (`datastartest/assert_test.go`, 2026-08-16)
+9. ~~**Test `Retry` field round-trip** through full Collect pipeline~~ done (`TestEvent_RetryEventIDRoundTrip`)
+10. ~~**Test `EventID` field round-trip** through full Collect pipeline~~ done (same test)
+11. ~~**Test `Collect` with empty handler** (zero events returned)~~ done (`TestEvent_EmptyHandler`)
 
 ### Medium impact (P1)
 
 12. **Add `RedirectURL()` accessor** — extract URL from redirect script patch
 13. **Add `CustomEventName()` accessor** — extract event name from dispatch patch
 14. **Add `CustomEventDetail()` accessor** — extract JSON detail from dispatch patch
-15. **Add `DataValue(key string) string`** — generic dataline lookup fallback
+15. ~~**Add `DataValue(key string) string`** — generic dataline lookup fallback~~ done at `c1ca7ce`
 16. **Add `RawSSE()` method on Event** — for debugging test failures
-17. **Add `Event.String()` method** — readable debug representation
-18. **Table-driven test for all dataline constants** — guard against key changes
-19. **Dedicated test for each `Require*` helper** — including failure message quality
-20. **Test concurrent Collect calls explicitly**
-21. **Add godoc examples on individual exported functions**
+17. ~~**Add `Event.String()` method** — readable debug representation~~ done at `c1ca7ce`
+18. ~~**Table-driven test for all dataline constants** — guard against key changes~~ done (`TestDatalineConstants_TableDriven`)
+19. ~~**Dedicated test for each `Require*` helper** — including failure message quality~~ mostly done — failure paths covered in `assert_test.go` (2026-08-16)
+20. ~~**Test concurrent Collect calls explicitly**~~ done (`TestEvent_ConcurrentCollect`)
+21. ~~**Add godoc examples on individual exported functions**~~ done (`ExampleCollect`, `ExampleFindElement`, etc.)
 22. **Promote testing section in README** — link from Quick Start
 23. **Add `Reader` struct with configurable max line size** — for edge cases
-24. **Improve `UnmarshalSignals` error** — include JSON payload in error message
-25. **Test the `parseSSEField` edge case: line with multiple colons** (e.g., `data: {"a":"b"}`)
-26. **Test the `parseSSEField` edge case: empty data field** (`data:` with nothing after)
+24. ~~**Improve `UnmarshalSignals` error** — include JSON payload in error message~~ done at `9f9b7ba` era (v0.1.0)
+25. ~~**Test the `parseSSEField` edge case: line with multiple colons** (e.g., `data: {"a":"b"}`)~~ done (`TestParseSSEField_MultiColon`)
+26. ~~**Test the `parseSSEField` edge case: empty data field** (`data:` with nothing after)~~ done (`TestParseSSEField_EmptyData`)
 
 ### Lower impact (P2)
 
@@ -261,7 +261,7 @@ Nothing is broken or regressively damaged. However:
 
 ## (g) Questions I CANNOT figure out myself
 
-### 1. Should `datastartest` be a separate Go module (`go.mod`)?
+### 1. ~~Should `datastartest` be a separate Go module (`go.mod`)?~~ Resolved — separate module since v0.1.0 (`github.com/larsartmann/go-datastartest/datastartest`, tagged `datastartest/v0.1.0`).
 
 The parent package `go-datastar` has zero test-only dependencies today — it's
 purely stdlib + go-sse + go-error-family. Adding `datastartest` as a subpackage
@@ -272,7 +272,7 @@ consumers opt-in to the test dependency explicitly. This is a packaging/
 versioning decision with tradeoffs I can't resolve without knowing your
 preference.
 
-### 2. Should we support the streaming/broadcaster use case?
+### 2. ~~Should we support the streaming/broadcaster use case?~~ Resolved — `CollectN` and `CollectWithTimeout` shipped (`9f9b7ba`, `22a9589`).
 
 The current `Collect` assumes a **synchronous handler** — send patches, return,
 close stream. But the example app (`example/main.go`) and the Broadcaster

@@ -21,7 +21,10 @@ const (
 //
 // The parser handles the standard SSE fields: event, data, id, retry, and
 // comment lines (starting with ":"). Each blank line dispatches the current
-// event. An event without a trailing blank line at EOF is still returned.
+// event. Per the SSE specification, only frames containing at least one data
+// line dispatch — comment frames (e.g., go-sse heartbeats) and id/retry-only
+// frames never surface as events. An event without a trailing blank line at
+// EOF is still returned, and lines may end with LF or CRLF.
 //
 // DataStar datalines are preserved individually in [Event.DataLines] with their
 // key prefixes intact (e.g., "selector #feed"), so typed accessors like
@@ -32,23 +35,16 @@ func ReadEvents(r io.Reader) ([]Event, error) {
 	var (
 		events  []Event
 		current Event
-		started bool
 	)
 
 	for scanner.Scan() {
 		line := scanner.Text()
 
 		if line == "" {
-			if started {
-				events = append(events, current)
-				current = Event{}
-				started = false
-			}
+			dispatchFrame(&events, &current)
 
 			continue
 		}
-
-		started = true
 
 		applySSELine(&current, line)
 	}
@@ -57,11 +53,20 @@ func ReadEvents(r io.Reader) ([]Event, error) {
 		return nil, errorfamily.WrapTransient(err, CodeSSEScanFailed, "scan SSE stream")
 	}
 
-	if started {
-		events = append(events, current)
-	}
+	dispatchFrame(&events, &current)
 
 	return events, nil
+}
+
+// dispatchFrame appends current to events if the frame carries data lines,
+// then resets the accumulator. Frames without data (comments, id/retry-only
+// frames) never dispatch, matching browser behavior.
+func dispatchFrame(events *[]Event, current *Event) {
+	if len(current.DataLines) > 0 {
+		*events = append(*events, *current)
+	}
+
+	*current = Event{}
 }
 
 // MustReadEvents is like [ReadEvents] but calls t.Fatal on error. Accepts

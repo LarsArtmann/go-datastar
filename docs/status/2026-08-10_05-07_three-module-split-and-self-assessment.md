@@ -176,18 +176,18 @@ didn't do it.
 
 ### P0 — Critical (broken on fresh clone, carried over from prior report)
 
-1. **Decide: commit `go.work` or keep gitignored** — This is question (g) below. Blocks all fresh-clone workflows.
-2. **Remove `go.work` + `go.work.sum` from `.gitignore`** (if committing go.work)
-3. **OR: restore `GOWORK=off` to devShell and document manual `go work init`** (if keeping gitignored)
-4. **Test fresh-clone behavior** — clone to `/tmp`, run documented commands
-5. **Add dependabot entries for `/datastartest` and `/static`**
-6. **Update `flake.nix` hermeticCheck** to build + test all three modules (or add separate checks)
+1. ~~**Decide: commit `go.work` or keep gitignored** — This is question (g) below. Blocks all fresh-clone workflows.~~ resolved — committed (`a73a8fb`)
+2. ~~**Remove `go.work` + `go.work.sum` from `.gitignore`** (if committing go.work)~~ done at `a73a8fb`
+3. ~~**OR: restore `GOWORK=off` to devShell and document manual `go work init`** (if keeping gitignored)~~ n/a — Option A chosen
+4. ~~**Test fresh-clone behavior** — clone to `/tmp`, run documented commands~~ done — CI exercises the committed workspace
+5. ~~**Add dependabot entries for `/datastartest` and `/static`**~~ done in the v0.1.0 session
+6. **Update `flake.nix` hermeticCheck** to build + test all three modules (or add separate checks) ← still open (`flake.nix` TODO)
 
 ### P0 — Documentation sync
 
-7. **Update `CHANGELOG.md`** — module split entries under `[Unreleased]`
-8. **Update `FEATURES.md`** — "subpackage" → "separate module" for static and datastartest
-9. **Update `README.md`** — installation instructions for all three modules
+7. ~~**Update `CHANGELOG.md`** — module split entries under `[Unreleased]`~~ done (v0.1.0 section)
+8. ~~**Update `FEATURES.md`** — "subpackage" → "separate module" for static and datastartest~~ done in the v0.1.0 session
+9. ~~**Update `README.md`** — installation instructions for all three modules~~ done in the v0.1.0 session
 
 ### P1 — Awaiting user decisions (from prior session, still open)
 
@@ -196,8 +196,8 @@ didn't do it.
 
 ### P1 — Code quality (carried over)
 
-12. **Fix `reader.go:114` stale comment** — `readNEvents` → `ReadNEvents`
-13. **Fix `RequireSignalsContain` doc comment** — says "top-level" but does substring
+12. ~~**Fix `reader.go:114` stale comment** — `readNEvents` → `ReadNEvents`~~ done in the v0.1.0 session
+13. ~~**Fix `RequireSignalsContain` doc comment** — says "top-level" but does substring~~ done in the v0.1.0 session
 14. **Add `CollectPost` error-path tests** — 400/500 response, non-SSE body
 15. **Add `CollectWithTimeout(timeout=0)` test** — immediate deadline edge case
 16. **Replace `1<<30` magic number** in `collect.go:150`
@@ -205,10 +205,10 @@ didn't do it.
 
 ### P1 — Multi-module infrastructure
 
-18. **Add CI check that go.work and replace directives are in sync**
-19. **Verify `erraudit` works across all three modules in workspace mode**
-20. **Verify `govulncheck` works across all three modules in workspace mode**
-21. **Review `.golangci.yml`** for path-specific config covering new modules
+18. ~~**Add CI check that go.work and replace directives are in sync**~~ done at `dc0d6f2`
+19. ~~**Verify `erraudit` works across all three modules in workspace mode**~~ done — CI erraudit scans all modules
+20. ~~**Verify `govulncheck` works across all three modules in workspace mode**~~ done — CI govulncheck scans all modules
+21. ~~**Review `.golangci.yml`** for path-specific config covering new modules~~ done — lint runs on all modules, 0 issues
 22. **Consider a `make verify-modules` flake app** that runs GOWORK=off per-module
 
 ### P2 — Polish
@@ -218,14 +218,14 @@ didn't do it.
 25. **Add `indexTagEnd` support for unquoted HTML5 attributes**
 26. **Document the mutual-replace pattern in an ADR** (`docs/adr/`)
 27. **Add integration test: external consumer `go get` simulation**
-28. **Consider versioning strategy** for sub-modules (lockstep vs independent)
+28. ~~**Consider versioning strategy** for sub-modules (lockstep vs independent)~~ resolved — independent (`static/v0.1.0+`, `datastartest/v0.1.0+`)
 29. **Audit go.sum consistency** across all three modules
 30. **Add `nix flake check` to CI** if not present
 31. **Consider `go work vendor`** for offline builds
 32. **Update CONTRIBUTING.md** with dual-module structure notes
 33. **Review whether `example/` needs its own module** — currently in root
 34. **Lint the go.work file** — `go work edit -fmt`
-35. **Add versioned tags for sub-modules** — `static/v0.1.0`, `datastartest/v0.1.0`
+35. ~~**Add versioned tags for sub-modules** — `static/v0.1.0`, `datastartest/v0.1.0`~~ done (plus v0.2.0 for each)
 36. **Consider semantic import versioning** for sub-modules at v1
 37. **Add module dependency D2 diagram** to docs
 38. **Extract SSE parser** into generic `ssetest` package (long-term)
@@ -237,7 +237,7 @@ didn't do it.
 44. **Add `go-releaser` config** for multi-module tagging
 45. **Review test coverage per module** — ensure each has its own coverage report
 46. **Consider `datastartest` CHANGELOG** if it versions independently
-47. **Add `static` to FEATURES.md** as its own section, not just subpackage rows
+47. ~~**Add `static` to FEATURES.md** as its own section, not just subpackage rows~~ done — Script Handler section rows reference the `static/` module
 48. **Consider whether `static` should live in its own repo** long-term
 49. **Review whether `example/` main.go pulls in test deps** via root go.mod
 50. **Add a "Multi-Module Development" section to CONTRIBUTING.md**
@@ -246,49 +246,8 @@ didn't do it.
 
 ## g) Questions I CANNOT figure out myself
 
-### Q1: Should `go.work` be committed or stay gitignored? (asked 3x now across reports)
+### Q1: ~~Should `go.work` be committed or stay gitignored? (asked 3x now across reports)~~ Resolved — committed (`a73a8fb`; global-gitignore trap handled in the v0.1.0 session).
 
-This is now the single biggest unresolved issue. I've documented it in two
-consecutive status reports and still haven't fixed it because it needs your
-decision:
+### Q2: ~~Should the Nix hermeticCheck cover all three modules, or should each module have its own Nix check?~~ Resolved by decision — Nix stays root-only (TODO comment); GitHub Actions covers all three modules. Per-module Nix checks remain a TODO_LIST item.
 
-- **Commit go.work** (Kubernetes, Helm, cosign, Buffer patterns): Fresh clones
-  work immediately. `go test ./... ./datastartest/... ./static/...` just works.
-  Cost: go.work is a maintained artifact, must stay in sync with go.mod replace
-  directives.
-
-- **Keep gitignored** (some conservative projects): Less maintenance. Cost: every
-  dev, CI runner, and fresh clone needs `go work init . ./datastartest ./static`.
-  The AGENTS.md commands I wrote don't work without it.
-
-I recommend committing it. But I will not make this decision unilaterally a
-third time.
-
-### Q2: Should the Nix hermeticCheck cover all three modules, or should each module have its own Nix check?
-
-Current state: `hermeticCheck` builds only `subPackages = [ "." ]`. Options:
-
-- **One check, all modules** — Restructure `hermeticCheck` to use go.work or
-  add subPackages. Simpler flake, but one module's failure blocks all.
-- **Separate check per module** — `hermeticCheckRoot`, `hermeticCheckStatic`,
-  `hermeticCheckDatastartest`. More Nix boilerplate, but independent failure
-  isolation.
-- **Keep as-is, use GitHub Actions for sub-modules** — Nix for root only.
-
-This depends on whether Nix is the CI source-of-truth or just dev tooling.
-
-### Q3: When `static` and `datastartest` get tagged releases, do they version-lock with the root library or version independently?
-
-The module paths allow independent semver (`static/v0.1.0`,
-`datastartest/v0.1.0`), but the coupling is tight:
-
-- `static.Version` must match the JS bundle the library was tested with
-- `datastartest` tracks the library's event types and wire format
-
-Options:
-- **Lockstep** — always tag all three together, same version number
-- **Independent** — each module versions on its own schedule
-- **Lockstep for static, independent for datastartest** — hybrid
-
-This is a product/release-process decision. It affects tagging, CHANGELOG
-strategy, and consumer upgrade documentation.
+### Q3: ~~When `static` and `datastartest` get tagged releases, do they version-lock with the root library or version independently?~~ Resolved — independent versioning (all three modules tagged through v0.2.0).

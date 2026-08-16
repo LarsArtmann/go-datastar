@@ -290,3 +290,25 @@ func TestReadEvents_ExceedsMaxLineSize(t *testing.T) {
 		t.Errorf("expected nil events on error; got %d", len(events))
 	}
 }
+
+// TestReadEvents_DatalessFramesNeverDispatch guards the SSE-spec rule that
+// only frames with data lines dispatch: comment frames (heartbeats) and
+// id/retry-only frames must not surface as phantom empty events.
+func TestReadEvents_DatalessFramesNeverDispatch(t *testing.T) {
+	t.Parallel()
+
+	const wire = ": heartbeat\n\n" +
+		"id: 7\n\n" +
+		"retry: 5000\n\n" +
+		"event: datastar-patch-elements\n" +
+		"data: elements <div>real</div>\n\n" +
+		": heartbeat\n\n"
+
+	events, err := datastartest.ReadEvents(strings.NewReader(wire))
+	if err != nil {
+		t.Fatalf("read events: %v", err)
+	}
+
+	datastartest.RequireEventCount(t, events, 1)
+	datastartest.RequireElements(t, events[0], "", "outer", "<div>real</div>")
+}

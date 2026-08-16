@@ -382,24 +382,24 @@ Nothing is broken or regressively damaged. However:
 
 ### High impact (P0)
 
-1. **Update README.md "Testing your handlers" section** — add CollectPost,
-   CollectN, ScriptContent examples. The section is stale right now.
-2. **Add `IsScript() bool` predicate** — check if Elements() starts with
-   `<script`. Complements ScriptContent().
-3. **Add `CollectN(t, handler, 0)` edge-case test** — should return empty
-   immediately.
-4. **Add `CollectN` "fewer than N" test** — handler sends fewer events
-   than requested.
-5. **Add `ScriptContent()` DispatchCustomEvent test** — complex JS blob
-   extraction.
-6. **Add `ScriptContent()` Prefetch test** — `type="speculationrules"`
-   attribute handling.
-7. **Extract `newSSEScanner` helper** — DRY the scanner setup between
-   ReadEvents and readNEvents.
-8. **Add `CollectWithTimeout(t, handler, timeout)`** — defensive testing
-   against hung handlers. Uses context.WithTimeout.
-9. **Add godoc examples for CollectPost, CollectN, ScriptContent** —
-   pkg.go.dev visibility.
+1. ~~**Update README.md "Testing your handlers" section** — add CollectPost,
+   CollectN, ScriptContent examples. The section is stale right now.~~ done in the 04-25 session (README rewritten with subsections)
+2. ~~**Add `IsScript() bool` predicate** — check if Elements() starts with
+   `<script`. Complements ScriptContent().~~ done at `9f9b7ba`
+3. ~~**Add `CollectN(t, handler, 0)` edge-case test** — should return empty
+   immediately.~~ done (`TestCollectN_ZeroCount`)
+4. ~~**Add `CollectN` "fewer than N" test** — handler sends fewer events
+   than requested.~~ done (`TestCollectN_FewerThanRequested`)
+5. ~~**Add `ScriptContent()` DispatchCustomEvent test** — complex JS blob
+   extraction.~~ done (`TestEvent_ScriptContent_DispatchCustomEvent`)
+6. ~~**Add `ScriptContent()` Prefetch test** — `type="speculationrules"`
+   attribute handling.~~ done (`TestEvent_ScriptContent_Prefetch`)
+7. ~~**Extract `newSSEScanner` helper** — DRY the scanner setup between
+   ReadEvents and readNEvents.~~ done in the 04-25 session
+8. ~~**Add `CollectWithTimeout(t, handler, timeout)`** — defensive testing
+   against hung handlers. Uses context.WithTimeout.~~ done at `22a9589`
+9. ~~**Add godoc examples for CollectPost, CollectN, ScriptContent** —
+   pkg.go.dev visibility.~~ partially done — examples exist for Collect, ScriptContent, Find*, Filter*, Require*; CollectPost/CollectN still lack dedicated examples
 10. **Add `CollectPost` malformed-body error-path test** — handler returns
     400, CollectPost behavior on non-SSE response.
 
@@ -411,15 +411,15 @@ Nothing is broken or regressively damaged. However:
     attributes.
 13. **Add `RawSSE() string` on Event** — reconstruct the wire format for
     debugging.
-14. **Add fuzz test for `ReadEvents`** — SSE parser is a boundary.
-15. **Add benchmark for `ReadEvents`** — establish perf baseline.
+14. ~~**Add fuzz test for `ReadEvents`** — SSE parser is a boundary.~~ done (`FuzzReadEvents`, 9-seed corpus)
+15. ~~**Add benchmark for `ReadEvents`** — establish perf baseline.~~ done (`BenchmarkReadEvents`, ~131 MB/s)
 16. **Add `CollectPost` error handling test** — non-200 response code.
-17. **Test `DataValue` with multi-line keys** — document/test that it
-    returns only the first match.
-18. **Add concurrent Collect test** — explicit `t.Parallel()` with multiple
-    servers.
-19. **Fix `ScriptContent()` `>` in attribute value edge case** — use a more
-    robust tag-end detection (find `>` only outside quoted attribute values).
+17. ~~**Test `DataValue` with multi-line keys** — document/test that it
+    returns only the first match.~~ done (`TestEvent_DataValue_MultiLineReturnsFirst`)
+18. ~~**Add concurrent Collect test** — explicit `t.Parallel()` with multiple
+    servers.~~ done (`TestEvent_ConcurrentCollect`)
+19. ~~**Fix `ScriptContent()` `>` in attribute value edge case** — use a more
+    robust tag-end detection (find `>` only outside quoted attribute values).~~ done at `5cf2f38` (`indexTagEnd`)
 20. **Split `collect.go` into `collect.go` + `streaming.go`** — separate
     readNEvents/CollectN from the synchronous Collect variants.
 21. **Add `CollectWithOptions(t, handler, opts...)`** — functional options
@@ -454,22 +454,22 @@ Nothing is broken or regressively damaged. However:
     structured extraction from DispatchCustomEvent JS.
 37. **Add CI check for datastartest coverage** — ensure new tests don't
     regress coverage.
-38. **Consider separate Go module for datastartest** — opt-in test dep.
-39. **Add versioning note** — how datastartest versions vs core.
+38. ~~**Consider separate Go module for datastartest** — opt-in test dep.~~ done — separate module since v0.1.0
+39. ~~**Add versioning note** — how datastartest versions vs core.~~ done — independent versioning (`datastartest/v0.1.0`)
 40. **Review all doc comments for godoc rendering** — formatting check.
 41. **Add `Event.LogJSON() string`** — structured JSON representation for
     logging.
 42. **Add `Event.ID` accessor method** — currently a public field, could be
     method for interface consistency.
 43. **Consider `Event.Retry` accessor method** — same as above.
-44. **Add `parseSSEField` edge case: line with only a colon** (`:` alone).
+44. ~~**Add `parseSSEField` edge case: line with only a colon** (`:` alone).~~ done (`TestParseSSEField_ColonOnlyLine`)
 45. **Add `parseSSEField` edge case: UTF-8 BOM handling** (spec edge case).
-46. **Add `ReadEvents` test with CRLF line endings** — Windows
-    compatibility.
+46. ~~**Add `ReadEvents` test with CRLF line endings** — Windows
+    compatibility.~~ done (`TestReadEvents_CRLFLineEndings`)
 47. **Add `ReadEvents` test with very long lines** — near maxLineBytes
     limit.
-48. **Add `ReadEvents` test exceeding maxLineBytes** — verify
-    scanner.Err() fires.
+48. ~~**Add `ReadEvents` test exceeding maxLineBytes** — verify
+    scanner.Err() fires.~~ done (`TestReadEvents_ExceedsMaxLineSize`)
 49. **Consider configurable maxLineBytes** — via Reader struct or option.
 50. **Add `CONTRIBUTING.md` note about datastartest** — how to use it when
     contributing new patch types.
@@ -478,7 +478,7 @@ Nothing is broken or regressively damaged. However:
 
 ## (g) Questions I CANNOT figure out myself
 
-### Q1: Should `datastartest` be a separate Go module (`go.mod`)?
+### Q1: ~~Should `datastartest` be a separate Go module (`go.mod`)?~~ Resolved — separate module since v0.1.0.
 
 The parent package `go-datastar` has zero test-only dependencies today.
 Adding `datastartest` as a subpackage keeps it in the same module, so
@@ -489,25 +489,9 @@ is a packaging/versioning decision with tradeoffs I can't resolve without
 knowing your preference. **This question was asked in the prior report and
 remains unanswered.**
 
-### Q2: Should we add a `CollectWithOptions(t, handler, opts...)` pattern to replace the growing number of Collect variants?
+### Q2: ~~Should we add a `CollectWithOptions(t, handler, opts...)` pattern to replace the growing number of Collect variants?~~ Resolved (2026-08-16) — every `Collect*` helper gained variadic request options (`WithPath`, `WithHeader`, `WithLastEventID`, `WithDatastarSignals`) instead of one consolidating function; see CHANGELOG `[Unreleased]`.
 
-We now have `Collect`, `CollectPost`, `CollectWithRequest`, `CollectN` —
-four functions. A functional-options pattern (`WithMethod`, `WithBody`,
-`WithCount`, `WithTimeout`) would consolidate these into one extensible
-function. But the current functions are clearer for the 80% case (each name
-says exactly what it does). Should I refactor to options, keep adding
-functions, or freeze the API here?
-
-### Q3: Is the `ScriptContent()` approach (return raw JS string) the right abstraction level, or should it parse into typed structures?
-
-Currently `ScriptContent()` returns the raw JavaScript source between
-`<script>` tags. For `ExecuteScript("console.log('hello')")` this returns
-`console.log('hello')` — perfect. But for `Redirect("https://x.com")` it
-returns `setTimeout(() => window.location.href = "https://x.com")` — the
-consumer still needs to extract the URL. Should I add typed accessors
-(`RedirectURL()`, `CustomEventName()`) that parse the JS, or is
-`ScriptContent()` + `strings.Contains` sufficient for consumer testing
-needs?
+### Q3: ~~Is the `ScriptContent()` approach (return raw JS string) the right abstraction level, or should it parse into typed structures?~~ Resolved — raw-JS approach kept; doc honesty fixed. Typed accessors remain a ROADMAP idea.
 
 ---
 
