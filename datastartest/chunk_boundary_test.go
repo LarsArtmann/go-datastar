@@ -17,25 +17,25 @@ func TestParserChunkBoundaryIndependence(t *testing.T) {
 	t.Parallel()
 
 	for _, chunkSize := range []int{1, 2, 3, 5, 7, 4096} {
-		for _, tc := range allConformanceCases() {
-			t.Run(tc.name, func(t *testing.T) {
+		for _, sseCase := range allConformanceCases() {
+			t.Run(sseCase.name, func(t *testing.T) {
 				t.Parallel()
 
-				whole, err := datastartest.ReadEvents(strings.NewReader(tc.wire))
+				whole, err := datastartest.ReadEvents(strings.NewReader(sseCase.wire))
 				if err != nil {
-					t.Fatalf("%s: baseline parse: %v", tc.url, err)
+					t.Fatalf("%s: baseline parse: %v", sseCase.url, err)
 				}
 
 				chunked, err := datastartest.ReadEvents(
-					&chunkedReader{data: []byte(tc.wire), size: chunkSize},
+					&chunkedReader{data: []byte(sseCase.wire), size: chunkSize},
 				)
 				if err != nil {
-					t.Fatalf("%s: chunked parse (size %d): %v", tc.url, chunkSize, err)
+					t.Fatalf("%s: chunked parse (size %d): %v", sseCase.url, chunkSize, err)
 				}
 
 				if len(chunked) != len(whole) {
 					t.Fatalf("%s: chunk size %d: event count: got %d, want %d\nwire: %q",
-						tc.url, chunkSize, len(chunked), len(whole), tc.wire)
+						sseCase.url, chunkSize, len(chunked), len(whole), sseCase.wire)
 				}
 
 				for i := range whole {
@@ -45,12 +45,12 @@ func TestParserChunkBoundaryIndependence(t *testing.T) {
 						dataOf(a) != dataOf(b) {
 						t.Fatalf(
 							"%s: chunk size %d: event[%d] differs:\nwhole:  %+v\nchunked:%+v\nwire: %q",
-							tc.url,
+							sseCase.url,
 							chunkSize,
 							i,
 							a,
 							b,
-							tc.wire,
+							sseCase.wire,
 						)
 					}
 				}

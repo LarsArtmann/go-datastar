@@ -147,21 +147,21 @@ var wptCorpus = []sseCase{
 		// CR, LF, and CRLF are all line terminators; a bare "data" line with
 		// no colon is an empty data line; "\r\r" is two terminators, the
 		// second of which is the blank line that dispatches the frame.
-		wire: "data:test" + "\r\n" +
+		wire: "data:alpha" + "\r\n" +
 			"data" + "\n" +
-			"data:test" + "\r\r" +
+			"data:beta" + "\r\r" +
 			"\n",
-		want: []wantEvent{{Data: "test\n\ntest"}},
+		want: []wantEvent{{Data: "alpha\n\nbeta"}},
 	},
 	{
 		name: "format-leading-space",
 		url:  "wpt:eventsource/format-leading-space.any.js",
 		// Only one leading space is stripped: a tab survives, "data: " is an
 		// empty data line.
-		wire: "data:\ttest" + "\r" +
+		wire: "data:\talpha" + "\r" +
 			"data: " + "\n" +
-			"data:test" + "\n\n",
-		want: []wantEvent{{Data: "\ttest\n\ntest"}},
+			"data:beta" + "\n\n",
+		want: []wantEvent{{Data: "\talpha\n\nbeta"}},
 	},
 	{
 		name: "format-comments",
@@ -380,16 +380,16 @@ var chromiumParserCases = []sseCase{
 func TestWPTFormatCorpus(t *testing.T) {
 	t.Parallel()
 
-	for _, tc := range allConformanceCases() {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, sseCase := range allConformanceCases() {
+		t.Run(sseCase.name, func(t *testing.T) {
 			t.Parallel()
 
-			events, err := datastartest.ReadEvents(strings.NewReader(tc.wire))
+			events, err := datastartest.ReadEvents(strings.NewReader(sseCase.wire))
 			if err != nil {
-				t.Fatalf("%s: read events: %v", tc.url, err)
+				t.Fatalf("%s: read events: %v", sseCase.url, err)
 			}
 
-			requireEventsMatch(t, tc, events)
+			requireEventsMatch(t, sseCase, events)
 		})
 	}
 }
@@ -415,31 +415,31 @@ func dataOf(evt datastartest.Event) string {
 
 // requireEventsMatch asserts the parsed events equal the vector's expected
 // observable output, with a failure message that includes the wire bytes.
-func requireEventsMatch(t *testing.T, tc sseCase, got []datastartest.Event) {
+func requireEventsMatch(t *testing.T, vector sseCase, got []datastartest.Event) {
 	t.Helper()
 
-	if len(got) != len(tc.want) {
+	if len(got) != len(vector.want) {
 		t.Fatalf("%s: event count: got %d, want %d\nwire: %q\ngot:\n%s",
-			tc.url, len(got), len(tc.want), tc.wire, datastartest.EventsString(got))
+			vector.url, len(got), len(vector.want), vector.wire, datastartest.EventsString(got))
 	}
 
-	for i, want := range tc.want {
+	for i, want := range vector.want {
 		evt := got[i]
 
 		if evt.Type != want.Type {
-			t.Errorf("%s: event[%d] type: got %q, want %q", tc.url, i, evt.Type, want.Type)
+			t.Errorf("%s: event[%d] type: got %q, want %q", vector.url, i, evt.Type, want.Type)
 		}
 
 		if data := dataOf(evt); data != want.Data {
-			t.Errorf("%s: event[%d] data: got %q, want %q", tc.url, i, data, want.Data)
+			t.Errorf("%s: event[%d] data: got %q, want %q", vector.url, i, data, want.Data)
 		}
 
 		if evt.ID != want.ID {
-			t.Errorf("%s: event[%d] last event id: got %q, want %q", tc.url, i, evt.ID, want.ID)
+			t.Errorf("%s: event[%d] last event id: got %q, want %q", vector.url, i, evt.ID, want.ID)
 		}
 
 		if evt.Retry != want.Retry {
-			t.Errorf("%s: event[%d] retry: got %d, want %d", tc.url, i, evt.Retry, want.Retry)
+			t.Errorf("%s: event[%d] retry: got %d, want %d", vector.url, i, evt.Retry, want.Retry)
 		}
 	}
 }
