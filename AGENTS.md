@@ -73,6 +73,9 @@ Every DataStar protocol message is a value that produces an `sse.Event`. This ma
 
 ### File layout
 
+See also [docs/modularization/README.md](docs/modularization/README.md) for the
+proposal, execution plan, and ADRs behind the multi-module split.
+
 | File                     | Role                                                                                       |
 | ------------------------ | ------------------------------------------------------------------------------------------ |
 | `patch.go`               | `Patch` interface                                                                          |

@@ -1,6 +1,7 @@
 package datastartest_test
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -152,4 +153,82 @@ func TestE2E_ReplayWithLastEventID(t *testing.T) {
 		datastartest.RequireEventID(t, events[0], "3")
 		datastartest.RequireElements(t, events[1], "#feed", "outer", "<div>live</div>")
 	})
+}
+
+// TestE2E_CollectPostRoundTrip dogfoods [datastartest.CollectPost]: the
+// handler reads inbound signals from the POST body via
+// [datastar.ReadSignals] and answers with a signals patch derived from them —
+// the canonical form-submit flow without a browser.
+func TestE2E_CollectPostRoundTrip(t *testing.T) {
+	t.Parallel()
+
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var inbound struct {
+			Email string `json:"email"`
+		}
+
+		if err := datastar.ReadSignals(r, &inbound); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+
+			return
+		}
+
+		stream := sse.NewStream(w, r)
+		defer func() { _ = stream.Close() }()
+
+		resp := datastar.NewResponse(stream)
+		_ = resp.MarshalAndPatchSignals(map[string]any{
+			"echo": inbound.Email,
+			"len":  len(inbound.Email),
+		})
+	})
+
+	events := datastartest.CollectPost(t, handler, `{"email":"lars@example.com"}`)
+	datastartest.RequireEventCount(t, events, 1)
+
+	var signals struct {
+		Echo string `json:"echo"`
+		Len  int    `json:"len"`
+	}
+
+	if err := events[0].UnmarshalSignals(&signals); err != nil {
+		t.Fatalf("unmarshal signals: %v", err)
+	}
+
+	if signals.Echo != "lars@example.com" || signals.Len != 16 {
+		t.Errorf("round-trip signals: got (%q, %d), want (%q, %d)",
+			signals.Echo, signals.Len, "lars@example.com", 16)
+	}
+}
+
+// TestE2E_CollectNStreaming dogfoods [datastartest.CollectN] against a
+// handler that keeps the connection open after sending its events: CollectN
+// must return as soon as the requested count arrives, without waiting for the
+// handler to finish.
+func TestE2E_CollectNStreaming(t *testing.T) {
+	t.Parallel()
+
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		stream := sse.NewStream(w, r)
+		defer func() { _ = stream.Close() }()
+
+		resp := datastar.NewResponse(stream)
+
+		for i := 1; i <= 3; i++ {
+			_ = resp.PatchElements(
+				fmt.Sprintf("<div>tick %d</div>", i),
+				datastar.WithSelector("#ticks"),
+			)
+		}
+
+		// Hold the connection open like a broadcaster-backed handler would;
+		// CollectN(2) below must not block on this.
+		<-r.Context().Done()
+	})
+
+	events := datastartest.CollectN(t, handler, 2)
+	datastartest.RequireEventCount(t, events, 2)
+
+	datastartest.RequireElements(t, events[0], "#ticks", "outer", "<div>tick 1</div>")
+	datastartest.RequireElements(t, events[1], "#ticks", "outer", "<div>tick 2</div>")
 }

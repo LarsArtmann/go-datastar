@@ -56,7 +56,7 @@ Both libraries emit the exact same DataStar wire format. The difference is what 
 | Per-subscriber event filtering             | Not built in                                                | Yes, via go-sse `SubscribeFilter`                                 |
 | Error handling                             | Standard `error` values                                     | Every error classified with a stable code, family, and retryability ([go-error-family](https://github.com/LarsArtmann/go-error-family)) |
 | E2E test helpers for your handlers         | None                                                        | `datastartest` module: SSE parsing, typed decoding, assertions    |
-| Serve the DataStar JS client               | Bring your own                                              | `ScriptHandler()` with ETag + Cache-Control, embedded zero-dep `static` module |
+| Serve the DataStar JS client               | Bring your own                                              | `ScriptHandler()` with ETag + Cache-Control, embedded zero-dep `static` module (JS client v1.0.2) |
 | SSE compression (gzip, Brotli, Zstd)       | Yes, built in                                               | No (bring your own middleware)                                    |
 | Templ / GoStar rendering                   | Yes                                                         | Yes                                                               |
 | Printf-style variants (`…f`)               | Yes                                                         | Yes                                                               |

@@ -41,6 +41,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   has been marshaled in the constructor (with a classified error on failure)
   since v0.0.3. The doc now matches the code.
 
+### Fixed — datastartest
+
+- **SSE wire parser brought to WHATWG HTML § 9.2.6 conformance**, synced from
+  go-sse's `ssetest` (the two parsers are deliberately duplicated; both must
+  agree with browsers). Six deviations corrected, all behavioral (no API
+  signature changes): lone CR is now a line terminator (§ 9.2.5), an
+  incomplete final frame at EOF is discarded, exactly one leading UTF-8 BOM
+  is stripped, an `id:` value containing NUL is ignored, the last event ID is
+  sticky connection state (an event reports the most recent `id:` value at
+  dispatch; empty `id:` resets it), and the `retry:` reconnection time is
+  likewise sticky (updated even by dataless frames, never reset by invalid
+  values, parsed at 64-bit width).
+- **The official Web Platform Tests `eventsource/format-*` corpus is now
+  transcribed as Go tests** (`wpt_format_corpus_test.go`: 15 WPT vectors,
+  3 spec § 9.2.6 example streams, 8 Chromium `event_source_parser_test.cc`
+  cases, each with its upstream citation), re-run through 1–4096 byte chunked
+  readers (`chunk_boundary_test.go`) to prove TCP-chunking independence.
+
 ### Security — CI and toolchain
 
 - **Go directives pinned to 1.26.6 across all modules** (go.mod ×3, go.work,
@@ -50,12 +68,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `go_1_26` to 1.26.6 via `overrideAttrs` until nixpkgs ships it, so
   `nix flake check` stays hermetic and green alongside CI.
 - **erraudit CI job probe-gated and un-red-X'd** — the job now probes
-  `go list -m github.com/larsartmann/erraudit@v0.3.0` first: when resolvable
-  (erraudit is public as of 2026-08-16) the audit runs as a hard gate over
-  each module in turn; when not, the job skips with a visible notice instead
-  of failing at install. Also fixes the latent broken invocation: erraudit
-  accepts one directory argument, not three package patterns — the old
-  command could never have passed even with the repo public.
+  `go list -m github.com/larsartmann/erraudit@v0.3.0` first: while the
+  erraudit repository is private (as of 2026-08-16) the job skips with a
+  visible notice instead of failing at install; once the module resolves
+  publicly, the audit runs as a hard gate over each module in turn. Also
+  fixes the latent broken invocation: erraudit accepts one directory
+  argument, not three package patterns — the old command could never have
+  passed even with the repo public.
+
+### Changed — developer tooling
+
+- **`dprint.json` removed** — it was committed without any integration
+  (treefmt owns Go + Nix formatting) and wiring it in would have made the
+  hermetic `nix flake check` depend on network-fetched WASM plugins. treefmt
+  remains the single formatter.
+- **`actionlint` CI job added** — workflow YAML is now linted on every push
+  (pinned v1.7.12), so a bad workflow edit can no longer silently redden
+  master.
+- **`erraudit` app fixed and `actionlint` added to the devShell** —
+  `nix run .#erraudit` now audits each module with the correct
+  single-directory invocation (the tool rejects package patterns; the old
+  app command could never have passed). erraudit itself stays out of the
+  hermetic devShell: its dependency tree contains private modules (e.g.
+  go-finding), which a sandboxed Nix build cannot fetch, so the app
+  go-installs it instead and requires local GitHub credentials.
 
 ## [0.2.0] - 2026-08-13
 

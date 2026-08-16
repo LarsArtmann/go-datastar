@@ -52,7 +52,13 @@ func TestReadEvents_SingleEvent(t *testing.T) {
 	}
 }
 
-func TestReadEvents_NoTrailingBlankLine(t *testing.T) {
+// TestReadEvents_IncompleteFinalFrameDiscarded pins spec § 9.2.6: "Once the
+// end of the file is reached, any pending data must be discarded." A frame
+// without a blank line before EOF never dispatches (also pinned by the WPT
+// format-data-before-final-empty-line vector in wpt_format_corpus_test.go).
+// Before the 2026-08-16 spec-conformance sync this test asserted the opposite,
+// lenient behavior.
+func TestReadEvents_IncompleteFinalFrameDiscarded(t *testing.T) {
 	t.Parallel()
 
 	input := "event: datastar-patch-signals\n" +
@@ -63,8 +69,19 @@ func TestReadEvents_NoTrailingBlankLine(t *testing.T) {
 		t.Fatalf("ReadEvents: %v", err)
 	}
 
+	if len(events) != 0 {
+		t.Fatalf("got %d events, want 0 (pending data discarded at EOF)", len(events))
+	}
+
+	withBlank := input + "\n"
+
+	events, err = datastartest.ReadEvents(strings.NewReader(withBlank))
+	if err != nil {
+		t.Fatalf("ReadEvents: %v", err)
+	}
+
 	if len(events) != 1 {
-		t.Fatalf("got %d events, want 1 (flushed at EOF)", len(events))
+		t.Fatalf("with trailing blank line: got %d events, want 1", len(events))
 	}
 }
 

@@ -51,33 +51,85 @@
           buildGoModule = pkgs.buildGoModule.override { go = goPkg; };
           version = self.rev or self.dirtyRev or "dev";
           # go1.26.6's `go mod vendor` output differs from 1.26.5's (modules.txt
-          # format), so this hash moved with the toolchain bump.
-          vendorHash = "sha256-ExmfW1vWz+7w8j4kuBsPwvaWqwci1DBFawnfk13XasE=";
+          # format), and the hash covers module-mode (GOWORK=off) downloads —
+          # both moved it from earlier values.
+          vendorHash = "sha256-J/VAO5/gm/2UJ2KPp0fhM45sXKFyTmkpYbWPoLiAukw=";
+          # datastartest vendors root + static via local replaces plus its own
+          # public deps, so its module set hashes differently from the root's.
+          datastartestVendorHash = "sha256-Lx0eYkKy6HNwFUa00Oo9yHAtOvhyKR7V6dIS1Knxegs=";
 
-          # TODO: add hermeticCheckStatic and hermeticCheckDatastartest
-          # buildGoModule derivations for full multi-module Nix CI.
-          # The GitHub Actions CI already covers all three modules.
+          maintainer = {
+            name = "Lars Artmann";
+            github = "LarsArtmann";
+          };
+
+          # One hermetic buildGoModule derivation per Go module — the Nix
+          # analog of the CI GOWORK=off per-module legs. All run in module
+          # mode: GOWORK=off and go.work excluded from the source fileset.
           hermeticCheck = buildGoModule {
             pname = "go-datastar";
             inherit version vendorHash;
             src = lib.fileset.toSource {
               root = ./.;
-              fileset = lib.fileset.gitTracked ./.;
+              fileset = lib.fileset.difference (lib.fileset.gitTracked ./.) ./go.work;
             };
             subPackages = [ "." ];
             proxyVendor = true;
             doCheck = true;
-            env.GOEXPERIMENT = "jsonv2";
+            env = {
+              GOWORK = "off";
+              GOEXPERIMENT = "jsonv2";
+            };
 
             meta = {
               description = "DataStar protocol library for Go";
               license = lib.licenses.mit;
-              maintainers = [
-                {
-                  name = "Lars Artmann";
-                  github = "LarsArtmann";
-                }
-              ];
+              maintainers = [ maintainer ];
+            };
+          };
+
+          # static module: stdlib-only, nothing to vendor.
+          hermeticCheckStatic = buildGoModule {
+            pname = "go-datastar-static";
+            inherit version;
+            src = lib.fileset.toSource {
+              root = ./static;
+              fileset = lib.fileset.gitTracked ./static;
+            };
+            vendorHash = null;
+            subPackages = [ "." ];
+            doCheck = true;
+            env.GOWORK = "off";
+
+            meta = {
+              description = "Embedded DataStar JS client bundle";
+              license = lib.licenses.mit;
+              maintainers = [ maintainer ];
+            };
+          };
+
+          # datastartest module: modRoot points into the repo source so the
+          # sibling replaces (=> .., => ../static) resolve inside the sandbox.
+          hermeticCheckDatastartest = buildGoModule {
+            pname = "go-datastar-datastartest";
+            inherit version;
+            vendorHash = datastartestVendorHash;
+            src = lib.fileset.toSource {
+              root = ./.;
+              fileset = lib.fileset.difference (lib.fileset.gitTracked ./.) ./go.work;
+            };
+            modRoot = "datastartest";
+            subPackages = [ "." ];
+            doCheck = true;
+            env = {
+              GOWORK = "off";
+              GOEXPERIMENT = "jsonv2";
+            };
+
+            meta = {
+              description = "Consumer E2E test helpers for go-datastar";
+              license = lib.licenses.mit;
+              maintainers = [ maintainer ];
             };
           };
 
@@ -124,10 +176,13 @@
             buildInputs = old.buildInputs ++ [ goPkg ];
           });
           checks.build = hermeticCheck;
+          checks.buildStatic = hermeticCheckStatic;
+          checks.buildDatastartest = hermeticCheckDatastartest;
 
           devShells.default = pkgs.mkShellNoCC {
             packages = [
               goPkg
+              pkgs.actionlint
               pkgs.golangci-lint
               pkgs.gopls
               pkgs.govulncheck
@@ -169,10 +224,17 @@
               golangci-lint run ./... ./datastartest/... ./static/...
             '';
 
+            # erraudit is NOT hermetically buildable (its dependency tree
+            # contains private modules, e.g. go-finding), so this app
+            # go-installs it and requires local GitHub credentials. One
+            # directory per run — the tool rejects package patterns.
             erraudit = mkApp "erraudit" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
               go install github.com/larsartmann/erraudit/cmd/erraudit@v0.3.0
-              "$HOME/go/bin/erraudit" ./... ./datastartest/... ./static/... --type-aware --enforce-go-error-family --severity-threshold error
+              for mod in . ./datastartest ./static; do
+                echo "== erraudit $mod"
+                (cd "$mod" && "$HOME/go/bin/erraudit" . --type-aware --enforce-go-error-family --severity-threshold error)
+              done
             '';
 
             govulncheck = mkApp "govulncheck" [ pkgs.govulncheck goPkg ] ''

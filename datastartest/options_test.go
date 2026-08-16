@@ -3,6 +3,7 @@ package datastartest_test
 import (
 	"fmt"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -91,6 +92,12 @@ func TestCollect_WithHeader(t *testing.T) {
 func TestCollect_WithLastEventID_HeaderArrives(t *testing.T) {
 	t.Parallel()
 
+	// Channel-synchronized: the handler signals after writing AND flushing
+	// the SSE event, so the test never starts reading before the data is in
+	// the TCP buffer. This eliminates the theoretical race where EOF arrives
+	// before the event data under extreme parallel load (guard G6: no sleeps).
+	written := make(chan struct{})
+
 	handler := http.HandlerFunc(func(writer http.ResponseWriter, r *http.Request) {
 		lastID := datastar.LastEventID(r)
 
@@ -99,9 +106,34 @@ func TestCollect_WithLastEventID_HeaderArrives(t *testing.T) {
 
 		resp := datastar.NewResponse(stream)
 		_ = resp.MarshalAndPatchSignals(map[string]any{"lastId": lastID.Get()})
+
+		if flusher, ok := writer.(http.Flusher); ok {
+			flusher.Flush()
+		}
+
+		close(written)
 	})
 
-	events := datastartest.Collect(t, handler, datastartest.WithLastEventID("42"))
+	srv := httptest.NewServer(handler)
+	t.Cleanup(srv.Close)
+
+	req, err := http.NewRequest(http.MethodGet, srv.URL, nil)
+	if err != nil {
+		t.Fatalf("build request: %v", err)
+	}
+
+	req.Header.Set("Last-Event-ID", "42")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("send request: %v", err)
+	}
+
+	defer func() { _ = resp.Body.Close() }()
+
+	<-written
+
+	events := datastartest.MustReadEvents(t, resp.Body)
 
 	datastartest.RequireEventCount(t, events, 1)
 

@@ -2,6 +2,11 @@
 //
 // Run: go run ./example/
 // Open: http://localhost:8765
+//
+// Slow-client behavior: when a subscriber's buffer is full the broadcaster
+// drops events for that subscriber only — observe it with sse.WithOnDrop, as
+// done below (see TestWithOnDropFiresWhenSubscriberBufferFull for the pattern
+// in test form).
 package main
 
 import (

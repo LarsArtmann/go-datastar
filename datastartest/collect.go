@@ -197,6 +197,10 @@ func doRequest(
 // counterpart to [ReadEvents]: use it with a live SSE connection body that does
 // not close on its own (e.g., a handler broadcasting through a Broadcaster).
 //
+// Wire-format semantics are identical to [ReadEvents] (spec § 9.2.6), except
+// that reading stops early: a frame still pending when count is reached is
+// naturally discarded, as is a frame pending at EOF.
+//
 // A scanner error after events have been collected is treated as a clean
 // connection close, not a failure.
 func ReadNEvents(r io.Reader, count int) ([]Event, error) {
@@ -204,38 +208,24 @@ func ReadNEvents(r io.Reader, count int) ([]Event, error) {
 		return nil, nil
 	}
 
+	parser := streamParser{}
 	scanner := newSSEScanner(r)
 
-	var (
-		events  []Event
-		current Event
-	)
-
 	for scanner.Scan() {
-		line := scanner.Text()
+		parser.acceptLine(scanner.Text())
 
-		if line == "" {
-			dispatchFrame(&events, &current)
-
-			if len(events) >= count {
-				return events, nil
-			}
-
-			continue
+		if len(parser.events) >= count {
+			return parser.events, nil
 		}
-
-		applySSELine(&current, line)
 	}
 
 	if err := scanner.Err(); err != nil {
-		if len(events) > 0 {
-			return events, nil
+		if len(parser.events) > 0 {
+			return parser.events, nil
 		}
 
 		return nil, errorfamily.WrapTransient(err, CodeSSEScanFailed, "scan SSE stream")
 	}
 
-	dispatchFrame(&events, &current)
-
-	return events, nil
+	return parser.events, nil
 }
