@@ -91,27 +91,27 @@ a4712ab test(e2e): relocate datastartest-based E2E test to break circular depend
 
 ### AGENTS.md Documentation Update
 
-- **Status:** NOT STARTED (this is the biggest gap — see section E)
+- ~~**Status:** NOT STARTED (this is the biggest gap — see section E)~~ Done at `3cd669e` (file layout table + datastartest section rewritten)
 - The AGENTS.md file layout table (lines 69-89) still references `e2e_test.go` as a root file without mentioning it was split. The `datastartest/` entry doesn't mention `e2e_test.go` was relocated there.
 - Line 172 says "It replaces ~260 lines of private parsing code that previously lived in this repo's own `e2e_test.go`" — this is now misleading since the E2E test lives IN datastartest, not just the parsing code.
 
 ### CI Isolation Step
 
 - Added `GOWORK=off` per-module build + test to CI.
-- **Missing:** `go work sync && git diff --exit-code` idempotency check (mentioned in proposal as essential, not implemented).
-- **Missing:** Replace directive audit for absolute paths (mentioned in proposal, not implemented).
+- ~~**Missing:** `go work sync && git diff --exit-code` idempotency check (mentioned in proposal as essential, not implemented).~~ Added at `dc0d6f2`
+- ~~**Missing:** Replace directive audit for absolute paths (mentioned in proposal, not implemented).~~ Added at `dc0d6f2`
 
 ---
 
 ## C) NOT STARTED
 
-1. **AGENTS.md update** — file layout table, datastartest section, and line 172 all need updating to reflect the e2e_test.go relocation.
-2. **go.work sync idempotency CI check** — proposed but not added.
-3. **Replace directive audit CI check** — proposed but not added.
+1. ~~**AGENTS.md update** — file layout table, datastartest section, and line 172 all need updating to reflect the e2e_test.go relocation.~~ done at `3cd669e`
+2. ~~**go.work sync idempotency CI check** — proposed but not added.~~ done at `dc0d6f2`
+3. ~~**Replace directive audit CI check** — proposed but not added.~~ done at `dc0d6f2`
 4. **Version drift detection CI check** — proposed in real-world-patterns.md reference, not added.
-5. **FEATURES.md update** — no mention of the modularization fix.
-6. **CHANGELOG.md update** — no entry for the circular dependency fix.
-7. **README.md review** — not checked for stale references to the old module structure.
+5. ~~**FEATURES.md update** — no mention of the modularization fix.~~ done at `b5465f2` (module-structure rows; re-verified 2026-08-16)
+6. ~~**CHANGELOG.md update** — no entry for the circular dependency fix.~~ done at `3cd669e`
+7. ~~**README.md review** — not checked for stale references to the old module structure.~~ done — reviewed in the 07-38 session, no stale references
 
 ---
 
@@ -137,11 +137,11 @@ However, there are honest criticisms:
 
 ### Immediate (should have been done this session)
 
-1. **Update AGENTS.md file layout table** — Add `datastartest/e2e_test.go` to the table, update the `datastartest/` row to mention the E2E test, and note that root's `e2e_test.go` now only contains `TestE2E_SSEHeaders`.
-2. **Update AGENTS.md line 172** — Change "It replaces ~260 lines of private parsing code that previously lived in this repo's own `e2e_test.go`" to reflect that the E2E test itself now lives in datastartest.
-3. **Add CHANGELOG.md entry** — Document the circular dependency fix.
-4. **Add `go work sync` idempotency check to CI** — Was in the proposal, not implemented.
-5. **Add replace directive audit to CI** — Was in the proposal, not implemented.
+1. ~~**Update AGENTS.md file layout table** — Add `datastartest/e2e_test.go` to the table, update the `datastartest/` row to mention the E2E test, and note that root's `e2e_test.go` now only contains `TestE2E_SSEHeaders`.~~ done at `3cd669e`
+2. ~~**Update AGENTS.md line 172** — Change "It replaces ~260 lines of private parsing code that previously lived in this repo's own `e2e_test.go`" to reflect that the E2E test itself now lives in datastartest.~~ done at `3cd669e`
+3. ~~**Add CHANGELOG.md entry** — Document the circular dependency fix.~~ done at `3cd669e`
+4. ~~**Add `go work sync` idempotency check to CI** — Was in the proposal, not implemented.~~ done at `dc0d6f2`
+5. ~~**Add replace directive audit to CI** — Was in the proposal, not implemented.~~ done at `dc0d6f2`
 
 ### Architectural
 
@@ -161,18 +161,18 @@ However, there are honest criticisms:
 
 ### Documentation (immediate)
 
-1. Update AGENTS.md file layout table — add `datastartest/e2e_test.go`, update root `e2e_test.go` description
-2. Update AGENTS.md line 172 — fix the stale "260 lines" reference
-3. Add CHANGELOG.md entry for the circular dependency fix
-4. Review README.md for stale module structure references
-5. Review FEATURES.md for modularization-related entries
-6. Add module boundary documentation to AGENTS.md (DAG diagram, replace strategy)
-7. Document the per-module GOWORK=off CI pattern in AGENTS.md
+1. ~~Update AGENTS.md file layout table — add `datastartest/e2e_test.go`, update root `e2e_test.go` description~~ done at `3cd669e`
+2. ~~Update AGENTS.md line 172 — fix the stale "260 lines" reference~~ done at `3cd669e`
+3. ~~Add CHANGELOG.md entry for the circular dependency fix~~ done at `3cd669e`
+4. ~~Review README.md for stale module structure references~~ done — reviewed in the 07-38 session, none found
+5. ~~Review FEATURES.md for modularization-related entries~~ done at `b5465f2`
+6. ~~Add module boundary documentation to AGENTS.md (DAG diagram, replace strategy)~~ done at `3cd669e` — "Module Structure" section (refined `06bb019`)
+7. ~~Document the per-module GOWORK=off CI pattern in AGENTS.md~~ done at `dc0d6f2` — Commands "CI also enforces" block
 
 ### CI Hardening
 
-8. Add `go work sync && git diff --exit-code go.work` idempotency check to CI
-9. Add replace directive audit (no absolute paths) to CI
+8. ~~Add `go work sync && git diff --exit-code go.work` idempotency check to CI~~ done at `dc0d6f2`
+9. ~~Add replace directive audit (no absolute paths) to CI~~ done at `dc0d6f2`
 10. Add version drift detection script to CI
 11. Add `go mod verify` step to CI
 12. Consider parallelizing CI jobs per module for faster feedback
@@ -181,60 +181,60 @@ However, there are honest criticisms:
 ### Testing
 
 14. Review `response_test.go` — it imports `static` directly; verify this is the right approach vs. using `datastar.DatastarJSVersion`
-15. Consider adding a test that verifies root's go.mod does NOT contain datastartest (regression guard)
-16. Consider adding a test that verifies the DAG is acyclic (programmatic check)
-17. Run erraudit on the updated codebase to verify no new error handling issues
-18. Run govulncheck on all 3 modules
-19. Add a test for `TestE2E_DataStarPatches` that exercises `CollectPost` and `CollectN` paths
-20. Consider property-based testing for the SSE parser in datastartest
+15. ~~Consider adding a test that verifies root's go.mod does NOT contain datastartest (regression guard)~~ done at `fda70c7` (`module_boundary_test.go`)
+16. ~~Consider adding a test that verifies the DAG is acyclic (programmatic check)~~ NOT-DO — superseded by `fda70c7`; the boundary guard covers the only cycle risk in this 3-module layout
+17. ~~Run erraudit on the updated codebase to verify no new error handling issues~~ done — CI erraudit job added at `eb8bf29`, runs every push
+18. ~~Run govulncheck on all 3 modules~~ done — CI govulncheck job added at `eb8bf29`, runs every push
+19. Add a test for `TestE2E_DataStarPatches` that exercises `CollectPost` and `CollectN` paths ← open, routed to TODO_LIST 2026-08-16
+20. ~~Consider property-based testing for the SSE parser in datastartest~~ done at `fd3a5ac` (`FuzzReadEvents`)
 
 ### Modularization Refinement
 
 21. Consider whether `static/` should have a go.sum file preemptively (even with zero deps)
 22. Evaluate whether the `example/` package should get its own go.mod (currently in root)
 23. Consider adding a `docs/modularization/README.md` index for the modularization docs
-24. Review whether the `datastartest/go.mod` replace directives should use `v0.0.0` instead of `v0.1.0` (the real-world-patterns.md recommends `v0.0.0`)
-25. Evaluate whether `go.work.sum` should be tracked in git (currently gitignored)
+24. Review whether the `datastartest/go.mod` replace directives should use `v0.0.0` instead of `v0.1.0` (the real-world-patterns.md recommends `v0.0.0`) ← open, routed to ROADMAP "Open questions" 2026-08-16
+25. Evaluate whether `go.work.sum` should be tracked in git (currently gitignored) ← open, routed to ROADMAP "Open questions" 2026-08-16
 
 ### Code Quality
 
 26. Fix gopls `stdversion` warnings — `json.Unmarshal` requires go1.27 in 4 files (datastartest/event.go, inbound.go, script_convenience.go, signals.go)
-27. Fix gopls `bloop` warnings — modernize `b.N` to `b.Loop()` in benchmark_test.go (4 instances) and reader_fuzz_test.go
-28. Fix gopls `writestring` warnings — inefficient string concatenation in reader_fuzz_test.go (3 instances)
-29. Fix gopls `errorsastype` hint — simplify `errors.As` in errors_test.go:253
-30. Review the `result` symlink in project root — points to a Nix store path, may be stale
+27. Fix gopls `bloop` warnings — modernize `b.N` to `b.Loop()` in benchmark_test.go (4 instances) and reader_fuzz_test.go ← open — benchmarks use `for range b.N`, not `b.Loop()` (2026-08-16)
+28. ~~Fix gopls `writestring` warnings — inefficient string concatenation in reader_fuzz_test.go (3 instances)~~ done at `fd3a5ac` — `strings.Builder.WriteString` now used
+29. Fix gopls `errorsastype` hint — simplify `errors.As` in errors_test.go:253 ← open — `errors.As` still used (errors_test.go:289, 2026-08-16)
+30. Review the `result` symlink in project root — points to a Nix store path, may be stale ← open, routed to TODO_LIST 2026-08-16
 
 ### Architecture
 
-31. Consider whether `datastartest` should export a `NewResponse` helper for test ergonomics
-32. Evaluate whether `datastartest` should have a `CollectWithOptions` for custom headers
-33. Consider adding a `datastartest.RequireEventOrder` helper for ordered event assertions
-34. Review whether the `datastartest/search.go` file is needed (what does it search?)
-35. Consider whether `static/` should export a `Version` constant AND a `Version()` function (currently both exist — one in static.go, one re-exported in script_handler.go)
+31. Consider whether `datastartest` should export a `NewResponse` helper for test ergonomics ← open — not exported (2026-08-16)
+32. ~~Evaluate whether `datastartest` should have a `CollectWithOptions` for custom headers~~ done at `06bb019` — every Collect* now takes `...RequestOption` (`WithPath`/`WithHeader`/`WithLastEventID`/`WithDatastarSignals`)
+33. Consider adding a `datastartest.RequireEventOrder` helper for ordered event assertions ← open (2026-08-16)
+34. Review whether the `datastartest/search.go` file is needed (what does it search?) ← open (2026-08-16)
+35. Consider whether `static/` should export a `Version` constant AND a `Version()` function (currently both exist — one in static.go, one re-exported in script_handler.go) ← open — both still exist (2026-08-16)
 
 ### Pre-Publish
 
-36. Create git tags for v0.1.0 release (if publishing)
-37. Verify `go mod verify` passes on all 3 modules
-38. Run `go mod tidy` on all 3 modules and verify no changes
-39. Test consumer experience: `go get github.com/larsartmann/go-datastar` should NOT pull datastartest
-40. Test consumer experience: `go get github.com/larsartmann/go-datastar/datastartest` should work
-41. Test consumer experience: `go get github.com/larsartmann/go-datastar/static` should work
-42. Verify GOPROXY resolution works (if published)
-43. Consider adding `//deprecated` comments to any old import paths if paths changed
+36. ~~Create git tags for v0.1.0 release (if publishing)~~ done — v0.1.0 tagged 2026-08-10 (and v0.2.0 since)
+37. ~~Verify `go mod verify` passes on all 3 modules~~ done — verified in the 08-13 02:58 session (and again 2026-08-16)
+38. ~~Run `go mod tidy` on all 3 modules and verify no changes~~ done — verified in the 07-38 session (no changes)
+39. ~~Test consumer experience: `go get github.com/larsartmann/go-datastar` should NOT pull datastartest~~ done — releases live; root has no datastartest require
+40. ~~Test consumer experience: `go get github.com/larsartmann/go-datastar/datastartest` should work~~ done — datastartest tagged v0.1.0/v0.2.0
+41. ~~Test consumer experience: `go get github.com/larsartmann/go-datastar/static` should work~~ done — static tagged v0.1.0/v0.2.0
+42. ~~Verify GOPROXY resolution works (if published)~~ done — v0.1.0/v0.2.0 resolve via the module proxy
+43. ~~Consider adding `//deprecated` comments to any old import paths if paths changed~~ Won't implement — no import paths changed
 
 ### Nix/Build
 
-44. Consider adding per-module Nix checks (`hermeticCheckStatic`, `hermeticCheckDatastartest`) as the flake.nix TODO mentions
+44. Consider adding per-module Nix checks (`hermeticCheckStatic`, `hermeticCheckDatastartest`) as the flake.nix TODO mentions ← open, routed to TODO_LIST 2026-08-16
 45. Run `nix flake check` to verify the flake is healthy
-46. Consider adding `nix run .#erraudit` and `nix run .#govulncheck` to CI
-47. Update the flake.nix `vendorHash` if go.sum changes in the future
-48. Consider adding a `nix run .#coverage` output that merges coverage across all 3 modules
+46. ~~Consider adding `nix run .#erraudit` and `nix run .#govulncheck` to CI~~ done at `eb8bf29` — both are CI jobs
+47. ~~Update the flake.nix `vendorHash` if go.sum changes in the future~~ done — maintained routinely (e.g. `5b70bb1`)
+48. Consider adding a `nix run .#coverage` output that merges coverage across all 3 modules ← open, routed to TODO_LIST 2026-08-16
 
 ### Process
 
 49. Add the go-modularize skill's "quick fix" mode for small boundary changes (skill improvement)
-50. Consider adding a pre-commit hook that warns if root go.mod gains a datastartest require (regression guard)
+50. ~~Consider adding a pre-commit hook that warns if root go.mod gains a datastartest require (regression guard)~~ superseded by `fda70c7` — test-level guard runs in CI on every push
 
 ---
 
@@ -244,13 +244,19 @@ However, there are honest criticisms:
 
 Currently `.gitignore` excludes both `go.work.sum` AND `go.work` — but `go.work` IS tracked (it was force-added). `go.work.sum` is NOT tracked. The real-world-patterns.md says "Always commit `go.work` and `go.work.sum` together." But the project has `go.work.sum` in `.gitignore`. This seems intentional (the `d8d2c9c` commit explicitly added both to `.gitignore`, then `a73a8fb` force-committed `go.work`). I cannot determine whether this was a deliberate decision or an oversight. If `go.work.sum` should be tracked, it needs to be force-added like `go.work` was.
 
+_Routed to ROADMAP.md "Open questions" (2026-08-16) — still awaiting an owner decision._
+
 ### 2. Should the internal module references use `v0.0.0` instead of `v0.1.0`?
 
 The real-world-patterns.md recommends `v0.0.0` for all internal requires to eliminate pseudo-version churn. Currently all three modules use `v0.1.0` for sibling references. This works fine with replace directives (version is irrelevant), but `go mod tidy` may generate pseudo-versions in some edge cases. Should we normalize to `v0.0.0` as the skill recommends, or keep `v0.1.0` since it works and is already in place?
 
+_Routed to ROADMAP.md "Open questions" (2026-08-16) — still awaiting an owner decision._
+
 ### 3. Is the `result` symlink in the project root intentional or stale?
 
 The project root contains a symlink: `result -> /nix/store/s2g7l4i6p5i8042fxfwgw36vz40h2kwb-go-datastar-8d5c0b902955c73ad3f22de9a528e14f181032db-dirty`. This appears to be a Nix build output symlink, but it points to a specific store path that may be stale (the hash doesn't match the current build output hash `a4712ab63d2086f16b0c770abb80cd33c0ddf2b8`). I cannot determine if this is expected behavior from the Nix build system or if it should be cleaned up.
+
+_Routed to TODO_LIST.md (2026-08-16) — `trash result` pending owner; `.gitignore` already covers it._
 
 ---
 

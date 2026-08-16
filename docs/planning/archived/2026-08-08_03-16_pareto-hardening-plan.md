@@ -101,9 +101,9 @@ Long-tail polish: GitHub repo settings, coverage badge, examples, markdown forma
 
 **BLOCKED items (require user decision or external access):**
 
-- T12: GitHub repo settings (topics, wiki) require `gh` CLI
-- T14: Release cadence — user decision (Q3 from status report)
-- WithScriptAttributeKVs code fix (not the doc fix) — user decision (Q2)
+- ~~T12: GitHub repo settings (topics, wiki) require `gh` CLI~~ done in the 09-36 session (`cfe328d`)
+- ~~T14: Release cadence — user decision (Q3 from status report)~~ done — v0.0.3 tagged 2026-08-08 (`4233e31`)
+- WithScriptAttributeKVs code fix (not the doc fix) — user decision (Q2) ← resolved: the doc was fixed instead (`4f7595e`), per this plan's Verschlimmbesserung guard; API unchanged
 
 ---
 
@@ -239,7 +239,7 @@ Long-tail polish: GitHub repo settings, coverage badge, examples, markdown forma
 | 11.3 | Add erraudit to flake.nix devShell (if not done in T10) | 5min   |
 | 11.4 | Run final quality gate before release                   | 10min  |
 
-### T12: GitHub repo polish (30min) — BLOCKED (needs gh)
+### T12: GitHub repo polish (30min) — ~~BLOCKED (needs gh)~~ done (`cfe328d`; pkg.go.dev + coverage badge sub-items routed to TODO_LIST)
 
 | Sub  | Task                                                                       | Effort |
 | ---- | -------------------------------------------------------------------------- | ------ |
@@ -256,7 +256,7 @@ Long-tail polish: GitHub repo settings, coverage badge, examples, markdown forma
 | 13.2 | Check if upstream DataStar JS has released beyond v1.0.2            | 10min  |
 | 13.3 | Document DataStar JS version pinning strategy in AGENTS.md or docs/ | 10min  |
 
-### T14: Tag v0.0.3 release (30min) — BLOCKED (needs user decision)
+### T14: Tag v0.0.3 release (30min) — ~~BLOCKED (needs user decision)~~ done (`4233e31`)
 
 | Sub  | Task                                                       | Effort |
 | ---- | ---------------------------------------------------------- | ------ |
@@ -266,7 +266,7 @@ Long-tail polish: GitHub repo settings, coverage badge, examples, markdown forma
 | 14.4 | Create annotated v0.0.3 git tag                            | 5min   |
 | 14.5 | Publish GitHub release with notes                          | 5min   |
 
-### T15: Markdown formatter for treefmt (30min)
+### T15: Markdown formatter for treefmt (30min) — attempted and reverted by design (see 06-52 execution report, section c.3); the dprint.json follow-up is routed to TODO_LIST
 
 | Sub  | Task                                                                            | Effort |
 | ---- | ------------------------------------------------------------------------------- | ------ |
@@ -429,5 +429,19 @@ T14 (tag v0.0.3) — only after all above are green.
 _All 32 TODO_LIST items accounted for. ROADMAP items (splitting response.go, Broadcaster example, migration guide, architecture diagram, website, goreleaser, version package, upstream tracking) remain in ROADMAP.md — they are too vague or long-term for this execution plan._
 
 ---
+
+## Resolution (2026-08-16)
+
+Executed in the 06:52 session (`docs/status/2026-08-08_06-52_pareto-hardening-execution.md`):
+13 of 15 tasks landed (`8b05ea5`…`7c60ccd` lineage, incl. `4f7595e` T03 doc fix,
+`eb8bf29` T05 erraudit/govulncheck CI, `de6abaf`/`4f332f0` T06 error system,
+`32d36a7` T08 benchmarks + fuzz, `451cce0` T10 nix tooling, `7c60ccd` T11
+Dependabot). T05.2-3 (Actions upgrades) slipped, then landed as SHA-pinned v7
+(`a1aaa15`). T12 done at `cfe328d`, T14 (v0.0.3) tagged at `4233e31`, T15
+reverted by design. v0.0.3 → v0.2.0 have shipped since.
+
+Still-open residue (routed forward, not part of this plan): pkg.go.dev render
+verification and coverage badge → TODO_LIST.md; DataStar JS pinning strategy →
+ROADMAP.md; dprint.json wire-or-remove → TODO_LIST.md.
 
 _End of plan._

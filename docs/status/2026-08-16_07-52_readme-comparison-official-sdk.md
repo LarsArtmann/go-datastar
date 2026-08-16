@@ -161,13 +161,17 @@ searching would have produced a fabricated claim.
 ## f) Next Steps (bounded — doc session)
 
 1. Re-verify the comparison table when datastar-go cuts its next release
-   (upstream cadence appears roughly monthly); update the footnote version.
+   (upstream cadence appears roughly monthly); update the footnote version
+   ← open, routed to TODO_LIST 2026-08-16
 2. Decide whether to mention the JS client version parity (v1.0.2 embedded
    vs. whatever upstream ships) in the table's "Serve the DataStar JS client"
-   row.
+   row ← open, routed to TODO_LIST 2026-08-16
 3. Optionally add the README comparison re-check to the release checklist
-   (docs/ or CHANGELOG process) so it cannot rot silently.
-4. The unrelated working-tree changes under `datastartest/` (modified
+   (docs/ or CHANGELOG process) so it cannot rot silently
+   ← open, routed to TODO_LIST 2026-08-16
+4. ~~The unrelated working-tree changes under `datastartest/` (modified
    `assert.go`, `collect.go`, `reader.go`, `e2e_test.go`, plus untracked
    `options*.go` / `assert_test.go`) belong to another session and were left
-   untouched on purpose — whoever owns that work should report on it.
+   untouched on purpose — whoever owns that work should report on it.~~ done —
+   committed as the request-options session: `06bb019` (options, script/ID
+   assertions, TB support) and `b0482db` (dataless-frame fix)

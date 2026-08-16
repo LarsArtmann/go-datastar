@@ -93,27 +93,27 @@ These items were identified in the prior session's status report (50-item
 list) but were out of scope for this session's documentation/CI focus. They
 remain as future work:
 
-1. **FEATURES.md update** — no mention of the modularization fix
+1. ~~**FEATURES.md update** — no mention of the modularization fix~~ done at `b5465f2` (module-structure rows; re-verified 2026-08-16)
 2. **Version drift detection CI check** — proposed in real-world-patterns.md
-3. **Regression guard test** — a test verifying root's go.mod does NOT contain
-  datastartest
-4. **Programmatic DAG acyclicity check** — test that verifies the module
-  dependency graph is acyclic
-5. **erraudit on updated codebase** — verify no new error handling issues
-6. **govulncheck on all 3 modules** — run vulnerability scan
+3. ~~**Regression guard test** — a test verifying root's go.mod does NOT contain
+  datastartest~~ done at `fda70c7` (`module_boundary_test.go`)
+4. ~~**Programmatic DAG acyclicity check** — test that verifies the module
+  dependency graph is acyclic~~ NOT-DO — superseded by `fda70c7`; the boundary guard covers the only cycle risk in this 3-module layout
+5. ~~**erraudit on updated codebase** — verify no new error handling issues~~ done — CI erraudit job added at `eb8bf29`, runs every push
+6. ~~**govulncheck on all 3 modules** — run vulnerability scan~~ done — CI govulncheck job added at `eb8bf29`; 2026-08-16 run flags 4 stdlib vulns fixed in go1.26.6 (routed to TODO_LIST)
 7. **v0.0.0 vs v0.1.0 normalization** — real-world-patterns.md recommends
-  v0.0.0 for internal module references
-8. **go.work.sum git tracking decision** — currently gitignored
-9. **result symlink cleanup** — stale Nix build output in project root
+  v0.0.0 for internal module references ← open, routed to ROADMAP "Open questions" 2026-08-16
+8. **go.work.sum git tracking decision** — currently gitignored ← open, routed to ROADMAP "Open questions" 2026-08-16
+9. **result symlink cleanup** — stale Nix build output in project root ← open, routed to TODO_LIST 2026-08-16
 10. **Per-module Nix checks** — flake.nix TODO mentions hermeticCheckStatic,
-  hermeticCheckDatastartest
+  hermeticCheckDatastartest ← open, routed to TODO_LIST 2026-08-16
 11. **nix flake check** — verify the flake is healthy
 12. **14 gopls warnings** — stdversion (4), bloop (4), writestring (3),
-  errorsastype (1) — all pre-existing, not introduced by modularization work
-13. **Pre-publish consumer experience tests** — `go get` root should NOT pull
-  datastartest; `go get` datastartest/static should work independently
-14. **go mod verify** on all 3 modules
-15. **Coverage across all 3 modules** — consider a merged coverage output
+  errorsastype (1) — all pre-existing, not introduced by modularization work ← mostly open — only writestring fixed (`fd3a5ac`); the rest persist (2026-08-16)
+13. ~~**Pre-publish consumer experience tests** — `go get` root should NOT pull
+  datastartest; `go get` datastartest/static should work independently~~ done — v0.1.0/v0.2.0 released with per-module tags
+14. ~~**go mod verify** on all 3 modules~~ done — verified in the 08-13 02:58 session (and again 2026-08-16)
+15. **Coverage across all 3 modules** — consider a merged coverage output ← open, routed to TODO_LIST 2026-08-16
 
 ---
 
@@ -139,8 +139,8 @@ is clean (3 files modified, no new untracked files except this status report).
    — if `go work sync` exits non-zero for an unrelated reason, the backup
    file leaks.
 
-3. **I didn't add the CI changes to the CHANGELOG.md `Added — CI hardening`
-   section.** Wait — I did. The CHANGELOG entry says "Per-module isolation
+3. ~~**I didn't add the CI changes to the CHANGELOG.md `Added — CI hardening`
+   section.**~~ Fixed at `dc0d6f2` — both steps documented in the 07-55 session. Wait — I did. The CHANGELOG entry says "Per-module isolation
    check" which was added in the prior session, but I also added two new CI
    steps (idempotency + replace audit) this session and did NOT mention them
    in the CHANGELOG. This is a documentation miss.
@@ -152,11 +152,11 @@ is clean (3 files modified, no new untracked files except this status report).
    which prints the "go.work changed" error message — misleading. Should
    handle exit code 2 separately.
 
-5. **I didn't update the AGENTS.md Commands section** to document the new CI
+5. ~~**I didn't update the AGENTS.md Commands section** to document the new CI
    steps. The Commands section (lines 21-35) shows workspace and isolation
    commands but doesn't mention the idempotency or replace audit checks that
    CI now performs. A developer reading AGENTS.md wouldn't know these CI
-   checks exist.
+   checks exist.~~ done at `dc0d6f2` — "CI also enforces" block added in the 07-55 session
 
 6. **I didn't add the new CI checks to the CHANGELOG.** The CHANGELOG entry
    only mentions "Per-module isolation check" from the prior session. The
@@ -169,21 +169,21 @@ is clean (3 files modified, no new untracked files except this status report).
 
 ### Immediate (should have been done this session)
 
-1. **Add workspace sync idempotency and replace directive audit to CHANGELOG
+1. ~~**Add workspace sync idempotency and replace directive audit to CHANGELOG
    `Added — CI hardening` section.** Currently only mentions per-module
-   isolation; missing the two new CI steps added this session.
+   isolation; missing the two new CI steps added this session.~~ done at `dc0d6f2`
 
-2. **Fix the `diff` exit-code handling in the CI idempotency check.** The
+2. ~~**Fix the `diff` exit-code handling in the CI idempotency check.** The
    `diff` command can exit 0 (same), 1 (different), or 2 (trouble). The
    current script treats exit 1 and 2 the same way, which could produce
-   misleading error messages.
+   misleading error messages.~~ done at `dc0d6f2` — explicit `rc=$?` handling added in the 07-55 session
 
-3. **Document the new CI checks in AGENTS.md.** The Commands or CI section
+3. ~~**Document the new CI checks in AGENTS.md.** The Commands or CI section
    should mention that CI verifies `go.work` idempotency and replace directive
-   paths.
+   paths.~~ done at `dc0d6f2`
 
-4. **Validate the CI YAML syntax.** Could use `yamllint` or `actionlint`
-   to validate the workflow file before pushing.
+4. ~~**Validate the CI YAML syntax.** Could use `yamllint` or `actionlint`
+   to validate the workflow file before pushing.~~ done — actionlint run clean in the 07-55 session (CI-step integration still open, routed to TODO_LIST)
 
 ### Architectural
 
@@ -192,18 +192,21 @@ is clean (3 files modified, no new untracked files except this status report).
    together, but the project has `go.work.sum` in `.gitignore`. This is a
    deliberate-looking decision (explicit commit `d8d2c9c` added both to
    `.gitignore`, then `a73a8fb` force-committed `go.work`). Needs a decision.
+   _Routed to ROADMAP.md "Open questions" (2026-08-16)._
 
 6. **The `v0.0.0` vs `v0.1.0` normalization question remains unanswered.**
    Internal module references use `v0.1.0` but the skill recommends `v0.0.0`
    to eliminate pseudo-version churn. Works fine with replace directives,
    but could be cleaner.
+   _Routed to ROADMAP.md "Open questions" (2026-08-16)._
 
 7. **The `result` symlink in project root remains.** Points to a stale Nix
    store path. Should be cleaned up or gitignored.
+   _Routed to TODO_LIST.md (2026-08-16) — `trash result` pending owner._
 
-8. **No regression guard test exists.** A simple test that imports root's
+8. ~~**No regression guard test exists.** A simple test that imports root's
    `go.mod` and asserts it does NOT contain `datastartest` would prevent
-   the circular dependency from being reintroduced.
+   the circular dependency from being reintroduced.~~ done at `fda70c7`
 
 ### Skill/Process
 
@@ -215,6 +218,7 @@ is clean (3 files modified, no new untracked files except this status report).
 10. **Status reports are accumulating in `docs/status/`** — two in the same
     day (07-27 and 07-38). Consider whether these should be consolidated or
     whether the prior one should be marked as superseded.
+    _Resolved 2026-08-16: all same-day reports inline-annotated instead; consolidation rejected to preserve point-in-time snapshots._
 
 ---
 
@@ -222,20 +226,20 @@ is clean (3 files modified, no new untracked files except this status report).
 
 ### Documentation (immediate)
 
-1. Add workspace sync idempotency and replace directive audit to CHANGELOG
-   `Added — CI hardening` section
-2. Document the new CI checks (idempotency, replace audit) in AGENTS.md
-   Commands or CI section
-3. Add module DAG diagram to AGENTS.md (text-based: static → root → datastartest)
-4. Add FEATURES.md entry for the modularization fix
-5. Mark the prior status report (07-27) as superseded by this one, or
-   consolidate them
-6. Add a `docs/modularization/README.md` index for the modularization docs
+1. ~~Add workspace sync idempotency and replace directive audit to CHANGELOG
+   `Added — CI hardening` section~~ done at `dc0d6f2`
+2. ~~Document the new CI checks (idempotency, replace audit) in AGENTS.md
+   Commands or CI section~~ done at `dc0d6f2`
+3. ~~Add module DAG diagram to AGENTS.md (text-based: static → root → datastartest)~~ done at `3cd669e` — "Module Structure" table + replace-directive notes
+4. ~~Add FEATURES.md entry for the modularization fix~~ done at `b5465f2`
+5. ~~Mark the prior status report (07-27) as superseded by this one, or
+   consolidate them~~ done — 07-27 inline-annotated 2026-08-16
+6. Add a `docs/modularization/README.md` index for the modularization docs ← open (2026-08-16)
 
 ### CI Hardening (immediate)
 
-7. Fix the `diff` exit-code handling in the workspace sync idempotency check
-8. Add `actionlint` or `yamllint` step to validate CI YAML syntax
+7. ~~Fix the `diff` exit-code handling in the workspace sync idempotency check~~ done at `dc0d6f2`
+8. Add `actionlint` or `yamllint` step to validate CI YAML syntax ← open, routed to TODO_LIST 2026-08-16
 9. Add `go mod verify` step to CI
 10. Add version drift detection script to CI
 11. Add a CI step that verifies `go.work` `use` directives match actual
@@ -260,18 +264,18 @@ is clean (3 files modified, no new untracked files except this status report).
     benchmark_test.go:92, datastartest/event.go:86, and 2 more files
 21. Fix gopls `bloop` warnings — modernize `b.N` to `b.Loop()` in
     benchmark_test.go (4 instances)
-22. Fix gopls `writestring` warnings — inefficient string concatenation in
-    reader_fuzz_test.go (3 instances)
+22. ~~Fix gopls `writestring` warnings — inefficient string concatenation in
+    reader_fuzz_test.go (3 instances)~~ done at `fd3a5ac` — `strings.Builder.WriteString` now used
 23. Fix gopls `errorsastype` hint — simplify `errors.As` in
     errors_test.go:253
 
 ### Modularization Refinement
 
 24. Evaluate `v0.0.0` vs `v0.1.0` for internal module references (needs
-    user decision)
+    user decision) ← open, routed to ROADMAP "Open questions" 2026-08-16
 25. Evaluate whether `go.work.sum` should be tracked in git (needs user
-    decision)
-26. Clean up or gitignore the `result` symlink in project root
+    decision) ← open, routed to ROADMAP "Open questions" 2026-08-16
+26. Clean up or gitignore the `result` symlink in project root ← open, routed to TODO_LIST 2026-08-16
 27. Consider whether `static/` should have a go.sum file preemptively
 28. Evaluate whether `example/` should get its own go.mod
 29. Review `response_test.go` — it imports `static` directly; verify this
@@ -279,41 +283,41 @@ is clean (3 files modified, no new untracked files except this status report).
 
 ### Pre-Publish
 
-30. Create git tags for v0.1.0 release
-31. Test consumer experience: `go get github.com/larsartmann/go-datastar`
-    should NOT pull datastartest
-32. Test consumer experience: `go get github.com/larsartmann/go-datastar/datastartest`
-    should work
-33. Test consumer experience: `go get github.com/larsartmann/go-datastar/static`
-    should work
-34. Verify GOPROXY resolution works
-35. Run `go mod verify` on all 3 modules
-36. Consider adding `//deprecated` comments to old import paths if any
-    changed
+30. ~~Create git tags for v0.1.0 release~~ done — v0.1.0 tagged 2026-08-10 (and v0.2.0 since)
+31. ~~Test consumer experience: `go get github.com/larsartmann/go-datastar`
+    should NOT pull datastartest~~ done — root has no datastartest require
+32. ~~Test consumer experience: `go get github.com/larsartmann/go-datastar/datastartest`
+    should work~~ done — datastartest tagged v0.1.0/v0.2.0
+33. ~~Test consumer experience: `go get github.com/larsartmann/go-datastar/static`
+    should work~~ done — static tagged v0.1.0/v0.2.0
+34. ~~Verify GOPROXY resolution works~~ done — v0.1.0/v0.2.0 resolve via the module proxy
+35. ~~Run `go mod verify` on all 3 modules~~ done — verified in the 08-13 02:58 session (and again 2026-08-16)
+36. ~~Consider adding `//deprecated` comments to old import paths if any
+    changed~~ Won't implement — no import paths changed
 
 ### Nix/Build
 
 37. Add per-module Nix checks (`hermeticCheckStatic`,
-    `hermeticCheckDatastartest`) as the flake.nix TODO mentions
+    `hermeticCheckDatastartest`) as the flake.nix TODO mentions ← open, routed to TODO_LIST 2026-08-16
 38. Run `nix flake check` to verify the flake is healthy
-39. Consider adding `nix run .#erraudit` and `nix run .#govulncheck` to CI
+39. ~~Consider adding `nix run .#erraudit` and `nix run .#govulncheck` to CI~~ done at `eb8bf29` — both are CI jobs
 40. Consider adding a `nix run .#coverage` output that merges coverage
-    across all 3 modules
-41. Update the flake.nix `vendorHash` if go.sum changes in the future
+    across all 3 modules ← open, routed to TODO_LIST 2026-08-16
+41. ~~Update the flake.nix `vendorHash` if go.sum changes in the future~~ done — maintained routinely (e.g. `5b70bb1`)
 
 ### Architecture
 
 42. Consider whether `datastartest` should export a `NewResponse` helper for
     test ergonomics
-43. Evaluate whether `datastartest` should have a `CollectWithOptions` for
-    custom headers
+43. ~~Evaluate whether `datastartest` should have a `CollectWithOptions` for
+    custom headers~~ done at `06bb019` — every Collect* now takes `...RequestOption` (`WithHeader` et al.)
 44. Consider adding a `datastartest.RequireEventOrder` helper for ordered
     event assertions
 45. Review whether `datastartest/search.go` is needed
 46. Consider whether `static/` should export a `Version` constant AND a
     `Version()` function (currently both exist)
-47. Add a pre-commit hook that warns if root go.mod gains a datastartest
-    require
+47. ~~Add a pre-commit hook that warns if root go.mod gains a datastartest
+    require~~ superseded by `fda70c7` — test-level guard runs in CI on every push
 
 ### Process
 
@@ -322,7 +326,7 @@ is clean (3 files modified, no new untracked files except this status report).
 49. Enforce Phase 7 documentation checklist more strongly in the
     go-modularize skill
 50. Consider adding a `CONTRIBUTING.md` section on the multi-module
-    architecture for new contributors
+    architecture for new contributors ← open, routed to TODO_LIST 2026-08-16
 
 ---
 
@@ -341,6 +345,8 @@ correct and nothing needs to change. This affects reproducibility of
 `GOWORK=off` builds — without `go.work.sum`, a fresh clone may not have
 checksums for workspace-local module replacements.
 
+_Routed to ROADMAP.md "Open questions" (2026-08-16) — still awaiting an owner decision._
+
 ### 2. Should internal module references use `v0.0.0` instead of `v0.1.0`?
 
 The real-world-patterns.md recommends `v0.0.0` for all internal sibling
@@ -353,6 +359,8 @@ removed. Should we normalize to `v0.0.0` as the skill recommends, or keep
 `v0.1.0` since it works and is already in place? This is a style/robustness
 decision that doesn't affect current behavior.
 
+_Routed to ROADMAP.md "Open questions" (2026-08-16) — still awaiting an owner decision._
+
 ### 3. Is the `result` symlink in the project root intentional or stale?
 
 The project root contains a symlink: `result -> /nix/store/s2g7l4i6...`.
@@ -363,3 +371,5 @@ behavior from the Nix build system (some setups leave `result` symlinks) or
 if it should be cleaned up. If it should be cleaned up, it should also be
 added to `.gitignore` to prevent future occurrences. If it's intentional
 (e.g., used by a Nix script), it should be documented.
+
+_Routed to TODO_LIST.md (2026-08-16) — `trash result` pending owner; `.gitignore` already covers it._

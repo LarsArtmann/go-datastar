@@ -66,17 +66,36 @@ hunks; only edited non-overlapping sections; their flaky test
 (`TestCollect_WithLastEventID_HeaderArrives`, fails only under full-suite
 parallel load, passes 3× in isolation) left untouched and reported, not "fixed".
 
+### 6. Continuation session (same day): finished the backlog + found the CI red root causes
+
+- Annotated the 5 remaining reports (07-27, 07-38, 07-55, 08-13 ×2) plus the
+  parallel session's fresh 07-52 report, and archived the pareto plan
+  (`docs/planning/archived/`) with a resolution appendix.
+- Diagnosed the red CI runs (31931262532, 31930879269): the govulncheck job
+  fails on **4 stdlib vulnerabilities in go1.26.5, all fixed in go1.26.6**
+  (GO-2026-5972, GO-2026-6089, GO-2026-6090, GO-2026-6218 — reachable via
+  `datastartest` HTTP helpers and the example's server); the erraudit job's
+  `Install erraudit` step fails because the erraudit repo is private.
+  Test/lint jobs pass. Both routed to TODO_LIST as new High/Low items; the
+  toolchain bump also feeds the BLOCKED go-directive question.
+- Re-ran the full gate: build/vet/race-test/lint 0 issues, `go mod verify`
+  all modules, replace audit clean, `GOWORK=off` isolation green per module,
+  `go work sync` idempotent.
+
 ---
 
 ## b) PARTIALLY DONE
 
-### 1. Five historical files remain unannotated
+### 1. ~~Five historical files remain unannotated~~
 
 07-27 (modularize review), 07-38 (documentation cleanup), 07-55 (CI hardening),
 08-13 02-58 (go-sse bump review), 08-13 03-25 (follow-up), plus the pareto
 plan. Their resolution status is fully analyzed (in session memory and mirrored
 in the corrected living docs), but the inline strikethrough pass hasn't been
 applied yet.
+
+_Done in the continuation session (08:47): all five annotated inline, plus the
+parallel session's 07-52 report; every numbered item resolved or routed._
 
 ### 2. go.mod lowering applied and then abandoned
 
@@ -86,20 +105,25 @@ idempotency — then the parallel session's tooling restored 1.26.5 in
 go.mod/go.work. Reverted my static/go.mod change to match their state and
 routed the whole question to TODO_LIST/ROADMAP instead of ping-ponging.
 
-### 3. No archives performed
+### 3. ~~No archives performed~~
 
-No file qualified for `archived/` yet (every report still has genuinely open
+~~No file qualified for `archived/` yet (every report still has genuinely open
 ROADMAP-routed items). The pareto plan is the sole candidate once its T15
-(reverted-by-design markdown formatter) gets a closing note.
+(reverted-by-design markdown formatter) gets a closing note.~~ Done — the
+pareto plan is archived at `docs/planning/archived/` with a Resolution appendix;
+still-open residue is routed to TODO_LIST/ROADMAP.
 
 ---
 
 ## c) NOT STARTED
 
-1. Final quality-gate run after all edits (build/vet/test/lint were green
-   mid-session, before the markdown annotation pass).
-2. Docs-health Accuracy/Fitness health report (the AUDIT output).
-3. Annotation of the 5 remaining files + archive step.
+1. ~~Final quality-gate run after all edits (build/vet/test/lint were green
+   mid-session, before the markdown annotation pass).~~ Done in the continuation
+   session — green (build, vet, race tests, lint 0 issues, `go mod verify`,
+   replace audit, GOWORK=off isolation, `go work sync` idempotent).
+2. ~~Docs-health Accuracy/Fitness health report (the AUDIT output).~~ Done —
+   emitted inline in the continuation session.
+3. ~~Annotation of the 5 remaining files + archive step.~~ Done.
 4. `trash result` symlink cleanup (in TODO_LIST now, needs trash CLI).
 
 ---
@@ -143,14 +167,14 @@ followed for 16 of 21 files; the grep-sourced ones bit me.
 
 ## f) Up to 8 Things We Should Get Done Next
 
-1. Annotate the 5 remaining historical reports (07-27, 07-38, 07-55, 08-13 ×2) + the pareto plan.
-2. Archive the pareto plan to `docs/planning/archived/` after its closing note.
-3. Run the full quality gate (test/vet/lint, workspace + isolation) post-edits.
-4. Emit the docs-health Accuracy/Fitness report for this audit.
-5. Resolve the go-directive decision (needs owner ruling).
+1. ~~Annotate the 5 remaining historical reports (07-27, 07-38, 07-55, 08-13 ×2) + the pareto plan.~~ done
+2. ~~Archive the pareto plan to `docs/planning/archived/` after its closing note.~~ done
+3. ~~Run the full quality gate (test/vet/lint, workspace + isolation) post-edits.~~ done — green
+4. ~~Emit the docs-health Accuracy/Fitness report for this audit.~~ done (continuation session)
+5. Resolve the go-directive decision (needs owner ruling) — now sharpened: 1.26.6 fixes the 4 stdlib CVEs failing CI
 6. Wire or remove `dprint.json`.
 7. `trash result` (stale Nix symlink).
-8. Re-verify the parallel session's flaky CollectWithLastEventID test once their WIP lands.
+8. Re-verify the parallel session's flaky CollectWithLastEventID test once their WIP lands. ← it passed in this session's full-suite race run; still worth a stabilization pass in the owning session
 
 ---
 
@@ -163,3 +187,6 @@ followed for 16 of 21 files; the grep-sourced ones bit me.
    commit both; this repo deliberately commits only `go.work`.
 3. **Sibling requires: `v0.0.0` or real versions?** Replace directives make it
    moot locally; the skill recommends `v0.0.0` to avoid pseudo-version churn.
+
+_(All three questions stand; all three are also recorded in ROADMAP.md "Open
+questions" and TODO_LIST.md so they survive this report.)_
