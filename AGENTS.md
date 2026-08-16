@@ -142,6 +142,22 @@ These behaviors reproduce the upstream SDK exactly:
 - `dprint.json` exists in the repo root but is NOT wired into treefmt/flake —
   canonical formatting is treefmt (gofumpt/goimports/golines/nixfmt) via
   `nix flake check`.
+- `origin/master` is protected: 4 required status checks (test, lint,
+  actionlint, govulncheck), enforced for admins, no force pushes, and merge
+  commits ARE allowed (linear history not required). A direct `git push` to
+  master fails with GH006. Land local master commits via a PR merged with a
+  merge commit, which preserves the original SHAs so open PRs that share
+  those commits recalibrate cleanly.
+- Multiple crush sessions share this checkout, plus an auto-commit daemon
+  that commits dirty files to whatever branch is checked out. Branch tips
+  can move or lose commits at any moment (for example a hard reset by a
+  parallel session). Re-verify with `git log` and `git reflog <branch>`
+  before and after every git operation, and quarantine work in a
+  `git worktree` outside the main checkout.
+- `git town` (v24) manages syncs. A failed `git sync` (for example a blocked
+  master push) leaves an unfinished run: check `git town status`, then
+  `git town skip` to finish without the failing step (the checkout may end
+  on another branch of the stack) or `git town continue` to retry.
 
 ## Error System
 
