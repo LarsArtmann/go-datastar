@@ -4,7 +4,7 @@ DataStar protocol library for Go. Patches as first-class values producing `sse.E
 
 ## Module Structure
 
-Three Go modules in a go.work workspace:
+Three Go modules in a go.work workspace (rationale and rules: [ADR 002](docs/adr/002-multi-module-split.md)):
 
 | Module | Path | Purpose | Dependencies |
 | --- | --- | --- | --- |
