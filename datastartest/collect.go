@@ -8,8 +8,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-
-	errorfamily "github.com/larsartmann/go-error-family"
 )
 
 // Collect starts a test server for the handler, sends a GET request, reads the
@@ -190,42 +188,4 @@ func doRequest(
 	}
 
 	return resp
-}
-
-// ReadNEvents reads up to count events from r. Returns as soon as count events
-// have been dispatched, without waiting for EOF. This is the streaming-reader
-// counterpart to [ReadEvents]: use it with a live SSE connection body that does
-// not close on its own (e.g., a handler broadcasting through a Broadcaster).
-//
-// Wire-format semantics are identical to [ReadEvents] (spec § 9.2.6), except
-// that reading stops early: a frame still pending when count is reached is
-// naturally discarded, as is a frame pending at EOF.
-//
-// A scanner error after events have been collected is treated as a clean
-// connection close, not a failure.
-func ReadNEvents(r io.Reader, count int) ([]Event, error) {
-	if count <= 0 {
-		return nil, nil
-	}
-
-	parser := streamParser{}
-	scanner := newSSEScanner(r)
-
-	for scanner.Scan() {
-		parser.acceptLine(scanner.Text())
-
-		if len(parser.events) >= count {
-			return parser.events, nil
-		}
-	}
-
-	if err := scanner.Err(); err != nil {
-		if len(parser.events) > 0 {
-			return parser.events, nil
-		}
-
-		return nil, errorfamily.WrapTransient(err, CodeSSEScanFailed, "scan SSE stream")
-	}
-
-	return parser.events, nil
 }
