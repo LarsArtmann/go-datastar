@@ -150,6 +150,8 @@ func eventsHandler(broadcaster *sse.Broadcaster[sse.Event]) http.HandlerFunc {
 		events := broadcaster.Subscribe()
 		defer broadcaster.Unsubscribe(events)
 
+		go stream.Heartbeat(request.Context(), 15*time.Second)
+
 		for {
 			select {
 			case <-request.Context().Done():
