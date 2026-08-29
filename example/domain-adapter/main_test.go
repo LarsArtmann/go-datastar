@@ -1,12 +1,13 @@
 package main
 
 import (
+	"io"
 	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-datastar"
-	"github.com/larsartmann/go-datastar/datastartest"
 	"github.com/larsartmann/go-sse"
 )
 
@@ -66,9 +67,10 @@ type unknownEvent struct{}
 
 func (unknownEvent) EventName() string { return "unknown" }
 
-// TestPostHandler_E2E exercises the transport through a real HTTP server:
-// POST a domain event, then confirm the SSE feed renders it.
-func TestPostHandler_E2E(t *testing.T) {
+// TestStreamE2E exercises the transport through a real HTTP server and reads
+// the raw SSE body — no datastartest dependency (the root module must never
+// require datastartest; see module_boundary_test.go in the root).
+func TestStreamE2E(t *testing.T) {
 	t.Parallel()
 
 	patches, err := Bridge(UserPosted{User: "bob", Message: "from test", Seq: 1})
@@ -89,9 +91,40 @@ func TestPostHandler_E2E(t *testing.T) {
 		}
 	})
 
-	events := datastartest.Collect(t, handler)
+	server := httptest.NewServer(handler)
+	defer server.Close()
 
-	datastartest.RequireEventCount(t, events, 2)
-	datastartest.RequireElements(t, events[0], "#feed", "append",
-		`<div class="post" data-post-seq="1"><strong>bob</strong> from test</div>`)
+	req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, server.URL, nil)
+	if err != nil {
+		t.Fatalf("request: %v", err)
+	}
+
+	res, err := server.Client().Do(req)
+	if err != nil {
+		t.Fatalf("GET: %v", err)
+	}
+
+	defer func() { _ = res.Body.Close() }()
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		t.Fatalf("read body: %v", err)
+	}
+
+	text := string(body)
+	if !strings.Contains(text, "event: datastar-patch-elements") {
+		t.Errorf("stream should contain element event; got:\n%s", text)
+	}
+
+	if !strings.Contains(text, "selector #feed") {
+		t.Errorf("stream should target #feed; got:\n%s", text)
+	}
+
+	if !strings.Contains(text, `<strong>bob</strong> from test`) {
+		t.Errorf("stream should contain the rendered post; got:\n%s", text)
+	}
+
+	if !strings.Contains(text, `"lastSeq":1`) {
+		t.Errorf("stream should contain the signals patch; got:\n%s", text)
+	}
 }

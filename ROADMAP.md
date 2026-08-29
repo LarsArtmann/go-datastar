@@ -126,10 +126,10 @@ Things we are deliberately NOT pursuing and why:
   directives make versions irrelevant locally, but a consumer testing without
   replaces must resolve to a real published module. `go mod tidy` already
   emits the correct published versions (e.g., v0.2.0). Documented in AGENTS.md.
-- **`go` directive policy (decided 2026-08-16, Full Execution Mode):**
-  directives pin the exact patch release — `go 1.26.6` across go.mod ×3,
-  go.work, and the CI `go-version`, clearing stdlib CVEs GO-2026-5972,
-  GO-2026-6089, GO-2026-6090, GO-2026-6218 and superseding the v0.0.2/v0.0.3
+- **`go` directive policy (decided 2026-08-16, updated 2026-08-29):**
+  directives pin the exact patch release — now `go 1.26.7` across go.mod ×3,
+  go.work, CI `go-version`, and the flake pin, clearing the four 1.26.6-era
+  stdlib CVEs (GO-2026-5972/6089/6090/6218) and superseding the v0.0.2/v0.0.3
   "lowered to `go 1.26`" CHANGELOG ghost. Nix stays hermetic through a
   `go_1_26.overrideAttrs` pin (marked TODO for removal) until nixpkgs ships
-  ≥ 1.26.6.
+  ≥ 1.26.7.

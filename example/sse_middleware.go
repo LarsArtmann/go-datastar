@@ -2,6 +2,7 @@ package main
 
 import (
 	"compress/gzip"
+	"fmt"
 	"net/http"
 	"strings"
 )
@@ -20,22 +21,22 @@ import (
 //     compressed responses to uncompressed clients;
 //   - leave text/event-stream negotiation to the handler.
 func gzipSSEMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return http.HandlerFunc(func(writer http.ResponseWriter, r *http.Request) {
 		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
-			next.ServeHTTP(w, r)
+			next.ServeHTTP(writer, r)
 
 			return
 		}
 
-		gz := gzip.NewWriter(w)
-		defer func() { _ = gz.Close() }()
+		compressor := gzip.NewWriter(writer)
+		defer func() { _ = compressor.Close() }()
 
-		header := w.Header()
+		header := writer.Header()
 		header.Del("Content-Length")
 		header.Set("Content-Encoding", "gzip")
 		header.Add("Vary", "Accept-Encoding")
 
-		next.ServeHTTP(&gzipSSEWriter{ResponseWriter: w, gz: gz}, r)
+		next.ServeHTTP(&gzipSSEWriter{ResponseWriter: writer, gz: compressor}, r)
 	})
 }
 
@@ -43,19 +44,25 @@ func gzipSSEMiddleware(next http.Handler) http.Handler {
 // instead of buffering until the handler returns.
 type gzipSSEWriter struct {
 	http.ResponseWriter
+
 	gz *gzip.Writer
 }
 
-func (w *gzipSSEWriter) Write(p []byte) (int, error) {
-	return w.gz.Write(p)
+func (writer *gzipSSEWriter) Write(p []byte) (int, error) {
+	n, err := writer.gz.Write(p)
+	if err != nil {
+		return n, fmt.Errorf("gzip write: %w", err)
+	}
+
+	return n, nil
 }
 
-func (w *gzipSSEWriter) Flush() {
-	if err := w.gz.Flush(); err != nil {
+func (writer *gzipSSEWriter) Flush() {
+	if err := writer.gz.Flush(); err != nil {
 		return
 	}
 
-	if flusher, ok := w.ResponseWriter.(http.Flusher); ok {
+	if flusher, ok := writer.ResponseWriter.(http.Flusher); ok {
 		flusher.Flush()
 	}
 }

@@ -26,7 +26,7 @@ func TestGzipSSEMiddleware(t *testing.T) {
 		}
 	}))
 
-	req := httptest.NewRequest(http.MethodGet, "/events", nil)
+	req := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/events", nil)
 	req.Header.Set("Accept-Encoding", "gzip")
 
 	rec := httptest.NewRecorder()
@@ -65,7 +65,7 @@ func TestGzipSSEMiddleware_PassthroughWithoutAcceptEncoding(t *testing.T) {
 		}
 	}))
 
-	req := httptest.NewRequest(http.MethodGet, "/events", nil)
+	req := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/events", nil)
 
 	rec := httptest.NewRecorder()
 	handler.ServeHTTP(rec, req)

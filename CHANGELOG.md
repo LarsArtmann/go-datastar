@@ -7,6 +7,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`ReplaceURLQuerystring`** — upstream-parity convenience
+  (`NewReplaceURLQuerystringPatch` + `Response.ReplaceURLQuerystring`):
+  replaces the browser URL's query string with the encoded values while
+  preserving the request path, mirroring the upstream SDK's semantics
+  (`url.Values.Encode()` key sorting, fragment dropped). Removes a documented
+  parity gap from the README's "where the official SDK wins" table.
+- `wire_golden_test.go` — `TestPatchWireGoldens` pins the exact SSE wire bytes of every patch family (elements with all options, signals with `onlyIfMissing`, script with attributes/autoRemove, redirect/console-log sugar, custom-event dispatch): event names, data-line keys and ordering, default-value elision, `id:`/`retry:` placement, and the one-`data:`-line-per-source-line splitting for multi-line payloads. A change to any golden is a wire-format change — make it deliberately, against the DataStar SDK, and record it here.
+
+### Added — documentation
+
+- **Consumer guide set under `docs/`**: `replay.md` (MemoryStore +
+  Last-Event-ID reconnection), `error-system.md` (the three matching
+  dimensions), `wire-format.md` (annotated datalines per patch family),
+  `testing.md` (datastartest quick start, fuzzing, coverage story),
+  `performance.md` (measured benchmark table), `migration-guide.md`
+  (v0.2.0 → v0.3.0), and `static-js.md` (embedded JS pinning and upgrade
+  process).
+- **ADRs 003–006**: error classification (go-error-family only, never
+  samber/oops), hermetic Nix checks and where the line is drawn, coverage
+  strategy (badged, not gated), and the formatter decision (treefmt
+  canonical, dprint.json as non-Go intent).
+- `docs/status/README.md` — navigation index for the point-in-time reports,
+  with the archiving policy.
+
+### Added — examples and CI
+
+- **`example/domain-adapter/`** — a miniature EventBridge: domain events →
+  `[]Patch` values → broadcaster + MemoryStore, E2E-tested with datastartest.
+- **`example/sse_middleware.go`** — gzip SSE compression middleware with
+  per-event flushing (the recommended alternative to in-library
+  compression), tested.
+- **`example/README.md`, `Dockerfile`, `docker-compose.yml`** — the demo now
+  documents its heartbeat keep-alive and runs from one command.
+- **`nix.yml`** — the hermetic `nix flake check` gate runs on CI
+  (non-required until stable); **`fuzz.yml`** schedules daily 60s fuzz runs
+  with crash-artifact upload; **`codeql.yml`** adds Go security scanning;
+  **`renovate.json`** proposes embedded-JS-client bumps from upstream
+  releases; the lint job caches golangci-lint's analysis cache; docs-only
+  changes skip the code gates (paths filters) while `actionlint.yml` still
+  validates workflows on every push.
+- **`nix run .#bench`** plus committed `datastartest` benchmarks for the
+  Collect round trip and the raw parser floor.
+- **Typed script accessors in datastartest** (`RedirectURL`,
+  `CustomEventName`, `CustomEventDetail`, `UnmarshalCustomEventDetail`,
+  `ScriptAttributes`) for intent-level assertions, with the new
+  `datastartest.custom_event_detail_unmarshal_failed` code.
+
 ## [0.3.0] - 2026-08-29
 
 ### Changed
