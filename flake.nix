@@ -37,26 +37,26 @@
           ...
         }:
         let
-          # TODO(go-1.26.6): drop this override when nixpkgs ships go_1_26 >= 1.26.6.
-          # The go.mod directives pin 1.26.6 to clear stdlib CVEs
+          # TODO(go-1.26.7): drop this override when nixpkgs ships go_1_26 >= 1.26.7.
+          # The go.mod directives pin 1.26.7 to clear stdlib CVEs
           # (GO-2026-5972/6089/6090/6218) and GOTOOLCHAIN=local forbids
           # auto-downloading a newer toolchain in hermetic builds.
           goPkg = pkgs.go_1_26.overrideAttrs (_old: rec {
-            version = "1.26.6";
+            version = "1.26.7";
             src = pkgs.fetchurl {
               url = "https://go.dev/dl/go${version}.src.tar.gz";
-              hash = "sha256-oHIcVMaIkBRI13rZs+x+p8R0cwdV/4kTgukuy5P/LLE=";
+              hash = "sha256-DtJOrHVRBQhbif6cq8J0K5GgrXuUtZ0602SRjryJVq0=";
             };
           });
           buildGoModule = pkgs.buildGoModule.override { go = goPkg; };
           version = self.rev or self.dirtyRev or "dev";
-          # go1.26.6's `go mod vendor` output differs from 1.26.5's (modules.txt
+          # go1.26.6+ `go mod vendor` output differs from 1.26.5's (modules.txt
           # format), and the hash covers module-mode (GOWORK=off) downloads —
           # both moved it from earlier values.
-          vendorHash = "sha256-J/VAO5/gm/2UJ2KPp0fhM45sXKFyTmkpYbWPoLiAukw=";
+          vendorHash = "sha256-X9xB6/Spsqq3dMUGxMyUzFTBHcHzMP8ZggsjbKlYEZw=";
           # datastartest vendors root + static via local replaces plus its own
           # public deps, so its module set hashes differently from the root's.
-          datastartestVendorHash = "sha256-/zpQvhbzQtvJISPdwN+VK7scNwa6441qLs3oYBVvbv4=";
+          datastartestVendorHash = "sha256-nkJghgIGscnmhUwotMdGAQXak0MirqmWIGS1uM+JVv0=";
 
           maintainer = {
             name = "Lars Artmann";

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Go directives pinned to 1.26.7 across all modules** (go.mod ×3, go.work,
+  CI `go-version` ×6) and the Nix flake `go_1_26` pin re-pointed at the
+  go1.26.7 source tarball with re-discovered vendor hashes (the patch bump
+  moves the module-set hash). Consumers must use Go ≥ 1.26.7.
+
 ### Added — datastartest
 
 - **Request options on every `Collect*` helper** — `WithPath` (target a mux

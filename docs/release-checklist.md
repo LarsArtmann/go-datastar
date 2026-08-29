@@ -5,11 +5,11 @@ Steps to cut a new go-datastar release. All three modules tag in lockstep
 
 ## 1. Pre-release verification
 
-- [ ] `GOTOOLCHAIN=go1.26.6 GOEXPERIMENT=jsonv2 go test ./... ./datastartest/... ./static/... -race -count=1` — all green
-- [ ] `GOTOOLCHAIN=go1.26.6 GOEXPERIMENT=jsonv2 go vet ./... ./datastartest/... ./static/...` — clean
-- [ ] `GOTOOLCHAIN=go1.26.6 GOEXPERIMENT=jsonv2 golangci-lint run ./... ./datastartest/... ./static/...` — 0 issues
+- [ ] `GOTOOLCHAIN=go1.26.7 GOEXPERIMENT=jsonv2 go test ./... ./datastartest/... ./static/... -race -count=1` — all green
+- [ ] `GOTOOLCHAIN=go1.26.7 GOEXPERIMENT=jsonv2 go vet ./... ./datastartest/... ./static/...` — clean
+- [ ] `GOTOOLCHAIN=go1.26.7 GOEXPERIMENT=jsonv2 golangci-lint run ./... ./datastartest/... ./static/...` — 0 issues
 - [ ] `nix flake check` — all checks passed
-- [ ] `GOTOOLCHAIN=go1.26.6 GOEXPERIMENT=jsonv2 go work sync` — go.work unchanged (idempotency)
+- [ ] `GOTOOLCHAIN=go1.26.7 GOEXPERIMENT=jsonv2 go work sync` — go.work unchanged (idempotency)
 - [ ] Per-module isolation (`GOWORK=off`) build + test for all 3 modules
 - [ ] `grep -rn 'replace.*=>/' go.mod datastartest/go.mod static/go.mod` — finds nothing (relative paths only)
 - [ ] `nix run .#govulncheck` — No vulnerabilities found
