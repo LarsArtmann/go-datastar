@@ -1,0 +1,52 @@
+name: fuzz
+
+# Short scheduled fuzz runs keep the parsers exercised between human
+# sessions. Seed corpora are committed (testdata/fuzz/**), so crashes found
+# here become permanent regression seeds; any NEW crash input is uploaded as
+# an artifact before the job fails.
+
+on:
+  schedule:
+    - cron: "17 3 * * *" # daily, off the busy minute marks
+  workflow_dispatch: {}
+
+env:
+  GOEXPERIMENT: jsonv2
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: .
+            target: FuzzReadSignals
+          - module: .
+            target: FuzzMarshalSignalsRoundtrip
+          - module: datastartest
+            target: FuzzReadEvents
+          - module: datastartest
+            target: FuzzUnmarshalSignals
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version: "1.26.7"
+
+      - name: Fuzz ${{ matrix.target }} (60s)
+        id: fuzz
+        working-directory: ${{ matrix.module }}
+        run: |
+          go test -run '^$' -fuzz '^${{ matrix.target }}$' -fuzztime 60s .
+
+      - name: Upload crash corpus on failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fuzz-crash-${{ matrix.target }}
+          path: |
+            ${{ matrix.module }}/testdata/fuzz/${{ matrix.target }}/
+          if-no-files-found: ignore

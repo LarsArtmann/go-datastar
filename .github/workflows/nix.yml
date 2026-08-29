@@ -42,5 +42,5 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Nix flake check (hermetic: 3 Go modules + format)
+      - name: "Nix flake check (hermetic: 3 Go modules + format)"
         run: nix flake check

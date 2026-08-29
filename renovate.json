@@ -1,0 +1,20 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":disableDependencyDashboard"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Bump the embedded DataStar JS client when starfederation/datastar releases a new client version",
+      "fileMatch": ["^static/static\\.go$"],
+      "matchStrings": [
+        "Version\\s*=\\s*\"(?<currentValue>[^\"]+)\""
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "starfederation/datastar",
+      "extractVersionTemplate": "^v?(?<version>.*)$"
+    }
+  ]
+}
