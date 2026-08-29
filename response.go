@@ -137,6 +137,17 @@ func (r *Response) ReplaceURL(u url.URL, opts ...ScriptPatchOption) error {
 	return wrapStreamError(r.stream.Send(NewReplaceURLPatch(u, opts...).Event()))
 }
 
+// ReplaceURLQuerystring replaces the browser URL's query string with the
+// encoded values, preserving the request's path (upstream-parity
+// convenience over [NewReplaceURLQuerystringPatch]).
+func (r *Response) ReplaceURLQuerystring(
+	req *http.Request,
+	values url.Values,
+	opts ...ScriptPatchOption,
+) error {
+	return wrapStreamError(r.stream.Send(NewReplaceURLQuerystringPatch(req, values, opts...).Event()))
+}
+
 // Prefetch sends a speculation rules [ScriptPatch] to prefetch the given URLs.
 func (r *Response) Prefetch(urls ...string) error {
 	return wrapStreamError(r.stream.Send(NewPrefetchPatch(urls...).Event()))

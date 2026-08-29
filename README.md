@@ -67,7 +67,6 @@ Both libraries emit the exact same DataStar wire format. The difference is what 
 Honesty first:
 
 - **Built-in SSE compression** — gzip, Brotli, Zstd, and Deflate with client- or server-priority negotiation. go-datastar leaves compression to middleware.
-- **`ReplaceURLQuerystring`** — merges query params into the current URL. go-datastar only has `ReplaceURL`.
 - **Fewer environment constraints** — works on Go 1.24+ with standard tooling. go-datastar requires Go 1.26.7+ and `GOEXPERIMENT=jsonv2` (transitive, via go-sse).
 - **First-party cadence** — the reference implementation, tracking DataStar client releases day one.
 

@@ -1,6 +1,9 @@
 package datastar_test
 
 import (
+	"context"
+	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"strings"
 	"testing"
@@ -142,6 +145,44 @@ func TestNewReplaceURLPatch(t *testing.T) {
 		`window.history.replaceState({}, "", "https://example.com/new")`,
 	) {
 		t.Errorf("should contain replaceState; got %q", got.Data)
+	}
+}
+
+func TestNewReplaceURLQuerystringPatch(t *testing.T) {
+	t.Parallel()
+
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/search?q=old#frag", nil)
+	values := url.Values{"q": {"new"}, "page": {"2"}}
+	patch := datastar.NewReplaceURLQuerystringPatch(req, values)
+	got := patch.Event()
+
+	// Path is preserved, query replaced (url.Values.Encode sorts keys),
+	// fragment dropped — mirroring upstream ReplaceURLQuerystring semantics.
+	if !strings.Contains(
+		got.Data,
+		`window.history.replaceState({}, "", "/search?page=2&q=new")`,
+	) {
+		t.Errorf("should contain replaceState with new query; got %q", got.Data)
+	}
+}
+
+func TestNewReplaceURLQuerystringPatch_ParityWireFormat(t *testing.T) {
+	t.Parallel()
+
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/search?q=old", nil)
+	patch := datastar.NewReplaceURLQuerystringPatch(req, url.Values{"q": {"new"}})
+	got := patch.Event()
+
+	// Parity item 5: script patches always append to selector body.
+	for _, want := range []string{"selector body", "mode append"} {
+		if !strings.Contains(got.Data, want) {
+			t.Errorf("wire format should contain %q; got %q", want, got.Data)
+		}
+	}
+
+	// Parity item 4: default AutoRemove (nil) adds the data-effect attribute.
+	if !strings.Contains(got.Data, `data-effect="el.remove()"`) {
+		t.Errorf("should contain auto-remove effect; got %q", got.Data)
 	}
 }
 

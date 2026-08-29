@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 
 	"github.com/larsartmann/go-datastar"
@@ -33,6 +34,20 @@ func ExampleSignalsPatch() {
 	fmt.Println(patch.Event().Data)
 	// Output:
 	// signals {"count":1}
+}
+
+// ExampleNewReplaceURLQuerystringPatch replaces the browser URL's query
+// string while preserving the request path (upstream-parity convenience).
+func ExampleNewReplaceURLQuerystringPatch() {
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/items?filter=old", nil)
+
+	patch := datastar.NewReplaceURLQuerystringPatch(req, url.Values{"filter": {"new"}})
+
+	fmt.Println(patch.Event().Data)
+	// Output:
+	// selector body
+	// mode append
+	// elements <script data-effect="el.remove()">window.history.replaceState({}, "", "/items?filter=new")</script>
 }
 
 // ExampleReadSignals demonstrates extracting signals from an inbound request body.

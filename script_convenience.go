@@ -3,6 +3,7 @@ package datastar
 import (
 	"encoding/json/v2"
 	"fmt"
+	"net/http"
 	"net/url"
 	"strings"
 
@@ -174,6 +175,22 @@ func NewReplaceURLPatch(u url.URL, opts ...ScriptPatchOption) ScriptPatch {
 	js := fmt.Sprintf(`window.history.replaceState({}, "", %q)`, u.String())
 
 	return NewScriptPatch(js, opts...)
+}
+
+// NewReplaceURLQuerystringPatch creates a [ScriptPatch] that replaces the
+// browser URL's query string with the encoded values, preserving the
+// request's path. It mirrors the upstream SDK's ReplaceURLQuerystring:
+// the request URL is cloned, RawQuery is set from values.Encode(), and the
+// result is sent through [NewReplaceURLPatch].
+func NewReplaceURLQuerystringPatch(
+	r *http.Request,
+	values url.Values,
+	opts ...ScriptPatchOption,
+) ScriptPatch {
+	u := *r.URL
+	u.RawQuery = values.Encode()
+
+	return NewReplaceURLPatch(u, opts...)
 }
 
 // NewPrefetchPatch creates a [ScriptPatch] that injects a speculation rules

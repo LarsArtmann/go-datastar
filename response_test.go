@@ -303,6 +303,18 @@ func TestResponse_Actions(t *testing.T) {
 			assert: assertContains("mode remove"),
 		},
 		{
+			name: "ReplaceURLQuerystring",
+			run: func(s *sse.Stream) error {
+				req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/search?q=old", nil)
+
+				return datastar.NewResponse(s).
+					ReplaceURLQuerystring(req, url.Values{"q": {"new"}, "page": {"2"}})
+			},
+			assert: assertContains(
+				`window.history.replaceState({}, "", "/search?page=2&q=new")`,
+			),
+		},
+		{
 			name: "ApplyPatches",
 			run: func(s *sse.Stream) error {
 				return datastar.NewResponse(s).ApplyPatches(
