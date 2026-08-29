@@ -98,6 +98,31 @@ All three modules version in lockstep from one commit: tag `vX.Y.Z` (root),
 versions in `require` blocks; the replaces are local-only conveniences and
 never ship.
 
+## Fuzzing
+
+Four fuzz targets guard the parsers and serializers. Their seed corpora are
+committed, so every regular `go test` run replays them as regression cases;
+`-fuzz` explores beyond the seeds.
+
+| Target | Module | What it shakes out |
+| ------ | ------ | ------------------ |
+| `FuzzReadSignals` | root | `ReadSignals` request-body parsing (malformed JSON, closed bodies) |
+| `FuzzMarshalSignalsRoundtrip` | root | signals marshal → unmarshal roundtrip stability |
+| `FuzzReadEvents` | `datastartest` | SSE wire-format parser conformance (51-seed corpus in `testdata/fuzz/FuzzReadEvents/`) |
+| `FuzzUnmarshalSignals` | `datastartest` | dataline signals decoding |
+
+Quick smoke (30 seconds, per module — fuzzing runs one target at a time):
+
+```bash
+GOEXPERIMENT=jsonv2 go test -run '^$' -fuzz '^FuzzReadSignals$' -fuzztime 30s .
+(cd datastartest && GOEXPERIMENT=jsonv2 go test -run '^$' -fuzz '^FuzzReadEvents$' -fuzztime 30s .)
+```
+
+On a crash, Go writes the failing input to `testdata/fuzz/<FuzzName>/` as a
+new seed — commit it so the regression is replayed by every future `go test`
+run. The seeds are intentionally portable across checkouts; do not gitignore
+them.
+
 ## Reporting Issues
 
 Please use GitHub Issues to report bugs or request features.

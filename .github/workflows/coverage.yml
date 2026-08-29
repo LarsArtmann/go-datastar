@@ -11,6 +11,16 @@ name: coverage
 on:
   push:
     branches: [master]
+    paths:
+      - "**.go"
+      - "**.templ"
+      - "go.mod"
+      - "go.sum"
+      - "go.work"
+      - "go.work.sum"
+      - ".github/workflows/coverage.yml"
+      - "static/datastar.js"
+      - "datastartest/testdata/**"
 
 env:
   GOEXPERIMENT: jsonv2

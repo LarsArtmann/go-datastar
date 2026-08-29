@@ -3,8 +3,39 @@ name: CI
 on:
   push:
     branches: [main, master]
+    paths:
+      - "**.go"
+      - "**.templ"
+      - "**.nix"
+      - "go.mod"
+      - "go.sum"
+      - "go.work"
+      - "go.work.sum"
+      - ".golangci.yml"
+      - "flake.lock"
+      - ".github/workflows/ci.yml"
+      - "static/datastar.js"
+      - "datastartest/testdata/**"
+      - "**.golden"
   pull_request:
     branches: [main, master]
+    paths:
+      - "**.go"
+      - "**.templ"
+      - "**.nix"
+      - "go.mod"
+      - "go.sum"
+      - "go.work"
+      - "go.work.sum"
+      - ".golangci.yml"
+      - "flake.lock"
+      - ".github/workflows/ci.yml"
+      - "static/datastar.js"
+      - "datastartest/testdata/**"
+      - "**.golden"
+
+# Docs-only changes skip this workflow entirely; actionlint.yml still runs
+# on every push so workflow and doc changes always get some CI signal.
 
 env:
   GOEXPERIMENT: jsonv2
@@ -76,21 +107,6 @@ jobs:
 
       - name: Lint
         run: golangci-lint run ./... ./datastartest/... ./static/... --timeout 5m
-
-  actionlint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
-        with:
-          go-version: "1.26.7"
-
-      - name: Install actionlint
-        run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
-
-      - name: Lint workflows
-        run: actionlint
 
   erraudit:
     runs-on: ubuntu-latest

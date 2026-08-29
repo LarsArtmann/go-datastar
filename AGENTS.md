@@ -14,18 +14,16 @@ Three Go modules in a go.work workspace (rationale and rules: [ADR 002](docs/adr
 
 Replace directives: root go.mod replaces `static => ./static`; datastartest
 go.mod replaces `go-datastar => ..` and `static => ../static`. All resolve locally
-for `GOWORK=off` builds (CI, Nix, consumers). Root no longer depends on
-datastartest — the E2E test that used datastartest helpers was relocated to
-`datastartest/e2e_test.go` to break a circular module dependency.
+for `GOWORK=off` builds (CI, Nix, consumers). Root must NEVER require
+datastartest (circular dependency; `module_boundary_test.go` enforces it).
 
-`go.work` is force-added to git (workspace development); `go.work.sum` is
-intentionally gitignored — it is advisory (the go toolchain regenerates it on
-demand), the committed per-module `go.sum` files are the source of truth for
-reproducibility, and the replace directives make sibling-module checksums
-unnecessary (they resolve to local paths). Committing `go.work.sum` would add
-diff noise on every dependency update. Sibling requires use real published
-versions (not `v0.0.0`) so consumers testing without replaces resolve to a real
-published module.
+Decisions: `go.work.sum` is intentionally gitignored (advisory — the toolchain
+regenerates it; per-module `go.sum` files are the reproducibility source of
+truth, and replaces make sibling checksums unnecessary). Sibling requires use
+real published versions (not `v0.0.0`) so consumers testing without replaces
+resolve to a real published module. The `go` directive pins the exact patch
+release (currently **1.26.7** across go.mod ×3, go.work, CI, and the flake
+`overrideAttrs` pin) to clear stdlib CVEs under `GOTOOLCHAIN=local`.
 
 ## Commands
 
@@ -44,6 +42,10 @@ GOWORK=off GOEXPERIMENT=jsonv2 go test ./...                      # static (run 
 for mod in . ./datastartest ./static; do
   (cd "$mod" && GOEXPERIMENT=jsonv2 erraudit . --type-aware --enforce-go-error-family --no-suppress)
 done
+
+# Fuzz smoke tests (30s; corpora are committed regression suites — see CONTRIBUTING.md "Fuzzing"):
+GOEXPERIMENT=jsonv2 go test -run '^$' -fuzz '^FuzzReadSignals$' -fuzztime 30s .
+(cd datastartest && GOEXPERIMENT=jsonv2 go test -run '^$' -fuzz '^FuzzReadEvents$' -fuzztime 30s .)
 
 # CI also enforces (run locally to pre-empt CI failures):
 GOEXPERIMENT=jsonv2 go work sync  # go.work must not change after sync (idempotency)
@@ -82,36 +84,13 @@ Every DataStar protocol message is a value that produces an `sse.Event`. This ma
 
 ### File layout
 
-See also [docs/modularization/README.md](docs/modularization/README.md) for the
-proposal, execution plan, and ADRs behind the multi-module split.
-
-| File                      | Role                                                                                                                                                                                                                                                                 |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `patch.go`                | `Patch` interface                                                                                                                                                                                                                                                    |
-| `errors.go`               | Error catalog: stable codes, sentinel errors, family mapping                                                                                                                                                                                                         |
-| `constants.go`            | EventType, ElementPatchMode, Namespace, dataline keys, DefaultRetryDuration                                                                                                                                                                                          |
-| `elements.go`             | `ElementsPatch` struct + `Event()` + options                                                                                                                                                                                                                         |
-| `signals.go`              | `SignalsPatch` struct + `Event()` + marshal helpers                                                                                                                                                                                                                  |
-| `script.go`               | `ScriptPatch` struct + `Event()` + options                                                                                                                                                                                                                           |
-| `script_convenience.go`   | Redirect, ConsoleLog/Error, DispatchCustomEvent, ReplaceURL, Prefetch                                                                                                                                                                                                |
-| `sugar.go`                | Mode helpers, RemovePatch, validation, namespace helpers                                                                                                                                                                                                             |
-| `adapters.go`             | ElementsFromTempl, ElementsFromGostar                                                                                                                                                                                                                                |
-| `http.go`                 | GetSSE/PostSSE/PutSSE/PatchSSE/DeleteSSE                                                                                                                                                                                                                             |
-| `inbound.go`              | ReadSignals, LastEventID                                                                                                                                                                                                                                             |
-| `store.go`                | `MemoryStore` — in-memory `sse.EventStore` ring buffer for reconnection replay                                                                                                                                                                                       |
-| `script_handler.go`       | ScriptHandler, ScriptTag, Version (HTTP serving of the `static` asset bundle)                                                                                                                                                                                        |
-| `static/`                 | **Separate Go module** (zero deps). `//go:embed datastar.js`, `Bytes()`, `Version`                                                                                                                                                                                   |
-| `response.go`             | Response (fluent SSE builder), ErrorResponse, ErrorResponseFromError, NotificationResponse                                                                                                                                                                           |
-| `doc.go`                  | Package documentation (design rationale, quick start, error-system contract)                                                                                                                                                                                         |
-| `example/`                | Live-feed demo app (broadcaster + MemoryStore + ScriptHandler), zero client JS                                                                                                                                                                                       |
-| `example_test.go`         | Testable examples (Example functions with `// Output:` assertions)                                                                                                                                                                                                   |
-| `inbound_fuzz_test.go`    | Fuzz test for ReadSignals (10-seed corpus, regression-guarded)                                                                                                                                                                                                       |
-| `benchmark_test.go`       | Benchmarks for patch `Event()` generation + `FuzzMarshalSignalsRoundtrip`                                                                                                                                                                                            |
-| `coverage_test.go`        | Option-application, construction error branches, stream-send failure paths                                                                                                                                                                                           |
-| `errors_example_test.go`  | Example functions showing all three error-handling patterns                                                                                                                                                                                                          |
-| `e2e_test.go`             | `TestE2E_SSEHeaders` — transport header verification (go-sse owned). The full DataStar wire-format E2E test was relocated to `datastartest/e2e_test.go`                                                                                                              |
-| `module_boundary_test.go` | Regression guard: asserts root go.mod never requires datastartest (circular dependency prevention)                                                                                                                                                                   |
-| `datastartest/`           | **Separate Go module** (`go.work` workspace). Consumer E2E test helpers: SSE parsing, DataStar decoding, Collect, CollectPost, CollectN, CollectWithTimeout, FindElement, FindSignals, assertions, fuzz test. Also contains `e2e_test.go` (dogfood integration test) |
+One flat package; file roles are documented in `doc.go` (design rationale,
+quick start, error-system contract) and discoverable via `ls`. Key entry
+points: `patch.go` (Patch interface), `errors.go` (error catalog),
+`constants.go` (dataline keys), `response.go` (fluent SSE builder),
+`store.go` (MemoryStore replay), `script_handler.go` (static JS serving),
+`example/` (live-feed demo). Multi-module rationale:
+[docs/modularization/README.md](docs/modularization/README.md).
 
 ## Wire-Format Parity Requirements
 
@@ -136,6 +115,19 @@ These behaviors reproduce the upstream SDK exactly:
 > convention (`key + " "`) conflicts with go-datastar's trailing-space dataline
 > constants (item 9). Revisit if upstream adopts CRLF normalization.
 
+## CI
+
+- `ci.yml` — test (build/vet/race + GOWORK=off ×3 + sync idempotency +
+  replace audit), lint, erraudit (probe-gated while the repo is private),
+  govulncheck. Runs ONLY on code-affecting paths (`paths` filter) — docs-only
+  pushes skip it entirely.
+- `actionlint.yml` — workflow YAML validation on EVERY push/PR (the signal
+  that still fires when ci.yml skips).
+- `coverage.yml` — master-push coverage badge to the orphan `coverage`
+  branch (same `paths` filter).
+- Nothing is a required check (branch protection removed); local gates are
+  the real gate.
+
 ## Gotchas
 
 - `go.work` is committed, but a **global** gitignore (`~/.config/git/ignore`)
@@ -148,47 +140,34 @@ These behaviors reproduce the upstream SDK exactly:
   is treefmt (gofumpt/goimports/golines/nixfmt) via `nix flake check`; wiring
   dprint into the hermetic check would make it depend on network-fetched WASM
   plugins.
-- `origin/master` branch protection was **removed on 2026-08-16** (owner
-  decision). Direct `git push` to master now works; `git sync` no longer
-  fails. CI still runs on master pushes but is informational only — nothing
-  blocks a bad push, so run tests locally before pushing.
-  Historical note (pre-2026-08-16): 4 required status checks (test, lint,
-  actionlint, govulncheck) enforced for admins; a direct push failed with
-  GH006 and commits had to land via a PR merged with a merge commit. To
-  restore, see repo Settings → Branches (or the GitHub API
-  `branches/master/protection` endpoint).
+- `origin/master` has NO branch protection (removed 2026-08-16, owner
+  decision): CI is informational, nothing blocks a bad push — run the gates
+  locally first. The auto-commit daemon can commit straight to master.
 - Multiple crush sessions share this checkout, plus an auto-commit daemon
   that commits dirty files to whatever branch is checked out. Branch tips
   can move or lose commits at any moment (for example a hard reset by a
   parallel session). Re-verify with `git log` and `git reflog <branch>`
   before and after every git operation, and quarantine work in a
-  `git worktree` outside the main checkout.
-- `git town` (v24) manages syncs. A failed `git sync` (for example a blocked
-  master push) leaves an unfinished run: check `git town status`, then
-  `git town skip` to finish without the failing step (the checkout may end
-  on another branch of the stack) or `git town continue` to retry.
-- `git town propose` is the one-command branch+push+PR flow — prefer it over
-  the manual 4-command sequence. `gh pr merge --merge --delete-branch` run
-  from master also deletes the LOCAL PR branch, not just the remote one.
-  After any branch deletion, prune its stale git-town lineage from git config
-  (see the skip/continue gotcha below).
+  `git worktree` outside the main checkout. Stage by explicit path list;
+  never `git add -A`; re-read files before every edit (mod-time races).
+- `git town` (v24) manages syncs. A failed `git sync` leaves an unfinished
+  run: check `git town status`, then `git town skip` (finish without the
+  failing step; the checkout may end on another branch of the stack) or
+  `git town continue` (retry). `skip`/`continue` abort non-interactively
+  when a local branch has no configured lineage — fix without moving HEAD
+  via `git config --add git-town.observed-branches <branch>` (snapshot
+  branches) or `git config git-town-branch.<branch>.parent master` (stack
+  children). All lineage/branchtype metadata lives in git config. After any
+  branch deletion, prune its stale lineage.
+- `git town propose` is the one-command branch+push+PR flow. `gh pr merge
+  --merge --delete-branch` from master also deletes the LOCAL PR branch.
 - Session-entry ritual: `git town status`, `git status`, `gh pr list` before
   starting work. End-of-session ritual: clean tree, synced master, no
   unfinished git-town run.
-- Status reports live in `docs/status/*.md` and are point-in-time snapshots —
-  they are excluded from CHANGELOG entries by policy. `.md` is the repo's
-  report format (100% convention; the status-report skill's HTML default is
-  overridden).
-- With branch protection removed, the auto-commit daemon can now commit
-  straight to master. Stage by explicit path list; never `git add -A`.
-- `git town skip`/`continue` aborts non-interactively ("cannot determine
-  parent branch for X: no interactive terminal available") when a local
-  branch has no configured lineage. Fix without moving HEAD:
-  `git config --add git-town.observed-branches <branch>` for snapshot
-  branches town must never touch (town then inlines it to
-  `git-town-branch.<branch>.branchtype observed`), or
-  `git config git-town-branch.<branch>.parent master` for stack children.
-  All lineage/branchtype metadata lives in git config.
+- Status reports live in `docs/status/*.md` (indexed by its README) and are
+  point-in-time snapshots — excluded from CHANGELOG entries by policy.
+  `.md` is the repo's report format (the status-report skill's HTML default
+  is overridden by convention).
 
 ## Error System
 
@@ -279,73 +258,29 @@ No CQRS, no event bus, no domain opinions. It is a pure protocol layer. Consumer
 - **BOM in Go source = compile error** ("illegal byte order mark"). Use the
   escape `"\xef\xbb\xbf"` for UTF-8 BOM in test seed data.
 - **Auto-commit daemon is active.** It commits and pushes the working tree
-  automatically. Check `git log` before assuming what's committed. Stage by
-  explicit path list; re-read files before every edit (mod-time races with
-  parallel sessions).
+  automatically. Check `git log` before assuming what's committed.
 
 ## E2E Testing for Consumers: `datastartest/`
 
-The `datastartest` subpackage gives consumers reusable helpers for E2E testing
-their DataStar handlers without hand-rolling SSE parsing or DataStar dataline
-decoding. The full wire-format E2E test (`TestE2E_DataStarPatches`) lives in
-`datastartest/e2e_test.go` — it dogfoods the helpers against real HTTP server
-output. Root's `e2e_test.go` retains only `TestE2E_SSEHeaders` (transport-level
-header checks owned by go-sse). This separation breaks what was otherwise a
-circular module dependency: root must never require datastartest in its go.mod.
+`datastartest` is a separate module of reusable E2E helpers (SSE parsing,
+DataStar dataline decoding, `Collect*` helpers, assertions). Quick start,
+request options, and the full API tour: [datastartest/README.md](datastartest/README.md).
+The wire-format E2E test (`TestE2E_DataStarPatches`) lives in
+`datastartest/e2e_test.go`; root's `e2e_test.go` retains only the
+go-sse-owned header checks. Root must never require datastartest.
 
-### API surface
+**Invariant:** all public helpers accept `testing.TB` (not `*testing.T`), so
+they work with `*testing.T`, `*testing.B`, and Ginkgo's `GinkgoT()`. Keep this
+when adding helpers.
 
-| Export                                                      | Purpose                                                                               |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `Collect(t, handler, opts...)`                              | Spin up httptest.Server, GET, parse SSE, return decoded events                        |
-| `CollectPost(t, handler, jsonBody, opts...)`                | POST with JSON body, parse SSE, return decoded events                                 |
-| `CollectWithRequest(t, handler, method, body, ct, opts...)` | Custom method/body/content-type, parse SSE                                            |
-| `CollectN(t, handler, count, opts...)`                      | Read exactly N events (streaming handlers), then close                                |
-| `CollectWithTimeout(t, handler, timeout, opts...)`          | GET with deadline; returns events received before timeout                             |
-| `WithPath(path)`                                            | Target a route (query allowed) instead of "/" — mux-friendly                          |
-| `WithDatastarSignals(json)`                                 | Send `?datastar=` query param (GET/DELETE signal submission)                          |
-| `WithLastEventID(id)`                                       | Send Last-Event-ID header — replay/reconnection testing                               |
-| `WithHeader(key, value)`                                    | Any custom request header                                                             |
-| `ReadEvents(io.Reader)`                                     | Parse SSE wire format from any reader                                                 |
-| `ReadNEvents(io.Reader, count)`                             | Streaming SSE reader; returns at N events or clean close                              |
-| `MustReadEvents(t, io.Reader)`                              | ReadEvents with t.Fatal on error                                                      |
-| `Event.IsElements()` / `.IsSignals()` / `.IsScript()`       | Type predicates                                                                       |
-| `Event.Selector()` / `.Mode()` / `.Elements()`              | Typed dataline accessors                                                              |
-| `Event.ScriptContent()`                                     | Strip `<script>` wrapper, return inner JS source                                      |
-| `Event.SignalsJSON()` / `.UnmarshalSignals(&v)`             | Decode signals JSON                                                                   |
-| `Event.DataValue(key)`                                      | Generic dataline lookup (escape hatch)                                                |
-| `Event.String()` / `EventsString(events)`                   | Human-readable debug representation                                                   |
-| `FindElement(events, selector)` / `FindSignals(events)`     | Search by selector/type                                                               |
-| `FilterElements(events)` / `FilterSignals(events)`          | Filter by event type                                                                  |
-| `RequireElements(t, evt, sel, mode, html)`                  | One-liner element assertion                                                           |
-| `RequireElementsContains(t, evt, sel, mode, htmlSubstr)`    | Substring match (scripts)                                                             |
-| `RequireSignals(t, evt, json)`                              | Exact signals JSON assertion                                                          |
-| `RequireSignalsContain(t, evt, key)`                        | Check signal key exists                                                               |
-| `RequireScript(t, evt, js)`                                 | Exact script-content assertion                                                        |
-| `RequireEventID(t, evt, id)`                                | Event-ID assertion (replay tests)                                                     |
-| `RequireEventCount(t, events, n)`                           | Event count assertion                                                                 |
-| `CodeSSEScanFailed`                                         | Error code for SSE scanner I/O failures (`datastartest.sse_scan_failed`)              |
-| `CodeSignalsUnmarshalFailed`                                | Error code for signals JSON decode failures (`datastartest.signals_unmarshal_failed`) |
+## Docs Map
 
-**All public helpers accept `testing.TB`** (not `*testing.T`), so they work with
-`*testing.T`, `*testing.B`, and Ginkgo's `GinkgoT()`. Keep this invariant when
-adding helpers.
-
-### Consumer usage
-
-```go
-import (
-    "github.com/larsartmann/go-datastar"
-    "github.com/larsartmann/go-datastar/datastartest"
-)
-
-func TestFeedHandler(t *testing.T) {
-    events := datastartest.Collect(t, myHandler)
-    datastartest.RequireEventCount(t, events, 2)
-
-    datastartest.RequireElements(t, events[0], "#feed", "append", "<div>hello</div>")
-
-    var data struct{ Count int `json:"count"` }
-    events[1].UnmarshalSignals(&data) // data.Count == 1
-}
-```
+| Path                          | Content                                                        |
+| ----------------------------- | -------------------------------------------------------------- |
+| `doc.go`                      | Package docs: design rationale, quick start, error contract    |
+| `docs/adr/`                   | Architecture decision records (multi-module, …)                |
+| `docs/release-checklist.md`   | Pre-release gate, versioning, lockstep tags, verification      |
+| `docs/status/` (+ its README) | Point-in-time status reports and audits (index + policy)       |
+| `docs/planning/`              | Pareto plans; `archived/` holds executed plans                 |
+| `CONTRIBUTING.md`             | Dev setup, workspace rules, fuzzing                            |
+| `CHANGELOG.md`                | Released history (append-only) + `[Unreleased]` draft          |
