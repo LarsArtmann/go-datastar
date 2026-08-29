@@ -1,0 +1,8 @@
+services:
+  demo:
+    build:
+      context: ..
+      dockerfile: example/Dockerfile
+    ports:
+      - "8765:8765"
+    restart: unless-stopped
