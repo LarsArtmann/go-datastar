@@ -172,6 +172,14 @@ Four types implement this interface. Everything else is a convenience constructo
 | `ScriptPatch`              | Execute JavaScript on the client |
 | `DispatchCustomEventPatch` | Dispatch a custom DOM event      |
 
+### Patches as values in a domain architecture
+
+Because patches are values, your domain layer can produce them without an
+HTTP connection: map domain events to `[]Patch` in one bridge function, then
+send, store (replay), or broadcast the events anywhere. A working miniature
+— domain events → EventBridge → broadcaster + MemoryStore — lives in
+[`example/domain-adapter/`](example/domain-adapter/main.go).
+
 ## Patch constructors
 
 ### Elements
