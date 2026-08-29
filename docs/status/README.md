@@ -1,0 +1,56 @@
+# Status Reports Index
+
+Point-in-time snapshots of the project's state after each work session.
+**Navigation only** — the verdicts and open items live inside each report;
+this index does not re-judge them.
+
+Policy:
+
+- Reports are `.md` (repo convention; the status-report skill's HTML default
+  is overridden), named `YYYY-MM-DD_HH-MM_<slug>.md`, and are excluded from
+  CHANGELOG entries.
+- A report moves to `archived/` only when docs-health verifies EVERY item in
+  it is resolved (annotation cites the resolving commit hash inline).
+- When you create a report, add its row here. One line, no more.
+
+## Active reports
+
+| Date | Report | Topic |
+| ---- | ------ | ----- |
+| 2026-08-07 | [typed-error-system](2026-08-07_08-09_typed-error-system.md) | go-error-family error system; remaining items routed to ROADMAP/AGENTS |
+| 2026-08-07 | [v0.0.1 release retrospective](2026-08-07_19-12_v0.0.1-release-retrospective.md) | First release: what shipped, what was missed |
+| 2026-08-07 | [v0.0.2 release retrospective](2026-08-07_20-57_v0.0.2-release-retrospective.md) | Second release retrospective |
+| 2026-08-08 | [deep review and hardening](2026-08-08_02-39_deep-review-and-hardening.md) | Full review pass + hardening fixes |
+| 2026-08-08 | [docs health audit and self-critique](2026-08-08_03-05_docs-health-audit-and-self-critique.md) | Doc accuracy audit of that date's state |
+| 2026-08-08 | [pareto hardening execution](2026-08-08_06-52_pareto-hardening-execution.md) | Executing the hardening plan |
+| 2026-08-08 | [fuckup fix session](2026-08-08_07-04_fuckup-fix-session.md) | Recovering from that session's own mistakes |
+| 2026-08-08 | [F4-F7 resolution and v0.0.3](2026-08-08_09-18_f4-f7-resolution-and-v0.0.3-release.md) | Findings F4–F7 closed; v0.0.3 cut |
+| 2026-08-08 | [release completion and honest audit](2026-08-08_09-36_release-completion-and-honest-audit.md) | v0.0.3 verification and honest assessment |
+| 2026-08-10 | [datastartest E2E package](2026-08-10_02-55_datastartest-e2e-testing-package.md) | Consumer E2E helper module created |
+| 2026-08-10 | [static asset package extraction](2026-08-10_02-57_static-asset-package-extraction.md) | Embedded JS bundle split into `static/` |
+| 2026-08-10 | [datastartest API expansion and doc sync](2026-08-10_03-49_datastartest-api-expansion-and-doc-sync.md) | Helper API growth |
+| 2026-08-10 | [datastartest hardening and API expansion](2026-08-10_04-25_datastartest-hardening-and-api-expansion.md) | Hardening pass on helpers |
+| 2026-08-10 | [multi-module split and self-assessment](2026-08-10_04-48_multi-module-split-and-self-assessment.md) | First split attempt |
+| 2026-08-10 | [three-module split and self-assessment](2026-08-10_05-07_three-module-split-and-self-assessment.md) | Final three-module layout |
+| 2026-08-10 | [v0.1.0 release and self-assessment](2026-08-10_06-00_v0.1.0-release-and-self-assessment.md) | v0.1.0 with the three-module layout |
+| 2026-08-10 | [modularize skill review and circular dep fix](2026-08-10_07-27_modularize-skill-review-and-circular-dep-fix.md) | Breaking root → datastartest cycle |
+| 2026-08-10 | [documentation cleanup and CI hardening](2026-08-10_07-38_documentation-cleanup-and-ci-hardening.md) | Docs + CI hardening |
+| 2026-08-10 | [CI hardening cleanup and regression guard](2026-08-10_07-55_ci-hardening-cleanup-and-regression-guard.md) | module_boundary regression guard |
+| 2026-08-13 | [go-sse v0.5.0 bump review](2026-08-13_02-58_go-sse-v0.5.0-bump-review.md) | Transport bump review |
+| 2026-08-13 | [go-sse v0.5.0 followup](2026-08-13_03-25_go-sse-v0.5.0-followup-tests-changelog-ondrop.md) | Followup tests, changelog, ondrop |
+| 2026-08-16 | [full execution T11–T16 completion](2026-08-16_11-07_full-execution-t11-t16-completion.md) | Pareto plan tasks T11–T16 (open items remain; see its annotations) |
+| 2026-08-16 | [master recovery and PR landing self-review](2026-08-16_12-24_master-recovery-and-pr-landing-self-review.md) | Recovery after blocked master push (open items remain) |
+| 2026-08-16 | [git-town skip recovery, PR5/PR6 landing](2026-08-16_12-43_git-town-skip-recovery-pr5-pr6-landing.md) | git-town lineage fixes; PR template lesson (open items remain) |
+| 2026-08-29 | [docs health audit: annotate, archive, living-doc sync](2026-08-29_17-05_docs-health-audit-annotate-archive-living-doc-sync.md) | Full audit; 8 historical files annotated, 5 archived, living docs synced; 3 owner questions |
+
+## Archived (fully resolved)
+
+| Date | Report | Topic |
+| ---- | ------ | ----- |
+| 2026-08-16 | [README comparison vs official SDK](archived/2026-08-16_07-52_readme-comparison-official-sdk.md) | Comparison table rewrite; every item resolved |
+| 2026-08-16 | [docs health audit annotations](archived/2026-08-16_08-20_docs-health-audit-annotations.md) | Audit annotation pass; every item resolved |
+| 2026-08-16 | [docs health audit completion self-review](archived/2026-08-16_08-47_docs-health-audit-completion-self-review.md) | Audit completion review; every item resolved |
+| 2026-08-16 | [full execution progress](archived/2026-08-16_09-55_full-execution-progress.md) | Execution progress; every item resolved |
+
+Related: executed plans live in [`docs/planning/archived/`](../planning/archived/)
+(the 2026-08-16 CI-trust plan is there, fully executed).
