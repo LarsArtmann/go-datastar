@@ -39,7 +39,12 @@ func ExampleSignalsPatch() {
 // ExampleNewReplaceURLQuerystringPatch replaces the browser URL's query
 // string while preserving the request path (upstream-parity convenience).
 func ExampleNewReplaceURLQuerystringPatch() {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/items?filter=old", nil)
+	req := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodGet,
+		"/items?filter=old",
+		nil,
+	)
 
 	patch := datastar.NewReplaceURLQuerystringPatch(req, url.Values{"filter": {"new"}})
 

@@ -76,7 +76,11 @@ func TestEvent_UnmarshalCustomEventDetail_ClassifiedError(t *testing.T) {
 	}
 
 	if got := errorfamily.Code(err); got != datastartest.CodeCustomEventDetailUnmarshalFailed {
-		t.Errorf("errorfamily.Code = %q; want %q", got, datastartest.CodeCustomEventDetailUnmarshalFailed)
+		t.Errorf(
+			"errorfamily.Code = %q; want %q",
+			got,
+			datastartest.CodeCustomEventDetailUnmarshalFailed,
+		)
 	}
 }
 

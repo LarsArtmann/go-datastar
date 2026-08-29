@@ -151,7 +151,12 @@ func TestNewReplaceURLPatch(t *testing.T) {
 func TestNewReplaceURLQuerystringPatch(t *testing.T) {
 	t.Parallel()
 
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/search?q=old#frag", nil)
+	req := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodGet,
+		"/search?q=old#frag",
+		nil,
+	)
 	values := url.Values{"q": {"new"}, "page": {"2"}}
 	patch := datastar.NewReplaceURLQuerystringPatch(req, values)
 	got := patch.Event()
@@ -169,7 +174,12 @@ func TestNewReplaceURLQuerystringPatch(t *testing.T) {
 func TestNewReplaceURLQuerystringPatch_ParityWireFormat(t *testing.T) {
 	t.Parallel()
 
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/search?q=old", nil)
+	req := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodGet,
+		"/search?q=old",
+		nil,
+	)
 	patch := datastar.NewReplaceURLQuerystringPatch(req, url.Values{"q": {"new"}})
 	got := patch.Event()
 

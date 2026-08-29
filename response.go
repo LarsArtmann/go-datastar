@@ -145,7 +145,9 @@ func (r *Response) ReplaceURLQuerystring(
 	values url.Values,
 	opts ...ScriptPatchOption,
 ) error {
-	return wrapStreamError(r.stream.Send(NewReplaceURLQuerystringPatch(req, values, opts...).Event()))
+	return wrapStreamError(
+		r.stream.Send(NewReplaceURLQuerystringPatch(req, values, opts...).Event()),
+	)
 }
 
 // Prefetch sends a speculation rules [ScriptPatch] to prefetch the given URLs.

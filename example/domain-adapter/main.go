@@ -75,7 +75,11 @@ func Bridge(evt DomainEvent) ([]datastar.Patch, error) {
 		}
 
 		return []datastar.Patch{
-			datastar.NewElementsPatch(html, datastar.WithSelector("#feed"), datastar.WithModeAppend()),
+			datastar.NewElementsPatch(
+				html,
+				datastar.WithSelector("#feed"),
+				datastar.WithModeAppend(),
+			),
 			datastar.SignalsPatch{Signals: signalsJSON},
 		}, nil
 
@@ -83,7 +87,11 @@ func Bridge(evt DomainEvent) ([]datastar.Patch, error) {
 		html := fmt.Sprintf(`<div class="toast">%s</div>`, domainEvt.Text)
 
 		return []datastar.Patch{
-			datastar.NewElementsPatch(html, datastar.WithSelector("#toasts"), datastar.WithModeAppend()),
+			datastar.NewElementsPatch(
+				html,
+				datastar.WithSelector("#toasts"),
+				datastar.WithModeAppend(),
+			),
 		}, nil
 
 	default:
