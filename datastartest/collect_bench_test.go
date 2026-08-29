@@ -3,8 +3,15 @@ package datastartest
 import (
 	"bytes"
 	"net/http"
+	"strings"
 	"testing"
 )
+
+// benchFrame is one element-patch frame as it appears on the SSE wire.
+const benchFrame = "event: datastar-patch-elements\n" +
+	"data: selector #bench\n" +
+	"data: elements <span>x</span>\n" +
+	"data: mode replace\n\n"
 
 // benchHandler emits count element patches, then returns (ending the
 // stream) — the same shape the Collect helpers are built for.
@@ -13,9 +20,9 @@ func benchHandler(count int) http.Handler {
 		w.Header().Set("Content-Type", "text/event-stream")
 		flusher := w.(http.Flusher)
 
-		for i := 0; i < count; i++ {
-			_, _ = w.Write([]byte(
-				"event: datastar-patch-elements\ndata: selector #bench\ndata: elements <span>x</span>\ndata: mode replace\n\n"))
+		for range count {
+			_, _ = w.Write([]byte(benchFrame))
+
 			flusher.Flush()
 		}
 	})
@@ -26,6 +33,7 @@ func benchHandler(count int) http.Handler {
 // It is the consumer-facing end-to-end cost of the helper.
 func BenchmarkCollect(b *testing.B) {
 	const events = 16
+
 	handler := benchHandler(events)
 
 	b.ReportAllocs()
@@ -42,14 +50,8 @@ func BenchmarkCollect(b *testing.B) {
 // without the HTTP layer — the parser floor under BenchmarkCollect.
 func BenchmarkReadEvents(b *testing.B) {
 	const frames = 16
-	stream := ""
-	for i := 0; i < frames; i++ {
-		stream += "event: datastar-patch-elements\n" +
-			"data: selector #bench\n" +
-			"data: elements <span>x</span>\n" +
-			"data: mode replace\n\n"
-	}
-	payload := []byte(stream)
+
+	payload := []byte(strings.Repeat(benchFrame, frames))
 
 	b.SetBytes(int64(len(payload)))
 	b.ReportAllocs()

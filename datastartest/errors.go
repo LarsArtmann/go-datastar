@@ -11,4 +11,8 @@ const (
 	// CodeSignalsUnmarshalFailed: [Event.UnmarshalSignals] could not decode
 	// the signals JSON payload from a patch-signals event.
 	CodeSignalsUnmarshalFailed = "datastartest.signals_unmarshal_failed"
+
+	// CodeCustomEventDetailUnmarshalFailed: [Event.UnmarshalCustomEventDetail]
+	// found no custom-event detail or could not decode it as JSON.
+	CodeCustomEventDetailUnmarshalFailed = "datastartest.custom_event_detail_unmarshal_failed"
 )

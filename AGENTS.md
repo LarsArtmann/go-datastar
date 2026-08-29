@@ -206,7 +206,8 @@ if errorfamily.IsRetryable(err) { /* backoff + retry */ }
 `datastar.stream_send_failed`.
 
 datastartest codes: `datastartest.sse_scan_failed`,
-`datastartest.signals_unmarshal_failed`.
+`datastartest.signals_unmarshal_failed`,
+`datastartest.custom_event_detail_unmarshal_failed`.
 
 ### Sentinels
 

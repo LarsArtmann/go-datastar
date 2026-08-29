@@ -100,6 +100,31 @@ elements := datastartest.FilterElements(events)
 t.Fatalf("unexpected events:\n%s", datastartest.EventsString(events))
 ```
 
+## Typed script accessors
+
+Assert intent instead of exact script text. The accessors parse the
+JavaScript the library itself emits and return zero values when the event is
+not a script or doesn't match:
+
+```go
+if got := evt.RedirectURL(); got != "/next" {
+    t.Errorf("redirect target = %q", got)
+}
+
+if name := evt.CustomEventName(); name != "cart-updated" {
+    t.Errorf("event name = %q", name)
+}
+
+var detail struct {
+    Count int `json:"count"`
+}
+if err := evt.UnmarshalCustomEventDetail(&detail); err != nil {
+    t.Fatal(err) // classified: datastartest.custom_event_detail_unmarshal_failed
+}
+
+attrs := evt.ScriptAttributes() // e.g. data-effect="el.remove()"
+```
+
 The package is a separate Go module with a stable, tagged API
 (`datastartest/v0.x.y`). See [pkg.go.dev](https://pkg.go.dev/github.com/larsartmann/go-datastar/datastartest)
 for the complete API.
