@@ -120,17 +120,17 @@ Both defensible; neither was argued, just applied.
 
 ## c) NOT STARTED
 
-1. `trash result` (stale Nix symlink) — TODO_LIST row exists; needs trash CLI
-   and owner nod.
-2. `nix flake check` — never run this session; Go gates treated as canonical
-   per AGENTS.md, but flake.nix is the declared interface for LarsArtmann
-   projects and the archived-plan residue includes nix-check routing.
-3. The actual toolchain bump (1.26.5 → 1.26.6) — routed BLOCKED/TODO; not
-   attempted, correctly, given the parallel session's go.mod territory and
-   the standing owner question.
-4. Any action on the three owner questions (go directive, go.work.sum,
-   v0.0.0 siblings) — deliberately parked in ROADMAP "Open questions."
-5. Roadmap/AGENTS sharpening notes from b.1 above.
+1. ~~`trash result` (stale Nix symlink) — TODO_LIST row exists; needs trash CLI~~ done at `bf68063`
+   ~~and owner nod.~~
+2. ~~`nix flake check` — never run this session; Go gates treated as canonical~~ done (done — T02/T11 ran nix flake check green (83d7c60); re-run 2026-08-29 (see f.6))
+   ~~per AGENTS.md, but flake.nix is the declared interface for LarsArtmann~~
+   ~~projects and the archived-plan residue includes nix-check routing.~~
+3. ~~The actual toolchain bump (1.26.5 → 1.26.6) — routed BLOCKED/TODO; not~~ done at `bf68063`
+   ~~attempted, correctly, given the parallel session's go.mod territory and~~
+   ~~the standing owner question.~~
+4. ~~Any action on the three owner questions (go directive, go.work.sum,~~ done (answered — rulings recorded via T16 (496a18b))
+   ~~v0.0.0 siblings) — deliberately parked in ROADMAP "Open questions."~~
+5. ~~Roadmap/AGENTS sharpening notes from b.1 above.~~ done (done — ROADMAP/AGENTS sharpening landed via T02/T16)
 
 ---
 
@@ -205,61 +205,61 @@ edit discipline.
 
 ## f) Up to 50 Things We Should Get Done Next
 
-1. Add the 1.26.6-CVE sharpening line to ROADMAP.md "Open questions" (go
-   directive entry).
-2. Add an AGENTS.md Gotchas entry: "master CI red 2026-08-16: govulncheck =
-   stdlib CVEs fixed in go1.26.6; erraudit = private-repo install; see
-   TODO_LIST" (remove once green).
-3. Bump go directives/toolchain to 1.26.6 across go.mod ×3 + go.work +
-   CI `go-version` once the owner rules on the directive policy — clears 4
-   CVEs and greens govulncheck.
-4. Decide erraudit CI job fate: drop it, gate it on repo visibility, or
-   vendor the binary via nix until erraudit is public.
-5. `trash result` (stale Nix symlink; 1 min).
-6. Run `nix flake check` at least once post-audit to confirm the flake is
-   healthy after all the doc churn.
-7. Wire-or-remove `dprint.json` (treefmt integration or deletion).
-8. Per-module Nix hermetic checks (`hermeticCheckStatic`,
-   `hermeticCheckDatastartest`) — flake.nix TODO.
-9. Exercise `CollectPost`/`CollectN` in `datastartest/e2e_test.go` dogfood.
-10. `CollectPost` error-path tests (400/500, non-SSE body).
-11. Integration test for `example/main.go`'s `WithOnDrop` (fill buffer,
-    assert drop fires).
-12. Fuzz `datastartest.UnmarshalSignals` error paths.
-13. Stabilize or explain `TestCollect_WithLastEventID_HeaderArrives` (it
-    passed under full-suite `-race` this session — the owning session should
-    confirm and de-flake or document).
-14. actionlint CI step.
-15. erraudit into the nix devShell.
-16. ADR 002 (multi-module split + mutual replaces).
-17. CONTRIBUTING.md multi-module section.
-18. pkg.go.dev render verification for v0.2.0 (root/static/datastartest).
-19. Coverage badge (README).
-20. Branch protection on master (require CI green) — three retrospectives
-    have asked; the current red jobs make it premature but it's the fix's
-    enforcement.
-21. Re-verify the README datastar-go comparison at the next upstream release
-    (pinned v1.2.2 footnote).
-22. Decide the JS-client-version row mention (v1.0.2) in the README
-    comparison table.
-23. Owner rulings on the three standing questions (go directive, go.work.sum
-    tracking, v0.0.0 sibling requires).
-24. Consider a release-checklist doc capturing items 21-22 so they cannot rot.
-25. Consider a `docs/modularization/README.md` index (2 HTML docs + ADR 001).
+1. ~~Add the 1.26.6-CVE sharpening line to ROADMAP.md "Open questions" (go~~ done (done — ROADMAP resolved-questions entry landed via T02/T16 (496a18b))
+   ~~directive entry).~~
+2. ~~Add an AGENTS.md Gotchas entry: "master CI red 2026-08-16: govulncheck =~~ done (done — gotcha added (T02), removed once CI went green per its own instruction)
+   ~~stdlib CVEs fixed in go1.26.6; erraudit = private-repo install; see~~
+   ~~TODO_LIST" (remove once green).~~
+3. ~~Bump go directives/toolchain to 1.26.6 across go.mod ×3 + go.work +~~ done at `bf68063`
+   ~~CI `go-version` once the owner rules on the directive policy — clears 4~~
+   ~~CVEs and greens govulncheck.~~
+4. ~~Decide erraudit CI job fate: drop it, gate it on repo visibility, or~~ done at `bf68063`
+   ~~vendor the binary via nix until erraudit is public.~~
+5. ~~`trash result` (stale Nix symlink; 1 min).~~ done at `bf68063`
+6. ~~Run `nix flake check` at least once post-audit to confirm the flake is~~ done (done — ALL CHECKS PASSED at T11 (83d7c60); re-run 2026-08-29 flagged the new reader_fuzz_test.go format drift, routed to TODO_LIST)
+   ~~healthy after all the doc churn.~~
+7. ~~Wire-or-remove `dprint.json` (treefmt integration or deletion).~~ done (done — dprint.json removed in T03, later KEPT by owner decision (CHANGELOG [Unreleased]))
+8. ~~Per-module Nix hermetic checks (`hermeticCheckStatic`,~~ done at `83d7c60`
+   ~~`hermeticCheckDatastartest`) — flake.nix TODO.~~
+9. ~~Exercise `CollectPost`/`CollectN` in `datastartest/e2e_test.go` dogfood.~~ done at `83d7c60`
+10. ~~`CollectPost` error-path tests (400/500, non-SSE body).~~ done at `83d7c60`
+11. ~~Integration test for `example/main.go`'s `WithOnDrop` (fill buffer,~~ done at `496a18b`
+    ~~assert drop fires).~~
+12. ~~Fuzz `datastartest.UnmarshalSignals` error paths.~~ done at `496a18b`
+13. ~~Stabilize or explain `TestCollect_WithLastEventID_HeaderArrives` (it~~ done at `83d7c60`, `496a18b`
+    ~~passed under full-suite `-race` this session — the owning session should~~
+    ~~confirm and de-flake or document).~~
+14. ~~actionlint CI step.~~ done at `83d7c60`
+15. ~~erraudit into the nix devShell.~~ done (done-by-reversal — attempted in T03, reverted by design (private deps); app go-installs with credentials)
+16. ~~ADR 002 (multi-module split + mutual replaces).~~ done at `affbe30`
+17. ~~CONTRIBUTING.md multi-module section.~~ done at `496a18b`
+18. ~~pkg.go.dev render verification for v0.2.0 (root/static/datastartest).~~ done at `496a18b`
+19. ~~Coverage badge (README).~~ done at `496a18b`, `ed815c7`
+20. ~~Branch protection on master (require CI green) — three retrospectives~~ done at `496a18b`
+    ~~have asked; the current red jobs make it premature but it's the fix's~~
+    ~~enforcement.~~
+21. ~~Re-verify the README datastar-go comparison at the next upstream release~~ done at `83d7c60`
+    ~~(pinned v1.2.2 footnote).~~
+22. ~~Decide the JS-client-version row mention (v1.0.2) in the README~~ done at `83d7c60`
+    ~~comparison table.~~
+23. ~~Owner rulings on the three standing questions (go directive, go.work.sum~~ done at `496a18b`
+    ~~tracking, v0.0.0 sibling requires).~~
+24. ~~Consider a release-checklist doc capturing items 21-22 so they cannot rot.~~ done at `83d7c60`
+25. ~~Consider a `docs/modularization/README.md` index (2 HTML docs + ADR 001).~~ done at `83d7c60`
 
 ---
 
 ## g) Questions I Cannot Answer Myself
 
-1. **Go toolchain ruling:** bump everything to `1.26.6` now (greens CI,
-   clears 4 stdlib CVEs, supersedes the 1.26-vs-1.26.5 debate), or hold at
-   `1.26.5` until you decide the `go` directive policy? The CHANGELOG's
-   "lowered to 1.26" claim never landed, so any choice rewrites that story.
-2. **erraudit CI job:** while the erraudit repo stays private, should the
-   failing job be removed, kept as an accepted red X, or pinned to a
-   nix-provided binary? (Job is already `continue-on-error`, so this is a
-   signal/noise call, not a correctness one.)
-3. **DOMAIN_LANGUAGE.md:** is a glossary a must-have for this repo (my
-   Fitness scoring subtracted 1.0 for its absence), or should a protocol
-   library waive it — in which case the audit's Fitness baseline is 10, not
-   9? Either way I'll record the ruling in the next audit.
+1. ~~**Go toolchain ruling:** bump everything to `1.26.6` now (greens CI,~~ done (answered YES — pinned at bf68063; superseded 2026-08-29 by the in-flight go 1.26.7 bump (see TODO_LIST))
+   ~~clears 4 stdlib CVEs, supersedes the 1.26-vs-1.26.5 debate), or hold at~~
+   ~~`1.26.5` until you decide the `go` directive policy? The CHANGELOG's~~
+   ~~"lowered to 1.26" claim never landed, so any choice rewrites that story.~~
+2. ~~**erraudit CI job:** while the erraudit repo stays private, should the~~ done (answered — probe-gate shipped at bf68063)
+   ~~failing job be removed, kept as an accepted red X, or pinned to a~~
+   ~~nix-provided binary? (Job is already `continue-on-error`, so this is a~~
+   ~~signal/noise call, not a correctness one.)~~
+3. ~~**DOMAIN_LANGUAGE.md:** is a glossary a must-have for this repo (my~~ done (answered CREATE — docs/DOMAIN_LANGUAGE.md shipped at 83d7c60)
+   ~~Fitness scoring subtracted 1.0 for its absence), or should a protocol~~
+   ~~library waive it — in which case the audit's Fitness baseline is 10, not~~
+   ~~9? Either way I'll record the ruling in the next audit.~~

@@ -167,6 +167,20 @@ These behaviors reproduce the upstream SDK exactly:
   master push) leaves an unfinished run: check `git town status`, then
   `git town skip` to finish without the failing step (the checkout may end
   on another branch of the stack) or `git town continue` to retry.
+- `git town propose` is the one-command branch+push+PR flow — prefer it over
+  the manual 4-command sequence. `gh pr merge --merge --delete-branch` run
+  from master also deletes the LOCAL PR branch, not just the remote one.
+  After any branch deletion, prune its stale git-town lineage from git config
+  (see the skip/continue gotcha below).
+- Session-entry ritual: `git town status`, `git status`, `gh pr list` before
+  starting work. End-of-session ritual: clean tree, synced master, no
+  unfinished git-town run.
+- Status reports live in `docs/status/*.md` and are point-in-time snapshots —
+  they are excluded from CHANGELOG entries by policy. `.md` is the repo's
+  report format (100% convention; the status-report skill's HTML default is
+  overridden).
+- With branch protection removed, the auto-commit daemon can now commit
+  straight to master. Stage by explicit path list; never `git add -A`.
 - `git town skip`/`continue` aborts non-interactively ("cannot determine
   parent branch for X: no interactive terminal available") when a local
   branch has no configured lineage. Fix without moving HEAD:

@@ -102,9 +102,9 @@
 | Feature           | Status                | Notes                                                                                                                                      |
 | ----------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | E2E HTTP test     | 🟢 `FULLY_FUNCTIONAL` | Transport header verification in root (`e2e_test.go`); full wire-format round-trip dogfooded via datastartest (`datastartest/e2e_test.go`) |
-| Fuzz testing      | 🟢 `FULLY_FUNCTIONAL` | `ReadSignals` panic-proof, 10-seed corpus (`inbound_fuzz_test.go`); SSE parser fuzzed in datastartest (9-seed corpus)                      |
+| Fuzz testing      | 🟢 `FULLY_FUNCTIONAL` | `ReadSignals` panic-proof, 10-seed corpus (`inbound_fuzz_test.go`); SSE parser fuzzed in datastartest (51-seed conformance corpus, ported from go-sse/ssetest)                      |
 | Testable examples | 🟢 `FULLY_FUNCTIONAL` | Wire-format `// Output:` assertions (`example_test.go`)                                                                                    |
-| Test coverage     | 🟢 `FULLY_FUNCTIONAL` | ~98% of statements (root, `go test -cover`); datastartest ~94%                                                                             |
+| Test coverage     | 🟢 `FULLY_FUNCTIONAL` | ~98% of statements (root, `go test -cover`, 98.4% measured 2026-08-29); datastartest ~93% (92.7% measured 2026-08-29)                       |
 | Benchmark tests   | 🟢 `FULLY_FUNCTIONAL` | 4 benchmarks + `FuzzMarshalSignalsRoundtrip` (`benchmark_test.go`); SSE parser benchmark in datastartest (~131 MB/s)                       |
 
 ## Consumer Test Helpers (`datastartest/` — separate module)
@@ -119,7 +119,7 @@
 | Request options      | 🟢 `FULLY_FUNCTIONAL` | WithPath, WithHeader, WithLastEventID, WithDatastarSignals on every Collect helper (`datastartest/options.go`)        |
 | Replay testing       | 🟢 `FULLY_FUNCTIONAL` | WithLastEventID + RequireEventID dogfood EventStore reconnection (`datastartest/e2e_test.go`)                         |
 | `testing.TB` support | 🟢 `FULLY_FUNCTIONAL` | All helpers accept testing.TB: *testing.T, *testing.B, GinkgoT()                                                      |
-| `ReadEvents`         | 🟢 `FULLY_FUNCTIONAL` | SSE wire-format parser for any `io.Reader` (`datastartest/reader.go`)                                                 |
+| `ReadEvents`         | 🟢 `FULLY_FUNCTIONAL` | SSE wire-format parser for any `io.Reader` (`datastartest/reader.go`); delegates to the shared `go-sse/ssetest` parser                                                              |
 | `ReadNEvents`        | 🟢 `FULLY_FUNCTIONAL` | Streaming SSE reader; returns at N events or clean close (`datastartest/collect.go`)                                  |
 | `Event` accessors    | 🟢 `FULLY_FUNCTIONAL` | 20+ typed accessors: Selector, Mode, Elements, ScriptContent, IsScript, SignalsJSON, etc.                             |
 | Search helpers       | 🟢 `FULLY_FUNCTIONAL` | FindElement, FindSignals (`datastartest/search.go`)                                                                   |
@@ -127,7 +127,7 @@
 | Filter helpers       | 🟢 `FULLY_FUNCTIONAL` | FilterElements, FilterSignals (`datastartest/filter.go`)                                                              |
 | Debug helpers        | 🟢 `FULLY_FUNCTIONAL` | Event.String(), EventsString, DataValue (`datastartest/event.go`)                                                     |
 | README               | 🟢 `FULLY_FUNCTIONAL` | Consumer-facing quick start + API tour (`datastartest/README.md`)                                                     |
-| Fuzz test            | 🟢 `FULLY_FUNCTIONAL` | FuzzReadEvents with 9-seed corpus (`datastartest/reader_fuzz_test.go`)                                                |
+| Fuzz test            | 🟢 `FULLY_FUNCTIONAL` | FuzzReadEvents with 51-seed committed conformance corpus incl. go-sse crasher ports (`datastartest/reader_fuzz_test.go`, `testdata/fuzz/`)                                            |
 | Benchmark            | 🟢 `FULLY_FUNCTIONAL` | BenchmarkReadEvents: ~131 MB/s, 108 allocs/op (`datastartest/reader_fuzz_test.go`)                                    |
 
 ## Build & CI
@@ -135,6 +135,6 @@
 | Feature           | Status                | Notes                                                                                                                                               |
 | ----------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Nix flake build   | 🟢 `FULLY_FUNCTIONAL` | `buildGoModule` (root module), treefmt, devShell with golangci-lint + govulncheck; test/build/lint/erraudit/govulncheck/coverage apps               |
-| GitHub Actions CI | 🟢 `FULLY_FUNCTIONAL` | 4 jobs: test (incl. per-module `GOWORK=off` isolation, workspace-sync idempotency, replace-directive audit), lint, erraudit, govulncheck (`ci.yml`) |
-| erraudit in CI    | 🟢 `FULLY_FUNCTIONAL` | Pinned v0.3.0, `--severity-threshold error`, `continue-on-error` until the erraudit repo is public (`ci.yml:80-94`)                                 |
+| GitHub Actions CI | 🟢 `FULLY_FUNCTIONAL` | 5 jobs: test (incl. per-module `GOWORK=off` isolation, workspace-sync idempotency, replace-directive audit), lint, actionlint, erraudit, govulncheck (`ci.yml`) |
+| erraudit in CI    | 🟢 `FULLY_FUNCTIONAL` | Pinned v0.3.0, probe-gated: skips with a notice while the erraudit repo is private, hard gate once public (`ci.yml`)                                 |
 | govulncheck in CI | 🟢 `FULLY_FUNCTIONAL` | Pinned v1.6.0, scans all three modules (`ci.yml:96-109`)                                                                                            |

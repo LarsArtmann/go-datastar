@@ -123,7 +123,7 @@ still-open residue is routed to TODO_LIST/ROADMAP.
 2. ~~Docs-health Accuracy/Fitness health report (the AUDIT output).~~ Done —
    emitted inline in the continuation session.
 3. ~~Annotation of the 5 remaining files + archive step.~~ Done.
-4. `trash result` symlink cleanup (in TODO_LIST now, needs trash CLI).
+4. ~~`trash result` symlink cleanup (in TODO_LIST now, needs trash CLI).~~ done at `bf68063`
 
 ---
 
@@ -170,22 +170,22 @@ followed for 16 of 21 files; the grep-sourced ones bit me.
 2. ~~Archive the pareto plan to `docs/planning/archived/` after its closing note.~~ done
 3. ~~Run the full quality gate (test/vet/lint, workspace + isolation) post-edits.~~ done — green
 4. ~~Emit the docs-health Accuracy/Fitness report for this audit.~~ done (continuation session)
-5. Resolve the go-directive decision (needs owner ruling) — now sharpened: 1.26.6 fixes the 4 stdlib CVEs failing CI
-6. Wire or remove `dprint.json`.
-7. `trash result` (stale Nix symlink).
-8. Re-verify the parallel session's flaky CollectWithLastEventID test once their WIP lands. ← it passed in this session's full-suite race run; still worth a stabilization pass in the owning session
+5. ~~Resolve the go-directive decision (needs owner ruling) — now sharpened: 1.26.6 fixes the 4 stdlib CVEs failing CI~~ done at `bf68063`
+6. ~~Wire or remove `dprint.json`.~~ done (resolved — dprint.json removed in T03, later KEPT by owner decision (CHANGELOG [Unreleased]))
+7. ~~`trash result` (stale Nix symlink).~~ done at `bf68063`
+8. ~~Re-verify the parallel session's flaky CollectWithLastEventID test once their WIP lands. ← it passed in this session's full-suite race run; still worth a stabilization pass in the owning session~~ done (resolved — channel-sync de-flake at 83d7c60/496a18b; passed full-suite race 2026-08-16 and docs-health gate 2026-08-29)
 
 ---
 
 ## g) Questions I Cannot Answer Myself
 
-1. **go directive: `1.26` or `1.26.5`?** Two CHANGELOG entries claim `1.26`
-   (never landed); the tree says `1.26.5`; CI pins toolchain "1.26". Which is
-   canonical? This blocks TODO_LIST item 1.
-2. **`go.work.sum`: track in git or keep ignored?** The modularize skill says
-   commit both; this repo deliberately commits only `go.work`.
-3. **Sibling requires: `v0.0.0` or real versions?** Replace directives make it
-   moot locally; the skill recommends `v0.0.0` to avoid pseudo-version churn.
+1. ~~**go directive: `1.26` or `1.26.5`?** Two CHANGELOG entries claim `1.26`~~ done (answered — pinned 1.26.6 at bf68063 (T01); superseded 2026-08-29 by the in-flight 1.26.7 bump)
+   ~~(never landed); the tree says `1.26.5`; CI pins toolchain "1.26". Which is~~
+   ~~canonical? This blocks TODO_LIST item 1.~~
+2. ~~**`go.work.sum`: track in git or keep ignored?** The modularize skill says~~ done (answered — stays gitignored (T16, 496a18b))
+   ~~commit both; this repo deliberately commits only `go.work`.~~
+3. ~~**Sibling requires: `v0.0.0` or real versions?** Replace directives make it~~ done (answered — real published versions (T16, 496a18b))
+   ~~moot locally; the skill recommends `v0.0.0` to avoid pseudo-version churn.~~
 
 _(All three questions stand; all three are also recorded in ROADMAP.md "Open
 questions" and TODO_LIST.md so they survive this report.)_

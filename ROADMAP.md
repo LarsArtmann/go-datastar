@@ -43,8 +43,11 @@ Raw ideas:
 - Typed script-patch accessors in `datastartest` (`RedirectURL`,
   `CustomEventName`/`CustomEventDetail`, `ScriptAttributes`) — structured
   extraction instead of `strings.Contains` on `ScriptContent()`
-- Extract the generic SSE parser (`datastartest/reader.go`, `event.go`) into
-  a reusable `ssetest` package, usable beyond DataStar
+- Domain-adapter example (EventBridge-style) demonstrating the
+  Patch-as-value payoff
+- `example/README.md` and an `example/docker-compose.yml` for easy local
+  runs; benchmark for `Collect` helper overhead
+- Community metadata: GitHub Sponsors / funding, contributor list
 
 ### 3. CI/CD & Hermeticity
 
@@ -54,10 +57,19 @@ Raw ideas:
 
 - Route all lint/audit tools through nix checks so `nix flake check` is the
   single canonical quality gate (golangci-lint, erraudit, govulncheck)
+- Nix CI job (cachix/install-nix-action) running `nix flake check` so
+  hermetic build regressions surface before merge, not after
+- Hermetic `checks.lint` / `checks.vet` / `checks.govulncheck` derivations;
+  `flake.nix` `apps.bench` for running benchmarks
+- vendorHash fragility under the `gitTracked` fileset: pin source by git rev
+  or find a non-moving-target strategy when the daemon commits mid-session
+- Verify the erraudit probe-gate transition once the repo goes public
+  (manual trigger or scheduled probe)
+- Scheduled fuzz runs in CI (`go test -fuzz` on a cron, corpus committed);
+  CodeQL workflow for Go security analysis
 - Release automation (goreleaser, changelog-from-release, tag-triggered
   GitHub releases)
 - Build-time version variable or `version` package
-- Scheduled fuzz testing in CI (`go test -fuzz` on a cron)
 
 ### 4. Documentation Depth
 
@@ -67,6 +79,13 @@ Raw ideas:
 
 - `docs/error-system.md` deep-dive: the full contract, decision rationale,
   why `--enforce-samber-oops` must NOT be used
+- ADRs: 003 error classification, 004 nix per-module hermetic checks,
+  005 coverage strategy (what the % includes)
+- Consumer guides: `docs/replay.md` (EventStore + LastEventID),
+  `docs/wire-format.md` (annotated dataline examples),
+  `docs/testing.md` (unit/E2E/fuzz/WPT strategy), `docs/performance.md`,
+  `docs/migration-guide.md` (for the next minor bump)
+- `docs/architecture.md` overview diagram (transport → protocol → domain)
 - Website launch (Astro + Starlight pattern)
 - Document the DataStar JS version pinning strategy and upgrade process
 - SSE heartbeat documentation
@@ -80,6 +99,10 @@ Raw ideas:
 - Subscribe to upstream `starfederation/datastar` for protocol changes
 - Renovate rule for upstream DataStar JS releases
 - Protocol version negotiation if DataStar introduces breaking wire changes
+- Implement `ReplaceURLQuerystring` (upstream has it; we only have
+  `ReplaceURL` — documented honestly in README)
+- SSE compression support (gzip/Brotli/Zstd) — the last substantial feature
+  gap vs upstream
 
 ## Non-goals
 

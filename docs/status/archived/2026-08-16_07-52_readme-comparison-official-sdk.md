@@ -161,15 +161,19 @@ searching would have produced a fabricated claim.
 
 ## f) Next Steps (bounded — doc session)
 
-1. Re-verify the comparison table when datastar-go cuts its next release
+1. ~~Re-verify the comparison table when datastar-go cuts its next release
    (upstream cadence appears roughly monthly); update the footnote version
-   ← open, routed to TODO_LIST 2026-08-16
-2. Decide whether to mention the JS client version parity (v1.0.2 embedded
+   ← open, routed to TODO_LIST 2026-08-16~~ done at `83d7c60` — re-verified
+   2026-08-16 (T12): v1.2.2 still latest; standing re-check lives in
+   `docs/release-checklist.md`
+2. ~~Decide whether to mention the JS client version parity (v1.0.2 embedded
    vs. whatever upstream ships) in the table's "Serve the DataStar JS client"
-   row ← open, routed to TODO_LIST 2026-08-16
-3. Optionally add the README comparison re-check to the release checklist
+   row ← open, routed to TODO_LIST 2026-08-16~~ done at `83d7c60` — the row
+   now cites "embedded zero-dep `static` module (JS client v1.0.2)"
+3. ~~Optionally add the README comparison re-check to the release checklist
    (docs/ or CHANGELOG process) so it cannot rot silently
-   ← open, routed to TODO_LIST 2026-08-16
+   ← open, routed to TODO_LIST 2026-08-16~~ done at `83d7c60` — quarterly
+   re-verify step codified in `docs/release-checklist.md`
 4. ~~The unrelated working-tree changes under `datastartest/` (modified
    `assert.go`, `collect.go`, `reader.go`, `e2e_test.go`, plus untracked
    `options*.go` / `assert_test.go`) belong to another session and were left

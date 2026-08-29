@@ -26,9 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **All public helpers now accept `testing.TB`** instead of `*testing.T`, so
   they work with `*testing.T`, `*testing.B`, and Ginkgo's `GinkgoT()`.
   Backward compatible for existing `*testing.T` callers.
-- Test coverage raised from 82.2% to 92.9% (assertion failure paths,
+- Test coverage raised from 82.2% to 92.7% (assertion failure paths,
   `RequireSignals`, `MustReadNEvents`, option plumbing, and a full
-  EventStore replay dogfood E2E via `WithLastEventID`).
+  EventStore replay dogfood E2E via `WithLastEventID`; re-measured 2026-08-29).
 - **Response-body Close errors now surface as test errors.** The `Collect*`
   helpers previously ignored `resp.Body.Close()` failures with `_ =`; they now
   report them via `tb.Errorf` instead of silently discarding them. Clears the
@@ -44,8 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed — datastartest
 
 - **SSE wire parser brought to WHATWG HTML § 9.2.6 conformance**, synced from
-  go-sse's `ssetest` (the two parsers are deliberately duplicated; both must
-  agree with browsers). Six deviations corrected, all behavioral (no API
+  go-sse's `ssetest`. Six deviations corrected, all behavioral (no API
   signature changes): lone CR is now a line terminator (§ 9.2.5), an
   incomplete final frame at EOF is discarded, exactly one leading UTF-8 BOM
   is stripped, an `id:` value containing NUL is ignored, the last event ID is
@@ -53,11 +52,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   dispatch; empty `id:` resets it), and the `retry:` reconnection time is
   likewise sticky (updated even by dataless frames, never reset by invalid
   values, parsed at 64-bit width).
+  _Superseded refinement:_ the parser is no longer a synchronized duplicate —
+  `datastartest` now delegates parsing directly to the shared
+  `go-sse/ssetest` package (v0.2.0), so conformance fixes land once for both
+  consumers.
 - **The official Web Platform Tests `eventsource/format-*` corpus is now
   transcribed as Go tests** (`wpt_format_corpus_test.go`: 15 WPT vectors,
   3 spec § 9.2.6 example streams, 8 Chromium `event_source_parser_test.cc`
   cases, each with its upstream citation), re-run through 1–4096 byte chunked
   readers (`chunk_boundary_test.go`) to prove TCP-chunking independence.
+- **Conformance fuzz corpus ported from go-sse/ssetest** — 51 committed
+  regression seeds under `testdata/fuzz/FuzzReadEvents/`, including the
+  `"0data: hello\n\n"` crasher and the trailing-LF terminator regression,
+  keeping the two modules' fuzz corpora in lockstep.
+
+### Changed — dependencies and example
+
+- **go-sse bumped from v0.5.0 to v0.5.1** in the root module and
+  `datastartest`, with `datastartest` additionally depending on
+  `go-sse/ssetest` v0.2.0 for the shared SSE test parser.
+- **Example adds a heartbeat mechanism** to the SSE event handler and ships a
+  rebuilt example binary, demonstrating a keep-alive pattern on top of
+  go-sse's broadcaster.
 
 ### Security — CI and toolchain
 

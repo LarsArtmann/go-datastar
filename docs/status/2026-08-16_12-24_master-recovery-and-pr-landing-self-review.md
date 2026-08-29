@@ -32,16 +32,16 @@ But the session also surfaced a **mid-session incident**: local master's tip sil
 
 1. **CodeRabbit thread replies on PR #3** — the five inline fixes were verified and merged, but the review threads were never answered (courtesy/closure gap; not a merge blocker — `required_conversation_resolution` is off).
 2. **Local verification before merge** — actionlint and coverage parsing were validated in the _prior_ session; this session merged without ever running `nix flake check` / `nix run .#test-race` locally. CI covered the Go jobs (green), but **CI has no nix jobs**: treefmt formatting, hermetic builds, and `go.work` idempotency beyond what ci.yml does are unverified on master. My own AGENTS.md markdown edit specifically was never format-checked.
-3. **Prior session's 3 open questions** — push scope: resolved (moot, everything was pushed); master reconciliation: resolved (this session); badge semantics (all 3 modules at 88.9% vs root-only): **still unanswered** — the badge now publishes all-modules by default.
-4. **TODO_LIST routing** — master's TODO_LIST.md was updated by the parallel session (via PR #3 merge) but contains a stale item (see d/e); this report's next-actions list is not yet harvested into it.
+3. ~~**Prior session's 3 open questions** — push scope: resolved (moot, everything was pushed); master reconciliation: resolved (this session); badge semantics (all 3 modules at 88.9% vs root-only): **still unanswered** — the badge now publishes all-modules by default.~~ done (resolved by the live CI badge (ed815c7))
+4. ~~**TODO_LIST routing** — master's TODO_LIST.md was updated by the parallel session (via PR #3 merge) but contains a stale item (see d/e); this report's next-actions list is not yet harvested into it.~~ done (docs-health pass 2026-08-29)
 
 ## c) NOT STARTED
 
-1. CHANGELOG stale coverage claim fix — L29 still says "92.9%"; real number is 88.9% (prior session's finding, still true on master).
+1. ~~CHANGELOG stale coverage claim fix — L29 still says "92.9%"; real number is 88.9% (prior session's finding, still true on master).~~ done (docs-health pass 2026-08-29)
 2. Rehoming `preserve/status-report-coderabbit-pr3` (the 11-37 report with the 50-item ranked table).
 3. Coverage-floor policy (optional CI gate at a threshold) — undecided.
 4. Merged-branch cleanup: remote `pr/docs-test-consolidation` and local tracking branch still exist (`delete_branch_on_merge` is false).
-5. Adding `nix flake check` to CI as a required check — the gap that let master merge on Go-only evidence.
+5. ~~Adding `nix flake check` to CI as a required check — the gap that let master merge on Go-only evidence.~~ **Won't implement — superseded — owner removed branch protection entirely (257c395); nix-in-CI idea routed to ROADMAP.**
 6. Reviewing the parallel session's 5 merged commits for content (they were CI-verified but never read by this session).
 7. Next release cut — CHANGELOG on master now carries multiple unreleased entries (coverage badge, gotchas, datastartest fixes).
 
@@ -98,26 +98,26 @@ But the session also surfaced a **mid-session incident**: local master's tip sil
 
 | #  | Task                                                                                                                                                       | Impact                      | Effort           |
 | -- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ---------------- |
-| 1  | Run `nix flake check` on master; fix fallout if any (treefmt on AGENTS.md, hermetic builds)                                                                | Critical (trust in session) | 10–30min         |
-| 2  | Run `nix run .#test-race` on master as final confirmation                                                                                                  | High                        | 5min             |
+| ~~1~~  | ~~Run `nix flake check` on master; fix fallout if any (treefmt on AGENTS.md, hermetic builds)~~ done (run 2026-08-29 — format check FAILS at HEAD (treefmt on reader_fuzz_test.go since d032dc5); gofumpt fix already in working tree — tracked in TODO_LIST) | ~~Critical (trust in session)~~ | ~~10–30min~~ |
+| ~~2~~  | ~~Run `nix run .#test-race` on master as final confirmation~~ done (go test -race green across all 4 packages at HEAD (2026-08-29); nix variant blocked by the same format failure) | ~~High~~ | ~~5min~~ |
 | 3  | Decide rehoming of `preserve/status-report-coderabbit-pr3`: PR the 11-37 report to master (feeds TODO_LIST harvest) or drop                                | High                        | 15min            |
-| 4  | Harvest this report's (f) into TODO_LIST.md via docs-health; fix/remove the stale "de-flake lint" item already on master (lint is green)                   | High                        | 20min            |
-| 5  | Add `nix flake check` (treefmt + hermetic builds) to CI as a 5th required check                                                                            | High                        | 30min            |
+| ~~4~~  | ~~Harvest this report's (f) into TODO_LIST.md via docs-health; fix/remove the stale "de-flake lint" item already on master (lint is green)~~ done (docs-health pass 2026-08-29) | ~~High~~ | ~~20min~~ |
+| ~~5~~  | ~~Add `nix flake check` (treefmt + hermetic builds) to CI as a 5th required check~~ **Won't implement — superseded — owner removed branch protection entirely (257c395).** | ~~High~~ | ~~30min~~ |
 | 6  | Delete merged branches: local + remote `pr/docs-test-consolidation`; `git town` config prune                                                               | Medium                      | 5min             |
-| 7  | Fix CHANGELOG L29 stale "92.9%" → measured 88.9%                                                                                                           | Medium                      | 5min             |
-| 8  | Decide badge semantics (all-modules 88.9% vs root-only higher number) and update README label if changed                                                   | Medium                      | 15min            |
+| ~~7~~  | ~~Fix CHANGELOG L29 stale "92.9%" → measured 88.9%~~ done (docs-health pass 2026-08-29) | ~~Medium~~ | ~~5min~~ |
+| ~~8~~  | ~~Decide badge semantics (all-modules 88.9% vs root-only higher number) and update README label if changed~~ done (resolved by the live CI badge (ed815c7)) | ~~Medium~~ | ~~15min~~ |
 | 9  | Reply to the 5 CodeRabbit threads on merged PR #3 (closure; mention fixes landed in `ed815c7`)                                                             | Medium                      | 15min            |
 | 10 | Adopt parallel-session policy: one session per checkout or mandatory per-session worktrees; constrain auto-commit daemon to non-master branches            | High                        | decision + 15min |
-| 11 | Route future status reports through quick PRs instead of direct master commits                                                                             | Medium                      | 5min             |
+| ~~11~~ | ~~Route future status reports through quick PRs instead of direct master commits~~ done (done — reports rode PRs #5/#6 (86d549a, cb86344, a8b8316)) | ~~Medium~~ | ~~5min~~ |
 | 12 | Read the 5 parallel-session commits now on master (`ed815c7` content, `ce3b4bc`, `66a637e`, `ffeedea`, `52cfac8`, `7dec1d3`) — human review never happened | Medium                      | 30min            |
-| 13 | Consider requiring 1 approving review on master protection (currently checks-only; everything merged with zero human review)                               | Medium                      | decision         |
-| 14 | Consider enabling `required_conversation_resolution` once thread replies (item 9) are done                                                                 | Low                         | 2min             |
+| ~~13~~ | ~~Consider requiring 1 approving review on master protection (currently checks-only; everything merged with zero human review)~~ **Won't implement — superseded — protection removed (257c395).** | ~~Medium~~ | ~~decision~~ |
+| ~~14~~ | ~~Consider enabling `required_conversation_resolution` once thread replies (item 9) are done~~ **Won't implement — superseded — protection removed (257c395).** | ~~Low~~ | ~~2min~~ |
 | 15 | Cut next release: CHANGELOG has unreleased entries (badge, gotchas, datastartest fixes); follow go-release skill                                           | Medium                      | 1h               |
 | 16 | Add coverage-floor gate to coverage.yml if a policy is chosen (item 8)                                                                                     | Low                         | 15min            |
-| 17 | Verify Dependabot covers all three modules (root, static, datastartest)                                                                                    | Low                         | 10min            |
+| ~~17~~ | ~~Verify Dependabot covers all three modules (root, static, datastartest)~~ done (.github/dependabot.yml covers root, datastartest, static + github-actions) | ~~Low~~ | ~~10min~~ |
 | 18 | Verify pkg.go.dev renders current docs after next release                                                                                                  | Low                         | 10min            |
-| 19 | Annotate older docs/status reports that reference pre-merge state (e.g., 09-55 "full-execution" report) via docs-health ANNOTATE                           | Low                         | 20min            |
-| 20 | Re-verify README comparison table against upstream `starfederation/datastar-go` changes since last check                                                   | Low                         | 30min            |
+| ~~19~~ | ~~Annotate older docs/status reports that reference pre-merge state (e.g., 09-55 "full-execution" report) via docs-health ANNOTATE~~ done (done — 08-47 pass covered pre-merge reports; docs-health 2026-08-29 covered 09-55 onward) | ~~Low~~ | ~~20min~~ |
+| ~~20~~ | ~~Re-verify README comparison table against upstream `starfederation/datastar-go` changes since last check~~ done (re-verified v1.2.2 on 2026-08-16 (T12, 83d7c60); standing re-check in docs/release-checklist.md) | ~~Low~~ | ~~30min~~ |
 | 21 | Un-block erraudit CI job: probe step skips while the erraudit repo is private; revisit when public                                                         | Low                         | deferred         |
 | 22 | Roadmap: domain-adapter example (EventBridge-style) demonstrating the Patch-as-value payoff                                                                | Low                         | deferred         |
 
