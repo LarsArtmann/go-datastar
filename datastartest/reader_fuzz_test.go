@@ -34,6 +34,19 @@ func FuzzReadEvents(f *testing.F) {
 	f.Add([]byte("retry: 3000\n\n"))
 	f.Add([]byte("event: named\nid: 9\nretry: 100\n\n"))
 
+	// Conformance parity with go-sse's ssetest (same parser under the hood;
+	// 2026-08-29 port). WPT format-* vectors, sticky-id, BOM, and terminator
+	// edge cases — see ssetest/reader_fuzz_test.go for the full citations.
+	f.Add([]byte("data:test\r\ndata\ndata:test\r\r\n"))                     // format-newlines
+	f.Add([]byte("data:\ttest\rdata: \ndata:test\n\n"))                     // format-leading-space
+	f.Add([]byte("\xEF\xBB\xBFdata:1\n\n\xEF\xBB\xBFdata:2\n\ndata:3\n\n")) // format-bom
+	f.Add([]byte("id:\x00\ndata:x\n\n"))                                    // format-field-id-null
+	f.Add([]byte("retry:2000\n\nretry\n\ndata:x\n\n"))                      // format-field-retry-empty
+	f.Add([]byte("data:1\nid:1\n\nid:2\ndata:2\n\ndata:3\n\n"))             // sticky last-event-id
+	f.Add([]byte("data: x\r"))                                              // trailing CR
+	f.Add([]byte("data: x\n"))                                              // trailing LF regression
+	f.Add([]byte("0data: hello\n\n"))                                       // crasher: substring but different field name — dispatches nothing
+
 	f.Fuzz(func(t *testing.T, input []byte) {
 		// The only invariant under fuzz: never panic.
 		_, _ = datastartest.ReadEvents(strings.NewReader(string(input)))

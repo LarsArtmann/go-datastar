@@ -103,3 +103,23 @@ t.Fatalf("unexpected events:\n%s", datastartest.EventsString(events))
 The package is a separate Go module with a stable, tagged API
 (`datastartest/v0.x.y`). See [pkg.go.dev](https://pkg.go.dev/github.com/larsartmann/go-datastar/datastartest)
 for the complete API.
+
+## Conformance
+
+The SSE parser underneath `datastartest` is pinned to the official browser
+suites:
+
+- The WPT `eventsource/format-*` corpus, the WHATWG HTML standard § 9.2.6
+  examples, and Chromium's `event_source_parser_test.cc` cases are transcribed
+  into executable tests (`wpt_format_corpus_test.go`), each with its upstream
+  citation.
+- `chunk_boundary_test.go` re-runs the entire corpus through readers that
+  deliver the stream in 1–4096 byte chunks, proving parse results are
+  independent of TCP chunking.
+- `testdata/fuzz/FuzzReadEvents/` carries committed regression seeds,
+  including the `"0data: hello\n\n"` crasher (a substring match that is a
+  different field name and must dispatch nothing) and the trailing-LF
+  terminator regression, ported from
+  [go-sse/ssetest](https://github.com/LarsArtmann/go-sse/tree/master/ssetest)
+  — the two modules deliberately share one parser implementation, so their
+  fuzz corpora stay in lockstep.
