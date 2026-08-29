@@ -14,14 +14,14 @@ at every tag (v0.0.1 → v0.2.0).
 
 ### 2. Fixed all five living docs
 
-| File | What was fixed |
-| --- | --- |
-| `TODO_LIST.md` | Rebuilt: removed the 45-line "Completed this session (2026-08-08)" trophy section (structural decay — completed work belongs in CHANGELOG); removed the `nestif` item (already fixed in code at `5bab343`, lint 0 issues); re-verified every surviving item; added harvested open items (per-module Nix checks, dprint wiring, actionlint CI step, erraudit devShell, CollectPost error tests, ADR 002, CONTRIBUTING multi-module section, branch protection, result symlink) |
-| `CHANGELOG.md` | Added missing `[0.2.0]` comparison link and fixed `[Unreleased]` to diff from v0.2.0; added `[Unreleased] → Fixed`: NewDispatchCustomEventPatch godoc correction |
-| `FEATURES.md` | Corrected 6 stale rows: `DispatchCustomEventPatch` → FULLY (marshal errors returned since v0.0.3), `WithScriptAttributeKVs` → FULLY (doc corrected v0.0.3), Benchmark tests → FULLY (4 benchmarks exist), erraudit-in-CI + govulncheck-in-CI → FULLY, GitHub Actions CI → FULLY, "9 codes" → 11 codes, stale e2e line-count (109 → current reality: 51 lines in root + relocated dogfood test), coverage 98.7% → measured 98.4% |
-| `AGENTS.md` | Added missing file-layout rows (`store.go`, `doc.go`, `example/`, `benchmark_test.go`); added a Gotchas section (global-gitignore `go.work` trap; `dprint.json` is unwired) |
-| `ROADMAP.md` | Added harvested long-term items (headless-browser E2E, typed script accessors, `ssetest` extraction); added "Open questions" section (go.work.sum tracking, `v0.0.0` vs real sibling versions, go-directive policy) |
-| `script_convenience.go` | Fixed godoc lie: `NewDispatchCustomEventPatch` comment claimed lazy marshal in `Event()`; it marshals in the constructor (since v0.0.3) |
+| File                    | What was fixed                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TODO_LIST.md`          | Rebuilt: removed the 45-line "Completed this session (2026-08-08)" trophy section (structural decay — completed work belongs in CHANGELOG); removed the `nestif` item (already fixed in code at `5bab343`, lint 0 issues); re-verified every surviving item; added harvested open items (per-module Nix checks, dprint wiring, actionlint CI step, erraudit devShell, CollectPost error tests, ADR 002, CONTRIBUTING multi-module section, branch protection, result symlink) |
+| `CHANGELOG.md`          | Added missing `[0.2.0]` comparison link and fixed `[Unreleased]` to diff from v0.2.0; added `[Unreleased] → Fixed`: NewDispatchCustomEventPatch godoc correction                                                                                                                                                                                                                                                                                                              |
+| `FEATURES.md`           | Corrected 6 stale rows: `DispatchCustomEventPatch` → FULLY (marshal errors returned since v0.0.3), `WithScriptAttributeKVs` → FULLY (doc corrected v0.0.3), Benchmark tests → FULLY (4 benchmarks exist), erraudit-in-CI + govulncheck-in-CI → FULLY, GitHub Actions CI → FULLY, "9 codes" → 11 codes, stale e2e line-count (109 → current reality: 51 lines in root + relocated dogfood test), coverage 98.7% → measured 98.4%                                               |
+| `AGENTS.md`             | Added missing file-layout rows (`store.go`, `doc.go`, `example/`, `benchmark_test.go`); added a Gotchas section (global-gitignore `go.work` trap; `dprint.json` is unwired)                                                                                                                                                                                                                                                                                                   |
+| `ROADMAP.md`            | Added harvested long-term items (headless-browser E2E, typed script accessors, `ssetest` extraction); added "Open questions" section (go.work.sum tracking, `v0.0.0` vs real sibling versions, go-directive policy)                                                                                                                                                                                                                                                           |
+| `script_convenience.go` | Fixed godoc lie: `NewDispatchCustomEventPatch` comment claimed lazy marshal in `Event()`; it marshals in the constructor (since v0.0.3)                                                                                                                                                                                                                                                                                                                                       |
 
 ### 3. Discovered and documented the go.mod ghost fix
 
@@ -33,8 +33,7 @@ in all of them. Routed as a BLOCKED decision item in TODO_LIST and ROADMAP.
 
 ### 4. Annotated 16 historical reports inline
 
-Every numbered item resolved in place (`~~strikethrough~~ done at \`hash\`` /
-`Won't implement — reason` / left untouched = still open):
+Every numbered item resolved in place (`~~strikethrough~~ done at \`hash\``/`Won't implement — reason` / left untouched = still open):
 
 1. 2026-08-07_08-09 typed-error-system (15 items + Q3 resolution corrected)
 2. 2026-08-07_19-12 v0.0.1 retro (~20 items + Q2 false resolution corrected)

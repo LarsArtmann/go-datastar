@@ -1,7 +1,7 @@
 # Status Report — Pareto Hardening Execution
 
 > **Resolution note (2026-08-08 07:04, corrected 2026-08-16):** The fuckups
-> listed in section d below (F1–F3) were *reported* as resolved by the 07-04
+> listed in section d below (F1–F3) were _reported_ as resolved by the 07-04
 > session. F1 and F2 genuinely landed; **F3 (go.mod lowering) never committed**
 > — every tag through v0.2.0 still says `go 1.26.5`. See the correction at
 > section d.3 and TODO_LIST. This report is preserved as a point-in-time
@@ -25,38 +25,38 @@
 
 ## a) FULLY DONE
 
-| #   | Task                                  | What was done                                                                                 | Evidence                                             |
-| --- | ------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| 1   | T01: Fix CONTRIBUTING.md              | Rewrote with GOEXPERIMENT=jsonv2, GOWORK=off, Nix workflow, manual workflow                   | `CONTRIBUTING.md` — 2 GOWORK refs, 13 Nix refs       |
-| 2   | T01: Update AGENTS.md file layout     | Added `example_test.go`, `inbound_fuzz_test.go`, `coverage_test.go`, `errors_example_test.go` | `AGENTS.md` file layout table                        |
-| 3   | T01: Add HEAD parity requirement #12  | Added RFC 7231 §4.3.2 HEAD compliance                                                         | `AGENTS.md` wire-format parity                       |
-| 4   | T01: Update doc.go                    | Added classified errors section with 3 code examples                                          | `doc.go`                                             |
-| 5   | T03: Fix WithScriptAttributeKVs doc   | Corrected "returns an error" → "silently dropped"                                             | `script.go:58-59`                                    |
-| 6   | T03: Add tests for odd/even KV args   | 2 new tests: odd-args truncation + multiple pairs                                             | `script_test.go`                                     |
-| 7   | T02: Clean CHANGELOG                  | Removed coverage_test.go, RequestWithContext, example update from [Unreleased]                | `CHANGELOG.md`                                       |
-| 8   | T02: Fix vague annotations            | 8 annotations in typed-error-system report now have commit hashes                             | `docs/status/2026-08-07_08-09_typed-error-system.md` |
-| 9   | T04: Create community files           | SECURITY.md, CODE_OF_CONDUCT.md, bug_report.md, feature_request.md, PULL_REQUEST_TEMPLATE.md  | `.github/` directory                                 |
-| 10  | T05: Pin golangci-lint                | Pinned to v2.12.2 (was @latest)                                                               | `ci.yml:50`                                          |
-| 11  | T05: Add erraudit CI job              | `--severity-threshold error --enforce-go-error-family`                                        | `ci.yml` erraudit job                                |
-| 12  | T05: Add govulncheck CI job           | `govulncheck ./...`                                                                           | `ci.yml` govulncheck job                             |
-| 13  | T05: CI env cleanup                   | Top-level `env:` block removes per-step repetition                                            | `ci.yml`                                             |
-| 14  | T06: Add input_preview                | First 200 bytes of unmarshal input in error context                                           | `inbound.go` `maxInputPreviewLen`                    |
-| 15  | T06: Add WrapOncef                    | ReadSignals + readSignalsFromBody use `WrapOncef` instead of `Wrapf`                          | `inbound.go:34,80`                                   |
-| 16  | T06: Add ErrorResponseFromError       | New function using errorfamily.HTTPStatus, Code, Classify, IsRetryable                        | `response.go`                                        |
-| 17  | T06: Fix DispatchCustomEventPatch     | Detail now marshaled in constructor, returns classified error instead of swallowing           | `script_convenience.go`                              |
-| 18  | T06: Add naming convention doc        | _failed/_invalid/_required/_after_close suffixes documented                                   | `errors.go`                                          |
-| 19  | T06: Add errors.As test               | All 10 error paths verified as `*errorfamily.Error` via `errors.As`                           | `errors_test.go`                                     |
-| 20  | T06: Add new error code               | `CodeCustomEventDetailMarshalFailed`                                                          | `errors.go`                                          |
-| 21  | T07: Add error codes table to README  | All 11 codes with family, retryability, HTTP status                                           | `README.md`                                          |
-| 22  | T07: Add errors_example_test.go       | 3 runnable Example functions (by code, sentinel, family)                                      | `errors_example_test.go`                             |
-| 23  | T08: Add benchmarks                   | 4 benchmarks: ElementsPatch, SignalsPatch, ScriptPatch, MarshalSignals                        | `benchmark_test.go`                                  |
-| 24  | T08: Add fuzz test for MarshalSignals | FuzzMarshalSignalsRoundtrip with 7 seed corpus                                                | `benchmark_test.go`                                  |
-| 25  | T09: erraudit strategy                | `--severity-threshold error` replaces `//nolint` (avoids golangci-lint conflict)              | Verified                                             |
-| 26  | T10: Nix flake apps                   | `erraudit` and `govulncheck` apps added                                                       | `flake.nix`                                          |
-| 27  | T11: Dependabot                       | gomod + github-actions, weekly, 5 PR limit                                                    | `.github/dependabot.yml`                             |
-| 28  | T13: Verify deps                      | go-error-family v0.10.0 (latest), go-sse v0.4.0 (latest), DataStar JS v1.0.2 (latest)         | Confirmed via `go list -m -versions` and GitHub      |
-| 29  | CHANGELOG updated                     | All user-visible changes from T01-T07 documented                                              | `CHANGELOG.md [Unreleased]`                          |
-| 30  | TODO_LIST updated                     | All completed items marked, remaining items (nestif, repo polish, v0.0.3 tag) listed          | `TODO_LIST.md`                                       |
+| #  | Task                                  | What was done                                                                                 | Evidence                                             |
+| -- | ------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| 1  | T01: Fix CONTRIBUTING.md              | Rewrote with GOEXPERIMENT=jsonv2, GOWORK=off, Nix workflow, manual workflow                   | `CONTRIBUTING.md` — 2 GOWORK refs, 13 Nix refs       |
+| 2  | T01: Update AGENTS.md file layout     | Added `example_test.go`, `inbound_fuzz_test.go`, `coverage_test.go`, `errors_example_test.go` | `AGENTS.md` file layout table                        |
+| 3  | T01: Add HEAD parity requirement #12  | Added RFC 7231 §4.3.2 HEAD compliance                                                         | `AGENTS.md` wire-format parity                       |
+| 4  | T01: Update doc.go                    | Added classified errors section with 3 code examples                                          | `doc.go`                                             |
+| 5  | T03: Fix WithScriptAttributeKVs doc   | Corrected "returns an error" → "silently dropped"                                             | `script.go:58-59`                                    |
+| 6  | T03: Add tests for odd/even KV args   | 2 new tests: odd-args truncation + multiple pairs                                             | `script_test.go`                                     |
+| 7  | T02: Clean CHANGELOG                  | Removed coverage_test.go, RequestWithContext, example update from [Unreleased]                | `CHANGELOG.md`                                       |
+| 8  | T02: Fix vague annotations            | 8 annotations in typed-error-system report now have commit hashes                             | `docs/status/2026-08-07_08-09_typed-error-system.md` |
+| 9  | T04: Create community files           | SECURITY.md, CODE_OF_CONDUCT.md, bug_report.md, feature_request.md, PULL_REQUEST_TEMPLATE.md  | `.github/` directory                                 |
+| 10 | T05: Pin golangci-lint                | Pinned to v2.12.2 (was @latest)                                                               | `ci.yml:50`                                          |
+| 11 | T05: Add erraudit CI job              | `--severity-threshold error --enforce-go-error-family`                                        | `ci.yml` erraudit job                                |
+| 12 | T05: Add govulncheck CI job           | `govulncheck ./...`                                                                           | `ci.yml` govulncheck job                             |
+| 13 | T05: CI env cleanup                   | Top-level `env:` block removes per-step repetition                                            | `ci.yml`                                             |
+| 14 | T06: Add input_preview                | First 200 bytes of unmarshal input in error context                                           | `inbound.go` `maxInputPreviewLen`                    |
+| 15 | T06: Add WrapOncef                    | ReadSignals + readSignalsFromBody use `WrapOncef` instead of `Wrapf`                          | `inbound.go:34,80`                                   |
+| 16 | T06: Add ErrorResponseFromError       | New function using errorfamily.HTTPStatus, Code, Classify, IsRetryable                        | `response.go`                                        |
+| 17 | T06: Fix DispatchCustomEventPatch     | Detail now marshaled in constructor, returns classified error instead of swallowing           | `script_convenience.go`                              |
+| 18 | T06: Add naming convention doc        | _failed/_invalid/_required/_after_close suffixes documented                                   | `errors.go`                                          |
+| 19 | T06: Add errors.As test               | All 10 error paths verified as `*errorfamily.Error` via `errors.As`                           | `errors_test.go`                                     |
+| 20 | T06: Add new error code               | `CodeCustomEventDetailMarshalFailed`                                                          | `errors.go`                                          |
+| 21 | T07: Add error codes table to README  | All 11 codes with family, retryability, HTTP status                                           | `README.md`                                          |
+| 22 | T07: Add errors_example_test.go       | 3 runnable Example functions (by code, sentinel, family)                                      | `errors_example_test.go`                             |
+| 23 | T08: Add benchmarks                   | 4 benchmarks: ElementsPatch, SignalsPatch, ScriptPatch, MarshalSignals                        | `benchmark_test.go`                                  |
+| 24 | T08: Add fuzz test for MarshalSignals | FuzzMarshalSignalsRoundtrip with 7 seed corpus                                                | `benchmark_test.go`                                  |
+| 25 | T09: erraudit strategy                | `--severity-threshold error` replaces `//nolint` (avoids golangci-lint conflict)              | Verified                                             |
+| 26 | T10: Nix flake apps                   | `erraudit` and `govulncheck` apps added                                                       | `flake.nix`                                          |
+| 27 | T11: Dependabot                       | gomod + github-actions, weekly, 5 PR limit                                                    | `.github/dependabot.yml`                             |
+| 28 | T13: Verify deps                      | go-error-family v0.10.0 (latest), go-sse v0.4.0 (latest), DataStar JS v1.0.2 (latest)         | Confirmed via `go list -m -versions` and GitHub      |
+| 29 | CHANGELOG updated                     | All user-visible changes from T01-T07 documented                                              | `CHANGELOG.md [Unreleased]`                          |
+| 30 | TODO_LIST updated                     | All completed items marked, remaining items (nestif, repo polish, v0.0.3 tag) listed          | `TODO_LIST.md`                                       |
 
 ---
 
@@ -78,13 +78,13 @@ Tried adding `mdformat` to treefmt. It reformatted status reports and other docs
 
 ## c) NOT STARTED
 
-| #   | Task                                   | Why                                                           | Status    |
-| --- | -------------------------------------- | ------------------------------------------------------------- | --------- |
-| 1   | T12: GitHub repo polish (topics, wiki) | ~~BLOCKED — requires `gh` CLI access~~ done in the 09-36 session (`cfe328d`) |
-| 2   | T14: Tag v0.0.3                        | ~~BLOCKED — release cadence decision (user)~~ done — v0.0.3 tagged 2026-08-08 |
-| 3   | Nestif refactor of ReadSignals         | done at `5bab343`                                                            |
-| 4   | Coverage badge in README               | TODO                                                            |
-| 5   | pkg.go.dev rendering verification      | TODO                                                            |
+| # | Task                                   | Why                                                                           | Status |
+| - | -------------------------------------- | ----------------------------------------------------------------------------- | ------ |
+| 1 | T12: GitHub repo polish (topics, wiki) | ~~BLOCKED — requires `gh` CLI access~~ done in the 09-36 session (`cfe328d`)  |        |
+| 2 | T14: Tag v0.0.3                        | ~~BLOCKED — release cadence decision (user)~~ done — v0.0.3 tagged 2026-08-08 |        |
+| 3 | Nestif refactor of ReadSignals         | done at `5bab343`                                                             |        |
+| 4 | Coverage badge in README               | TODO                                                                          |        |
+| 5 | pkg.go.dev rendering verification      | TODO                                                                          |        |
 
 ---
 

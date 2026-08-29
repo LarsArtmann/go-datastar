@@ -15,17 +15,16 @@ parallel session mid-flight (see d) F6); zero Go files changed by this session.
 
 ### 1. Annotated the 5 remaining historical reports inline
 
-Every numbered item resolved in place (`~~item~~ done at \`hash\`` /
-`NOT-DO — reason` / `Won't implement` / left untouched = still open), every
-hash verified against `git show --stat` before citing:
+Every numbered item resolved in place (`~~item~~ done at \`hash\``/`NOT-DO — reason`/`Won't implement`/ left untouched = still open), every
+hash verified against`git show --stat` before citing:
 
-| Report | Edits | Notable resolutions |
-| --- | --- | --- |
-| `2026-08-10_07-27` modularize review | 17 | AGENTS/CHANGELOG/CI checks → `3cd669e`, `dc0d6f2`; regression guard → `fda70c7`; DAG-acyclicity → NOT-DO (superseded); `CollectWithOptions` → done at `06bb019`; pre-publish tags → done |
-| `2026-08-10_07-38` documentation cleanup | 23 (17+6 corrective) | diff exit-code fix, CHANGELOG/AGENTS CI docs → `dc0d6f2`; guard → `fda70c7`; erraudit/govulncheck → CI jobs at `eb8bf29` |
-| `2026-08-10_07-55` CI hardening + guard | 19 (17+1+1) | GOWORK=off guard coverage → CI isolation job; benchmarks/fuzz → `fd3a5ac`; all three G questions routed |
-| `2026-08-13_02-58` go-sse v0.5.0 review | 16 | everything closes at `7d6e423` / `0dc2dbd` / `5b70bb1`; flake.lock bump resolved intentional; v0.2.0 shipped; all 3 G questions resolved |
-| `2026-08-13_03-25` go-sse follow-up | 19 | deferred gate items re-verified this session; release items → `0dc2dbd`; dprint → routed; Dependabot verified live |
+| Report                                   | Edits                | Notable resolutions                                                                                                                                                                      |
+| ---------------------------------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `2026-08-10_07-27` modularize review     | 17                   | AGENTS/CHANGELOG/CI checks → `3cd669e`, `dc0d6f2`; regression guard → `fda70c7`; DAG-acyclicity → NOT-DO (superseded); `CollectWithOptions` → done at `06bb019`; pre-publish tags → done |
+| `2026-08-10_07-38` documentation cleanup | 23 (17+6 corrective) | diff exit-code fix, CHANGELOG/AGENTS CI docs → `dc0d6f2`; guard → `fda70c7`; erraudit/govulncheck → CI jobs at `eb8bf29`                                                                 |
+| `2026-08-10_07-55` CI hardening + guard  | 19 (17+1+1)          | GOWORK=off guard coverage → CI isolation job; benchmarks/fuzz → `fd3a5ac`; all three G questions routed                                                                                  |
+| `2026-08-13_02-58` go-sse v0.5.0 review  | 16                   | everything closes at `7d6e423` / `0dc2dbd` / `5b70bb1`; flake.lock bump resolved intentional; v0.2.0 shipped; all 3 G questions resolved                                                 |
+| `2026-08-13_03-25` go-sse follow-up      | 19                   | deferred gate items re-verified this session; release items → `0dc2dbd`; dprint → routed; Dependabot verified live                                                                       |
 
 Plus the parallel session's fresh `2026-08-16_07-52` README-comparison report
 (item f.4: the uncommitted datastartest WIP it worried about landed as
@@ -262,5 +261,5 @@ edit discipline.
    signal/noise call, not a correctness one.)
 3. **DOMAIN_LANGUAGE.md:** is a glossary a must-have for this repo (my
    Fitness scoring subtracted 1.0 for its absence), or should a protocol
-    library waive it — in which case the audit's Fitness baseline is 10, not
+   library waive it — in which case the audit's Fitness baseline is 10, not
    9? Either way I'll record the ruling in the next audit.

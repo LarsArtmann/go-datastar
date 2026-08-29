@@ -16,6 +16,7 @@ hand-rolling SSE parsing and DataStar dataline decoding.
 ### Approach taken
 
 Created a `datastartest/` subpackage with:
+
 - `Event` type with typed accessors (`Selector()`, `Mode()`, `Elements()`, etc.)
 - `ReadEvents(io.Reader)` SSE wire-format parser
 - `Collect(t, handler)` one-liner test server + request + decode
@@ -26,20 +27,20 @@ Created a `datastartest/` subpackage with:
 
 ### Files created/modified
 
-| File | Lines | Status |
-| --- | --- | --- |
-| `datastartest/doc.go` | 65 | NEW — package documentation with quick-start example |
-| `datastartest/event.go` | 122 | NEW — Event type + 12 typed accessors |
-| `datastartest/reader.go` | 112 | NEW — SSE wire-format parser |
-| `datastartest/collect.go` | 44 | NEW — Collect helper |
-| `datastartest/filter.go` | 21 | NEW — FilterElements/FilterSignals |
-| `datastartest/assert.go` | 93 | NEW — Require* assertion helpers |
-| `datastartest/event_test.go` | 268 | NEW — 16 tests covering all accessors |
-| `datastartest/reader_test.go` | 187 | NEW — 8 tests covering SSE parsing edge cases |
-| `datastartest/example_test.go` | 90 | NEW — 4 testable examples |
-| `e2e_test.go` | 109 | MODIFIED — refactored from 261 to 109 lines |
-| `AGENTS.md` | — | MODIFIED — added datastartest to file layout + new section |
-| `README.md` | — | MODIFIED — added "Testing your handlers" section |
+| File                           | Lines | Status                                                     |
+| ------------------------------ | ----- | ---------------------------------------------------------- |
+| `datastartest/doc.go`          | 65    | NEW — package documentation with quick-start example       |
+| `datastartest/event.go`        | 122   | NEW — Event type + 12 typed accessors                      |
+| `datastartest/reader.go`       | 112   | NEW — SSE wire-format parser                               |
+| `datastartest/collect.go`      | 44    | NEW — Collect helper                                       |
+| `datastartest/filter.go`       | 21    | NEW — FilterElements/FilterSignals                         |
+| `datastartest/assert.go`       | 93    | NEW — Require* assertion helpers                           |
+| `datastartest/event_test.go`   | 268   | NEW — 16 tests covering all accessors                      |
+| `datastartest/reader_test.go`  | 187   | NEW — 8 tests covering SSE parsing edge cases              |
+| `datastartest/example_test.go` | 90    | NEW — 4 testable examples                                  |
+| `e2e_test.go`                  | 109   | MODIFIED — refactored from 261 to 109 lines                |
+| `AGENTS.md`                    | —     | MODIFIED — added datastartest to file layout + new section |
+| `README.md`                    | —     | MODIFIED — added "Testing your handlers" section           |
 
 ---
 
@@ -285,7 +286,7 @@ significantly expands the API surface and I don't know if your consumers need it
 
 Go examples must have `// Output:` assertions to be run by `go test`, but
 functions like `Collect` require a `*testing.T` which examples can't provide.
-I worked around this by demonstrating the *decoded output shape* via
+I worked around this by demonstrating the _decoded output shape_ via
 `ReadEvents` on string input, rather than calling `Collect` directly. The
 example is titled `ExampleCollect` but doesn't call `Collect`. Is this
 acceptable, or should I restructure to have only genuinely-executable examples
@@ -295,14 +296,14 @@ that call the real API?
 
 ## Metrics Summary
 
-| Metric | Value |
-| --- | --- |
-| New source files | 6 (485 lines) |
-| New test files | 3 (545 lines) |
-| New tests | 24 (all pass with `-race`) |
-| New testable examples | 4 (all pass) |
-| `e2e_test.go` reduction | 261 → 109 lines (-58%) |
-| Total project tests | 272 (all pass) |
-| `golangci-lint` issues | 0 |
-| `go vet` issues | 0 |
-| New dependencies | 0 |
+| Metric                  | Value                      |
+| ----------------------- | -------------------------- |
+| New source files        | 6 (485 lines)              |
+| New test files          | 3 (545 lines)              |
+| New tests               | 24 (all pass with `-race`) |
+| New testable examples   | 4 (all pass)               |
+| `e2e_test.go` reduction | 261 → 109 lines (-58%)     |
+| Total project tests     | 272 (all pass)             |
+| `golangci-lint` issues  | 0                          |
+| `go vet` issues         | 0                          |
+| New dependencies        | 0                          |

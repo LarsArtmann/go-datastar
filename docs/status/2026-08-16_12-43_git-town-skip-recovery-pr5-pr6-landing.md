@@ -94,38 +94,38 @@ No. Every claim in the session was verifiable and verified. The closest to a lie
 
 Ordered roughly by impact / effort. Everything here is grounded in what this session did or directly observed.
 
-| # | Task | Why |
-|---|------|-----|
-| 1 | Harvest this report + `12-24` report next-steps into TODO_LIST.md (docs-health HARVEST) | Close the loop; 28 entombed snapshots |
-| 2 | AGENTS.md rule: never commit to local master; branch first | Kills the recurring incident class |
-| 3 | Pre-push hook blocking `git push origin master` with pointer to PR flow | Fail fast instead of GH006 round-trip |
-| 4 | Delete stale `pr/docs-test-consolidation` (local + remote) | PR #3 merged; dead branch |
-| 5 | Decide fate of `preserve/status-report-coderabbit-pr3` | Snapshot already preserved in docs/status |
-| 6 | Extend the git-town AGENTS.md gotcha: lineage-unset after branch deletion | Did it manually twice this session |
-| 7 | Document `git town propose` as the one-command branch+push+PR path | Replaces 4 manual commands |
-| 8 | Annotate the `12-24` report: its "land 86d549a" item is DONE via PR #5 | docs-health ANNOTATE mode |
-| 9 | Consolidate master-landing runbook into one canonical doc | Kill the 3-way split-brain risk |
-| 10 | Verify TODO_LIST.md exists and is current (docs-health VERIFY) | Unknown state; reports keep deferring to it |
-| 11 | Confirm erraudit CI job status in AGENTS.md (informational, not required) | Prevents future 4-vs-5 confusion |
-| 12 | Path-filter CI so docs-only PRs skip test/lint/govulncheck | ~2 min saved per docs PR |
-| 13 | Investigate golangci-lint CI caching | 1m33s long pole on every PR |
-| 14 | PR template: "CI-dependent boxes are checked by CI" guard | Honesty fix from this session |
-| 15 | docs/status/README.md index (date, one-liner, outcome per report) | 28 files, no navigation |
-| 16 | Codify CHANGELOG policy: docs/status snapshots excluded (status quo, unwritten) | PR #5/#6 both had to argue this ad hoc |
-| 17 | Session-entry ritual in AGENTS.md: `git town status`, `git status`, `gh pr list` | Caught an unfinished run only because the user pasted it |
-| 18 | Investigate `origin/coverage` force-pushes observed twice this session | Parallel session activity; coordinate |
-| 19 | Confirm auto-commit daemon cannot commit session work to master | AGENTS.md warns; never verified |
-| 20 | One-command landing app in flake.nix (branch→PR→watch→merge→ff) | Third manual execution = automation time |
-| 21 | Label future PRs (`docs`) for filterable history | Cheap hygiene |
-| 22 | Verify `go.work.sum` still gitignored and `go.work` still tracked | AGENTS.md gotcha; 30-second check |
-| 23 | Run `git check-ignore -v go.work` (global gitignore gotcha on new machines) | AGENTS.md recommends; not done this session |
-| 24 | End-of-session ritual in AGENTS.md: clean tree, synced master, no unfinished git-town run | What this session ended with; make it standard |
-| 25 | Review other branch-protection settings (dismiss stale reviews, up-to-date checks) | Only required-checks was ever verified |
-| 26 | Consider GitHub merge queue for auto-landing | Removes human/agent merge latency |
-| 27 | Standardize `.md` as THIS repo's status-report format (28/28 are .md; skill default is HTML) | Convention already de facto; make it official |
-| 28 | Check whether earlier reports' next-steps were ever harvested | If not, TODO_LIST is far behind reality |
-| 29 | Document that `gh pr merge --merge --delete-branch` from master also removes the local PR branch | Observed twice; undocumented behavior |
-| 30 | Sweep sibling repos for the same protected-master+local-commit pattern | Same failure will recur elsewhere |
+| #  | Task                                                                                             | Why                                                      |
+| -- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------- |
+| 1  | Harvest this report + `12-24` report next-steps into TODO_LIST.md (docs-health HARVEST)          | Close the loop; 28 entombed snapshots                    |
+| 2  | AGENTS.md rule: never commit to local master; branch first                                       | Kills the recurring incident class                       |
+| 3  | Pre-push hook blocking `git push origin master` with pointer to PR flow                          | Fail fast instead of GH006 round-trip                    |
+| 4  | Delete stale `pr/docs-test-consolidation` (local + remote)                                       | PR #3 merged; dead branch                                |
+| 5  | Decide fate of `preserve/status-report-coderabbit-pr3`                                           | Snapshot already preserved in docs/status                |
+| 6  | Extend the git-town AGENTS.md gotcha: lineage-unset after branch deletion                        | Did it manually twice this session                       |
+| 7  | Document `git town propose` as the one-command branch+push+PR path                               | Replaces 4 manual commands                               |
+| 8  | Annotate the `12-24` report: its "land 86d549a" item is DONE via PR #5                           | docs-health ANNOTATE mode                                |
+| 9  | Consolidate master-landing runbook into one canonical doc                                        | Kill the 3-way split-brain risk                          |
+| 10 | Verify TODO_LIST.md exists and is current (docs-health VERIFY)                                   | Unknown state; reports keep deferring to it              |
+| 11 | Confirm erraudit CI job status in AGENTS.md (informational, not required)                        | Prevents future 4-vs-5 confusion                         |
+| 12 | Path-filter CI so docs-only PRs skip test/lint/govulncheck                                       | ~2 min saved per docs PR                                 |
+| 13 | Investigate golangci-lint CI caching                                                             | 1m33s long pole on every PR                              |
+| 14 | PR template: "CI-dependent boxes are checked by CI" guard                                        | Honesty fix from this session                            |
+| 15 | docs/status/README.md index (date, one-liner, outcome per report)                                | 28 files, no navigation                                  |
+| 16 | Codify CHANGELOG policy: docs/status snapshots excluded (status quo, unwritten)                  | PR #5/#6 both had to argue this ad hoc                   |
+| 17 | Session-entry ritual in AGENTS.md: `git town status`, `git status`, `gh pr list`                 | Caught an unfinished run only because the user pasted it |
+| 18 | Investigate `origin/coverage` force-pushes observed twice this session                           | Parallel session activity; coordinate                    |
+| 19 | Confirm auto-commit daemon cannot commit session work to master                                  | AGENTS.md warns; never verified                          |
+| 20 | One-command landing app in flake.nix (branch→PR→watch→merge→ff)                                  | Third manual execution = automation time                 |
+| 21 | Label future PRs (`docs`) for filterable history                                                 | Cheap hygiene                                            |
+| 22 | Verify `go.work.sum` still gitignored and `go.work` still tracked                                | AGENTS.md gotcha; 30-second check                        |
+| 23 | Run `git check-ignore -v go.work` (global gitignore gotcha on new machines)                      | AGENTS.md recommends; not done this session              |
+| 24 | End-of-session ritual in AGENTS.md: clean tree, synced master, no unfinished git-town run        | What this session ended with; make it standard           |
+| 25 | Review other branch-protection settings (dismiss stale reviews, up-to-date checks)               | Only required-checks was ever verified                   |
+| 26 | Consider GitHub merge queue for auto-landing                                                     | Removes human/agent merge latency                        |
+| 27 | Standardize `.md` as THIS repo's status-report format (28/28 are .md; skill default is HTML)     | Convention already de facto; make it official            |
+| 28 | Check whether earlier reports' next-steps were ever harvested                                    | If not, TODO_LIST is far behind reality                  |
+| 29 | Document that `gh pr merge --merge --delete-branch` from master also removes the local PR branch | Observed twice; undocumented behavior                    |
+| 30 | Sweep sibling repos for the same protected-master+local-commit pattern                           | Same failure will recur elsewhere                        |
 
 Stopped at 30 — every further item would be padding to hit 50.
 
@@ -137,4 +137,4 @@ Stopped at 30 — every further item would be padding to hit 50.
 
 ---
 
-*Point-in-time snapshot. Written by the session that landed PRs #5 and #6. Format: `.md` per explicit user instruction (repo convention is also 100% `.md`; the status-report skill's HTML default was overridden).*
+_Point-in-time snapshot. Written by the session that landed PRs #5 and #6. Format: `.md` per explicit user instruction (repo convention is also 100% `.md`; the status-report skill's HTML default was overridden)._

@@ -58,13 +58,13 @@ Run the `go-modularize` skill against go-datastar to review module boundaries, f
 
 All 5 steps executed and verified:
 
-| Step | Tier | Action | Status |
-| --- | --- | --- | --- |
-| 1 | Domain | Relocated `TestE2E_DataStarPatches` to `datastartest/e2e_test.go` | DONE |
-| 2 | Untangle | `go mod tidy` on root — removed datastartest require + replace | DONE |
-| 3 | Untangle | `go work sync` — verified idempotent, full test suite passes | DONE |
-| 4 | Infrastructure | Nix build passes — vendorHash unchanged | DONE |
-| 5 | Polish | Added per-module `GOWORK=off` CI isolation step | DONE |
+| Step | Tier           | Action                                                            | Status |
+| ---- | -------------- | ----------------------------------------------------------------- | ------ |
+| 1    | Domain         | Relocated `TestE2E_DataStarPatches` to `datastartest/e2e_test.go` | DONE   |
+| 2    | Untangle       | `go mod tidy` on root — removed datastartest require + replace    | DONE   |
+| 3    | Untangle       | `go work sync` — verified idempotent, full test suite passes      | DONE   |
+| 4    | Infrastructure | Nix build passes — vendorHash unchanged                           | DONE   |
+| 5    | Polish         | Added per-module `GOWORK=off` CI isolation step                   | DONE   |
 
 ### Final Verification
 

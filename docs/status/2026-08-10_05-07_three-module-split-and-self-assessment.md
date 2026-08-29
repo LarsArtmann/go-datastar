@@ -9,26 +9,26 @@
 
 ### Three-module workspace — operational and verified
 
-| Artifact | Status | Notes |
-| --- | --- | --- |
-| `datastartest/go.mod` | DONE | Module: `github.com/larsartmann/go-datastar/datastartest`, deps: go-datastar, go-sse |
-| `datastartest/go.sum` | DONE | 7 lines, includes static module hash |
-| `static/go.mod` | DONE | Module: `github.com/larsartmann/go-datastar/static`, zero deps |
-| `static/go.sum` | N/A | Not generated (zero dependencies) |
-| Root `go.mod` replace directives | DONE | `datastartest => ./datastartest`, `static => ./static` |
-| `datastartest/go.mod` replace directives | DONE | `go-datastar => ..`, `static => ../static` |
-| `go.work` | DONE | Three modules: `.`, `./datastartest`, `./static` |
-| `flake.nix` apps updated | DONE | All 8 apps include `./datastartest/... ./static/...` |
-| `AGENTS.md` updated | DONE | Three-module table with deps column, all commands, file layout |
+| Artifact                                 | Status | Notes                                                                                |
+| ---------------------------------------- | ------ | ------------------------------------------------------------------------------------ |
+| `datastartest/go.mod`                    | DONE   | Module: `github.com/larsartmann/go-datastar/datastartest`, deps: go-datastar, go-sse |
+| `datastartest/go.sum`                    | DONE   | 7 lines, includes static module hash                                                 |
+| `static/go.mod`                          | DONE   | Module: `github.com/larsartmann/go-datastar/static`, zero deps                       |
+| `static/go.sum`                          | N/A    | Not generated (zero dependencies)                                                    |
+| Root `go.mod` replace directives         | DONE   | `datastartest => ./datastartest`, `static => ./static`                               |
+| `datastartest/go.mod` replace directives | DONE   | `go-datastar => ..`, `static => ../static`                                           |
+| `go.work`                                | DONE   | Three modules: `.`, `./datastartest`, `./static`                                     |
+| `flake.nix` apps updated                 | DONE   | All 8 apps include `./datastartest/... ./static/...`                                 |
+| `AGENTS.md` updated                      | DONE   | Three-module table with deps column, all commands, file layout                       |
 
 ### Verification — all green
 
-| Mode | Test (-race) | Vet | Lint | Nix build |
-| --- | --- | --- | --- | --- |
-| Workspace (all 3) | PASS | PASS | PASS (0 issues) | PASS (exit 0) |
-| GOWORK=off root | PASS | — | — | — |
-| GOWORK=off datastartest | PASS | — | — | — |
-| GOWORK=off static | PASS | — | — | — |
+| Mode                    | Test (-race) | Vet  | Lint            | Nix build     |
+| ----------------------- | ------------ | ---- | --------------- | ------------- |
+| Workspace (all 3)       | PASS         | PASS | PASS (0 issues) | PASS (exit 0) |
+| GOWORK=off root         | PASS         | —    | —               | —             |
+| GOWORK=off datastartest | PASS         | —    | —               | —             |
+| GOWORK=off static       | PASS         | —    | —               | —             |
 
 ### Module dependency graph
 

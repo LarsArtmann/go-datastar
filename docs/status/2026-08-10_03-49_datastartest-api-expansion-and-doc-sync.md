@@ -25,18 +25,18 @@ linters, zero issues), `go vet`, and `go test -race` before moving to the next.
 
 ### Files created/modified (this session)
 
-| File | Lines | Status |
-| --- | --- | --- |
-| `CHANGELOG.md` | +27 | MODIFIED — `[Unreleased]` section with datastartest + static entries |
-| `FEATURES.md` | +18 -3 | MODIFIED — new "Consumer Test Helpers" section, fixed stale Script Handler refs, fixed e2e line count |
-| `datastartest/event.go` | +48 | MODIFIED — `ScriptContent()`, `DataValue()`, `String()` methods |
-| `datastartest/collect.go` | +143 -19 | MODIFIED — `CollectWithRequest`, `CollectPost`, `CollectN`, `readNEvents` |
-| `datastartest/doc.go` | +30 -19 | MODIFIED — sections for non-GET, streaming, script patches |
-| `datastartest/event_test.go` | +180 | MODIFIED — 12 new tests (ScriptContent x4, DataValue, String, Retry/EventID, EmptyHandler, DatalineConstants x8 subtests) |
-| `datastartest/reader_test.go` | +49 | MODIFIED — 2 new edge-case tests (multi-colon, empty data) |
-| `datastartest/collect_test.go` | 132 (NEW) | NEW — 5 tests (CollectPost, CollectWithRequest, CollectN streaming, CollectN all, failing reader) |
-| `response_test.go` | +47 | MODIFIED — `TestStaticVersionConsistency`, `TestScriptHandler_ServesStaticBytes` |
-| `AGENTS.md` | +6 | MODIFIED (uncommitted) — API surface table expanded with new exports |
+| File                           | Lines     | Status                                                                                                                    |
+| ------------------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `CHANGELOG.md`                 | +27       | MODIFIED — `[Unreleased]` section with datastartest + static entries                                                      |
+| `FEATURES.md`                  | +18 -3    | MODIFIED — new "Consumer Test Helpers" section, fixed stale Script Handler refs, fixed e2e line count                     |
+| `datastartest/event.go`        | +48       | MODIFIED — `ScriptContent()`, `DataValue()`, `String()` methods                                                           |
+| `datastartest/collect.go`      | +143 -19  | MODIFIED — `CollectWithRequest`, `CollectPost`, `CollectN`, `readNEvents`                                                 |
+| `datastartest/doc.go`          | +30 -19   | MODIFIED — sections for non-GET, streaming, script patches                                                                |
+| `datastartest/event_test.go`   | +180      | MODIFIED — 12 new tests (ScriptContent x4, DataValue, String, Retry/EventID, EmptyHandler, DatalineConstants x8 subtests) |
+| `datastartest/reader_test.go`  | +49       | MODIFIED — 2 new edge-case tests (multi-colon, empty data)                                                                |
+| `datastartest/collect_test.go` | 132 (NEW) | NEW — 5 tests (CollectPost, CollectWithRequest, CollectN streaming, CollectN all, failing reader)                         |
+| `response_test.go`             | +47       | MODIFIED — `TestStaticVersionConsistency`, `TestScriptHandler_ServesStaticBytes`                                          |
+| `AGENTS.md`                    | +6        | MODIFIED (uncommitted) — API surface table expanded with new exports                                                      |
 
 **Total: 9 files, +655 -19 lines**
 
@@ -326,9 +326,7 @@ Nothing is broken or regressively damaged. However:
     this, but it's untested.
 
 11. **No test for `ScriptContent()` with Prefetch (type="speculationrules").**
-    Prefetch patches use `WithScriptAttributes(\`type="speculationrules"\`)`
-    and `WithScriptAutoRemove(false)`. The `<script type="speculationrules">`
-    tag has attributes that `ScriptContent()` must skip past. Untested.
+    Prefetch patches use `WithScriptAttributes(\`type="speculationrules"\`)`and`WithScriptAutoRemove(false)`. The`<script type="speculationrules">`tag has attributes that`ScriptContent()` must skip past. Untested.
 
 12. **No concurrent Collect test.** Multiple `Collect` calls in parallel
     (with `t.Parallel()`) work (proven by all tests using t.Parallel()), but
@@ -497,17 +495,17 @@ remains unanswered.**
 
 ## Metrics Summary
 
-| Metric | Value |
-| --- | --- |
-| Files changed | 9 (+1 uncommitted AGENTS.md) |
-| Lines added | +655 |
-| Lines removed | -19 |
-| New exported functions | 6 (`ScriptContent`, `DataValue`, `String`, `CollectWithRequest`, `CollectPost`, `CollectN`) |
-| New tests | 19 (including 8 table-driven subtests) |
-| Total datastartest tests | 40 test functions (including subtests: 48) |
-| Total project test invocations | 298 (all pass with `-race`) |
-| `golangci-lint` issues | 0 |
-| `go vet` issues | 0 |
-| New dependencies | 0 |
-| Auto-commits by daemon | 5 |
-| Tasks completed | 18 / 18 |
+| Metric                         | Value                                                                                       |
+| ------------------------------ | ------------------------------------------------------------------------------------------- |
+| Files changed                  | 9 (+1 uncommitted AGENTS.md)                                                                |
+| Lines added                    | +655                                                                                        |
+| Lines removed                  | -19                                                                                         |
+| New exported functions         | 6 (`ScriptContent`, `DataValue`, `String`, `CollectWithRequest`, `CollectPost`, `CollectN`) |
+| New tests                      | 19 (including 8 table-driven subtests)                                                      |
+| Total datastartest tests       | 40 test functions (including subtests: 48)                                                  |
+| Total project test invocations | 298 (all pass with `-race`)                                                                 |
+| `golangci-lint` issues         | 0                                                                                           |
+| `go vet` issues                | 0                                                                                           |
+| New dependencies               | 0                                                                                           |
+| Auto-commits by daemon         | 5                                                                                           |
+| Tasks completed                | 18 / 18                                                                                     |

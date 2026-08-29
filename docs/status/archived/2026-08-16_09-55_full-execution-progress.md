@@ -14,11 +14,12 @@
 2. **Q2 erraudit CI job:** probe-gate, don't delete. Job probes
    `go list -m github.com/larsartmann/erraudit@v0.3.0`; skips with a visible
    notice while the repo is private, becomes a hard gate when public.
-3. **Q3 DOMAIN_LANGUAGE.md:** create (T15) — **not yet executed**.
+3. **Q3 DOMAIN_LANGUAGE.md:** create (T15) — ~~**not yet executed**.~~ Executed at `83d7c60` (docs-health correction 2026-08-29).
 
 ## Completed and verified
 
 ### T01 — Green master CI (the 1% / 51%) — DONE, PUSHED, CI GREEN
+
 - `go 1.26.6` in 3× go.mod + go.work + ci.yml `go-version` (via `go mod edit`,
   never sed). Clears GO-2026-5972/6089/6090/6218.
 - ci.yml erraudit job: probe-gated, `continue-on-error` removed, **latent bug
@@ -37,15 +38,17 @@
   `go work sync` idempotent; `nix flake check` ALL CHECKS PASSED; hermetic
   govulncheck: **No vulnerabilities found.**
 - **Commits:** `bf68063` (auto-committed by daemon, pushed), `affbe30` (ADR 002
-  + AGENTS + vendorHash), `f198377` (flake dedupe). CI run 31933895108:
-  **success**. Master is green.
+  - AGENTS + vendorHash), `f198377` (flake dedupe). CI run 31933895108:
+    **success**. Master is green.
 
 ### T02 — Hygiene pack — DONE
+
 - `result` symlink trashed. ROADMAP go-directive entry resolved with 1.26.6
   facts. AGENTS erraudit invocation corrected. `nix flake check` green
   (recorded here, not in TODO_LIST — harvest-out pending).
 
 ### T03 — Formatter & lint wiring — DONE (uncommitted)
+
 - `dprint.json` removed (guard G7 verdict: wiring it would make hermetic
   `nix flake check` depend on network-fetched WASM plugins; treefmt stays the
   single formatter). CHANGELOG entry added.
@@ -56,50 +59,56 @@
   go-installs with credentials. devShell builds green.
 
 ### T05 — ADR 002 — DONE (committed in `affbe30`)
+
 - `docs/adr/002-multi-module-split.md`: three modules, strict DAG
   (static → root → datastartest), mutual relative replaces with 4 enforced
   rules, lockstep tags, consequences. Linked from AGENTS Module Structure.
   Facts cross-checked against the modularization proposal + live go.mod/tags.
 
 ### T06 — CONTRIBUTING multi-module section — DONE (uncommitted)
+
 - New "Multi-Module Development" section (workspace vs GOWORK=off, replace
   rules, per-module tags). **Fixed drift:** old text claimed the devShell sets
   `GOWORK=off` (false) and told manual-setup users to export it (wrong for a
   workspace repo). All commands verified green this session.
 
 ### T07 — CollectPost error-path tests — DONE (uncommitted)
+
 - `datastartest/collect_error_test.go`: 400/422/500 × non-SSE bodies, 200
   non-SSE, garbage frames, and the documented sharp edge (SSE payload in a 500
   still decodes). Pins current behavior: helpers never gate on status; failure
   mode is zero events, never panic/hang. All pass, race.
 
 ### T08 — e2e dogfood expansion — DONE (uncommitted)
+
 - `TestE2E_CollectPostRoundTrip` (ReadSignals → echo signals patch) and
   `TestE2E_CollectNStreaming` (open-stream handler; CollectN(2) returns without
   waiting). Pass, race.
 
 ### T09 — Example WithOnDrop integration test — DONE (uncommitted)
+
 - `example/ondrop_test.go`: WithBufferSize(2) + slow subscriber → asserts
   exact dropped events in order, buffer contents, no extra drops. Pass, race.
   Example godoc now points to it.
 
 ### T10 — UnmarshalSignals fuzz — DONE (uncommitted)
+
 - `datastartest/event_fuzz_test.go`: 17 seeds (valid/malformed/nested/BOM/NUL);
   invariant = classified `datastartest.signals_unmarshal_failed` code or
   success, never panic. Seeds pass; 10s exploration: 2.27M execs, clean.
 
 ## Remaining (in plan order)
 
-| Task | Content | Notes |
-| ---- | ------- | ----- |
-| T11 | Per-module Nix hermetic checks (`hermeticCheckStatic` with `vendorHash = null`, `hermeticCheckDatastartest`) | remove flake TODO comment |
-| T12 | README comparison re-verify (v1.2.2 pin), JS-version row decision, `docs/release-checklist.md` | |
-| T13 | De-flake `TestCollect_WithLastEventID_HeaderArrives` (channel-sync, G6: no sleeps) | passed race here; still worth hardening |
-| T14 | `docs/modularization/README.md` index + AGENTS link | |
-| T15 | `docs/DOMAIN_LANGUAGE.md` (Q3 ruling: create) | |
-| T16 | go.work.sum tracking decision, v0.0.0 vs real sibling requires | rulings recorded, mechanics pending |
-| T04 | Branch protection (gh api), pkg.go.dev verify, coverage badge | last — after everything else lands |
-| — | Final sync: TODO_LIST harvest-out (19 rows → done), CHANGELOG pass, AGENTS notes, full gate | |
+| Task | Content                                                                                                      | Notes                                   |
+| ---- | ------------------------------------------------------------------------------------------------------------ | --------------------------------------- |
+| ~~T11~~  | ~~Per-module Nix hermetic checks (`hermeticCheckStatic` with `vendorHash = null`, `hermeticCheckDatastartest`)~~ done at `83d7c60`, `b269bbb` | ~~remove flake TODO comment~~ |
+| ~~T12~~  | ~~README comparison re-verify (v1.2.2 pin), JS-version row decision, `docs/release-checklist.md`~~ done at `83d7c60` | ~~~~ |
+| ~~T13~~  | ~~De-flake `TestCollect_WithLastEventID_HeaderArrives` (channel-sync, G6: no sleeps)~~ done at `83d7c60`, `496a18b` | ~~passed race here; still worth hardening~~ |
+| ~~T14~~  | ~~`docs/modularization/README.md` index + AGENTS link~~ done at `83d7c60` | ~~~~ |
+| ~~T15~~  | ~~`docs/DOMAIN_LANGUAGE.md` (Q3 ruling: create)~~ done at `83d7c60` | ~~~~ |
+| ~~T16~~  | ~~go.work.sum tracking decision, v0.0.0 vs real sibling requires~~ done at `496a18b` | ~~rulings recorded, mechanics pending~~ |
+| ~~T04~~  | ~~Branch protection (gh api), pkg.go.dev verify, coverage badge~~ done at `496a18b`, `ed815c7` | ~~last — after everything else lands~~ |
+| —    | Final sync: TODO_LIST harvest-out (19 rows → done), CHANGELOG pass, AGENTS notes, full gate                  | → done at `496a18b`, `83d7c60` (completed by the 11:07 session) |
 
 ## Uncommitted working tree (mine, verified)
 
@@ -127,3 +136,16 @@ legs), `datastartest/event_fuzz_test.go`, `example/ondrop_test.go`,
 Read this file + the plan, `git status` (expect the uncommitted list above),
 run the full gate, then continue with T11 → T12 → T13 → T14 → T15 → T16 → T04
 → final sync. Do not re-do completed tasks.
+
+_~~Read this file + the plan... continue with T11 → ...~~ Superseded — the 11:07
+session executed everything above; see `2026-08-16_11-07_full-execution-t11-t16-completion.md`
+and the plan's Resolution appendix._
+
+---
+
+## Resolution (2026-08-29, docs-health pass)
+
+Everything this report left "Remaining" was executed by the 11:07 session
+(T11–T16, T04, final sync — commits `83d7c60`, `496a18b`, `b269bbb`, plus
+`ed815c7` for the live coverage badge). Struck inline above. Post-plan lint
+residue on newer commits is owned by TODO_LIST.md (2026-08-29 harvest).

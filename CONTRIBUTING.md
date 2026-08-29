@@ -56,11 +56,11 @@ go vet ./... ./datastartest/... ./static/...
 This repository is a Go workspace with **three modules** (rationale and rules:
 [ADR 002](docs/adr/002-multi-module-split.md)):
 
-| Module          | Import path                                       | Role                         |
-| --------------- | ------------------------------------------------- | ---------------------------- |
-| root            | `github.com/larsartmann/go-datastar`              | protocol library             |
-| `static/`       | `github.com/larsartmann/go-datastar/static`       | embedded DataStar JS bundle  |
-| `datastartest/` | `github.com/larsartmann/go-datastar/datastartest` | consumer E2E test helpers    |
+| Module          | Import path                                       | Role                        |
+| --------------- | ------------------------------------------------- | --------------------------- |
+| root            | `github.com/larsartmann/go-datastar`              | protocol library            |
+| `static/`       | `github.com/larsartmann/go-datastar/static`       | embedded DataStar JS bundle |
+| `datastartest/` | `github.com/larsartmann/go-datastar/datastartest` | consumer E2E test helpers   |
 
 ### Workspace mode (default) vs per-module isolation (`GOWORK=off`)
 

@@ -31,7 +31,7 @@ But the session also surfaced a **mid-session incident**: local master's tip sil
 ## b) PARTIALLY DONE
 
 1. **CodeRabbit thread replies on PR #3** — the five inline fixes were verified and merged, but the review threads were never answered (courtesy/closure gap; not a merge blocker — `required_conversation_resolution` is off).
-2. **Local verification before merge** — actionlint and coverage parsing were validated in the *prior* session; this session merged without ever running `nix flake check` / `nix run .#test-race` locally. CI covered the Go jobs (green), but **CI has no nix jobs**: treefmt formatting, hermetic builds, and `go.work` idempotency beyond what ci.yml does are unverified on master. My own AGENTS.md markdown edit specifically was never format-checked.
+2. **Local verification before merge** — actionlint and coverage parsing were validated in the _prior_ session; this session merged without ever running `nix flake check` / `nix run .#test-race` locally. CI covered the Go jobs (green), but **CI has no nix jobs**: treefmt formatting, hermetic builds, and `go.work` idempotency beyond what ci.yml does are unverified on master. My own AGENTS.md markdown edit specifically was never format-checked.
 3. **Prior session's 3 open questions** — push scope: resolved (moot, everything was pushed); master reconciliation: resolved (this session); badge semantics (all 3 modules at 88.9% vs root-only): **still unanswered** — the badge now publishes all-modules by default.
 4. **TODO_LIST routing** — master's TODO_LIST.md was updated by the parallel session (via PR #3 merge) but contains a stale item (see d/e); this report's next-actions list is not yet harvested into it.
 
@@ -48,13 +48,14 @@ But the session also surfaced a **mid-session incident**: local master's tip sil
 ## d) TOTALLY FUCKED UP
 
 1. **The lost-commit incident (cause still unattributed).** Reflog: `8d6a442` committed 11:43:15, then `reset: moving to 496a18b` at **12:00:11** — dropping the previous session's status report from master mid-session. My final summary last time stated "a parallel crush session hard-reset master" — **that attribution was an overclaim stated as fact**. There are 8 concurrent crush processes in this checkout, but the reset timing also coincides with my own `git town skip`, and I cannot prove which actor did it. What is fact: a reset happened, it wasn't me running `git reset`, and the commit is safe on the preserve branch. What isn't fact: who did it.
-2. **One wasted CI cycle on PR #4.** The conversation summary already said the parallel session's lint fixes were *separate later commits* (`ce3b4bc`), and I even printed the branch graph showing them — yet I opened PR #4 (containing lint-red `496a18b` alone) without running lint locally or sequencing #3 first. Result: red `lint`, a merge-conflict round-trip, and a re-push. Predictable, prevented by one local `golangci-lint run` or by merging #3 first.
-3. **Merged to master on CI-only evidence, twice.** Neither `nix flake check` nor `nix run .#test-race` ever ran against any commit I merged. If treefmt dislikes my AGENTS.md edit or the hermetic checks regressed, master is broken *right now* and nothing downstream would notice (no nix in CI). This was flagged as a gap in the prior session's report and I carried it forward instead of closing it — 10 minutes of work that gates the whole session's trustworthiness.
+2. **One wasted CI cycle on PR #4.** The conversation summary already said the parallel session's lint fixes were _separate later commits_ (`ce3b4bc`), and I even printed the branch graph showing them — yet I opened PR #4 (containing lint-red `496a18b` alone) without running lint locally or sequencing #3 first. Result: red `lint`, a merge-conflict round-trip, and a re-push. Predictable, prevented by one local `golangci-lint run` or by merging #3 first.
+3. **Merged to master on CI-only evidence, twice.** Neither `nix flake check` nor `nix run .#test-race` ever ran against any commit I merged. If treefmt dislikes my AGENTS.md edit or the hermetic checks regressed, master is broken _right now_ and nothing downstream would notice (no nix in CI). This was flagged as a gap in the prior session's report and I carried it forward instead of closing it — 10 minutes of work that gates the whole session's trustworthiness.
 4. **Stale TODO_LIST item shipped to master via PR #3**: "De-flake remaining lint issues in parallel-session files" cites exactly the lint errors (`reader.go` intrange/dupword/etc.) that `ce3b4bc`/`7dec1d3` fixed and that now pass on master. Docs drift landed inside the merge I supervised.
 
 ## e) WHAT WE SHOULD IMPROVE (brutal-self-review answers)
 
 **1. What did you forget?**
+
 - That docs-only PR #4 wasn't docs-only — it carried `496a18b`'s Go changes (source of the lint failure).
 - The prior session's own data (lint fixes as separate commits) that predicted that failure.
 - Local nix verification before merging (the standing gap).
@@ -62,16 +63,19 @@ But the session also surfaced a **mid-session incident**: local master's tip sil
 - Verifying the badge render before claiming it self-healed (now verified: 88.9%).
 
 **2. What's stupid that we do anyway?**
-- Running 8 parallel agent sessions in **one** checkout with an auto-commit daemon. It has now caused: working-tree file theft (prior session), a lost commit (this session). It *will* cause worse.
+
+- Running 8 parallel agent sessions in **one** checkout with an auto-commit daemon. It has now caused: working-tree file theft (prior session), a lost commit (this session). It _will_ cause worse.
 - Committing status reports directly to local master under protection — a guaranteed stranded-commit generator. Reports should ride a quick PR like `db4cc7a` did.
 - Trusting CI (Go-only) as the full gate for a repo whose real quality bar (`nix flake check`) CI never runs.
 
 **3. What could you have done better?**
-- Sequence: merge #3 → update #4 → merge #4, determined *before* opening #4.
+
+- Sequence: merge #3 → update #4 → merge #4, determined _before_ opening #4.
 - Run `golangci-lint`/`nix run .#lint` in the worktree before pushing any PR.
 - State the reset as "unattributed reset at 12:00:11, cause unknown (parallel session or git town side effect)" instead of naming a culprit.
 
 **4. What could you still improve?**
+
 - Attribution rigor: reflog facts vs inference, clearly separated, every time.
 - Close the nix-in-CI gap so "merged green" means what it says.
 - Rehome or delete the preserve branch this week — an unreferenced local branch holding the only copy of a report is a ghost system in formation.
@@ -86,36 +90,36 @@ But the session also surfaced a **mid-session incident**: local master's tip sil
 
 **9. Removed something useful?** No. (`git town skip`'s push-skip was the intended outcome, not data loss.)
 
-**10. Split brains?** One: master's `docs/status/` now contains the *parallel* session's 11-07 report but not mine (11-37), so the history implies a session that "didn't report" and hides one that did. Rehoming fixes it.
+**10. Split brains?** One: master's `docs/status/` now contains the _parallel_ session's 11-07 report but not mine (11-37), so the history implies a session that "didn't report" and hides one that did. Rehoming fixes it.
 
 **11. Tests?** No product code changed by this session (docs + YAML + merge ops). CI ran the full suite twice post-merge (green, race + GOWORK=off isolation included). Improvement: nix-based checks in CI (recurring theme).
 
 ## f) Next Actions (ranked; 1–7 = this week, rest = backlog fuel for TODO_LIST/ROADMAP harvest)
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 1 | Run `nix flake check` on master; fix fallout if any (treefmt on AGENTS.md, hermetic builds) | Critical (trust in session) | 10–30min |
-| 2 | Run `nix run .#test-race` on master as final confirmation | High | 5min |
-| 3 | Decide rehoming of `preserve/status-report-coderabbit-pr3`: PR the 11-37 report to master (feeds TODO_LIST harvest) or drop | High | 15min |
-| 4 | Harvest this report's (f) into TODO_LIST.md via docs-health; fix/remove the stale "de-flake lint" item already on master (lint is green) | High | 20min |
-| 5 | Add `nix flake check` (treefmt + hermetic builds) to CI as a 5th required check | High | 30min |
-| 6 | Delete merged branches: local + remote `pr/docs-test-consolidation`; `git town` config prune | Medium | 5min |
-| 7 | Fix CHANGELOG L29 stale "92.9%" → measured 88.9% | Medium | 5min |
-| 8 | Decide badge semantics (all-modules 88.9% vs root-only higher number) and update README label if changed | Medium | 15min |
-| 9 | Reply to the 5 CodeRabbit threads on merged PR #3 (closure; mention fixes landed in `ed815c7`) | Medium | 15min |
-| 10 | Adopt parallel-session policy: one session per checkout or mandatory per-session worktrees; constrain auto-commit daemon to non-master branches | High | decision + 15min |
-| 11 | Route future status reports through quick PRs instead of direct master commits | Medium | 5min |
-| 12 | Read the 5 parallel-session commits now on master (`ed815c7` content, `ce3b4bc`, `66a637e`, `ffeedea`, `52cfac8`, `7dec1d3`) — human review never happened | Medium | 30min |
-| 13 | Consider requiring 1 approving review on master protection (currently checks-only; everything merged with zero human review) | Medium | decision |
-| 14 | Consider enabling `required_conversation_resolution` once thread replies (item 9) are done | Low | 2min |
-| 15 | Cut next release: CHANGELOG has unreleased entries (badge, gotchas, datastartest fixes); follow go-release skill | Medium | 1h |
-| 16 | Add coverage-floor gate to coverage.yml if a policy is chosen (item 8) | Low | 15min |
-| 17 | Verify Dependabot covers all three modules (root, static, datastartest) | Low | 10min |
-| 18 | Verify pkg.go.dev renders current docs after next release | Low | 10min |
-| 19 | Annotate older docs/status reports that reference pre-merge state (e.g., 09-55 "full-execution" report) via docs-health ANNOTATE | Low | 20min |
-| 20 | Re-verify README comparison table against upstream `starfederation/datastar-go` changes since last check | Low | 30min |
-| 21 | Un-block erraudit CI job: probe step skips while the erraudit repo is private; revisit when public | Low | deferred |
-| 22 | Roadmap: domain-adapter example (EventBridge-style) demonstrating the Patch-as-value payoff | Low | deferred |
+| #  | Task                                                                                                                                                       | Impact                      | Effort           |
+| -- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ---------------- |
+| 1  | Run `nix flake check` on master; fix fallout if any (treefmt on AGENTS.md, hermetic builds)                                                                | Critical (trust in session) | 10–30min         |
+| 2  | Run `nix run .#test-race` on master as final confirmation                                                                                                  | High                        | 5min             |
+| 3  | Decide rehoming of `preserve/status-report-coderabbit-pr3`: PR the 11-37 report to master (feeds TODO_LIST harvest) or drop                                | High                        | 15min            |
+| 4  | Harvest this report's (f) into TODO_LIST.md via docs-health; fix/remove the stale "de-flake lint" item already on master (lint is green)                   | High                        | 20min            |
+| 5  | Add `nix flake check` (treefmt + hermetic builds) to CI as a 5th required check                                                                            | High                        | 30min            |
+| 6  | Delete merged branches: local + remote `pr/docs-test-consolidation`; `git town` config prune                                                               | Medium                      | 5min             |
+| 7  | Fix CHANGELOG L29 stale "92.9%" → measured 88.9%                                                                                                           | Medium                      | 5min             |
+| 8  | Decide badge semantics (all-modules 88.9% vs root-only higher number) and update README label if changed                                                   | Medium                      | 15min            |
+| 9  | Reply to the 5 CodeRabbit threads on merged PR #3 (closure; mention fixes landed in `ed815c7`)                                                             | Medium                      | 15min            |
+| 10 | Adopt parallel-session policy: one session per checkout or mandatory per-session worktrees; constrain auto-commit daemon to non-master branches            | High                        | decision + 15min |
+| 11 | Route future status reports through quick PRs instead of direct master commits                                                                             | Medium                      | 5min             |
+| 12 | Read the 5 parallel-session commits now on master (`ed815c7` content, `ce3b4bc`, `66a637e`, `ffeedea`, `52cfac8`, `7dec1d3`) — human review never happened | Medium                      | 30min            |
+| 13 | Consider requiring 1 approving review on master protection (currently checks-only; everything merged with zero human review)                               | Medium                      | decision         |
+| 14 | Consider enabling `required_conversation_resolution` once thread replies (item 9) are done                                                                 | Low                         | 2min             |
+| 15 | Cut next release: CHANGELOG has unreleased entries (badge, gotchas, datastartest fixes); follow go-release skill                                           | Medium                      | 1h               |
+| 16 | Add coverage-floor gate to coverage.yml if a policy is chosen (item 8)                                                                                     | Low                         | 15min            |
+| 17 | Verify Dependabot covers all three modules (root, static, datastartest)                                                                                    | Low                         | 10min            |
+| 18 | Verify pkg.go.dev renders current docs after next release                                                                                                  | Low                         | 10min            |
+| 19 | Annotate older docs/status reports that reference pre-merge state (e.g., 09-55 "full-execution" report) via docs-health ANNOTATE                           | Low                         | 20min            |
+| 20 | Re-verify README comparison table against upstream `starfederation/datastar-go` changes since last check                                                   | Low                         | 30min            |
+| 21 | Un-block erraudit CI job: probe step skips while the erraudit repo is private; revisit when public                                                         | Low                         | deferred         |
+| 22 | Roadmap: domain-adapter example (EventBridge-style) demonstrating the Patch-as-value payoff                                                                | Low                         | deferred         |
 
 ## g) Questions (cannot be figured out from the repo)
 

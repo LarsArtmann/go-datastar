@@ -284,9 +284,9 @@ Nothing is broken or regressively damaged. However:
    - Unquoted attribute values (HTML5 allows `<script type=module>`)
    - Backtick-quoted values (some templating engines)
    - Self-closing `<script />` tags (invalid HTML but might appear in tests)
-   These are edge cases that don't occur with real DataStar patches, but the
-   function name `indexTagEnd` implies general HTML parsing capability it
-   doesn't fully deliver.
+     These are edge cases that don't occur with real DataStar patches, but the
+     function name `indexTagEnd` implies general HTML parsing capability it
+     doesn't fully deliver.
 
 3. ⚠️ **`RequireSignalsContain` uses substring matching, not JSON parsing.**
    It checks for `"key":` as a raw substring in the JSON payload. This
@@ -502,20 +502,20 @@ Nothing is broken or regressively damaged. However:
 
 ## Metrics Summary
 
-| Metric | Value |
-| --- | --- |
-| Tasks completed | 15 / 15 |
-| New exported functions | 7 (`CollectWithTimeout`, `ReadNEvents`, `IsScript`, `FindElement`, `FindSignals`, `EventsString`, `RequireSignalsContain`) |
-| New test functions | 22 |
-| New testable examples | 4 |
-| Total test invocations | 332 RUN, 191 PASS (including subtests) |
-| Fuzz test seeds | 9 |
-| Benchmark | ~131 MB/s, 108 allocs/op, 14µs/op |
-| `golangci-lint` issues | 0 |
-| `go vet` issues | 0 |
-| New dependencies | 0 |
-| New source files | 1 (`search.go`) |
-| New test files | 1 (`reader_fuzz_test.go`) |
-| Auto-commits by daemon | 9 |
-| `datastartest/` total lines | 2,235 (source: 854, test: 1,381) |
-| Files modified | 12 (AGENTS.md, CHANGELOG.md, FEATURES.md, README.md, doc.go, event.go, collect.go, reader.go, assert.go, event_test.go, collect_test.go, reader_test.go, example_test.go) |
+| Metric                      | Value                                                                                                                                                                     |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tasks completed             | 15 / 15                                                                                                                                                                   |
+| New exported functions      | 7 (`CollectWithTimeout`, `ReadNEvents`, `IsScript`, `FindElement`, `FindSignals`, `EventsString`, `RequireSignalsContain`)                                                |
+| New test functions          | 22                                                                                                                                                                        |
+| New testable examples       | 4                                                                                                                                                                         |
+| Total test invocations      | 332 RUN, 191 PASS (including subtests)                                                                                                                                    |
+| Fuzz test seeds             | 9                                                                                                                                                                         |
+| Benchmark                   | ~131 MB/s, 108 allocs/op, 14µs/op                                                                                                                                         |
+| `golangci-lint` issues      | 0                                                                                                                                                                         |
+| `go vet` issues             | 0                                                                                                                                                                         |
+| New dependencies            | 0                                                                                                                                                                         |
+| New source files            | 1 (`search.go`)                                                                                                                                                           |
+| New test files              | 1 (`reader_fuzz_test.go`)                                                                                                                                                 |
+| Auto-commits by daemon      | 9                                                                                                                                                                         |
+| `datastartest/` total lines | 2,235 (source: 854, test: 1,381)                                                                                                                                          |
+| Files modified              | 12 (AGENTS.md, CHANGELOG.md, FEATURES.md, README.md, doc.go, event.go, collect.go, reader.go, assert.go, event_test.go, collect_test.go, reader_test.go, example_test.go) |

@@ -8,39 +8,39 @@
 
 ## a) FULLY DONE
 
-| #   | Task                                                           | Evidence                                                    |
-| --- | -------------------------------------------------------------- | ----------------------------------------------------------- |
-| 1   | v0.0.3 GitHub release created with superb notes                | `gh release view v0.0.3` — 3724 chars, published, Latest    |
-| 2   | All 3 tags have matching non-draft, non-prerelease releases    | `gh release list` confirms v0.0.1, v0.0.2, v0.0.3           |
-| 3   | CHANGELOG comparison links added (Keep a Changelog convention) | 4 links at bottom of CHANGELOG.md on master                 |
-| 4   | TODO_LIST.md status drift fixed (F9)                           | "Tag v0.0.3" moved to completed; `[Unreleased]` → `[0.0.3]` |
-| 5   | False "blocked on gh" removed from TODO_LIST (F11)             | GitHub repo polish unblocked to TODO, then completed        |
-| 6   | GitHub repo topics set                                         | `datastar, go, htmx, hypermedia, server-sent-events, sse`   |
-| 7   | Empty wiki disabled                                            | `hasWikiEnabled: false`                                     |
-| 8   | `go get @v0.0.3` verified from module proxy                    | Resolves with all 4 deps in clean temp module               |
-| 9   | Local quality gates all pass                                   | build, vet, 119 tests, lint 0 issues, erraudit 0 violations |
+| # | Task                                                           | Evidence                                                    |
+| - | -------------------------------------------------------------- | ----------------------------------------------------------- |
+| 1 | v0.0.3 GitHub release created with superb notes                | `gh release view v0.0.3` — 3724 chars, published, Latest    |
+| 2 | All 3 tags have matching non-draft, non-prerelease releases    | `gh release list` confirms v0.0.1, v0.0.2, v0.0.3           |
+| 3 | CHANGELOG comparison links added (Keep a Changelog convention) | 4 links at bottom of CHANGELOG.md on master                 |
+| 4 | TODO_LIST.md status drift fixed (F9)                           | "Tag v0.0.3" moved to completed; `[Unreleased]` → `[0.0.3]` |
+| 5 | False "blocked on gh" removed from TODO_LIST (F11)             | GitHub repo polish unblocked to TODO, then completed        |
+| 6 | GitHub repo topics set                                         | `datastar, go, htmx, hypermedia, server-sent-events, sse`   |
+| 7 | Empty wiki disabled                                            | `hasWikiEnabled: false`                                     |
+| 8 | `go get @v0.0.3` verified from module proxy                    | Resolves with all 4 deps in clean temp module               |
+| 9 | Local quality gates all pass                                   | build, vet, 119 tests, lint 0 issues, erraudit 0 violations |
 
 ---
 
 ## b) PARTIALLY DONE
 
-| #   | Task                       | What's done                                | What's missing                                                                                                                                                                                     |
-| --- | -------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | CHANGELOG comparison links | Links exist on master/HEAD                 | **Links do NOT exist at the v0.0.3 tag.** The GitHub release page links to `CHANGELOG.md` at the tag, which has no comparison links. They're trapped on master, unreachable from the release page. |
-| 2   | TODO_LIST.md cleanup       | Open items updated, completed items added  | One uncommitted change remains (`TODO_LIST.md` modified, not committed). Local branch is 1 commit ahead of origin (not pushed).                                                                    |
-| 3   | CI pipeline verification   | Identified that test/lint/govulncheck pass | **erraudit job is broken** — erraudit repo is private, CI can't `go install` it. Every CI run is RED.                                                                                              |
+| # | Task                       | What's done                                | What's missing                                                                                                                                                                                     |
+| - | -------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | CHANGELOG comparison links | Links exist on master/HEAD                 | **Links do NOT exist at the v0.0.3 tag.** The GitHub release page links to `CHANGELOG.md` at the tag, which has no comparison links. They're trapped on master, unreachable from the release page. |
+| 2 | TODO_LIST.md cleanup       | Open items updated, completed items added  | One uncommitted change remains (`TODO_LIST.md` modified, not committed). Local branch is 1 commit ahead of origin (not pushed).                                                                    |
+| 3 | CI pipeline verification   | Identified that test/lint/govulncheck pass | **erraudit job is broken** — erraudit repo is private, CI can't `go install` it. Every CI run is RED.                                                                                              |
 
 ---
 
 ## c) NOT STARTED
 
-| #   | Task                                                                 | Impact                                                        |
-| --- | -------------------------------------------------------------------- | ------------------------------------------------------------- |
-| 1   | Fix CI erraudit job (private repo)                                   | Every push shows red CI. Consumers see a failing build badge. |
-| 2   | Address open Dependabot PRs (#1: checkout v5→v7, #2: setup-go v6→v7) | We just upgraded to v5/v6; dependabot immediately wants v7.   |
-| 3   | Verify pkg.go.dev renders docs for v0.0.3                            | Consumers may see stale/missing godoc.                        |
-| 4   | Add coverage badge to README                                         | CI badge shows failing; coverage badge doesn't exist.         |
-| 5   | Push uncommitted TODO_LIST.md and local commit to origin             | Remote is behind by 1 commit + 1 uncommitted change.          |
+| # | Task                                                                 | Impact                                                        |
+| - | -------------------------------------------------------------------- | ------------------------------------------------------------- |
+| 1 | Fix CI erraudit job (private repo)                                   | Every push shows red CI. Consumers see a failing build badge. |
+| 2 | Address open Dependabot PRs (#1: checkout v5→v7, #2: setup-go v6→v7) | We just upgraded to v5/v6; dependabot immediately wants v7.   |
+| 3 | Verify pkg.go.dev renders docs for v0.0.3                            | Consumers may see stale/missing godoc.                        |
+| 4 | Add coverage badge to README                                         | CI badge shows failing; coverage badge doesn't exist.         |
+| 5 | Push uncommitted TODO_LIST.md and local commit to origin             | Remote is behind by 1 commit + 1 uncommitted change.          |
 
 ---
 

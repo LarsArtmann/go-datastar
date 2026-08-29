@@ -6,11 +6,11 @@ DataStar protocol library for Go. Patches as first-class values producing `sse.E
 
 Three Go modules in a go.work workspace (rationale and rules: [ADR 002](docs/adr/002-multi-module-split.md)):
 
-| Module | Path | Purpose | Dependencies |
-| --- | --- | --- | --- |
-| Root | `github.com/larsartmann/go-datastar` | Protocol library | go-sse, go-error-family |
-| static | `github.com/larsartmann/go-datastar/static` | Embedded DataStar JS client bundle | zero (stdlib only) |
-| datastartest | `github.com/larsartmann/go-datastar/datastartest` | Consumer E2E test helpers | go-datastar, go-sse |
+| Module       | Path                                              | Purpose                            | Dependencies            |
+| ------------ | ------------------------------------------------- | ---------------------------------- | ----------------------- |
+| Root         | `github.com/larsartmann/go-datastar`              | Protocol library                   | go-sse, go-error-family |
+| static       | `github.com/larsartmann/go-datastar/static`       | Embedded DataStar JS client bundle | zero (stdlib only)      |
+| datastartest | `github.com/larsartmann/go-datastar/datastartest` | Consumer E2E test helpers          | go-datastar, go-sse     |
 
 Replace directives: root go.mod replaces `static => ./static`; datastartest
 go.mod replaces `go-datastar => ..` and `static => ../static`. All resolve locally
@@ -85,32 +85,32 @@ Every DataStar protocol message is a value that produces an `sse.Event`. This ma
 See also [docs/modularization/README.md](docs/modularization/README.md) for the
 proposal, execution plan, and ADRs behind the multi-module split.
 
-| File                     | Role                                                                                       |
-| ------------------------ | ------------------------------------------------------------------------------------------ |
-| `patch.go`               | `Patch` interface                                                                          |
-| `errors.go`              | Error catalog: stable codes, sentinel errors, family mapping                               |
-| `constants.go`           | EventType, ElementPatchMode, Namespace, dataline keys, DefaultRetryDuration                |
-| `elements.go`            | `ElementsPatch` struct + `Event()` + options                                               |
-| `signals.go`             | `SignalsPatch` struct + `Event()` + marshal helpers                                        |
-| `script.go`              | `ScriptPatch` struct + `Event()` + options                                                 |
-| `script_convenience.go`  | Redirect, ConsoleLog/Error, DispatchCustomEvent, ReplaceURL, Prefetch                      |
-| `sugar.go`               | Mode helpers, RemovePatch, validation, namespace helpers                                   |
-| `adapters.go`            | ElementsFromTempl, ElementsFromGostar                                                      |
-| `http.go`                | GetSSE/PostSSE/PutSSE/PatchSSE/DeleteSSE                                                   |
-| `inbound.go`             | ReadSignals, LastEventID                                                                   |
-| `store.go`               | `MemoryStore` — in-memory `sse.EventStore` ring buffer for reconnection replay             |
-| `script_handler.go`      | ScriptHandler, ScriptTag, Version (HTTP serving of the `static` asset bundle)              |
-| `static/`                | **Separate Go module** (zero deps). `//go:embed datastar.js`, `Bytes()`, `Version`         |
-| `response.go`            | Response (fluent SSE builder), ErrorResponse, ErrorResponseFromError, NotificationResponse |
-| `doc.go`                 | Package documentation (design rationale, quick start, error-system contract)               |
-| `example/`               | Live-feed demo app (broadcaster + MemoryStore + ScriptHandler), zero client JS              |
-| `example_test.go`        | Testable examples (Example functions with `// Output:` assertions)                         |
-| `inbound_fuzz_test.go`   | Fuzz test for ReadSignals (10-seed corpus, regression-guarded)                             |
-| `benchmark_test.go`      | Benchmarks for patch `Event()` generation + `FuzzMarshalSignalsRoundtrip`                  |
-| `coverage_test.go`       | Option-application, construction error branches, stream-send failure paths                 |
-| `errors_example_test.go` | Example functions showing all three error-handling patterns                |
-| `e2e_test.go`             | `TestE2E_SSEHeaders` — transport header verification (go-sse owned). The full DataStar wire-format E2E test was relocated to `datastartest/e2e_test.go` |
-| `module_boundary_test.go` | Regression guard: asserts root go.mod never requires datastartest (circular dependency prevention) |
+| File                      | Role                                                                                                                                                                                                                                                                 |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `patch.go`                | `Patch` interface                                                                                                                                                                                                                                                    |
+| `errors.go`               | Error catalog: stable codes, sentinel errors, family mapping                                                                                                                                                                                                         |
+| `constants.go`            | EventType, ElementPatchMode, Namespace, dataline keys, DefaultRetryDuration                                                                                                                                                                                          |
+| `elements.go`             | `ElementsPatch` struct + `Event()` + options                                                                                                                                                                                                                         |
+| `signals.go`              | `SignalsPatch` struct + `Event()` + marshal helpers                                                                                                                                                                                                                  |
+| `script.go`               | `ScriptPatch` struct + `Event()` + options                                                                                                                                                                                                                           |
+| `script_convenience.go`   | Redirect, ConsoleLog/Error, DispatchCustomEvent, ReplaceURL, Prefetch                                                                                                                                                                                                |
+| `sugar.go`                | Mode helpers, RemovePatch, validation, namespace helpers                                                                                                                                                                                                             |
+| `adapters.go`             | ElementsFromTempl, ElementsFromGostar                                                                                                                                                                                                                                |
+| `http.go`                 | GetSSE/PostSSE/PutSSE/PatchSSE/DeleteSSE                                                                                                                                                                                                                             |
+| `inbound.go`              | ReadSignals, LastEventID                                                                                                                                                                                                                                             |
+| `store.go`                | `MemoryStore` — in-memory `sse.EventStore` ring buffer for reconnection replay                                                                                                                                                                                       |
+| `script_handler.go`       | ScriptHandler, ScriptTag, Version (HTTP serving of the `static` asset bundle)                                                                                                                                                                                        |
+| `static/`                 | **Separate Go module** (zero deps). `//go:embed datastar.js`, `Bytes()`, `Version`                                                                                                                                                                                   |
+| `response.go`             | Response (fluent SSE builder), ErrorResponse, ErrorResponseFromError, NotificationResponse                                                                                                                                                                           |
+| `doc.go`                  | Package documentation (design rationale, quick start, error-system contract)                                                                                                                                                                                         |
+| `example/`                | Live-feed demo app (broadcaster + MemoryStore + ScriptHandler), zero client JS                                                                                                                                                                                       |
+| `example_test.go`         | Testable examples (Example functions with `// Output:` assertions)                                                                                                                                                                                                   |
+| `inbound_fuzz_test.go`    | Fuzz test for ReadSignals (10-seed corpus, regression-guarded)                                                                                                                                                                                                       |
+| `benchmark_test.go`       | Benchmarks for patch `Event()` generation + `FuzzMarshalSignalsRoundtrip`                                                                                                                                                                                            |
+| `coverage_test.go`        | Option-application, construction error branches, stream-send failure paths                                                                                                                                                                                           |
+| `errors_example_test.go`  | Example functions showing all three error-handling patterns                                                                                                                                                                                                          |
+| `e2e_test.go`             | `TestE2E_SSEHeaders` — transport header verification (go-sse owned). The full DataStar wire-format E2E test was relocated to `datastartest/e2e_test.go`                                                                                                              |
+| `module_boundary_test.go` | Regression guard: asserts root go.mod never requires datastartest (circular dependency prevention)                                                                                                                                                                   |
 | `datastartest/`           | **Separate Go module** (`go.work` workspace). Consumer E2E test helpers: SSE parsing, DataStar decoding, Collect, CollectPost, CollectN, CollectWithTimeout, FindElement, FindSignals, assertions, fuzz test. Also contains `e2e_test.go` (dogfood integration test) |
 
 ## Wire-Format Parity Requirements
@@ -281,37 +281,37 @@ circular module dependency: root must never require datastartest in its go.mod.
 
 ### API surface
 
-| Export | Purpose |
-| --- | --- |
-| `Collect(t, handler, opts...)` | Spin up httptest.Server, GET, parse SSE, return decoded events |
-| `CollectPost(t, handler, jsonBody, opts...)` | POST with JSON body, parse SSE, return decoded events |
-| `CollectWithRequest(t, handler, method, body, ct, opts...)` | Custom method/body/content-type, parse SSE |
-| `CollectN(t, handler, count, opts...)` | Read exactly N events (streaming handlers), then close |
-| `CollectWithTimeout(t, handler, timeout, opts...)` | GET with deadline; returns events received before timeout |
-| `WithPath(path)` | Target a route (query allowed) instead of "/" — mux-friendly |
-| `WithDatastarSignals(json)` | Send `?datastar=` query param (GET/DELETE signal submission) |
-| `WithLastEventID(id)` | Send Last-Event-ID header — replay/reconnection testing |
-| `WithHeader(key, value)` | Any custom request header |
-| `ReadEvents(io.Reader)` | Parse SSE wire format from any reader |
-| `ReadNEvents(io.Reader, count)` | Streaming SSE reader; returns at N events or clean close |
-| `MustReadEvents(t, io.Reader)` | ReadEvents with t.Fatal on error |
-| `Event.IsElements()` / `.IsSignals()` / `.IsScript()` | Type predicates |
-| `Event.Selector()` / `.Mode()` / `.Elements()` | Typed dataline accessors |
-| `Event.ScriptContent()` | Strip `<script>` wrapper, return inner JS source |
-| `Event.SignalsJSON()` / `.UnmarshalSignals(&v)` | Decode signals JSON |
-| `Event.DataValue(key)` | Generic dataline lookup (escape hatch) |
-| `Event.String()` / `EventsString(events)` | Human-readable debug representation |
-| `FindElement(events, selector)` / `FindSignals(events)` | Search by selector/type |
-| `FilterElements(events)` / `FilterSignals(events)` | Filter by event type |
-| `RequireElements(t, evt, sel, mode, html)` | One-liner element assertion |
-| `RequireElementsContains(t, evt, sel, mode, htmlSubstr)` | Substring match (scripts) |
-| `RequireSignals(t, evt, json)` | Exact signals JSON assertion |
-| `RequireSignalsContain(t, evt, key)` | Check signal key exists |
-| `RequireScript(t, evt, js)` | Exact script-content assertion |
-| `RequireEventID(t, evt, id)` | Event-ID assertion (replay tests) |
-| `RequireEventCount(t, events, n)` | Event count assertion |
-| `CodeSSEScanFailed` | Error code for SSE scanner I/O failures (`datastartest.sse_scan_failed`) |
-| `CodeSignalsUnmarshalFailed` | Error code for signals JSON decode failures (`datastartest.signals_unmarshal_failed`) |
+| Export                                                      | Purpose                                                                               |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `Collect(t, handler, opts...)`                              | Spin up httptest.Server, GET, parse SSE, return decoded events                        |
+| `CollectPost(t, handler, jsonBody, opts...)`                | POST with JSON body, parse SSE, return decoded events                                 |
+| `CollectWithRequest(t, handler, method, body, ct, opts...)` | Custom method/body/content-type, parse SSE                                            |
+| `CollectN(t, handler, count, opts...)`                      | Read exactly N events (streaming handlers), then close                                |
+| `CollectWithTimeout(t, handler, timeout, opts...)`          | GET with deadline; returns events received before timeout                             |
+| `WithPath(path)`                                            | Target a route (query allowed) instead of "/" — mux-friendly                          |
+| `WithDatastarSignals(json)`                                 | Send `?datastar=` query param (GET/DELETE signal submission)                          |
+| `WithLastEventID(id)`                                       | Send Last-Event-ID header — replay/reconnection testing                               |
+| `WithHeader(key, value)`                                    | Any custom request header                                                             |
+| `ReadEvents(io.Reader)`                                     | Parse SSE wire format from any reader                                                 |
+| `ReadNEvents(io.Reader, count)`                             | Streaming SSE reader; returns at N events or clean close                              |
+| `MustReadEvents(t, io.Reader)`                              | ReadEvents with t.Fatal on error                                                      |
+| `Event.IsElements()` / `.IsSignals()` / `.IsScript()`       | Type predicates                                                                       |
+| `Event.Selector()` / `.Mode()` / `.Elements()`              | Typed dataline accessors                                                              |
+| `Event.ScriptContent()`                                     | Strip `<script>` wrapper, return inner JS source                                      |
+| `Event.SignalsJSON()` / `.UnmarshalSignals(&v)`             | Decode signals JSON                                                                   |
+| `Event.DataValue(key)`                                      | Generic dataline lookup (escape hatch)                                                |
+| `Event.String()` / `EventsString(events)`                   | Human-readable debug representation                                                   |
+| `FindElement(events, selector)` / `FindSignals(events)`     | Search by selector/type                                                               |
+| `FilterElements(events)` / `FilterSignals(events)`          | Filter by event type                                                                  |
+| `RequireElements(t, evt, sel, mode, html)`                  | One-liner element assertion                                                           |
+| `RequireElementsContains(t, evt, sel, mode, htmlSubstr)`    | Substring match (scripts)                                                             |
+| `RequireSignals(t, evt, json)`                              | Exact signals JSON assertion                                                          |
+| `RequireSignalsContain(t, evt, key)`                        | Check signal key exists                                                               |
+| `RequireScript(t, evt, js)`                                 | Exact script-content assertion                                                        |
+| `RequireEventID(t, evt, id)`                                | Event-ID assertion (replay tests)                                                     |
+| `RequireEventCount(t, events, n)`                           | Event count assertion                                                                 |
+| `CodeSSEScanFailed`                                         | Error code for SSE scanner I/O failures (`datastartest.sse_scan_failed`)              |
+| `CodeSignalsUnmarshalFailed`                                | Error code for signals JSON decode failures (`datastartest.signals_unmarshal_failed`) |
 
 **All public helpers accept `testing.TB`** (not `*testing.T`), so they work with
 `*testing.T`, `*testing.B`, and Ginkgo's `GinkgoT()`. Keep this invariant when

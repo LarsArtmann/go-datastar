@@ -11,20 +11,20 @@
 
 Executed end-to-end with verification across all build modes.
 
-| Step | Status | Verification |
-| --- | --- | --- |
-| `datastartest/go.mod` created | DONE | `go mod tidy` resolved deps: go-sse direct, go-error-family + go-branded-id indirect |
-| `datastartest/go.sum` created | DONE | 6 lines, 3 module hashes |
-| Mutual replace directives | DONE | Root go.mod: `datastartest => ./datastartest`; datastartest go.mod: `go-datastar => ..` |
-| `go.work` created | DONE | `go 1.26.5` with `use ( . ./datastartest )` |
-| Workspace test (both modules, -race) | PASS | 4 packages, 0 failures |
-| GOWORK=off root test (-race) | PASS | e2e_test.go resolves datastartest via replace directive |
-| GOWORK=off datastartest test (-race) | PASS | Resolves go-datastar via replace directive |
-| Workspace vet | PASS | 0 issues |
-| Workspace lint | PASS | 0 issues |
-| Nix hermeticCheck build | PASS | `nix build .#checks.x86_64-linux.build` exit 0 |
-| `flake.nix` updated | DONE | Removed `GOWORK=off` from devShell; all 8 apps now include `./datastartest/...` |
-| `AGENTS.md` updated | DONE | Module Structure section, dual-mode Commands section, file layout table |
+| Step                                 | Status | Verification                                                                            |
+| ------------------------------------ | ------ | --------------------------------------------------------------------------------------- |
+| `datastartest/go.mod` created        | DONE   | `go mod tidy` resolved deps: go-sse direct, go-error-family + go-branded-id indirect    |
+| `datastartest/go.sum` created        | DONE   | 6 lines, 3 module hashes                                                                |
+| Mutual replace directives            | DONE   | Root go.mod: `datastartest => ./datastartest`; datastartest go.mod: `go-datastar => ..` |
+| `go.work` created                    | DONE   | `go 1.26.5` with `use ( . ./datastartest )`                                             |
+| Workspace test (both modules, -race) | PASS   | 4 packages, 0 failures                                                                  |
+| GOWORK=off root test (-race)         | PASS   | e2e_test.go resolves datastartest via replace directive                                 |
+| GOWORK=off datastartest test (-race) | PASS   | Resolves go-datastar via replace directive                                              |
+| Workspace vet                        | PASS   | 0 issues                                                                                |
+| Workspace lint                       | PASS   | 0 issues                                                                                |
+| Nix hermeticCheck build              | PASS   | `nix build .#checks.x86_64-linux.build` exit 0                                          |
+| `flake.nix` updated                  | DONE   | Removed `GOWORK=off` from devShell; all 8 apps now include `./datastartest/...`         |
+| `AGENTS.md` updated                  | DONE   | Module Structure section, dual-mode Commands section, file layout table                 |
 
 **What the split achieves:** Consumers can now `go get github.com/larsartmann/go-datastar/datastartest` as an independently versioned module, without pulling the protocol library's test infrastructure into their dependency tree.
 
@@ -74,6 +74,7 @@ This is not just "not started" — it's a design error I introduced. Here's the 
 6. Result: **the documented default commands don't work on fresh clone**
 
 The fix is either:
+
 - **Option A:** Remove `go.work` and `go.work.sum` from `.gitignore` and commit them. This is the modern Go multi-module pattern (Kubernetes, Helm, cosign all do this). The replace directives + go.work together provide both local dev and CI isolation.
 - **Option B:** Keep `go.work` gitignored and set `GOWORK=off` back in the devShell. Document that workspace mode requires `go work init`. This is more conservative but adds friction.
 

@@ -17,18 +17,18 @@
 
 ## a) FULLY DONE
 
-| #   | Item                                                                                  | Evidence                                                                       |
-| --- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| 1   | Ran the exact requested erraudit command with all 4 flags                             | Captured full 27-violation report                                              |
-| 2   | Created `errors.go` — stable error codes, sentinel errors, family mapping             | 9 `Code*` constants + 2 `Err*` sentinels                                       |
-| 3   | Migrated every `fmt.Errorf` to `errorfamily` constructors                             | `adapters.go`, `inbound.go`, `signals.go`, `script_convenience.go`, `sugar.go` |
-| 4   | Fixed all 5 context-loss violations via `WithContext`                                 | Added method, input_bytes, value-type context                                  |
-| 5   | Fixed all 6 ignored errors (`_ =`) in `script_handler.go` + `example/main.go`         | Now checked or logged                                                          |
-| 6   | Refactored `ElementPatchModeFromString` / `NamespaceFromString` to `slices.IndexFunc` | Eliminated 2 false-positive context-loss flags, cleaner code                   |
-| 7   | Added `errors_test.go` with 11 tests using `errorfamilytest` assertions               | Family + code + retryable + context + sentinel-Is + cause-Is                   |
-| 8   | Promoted `go-error-family` from indirect to direct dependency in `go.mod`             | `go mod tidy` applied                                                          |
-| 9   | Documented the error system in `AGENTS.md`                                            | New "Error System" section + file layout + command notes                       |
-| 10  | Verified: build + `-race` tests + `go vet` + `golangci-lint` (0 issues)               | All exit 0                                                                     |
+| #  | Item                                                                                  | Evidence                                                                       |
+| -- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| 1  | Ran the exact requested erraudit command with all 4 flags                             | Captured full 27-violation report                                              |
+| 2  | Created `errors.go` — stable error codes, sentinel errors, family mapping             | 9 `Code*` constants + 2 `Err*` sentinels                                       |
+| 3  | Migrated every `fmt.Errorf` to `errorfamily` constructors                             | `adapters.go`, `inbound.go`, `signals.go`, `script_convenience.go`, `sugar.go` |
+| 4  | Fixed all 5 context-loss violations via `WithContext`                                 | Added method, input_bytes, value-type context                                  |
+| 5  | Fixed all 6 ignored errors (`_ =`) in `script_handler.go` + `example/main.go`         | Now checked or logged                                                          |
+| 6  | Refactored `ElementPatchModeFromString` / `NamespaceFromString` to `slices.IndexFunc` | Eliminated 2 false-positive context-loss flags, cleaner code                   |
+| 7  | Added `errors_test.go` with 11 tests using `errorfamilytest` assertions               | Family + code + retryable + context + sentinel-Is + cause-Is                   |
+| 8  | Promoted `go-error-family` from indirect to direct dependency in `go.mod`             | `go mod tidy` applied                                                          |
+| 9  | Documented the error system in `AGENTS.md`                                            | New "Error System" section + file layout + command notes                       |
+| 10 | Verified: build + `-race` tests + `go vet` + `golangci-lint` (0 issues)               | All exit 0                                                                     |
 
 ---
 
@@ -50,20 +50,20 @@ I added an Error System section to `AGENTS.md` but did **not** check whether `RE
 
 ## c) NOT STARTED
 
-| #   | Item                                                                                                            |
-| --- | --------------------------------------------------------------------------------------------------------------- |
-| 1   | ~~`CHANGELOG.md` entry for the error system~~ done — included in v0.0.1 CHANGELOG (`6af9dc4`)                   |
-| 2   | ~~`FEATURES.md` update~~ done at `b1e2063` — FEATURES.md built with full error system inventory                 |
-| 3   | ~~`README.md` error-handling section~~ done at `391db38` (three typed handles documented)                       |
-| 4   | `doc.go` package doc update (never read this session)                                                           |
-| 5   | CI integration — `.github/workflows/ci.yml` was never checked; erraudit not added to CI                         |
-| 6   | `flake.nix` integration — erraudit command not added to the flake devShell/checks                               |
-| 7   | Evaluating domain-specific error return types (see Partially Done #2)                                           |
-| 8   | ~~Running the example end-to-end~~ done at `a8ba8be` — example updated and verified; `go vet ./example/` passes |
-| 9   | ~~Reading `elements.go` and `http.go`~~ done — reviewed during deep-review session (`0d30c94`)                  |
-| 10  | ~~Reading `go-error-family/interfaces.go`~~ done — reviewed during deep-review session (`0d30c94`)              |
-| 11  | NOT-DO — skill/lint config scope is outside this library                                                        |
-| 12  | Routed to ROADMAP.md (Error System Maturity theme)                                                              |
+| #  | Item                                                                                                            |
+| -- | --------------------------------------------------------------------------------------------------------------- |
+| 1  | ~~`CHANGELOG.md` entry for the error system~~ done — included in v0.0.1 CHANGELOG (`6af9dc4`)                   |
+| 2  | ~~`FEATURES.md` update~~ done at `b1e2063` — FEATURES.md built with full error system inventory                 |
+| 3  | ~~`README.md` error-handling section~~ done at `391db38` (three typed handles documented)                       |
+| 4  | `doc.go` package doc update (never read this session)                                                           |
+| 5  | CI integration — `.github/workflows/ci.yml` was never checked; erraudit not added to CI                         |
+| 6  | `flake.nix` integration — erraudit command not added to the flake devShell/checks                               |
+| 7  | Evaluating domain-specific error return types (see Partially Done #2)                                           |
+| 8  | ~~Running the example end-to-end~~ done at `a8ba8be` — example updated and verified; `go vet ./example/` passes |
+| 9  | ~~Reading `elements.go` and `http.go`~~ done — reviewed during deep-review session (`0d30c94`)                  |
+| 10 | ~~Reading `go-error-family/interfaces.go`~~ done — reviewed during deep-review session (`0d30c94`)              |
+| 11 | NOT-DO — skill/lint config scope is outside this library                                                        |
+| 12 | Routed to ROADMAP.md (Error System Maturity theme)                                                              |
 
 ---
 

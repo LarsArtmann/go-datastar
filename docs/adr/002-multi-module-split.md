@@ -7,11 +7,11 @@ Date: 2026-08-16
 go-datastar is not one Go module but three, living in one repository with a
 single `go.work`:
 
-| Module   | Path                                                | Purpose                          | Dependencies            |
-| -------- | --------------------------------------------------- | -------------------------------- | ----------------------- |
-| root     | `github.com/larsartmann/go-datastar`                | DataStar protocol library        | go-sse, go-error-family |
-| static   | `github.com/larsartmann/go-datastar/static`         | Embedded DataStar JS client      | none (stdlib only)      |
-| datastartest | `github.com/larsartmann/go-datastar/datastartest`   | Consumer E2E test helpers        | root, go-sse            |
+| Module       | Path                                              | Purpose                     | Dependencies            |
+| ------------ | ------------------------------------------------- | --------------------------- | ----------------------- |
+| root         | `github.com/larsartmann/go-datastar`              | DataStar protocol library   | go-sse, go-error-family |
+| static       | `github.com/larsartmann/go-datastar/static`       | Embedded DataStar JS client | none (stdlib only)      |
+| datastartest | `github.com/larsartmann/go-datastar/datastartest` | Consumer E2E test helpers   | root, go-sse            |
 
 Before 2026-08-10 the root module required `datastartest` for a single E2E
 test file while `datastartest` required root for production code — a circular
@@ -56,11 +56,11 @@ Rationale per module:
 
 Replace directives make sibling modules resolve locally during development:
 
-| Module       | Replace directives                                             |
-| ------------ | -------------------------------------------------------------- |
-| root         | `static => ./static`                                           |
-| static       | (none — leaf)                                                  |
-| datastartest | `go-datastar => ..`, `static => ../static`                     |
+| Module       | Replace directives                         |
+| ------------ | ------------------------------------------ |
+| root         | `static => ./static`                       |
+| static       | (none — leaf)                              |
+| datastartest | `go-datastar => ..`, `static => ../static` |
 
 Rules enforced by CI and tests:
 

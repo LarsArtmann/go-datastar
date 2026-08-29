@@ -119,18 +119,18 @@ item #13 in its "50 things" list) but never created.
 
 ### 8. Full verification suite — all green
 
-| Check | Command | Result |
-| --- | --- | --- |
-| Regression guard test | `go test -run TestRootModuleDoesNotRequireDatastartest -race` | PASS |
-| Full test suite (race) | `go test ./... ./datastartest/... ./static/... -race -count=1` | All pass |
-| Vet | `go vet ./... ./datastartest/... ./static/...` | Clean |
-| Build | `go build ./... ./datastartest/... ./static/...` | Clean |
-| Per-module isolation | `GOWORK=off go build + go test` per module | All 3 pass |
-| go.work sync idempotency | `cp go.work go.work.bak && go work sync && diff` | Idempotent |
-| Replace directive audit | `grep -rn 'replace.*=>/' go.mod datastartest/go.mod static/go.mod` | No matches |
-| golangci-lint | `golangci-lint run ./... ./datastartest/... ./static/...` | 0 issues |
-| actionlint | `nix run nixpkgs#actionlint .github/workflows/ci.yml` | Exit 0 |
-| YAML syntax | `python3 -c "import yaml; yaml.safe_load(...)"` | Valid |
+| Check                    | Command                                                            | Result     |
+| ------------------------ | ------------------------------------------------------------------ | ---------- |
+| Regression guard test    | `go test -run TestRootModuleDoesNotRequireDatastartest -race`      | PASS       |
+| Full test suite (race)   | `go test ./... ./datastartest/... ./static/... -race -count=1`     | All pass   |
+| Vet                      | `go vet ./... ./datastartest/... ./static/...`                     | Clean      |
+| Build                    | `go build ./... ./datastartest/... ./static/...`                   | Clean      |
+| Per-module isolation     | `GOWORK=off go build + go test` per module                         | All 3 pass |
+| go.work sync idempotency | `cp go.work go.work.bak && go work sync && diff`                   | Idempotent |
+| Replace directive audit  | `grep -rn 'replace.*=>/' go.mod datastartest/go.mod static/go.mod` | No matches |
+| golangci-lint            | `golangci-lint run ./... ./datastartest/... ./static/...`          | 0 issues   |
+| actionlint               | `nix run nixpkgs#actionlint .github/workflows/ci.yml`              | Exit 0     |
+| YAML syntax              | `python3 -c "import yaml; yaml.safe_load(...)"`                    | Valid      |
 
 ---
 
@@ -148,32 +148,32 @@ and remain out of scope for this session's CI-hardening and regression-guard
 focus:
 
 1. ~~**FEATURES.md update** — no mention of the modularization fix or the new
-  regression guard test~~ done at `b5465f2` — module-structure rows; the guard is documented in AGENTS.md (`fda70c7`); CI rows re-verified 2026-08-16
+   regression guard test~~ done at `b5465f2` — module-structure rows; the guard is documented in AGENTS.md (`fda70c7`); CI rows re-verified 2026-08-16
 2. **Version drift detection CI check** — proposed in real-world-patterns.md
 3. ~~**Programmatic DAG acyclicity check** — a test that verifies the module
-  dependency graph is acyclic (more robust than the text-scanning regression
-  guard I added)~~ NOT-DO — superseded by `fda70c7`; the boundary guard covers the only cycle risk in this 3-module layout
+   dependency graph is acyclic (more robust than the text-scanning regression
+   guard I added)~~ NOT-DO — superseded by `fda70c7`; the boundary guard covers the only cycle risk in this 3-module layout
 4. ~~**erraudit on updated codebase** — AGENTS.md documents the command but I
-  did not run it this session~~ done — CI erraudit job added at `eb8bf29`, runs every push
+   did not run it this session~~ done — CI erraudit job added at `eb8bf29`, runs every push
 5. ~~**govulncheck on all 3 modules** — CI runs it but I did not verify locally~~ done — CI govulncheck job (`eb8bf29`) runs every push; 2026-08-16 run flags 4 stdlib vulns fixed in go1.26.6 (routed to TODO_LIST)
 6. **v0.0.0 vs v0.1.0 normalization** — internal module references use v0.1.0,
-  skill recommends v0.0.0 (needs user decision) ← open, routed to ROADMAP "Open questions" 2026-08-16
+   skill recommends v0.0.0 (needs user decision) ← open, routed to ROADMAP "Open questions" 2026-08-16
 7. **go.work.sum git tracking decision** — currently gitignored (needs user
-  decision) ← open, routed to ROADMAP "Open questions" 2026-08-16
+   decision) ← open, routed to ROADMAP "Open questions" 2026-08-16
 8. **result symlink cleanup** — stale Nix build output in project root
-  (still present, still gitignored, needs user decision) ← open, routed to TODO_LIST 2026-08-16
+   (still present, still gitignored, needs user decision) ← open, routed to TODO_LIST 2026-08-16
 9. **Per-module Nix checks** — flake.nix TODO mentions hermeticCheckStatic,
-  hermeticCheckDatastartest ← open, routed to TODO_LIST 2026-08-16
+   hermeticCheckDatastartest ← open, routed to TODO_LIST 2026-08-16
 10. **nix flake check** — verify the flake is healthy
 11. **14 gopls warnings** — stdversion (4), bloop (4), writestring (3),
-  errorsastype (1) — all pre-existing, not introduced by this work ← mostly open — only writestring fixed (`fd3a5ac`); the rest persist (2026-08-16)
+    errorsastype (1) — all pre-existing, not introduced by this work ← mostly open — only writestring fixed (`fd3a5ac`); the rest persist (2026-08-16)
 12. ~~**Pre-publish consumer experience tests** — `go get` root should NOT pull
-  datastartest; `go get` datastartest/static should work independently~~ done — v0.1.0/v0.2.0 released with per-module tags
+    datastartest; `go get` datastartest/static should work independently~~ done — v0.1.0/v0.2.0 released with per-module tags
 13. ~~**go mod verify** on all 3 modules~~ done — verified in the 08-13 02:58 session (and again 2026-08-16)
 14. **Coverage across all 3 modules** — consider a merged coverage output ← open, routed to TODO_LIST 2026-08-16
 15. ~~**CHANGELOG entry for the regression guard test** — I documented the CI
-  steps but did not add a separate CHANGELOG entry for the new
-  `module_boundary_test.go` test file itself~~ covered in substance — the [Unreleased] "Fixed — Module boundary" section (`3cd669e`, shipped in [0.1.0]) documents the fix this guard enforces
+    steps but did not add a separate CHANGELOG entry for the new
+    `module_boundary_test.go` test file itself~~ covered in substance — the [Unreleased] "Fixed — Module boundary" section (`3cd669e`, shipped in [0.1.0]) documents the fix this guard enforces
 
 ---
 
@@ -326,7 +326,7 @@ working tree was committed by the auto-commit daemon (3 commits: `3cd669e`,
 8. Add `go mod verify` step to CI (all 3 modules)
 9. Add version drift detection script to CI
 10. Add a CI step that verifies `go.work` `use` directives match actual
-     go.mod files on disk
+    go.mod files on disk
 11. Add `actionlint` as a CI step to validate workflow YAML
 12. Consider parallelizing CI jobs per module for faster feedback
 13. ~~Add a CI step that runs the regression guard test in GOWORK=off mode~~ done — the CI isolation job runs the full suite `GOWORK=off` on every push (`eb8bf29` lineage)
@@ -347,21 +347,21 @@ working tree was committed by the auto-commit daemon (3 commits: `3cd669e`,
 ### Code Quality (pre-existing gopls warnings)
 
 22. Fix gopls `stdversion` warnings — `json.Unmarshal` requires go1.27 in
-     benchmark_test.go:92, datastartest/event.go:86, and 2 more files
+    benchmark_test.go:92, datastartest/event.go:86, and 2 more files
 23. Fix gopls `bloop` warnings — modernize `b.N` to `b.Loop()` in
-     benchmark_test.go (4 instances)
+    benchmark_test.go (4 instances)
 24. ~~Fix gopls `writestring` warnings — inefficient string concatenation in
-     reader_fuzz_test.go (3 instances)~~ done at `fd3a5ac` — `strings.Builder.WriteString` now used
+    reader_fuzz_test.go (3 instances)~~ done at `fd3a5ac` — `strings.Builder.WriteString` now used
 25. Fix gopls `errorsastype` hint — simplify `errors.As` in errors_test.go:253
 
 ### Modularization Refinement
 
 26. Evaluate `v0.0.0` vs `v0.1.0` for internal module references (needs
-  user decision) ← open, routed to ROADMAP "Open questions" 2026-08-16
+    user decision) ← open, routed to ROADMAP "Open questions" 2026-08-16
 27. Evaluate whether `go.work.sum` should be tracked in git (needs user
-  decision) ← open, routed to ROADMAP "Open questions" 2026-08-16
+    decision) ← open, routed to ROADMAP "Open questions" 2026-08-16
 28. Clean up or document the `result` symlink in project root (needs user
-  decision) ← open, routed to TODO_LIST 2026-08-16
+    decision) ← open, routed to TODO_LIST 2026-08-16
 29. Consider whether `static/` should have a go.sum file preemptively
 30. Evaluate whether `example/` should get its own go.mod
 31. Review `response_test.go` — it imports `static` directly; verify this
@@ -371,24 +371,24 @@ working tree was committed by the auto-commit daemon (3 commits: `3cd669e`,
 
 32. ~~Create git tags for v0.1.0 release~~ done — v0.1.0 tagged 2026-08-10 (and v0.2.0 since)
 33. ~~Test consumer experience: `go get github.com/larsartmann/go-datastar`
-  should NOT pull datastartest~~ done — root has no datastartest require
+    should NOT pull datastartest~~ done — root has no datastartest require
 34. ~~Test consumer experience: `go get github.com/larsartmann/go-datastar/datastartest`
-  should work~~ done — datastartest tagged v0.1.0/v0.2.0
+    should work~~ done — datastartest tagged v0.1.0/v0.2.0
 35. ~~Test consumer experience: `go get github.com/larsartmann/go-datastar/static`
-  should work~~ done — static tagged v0.1.0/v0.2.0
+    should work~~ done — static tagged v0.1.0/v0.2.0
 36. ~~Verify GOPROXY resolution works~~ done — v0.1.0/v0.2.0 resolve via the module proxy
 37. ~~Run `go mod verify` on all 3 modules~~ done — verified in the 08-13 02:58 session (and again 2026-08-16)
 38. ~~Consider adding `//deprecated` comments to old import paths if any
-  changed~~ Won't implement — no import paths changed
+    changed~~ Won't implement — no import paths changed
 
 ### Nix/Build
 
 39. Add per-module Nix checks (`hermeticCheckStatic`,
-  `hermeticCheckDatastartest`) as the flake.nix TODO mentions ← open, routed to TODO_LIST 2026-08-16
+    `hermeticCheckDatastartest`) as the flake.nix TODO mentions ← open, routed to TODO_LIST 2026-08-16
 40. Run `nix flake check` to verify the flake is healthy
 41. ~~Consider adding `nix run .#erraudit` and `nix run .#govulncheck` to CI~~ done at `eb8bf29` — both are CI jobs
 42. Consider adding a `nix run .#coverage` output that merges coverage
-  across all 3 modules ← open, routed to TODO_LIST 2026-08-16
+    across all 3 modules ← open, routed to TODO_LIST 2026-08-16
 43. ~~Update the flake.nix `vendorHash` if go.sum changes in the future~~ done — maintained routinely (e.g. `5b70bb1`)
 
 ### Architecture
@@ -396,13 +396,13 @@ working tree was committed by the auto-commit daemon (3 commits: `3cd669e`,
 44. Consider whether `datastartest` should export a `NewResponse` helper for
     test ergonomics
 45. ~~Evaluate whether `datastartest` should have a `CollectWithOptions` for
-  custom headers~~ done at `06bb019` — every Collect* now takes `...RequestOption` (`WithHeader` et al.)
+    custom headers~~ done at `06bb019` — every Collect* now takes `...RequestOption` (`WithHeader` et al.)
 46. Consider adding a `datastartest.RequireEventOrder` helper for ordered
     event assertions
 47. Consider whether `static/` should export a `Version` constant AND a
     `Version()` function (currently both exist)
 48. ~~Add a pre-commit hook that warns if root go.mod gains a datastartest
-  require~~ superseded by `fda70c7` — test-level guard runs in CI on every push
+    require~~ superseded by `fda70c7` — test-level guard runs in CI on every push
 
 ### Process
 

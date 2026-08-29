@@ -4,8 +4,8 @@ import (
 	"io"
 	"testing"
 
-	"github.com/larsartmann/go-sse/ssetest"
 	errorfamily "github.com/larsartmann/go-error-family"
+	"github.com/larsartmann/go-sse/ssetest"
 )
 
 // ReadEvents parses the SSE wire format from r and returns all decoded events.

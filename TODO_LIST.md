@@ -7,17 +7,17 @@
 
 ## Status legend
 
-| Status           | Meaning                                                     |
-| ---------------- | ----------------------------------------------------------- |
-| 🔴 `TODO`        | Not started. Needs doing.                                   |
-| 🟡 `IN_PROGRESS` | Actively being worked on.                                   |
-| 🔵 `BLOCKED`     | Cannot proceed, external dependency or decision needed.     |
+| Status           | Meaning                                                 |
+| ---------------- | ------------------------------------------------------- |
+| 🔴 `TODO`        | Not started. Needs doing.                               |
+| 🟡 `IN_PROGRESS` | Actively being worked on.                               |
+| 🔵 `BLOCKED`     | Cannot proceed, external dependency or decision needed. |
 
 ## Open items
 
-| Task                                                                                              | Status         | Impact   | Effort | Evidence                                                            |
-| ------------------------------------------------------------------------------------------------- | -------------- | -------- | ------ | ------------------------------------------------------------------- |
-| De-flake remaining lint issues in parallel-session files (`reader.go` intrange, `wpt_format_corpus_test.go` dupword, `reader.go` gochecknoglobals/nlreturn/nonamedreturns) | 🔴 `TODO` | Low | 10min | `golangci-lint run` output |
+| Task                                                                                                                                                                       | Status    | Impact | Effort | Evidence                   |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------ | ------ | -------------------------- |
+| De-flake remaining lint issues in parallel-session files (`reader.go` intrange, `wpt_format_corpus_test.go` dupword, `reader.go` gochecknoglobals/nlreturn/nonamedreturns) | 🔴 `TODO` | Low    | 10min  | `golangci-lint run` output |
 
 ## Notes
 

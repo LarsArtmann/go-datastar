@@ -9,6 +9,7 @@ paragraph with a full, honest comparison section.
 dependencies, no go.mod changes.
 
 **Commits this session:**
+
 - This report + `README.md` (user explicitly requested the commit)
 
 ---

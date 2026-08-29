@@ -12,27 +12,27 @@ The `//go:embed static/datastar.js` directive, the `embeddedDatastarJS []byte` v
 
 ### Files Created
 
-| File | Role |
-|---|---|
-| `static/static.go` | Dedicated asset package: `//go:embed datastar.js`, `Bytes() []byte`, `Version` const ("1.0.2") |
+| File                    | Role                                                                                                  |
+| ----------------------- | ----------------------------------------------------------------------------------------------------- |
+| `static/static.go`      | Dedicated asset package: `//go:embed datastar.js`, `Bytes() []byte`, `Version` const ("1.0.2")        |
 | `static/static_test.go` | 4 tests: version sanity, non-empty bytes, header-banner-matches-version guard, shared-slice stability |
 
 ### Files Modified
 
-| File | Change |
-|---|---|
+| File                | Change                                                                                                                                                                                                                                                                |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `script_handler.go` | Dropped `_ "embed"` import + `embeddedDatastarJS` var + inline version const. Added `static` import. `ScriptHandler()` now calls `ScriptHandlerWith(static.Bytes(), static.Version)`. `DatastarJSVersion` re-exports `static.Version` as a backward-compatible alias. |
-| `AGENTS.md` | File-layout table: `script_handler.go` row updated; new `static/` row added. |
+| `AGENTS.md`         | File-layout table: `script_handler.go` row updated; new `static/` row added.                                                                                                                                                                                          |
 
 ### Verification (all passed)
 
-| Gate | Result |
-|---|---|
-| `go build ./...` | clean |
-| `go vet ./...` | clean |
+| Gate                           | Result                                                    |
+| ------------------------------ | --------------------------------------------------------- |
+| `go build ./...`               | clean                                                     |
+| `go vet ./...`                 | clean                                                     |
 | `go test ./... -race -count=1` | all pass (root, datastartest, **static**), example builds |
-| `golangci-lint run ./...` | 0 issues |
-| `go vet ./example/` | clean |
+| `golangci-lint run ./...`      | 0 issues                                                  |
+| `go vet ./example/`            | clean                                                     |
 
 ---
 
@@ -50,13 +50,13 @@ Nothing is half-finished. The refactor itself is complete and verified.
 
 ## c) NOT STARTED
 
-| # | Item | Why it matters |
-|---|---|---|
-| 1 | **CHANGELOG.md `[Unreleased]` entry** | Structural refactor (new package); the `[Unreleased]` section exists but was not updated. Clear miss. ~~→ done at `7c18089`~~ |
-| 2 | **FEATURES.md line 66** | Says "v1.0.2 embedded. ScriptHandler() ... (`script_handler.go`)." The embed now lives in `static/`. File reference is stale. ~~→ done at `222353e` (later updated again for the module split)~~ |
-| 3 | **README.md API surface table** | Does not mention `static.Bytes()` / `static.Version` for consumers who want raw access to the JS bundle without HTTP. |
-| 4 | **Root `doc.go`** | Doesn't mention that the JS client is served from the `static` subpackage. Minor. |
-| 5 | **`.github/workflows/ci.yml` review** | Not checked for embed-path references that may now be stale. ~~→ moot — CI covers all three modules since v0.1.0~~ |
+| # | Item                                  | Why it matters                                                                                                                                                                                   |
+| - | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1 | **CHANGELOG.md `[Unreleased]` entry** | Structural refactor (new package); the `[Unreleased]` section exists but was not updated. Clear miss. ~~→ done at `7c18089`~~                                                                    |
+| 2 | **FEATURES.md line 66**               | Says "v1.0.2 embedded. ScriptHandler() ... (`script_handler.go`)." The embed now lives in `static/`. File reference is stale. ~~→ done at `222353e` (later updated again for the module split)~~ |
+| 3 | **README.md API surface table**       | Does not mention `static.Bytes()` / `static.Version` for consumers who want raw access to the JS bundle without HTTP.                                                                            |
+| 4 | **Root `doc.go`**                     | Doesn't mention that the JS client is served from the `static` subpackage. Minor.                                                                                                                |
+| 5 | **`.github/workflows/ci.yml` review** | Not checked for embed-path references that may now be stale. ~~→ moot — CI covers all three modules since v0.1.0~~                                                                               |
 
 ## d) TOTALLY FUCKED UP
 

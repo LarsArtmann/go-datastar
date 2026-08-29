@@ -59,21 +59,22 @@ isolation step:
 
 All checks pass:
 
-| Check | Command | Result |
-| --- | --- | --- |
-| go mod tidy (root) | `GOWORK=off go mod tidy` | No changes |
-| go mod tidy (datastartest) | `GOWORK=off go mod tidy` | No changes |
-| go mod tidy (static) | `GOWORK=off go mod tidy` | No changes |
-| go work sync idempotency | `go work sync && git diff --exit-code go.work` | Idempotent |
-| Full test suite | `go test ./... ./datastartest/... ./static/... -race -count=1` | All pass |
-| go vet | `go vet ./... ./datastartest/... ./static/...` | Clean |
-| Per-module isolation | `GOWORK=off go build + go test` per module | All 3 pass |
-| Replace directive audit | `grep 'replace.*=>/' go.mod datastartest/go.mod static/go.mod` | No matches |
+| Check                      | Command                                                        | Result     |
+| -------------------------- | -------------------------------------------------------------- | ---------- |
+| go mod tidy (root)         | `GOWORK=off go mod tidy`                                       | No changes |
+| go mod tidy (datastartest) | `GOWORK=off go mod tidy`                                       | No changes |
+| go mod tidy (static)       | `GOWORK=off go mod tidy`                                       | No changes |
+| go work sync idempotency   | `go work sync && git diff --exit-code go.work`                 | Idempotent |
+| Full test suite            | `go test ./... ./datastartest/... ./static/... -race -count=1` | All pass   |
+| go vet                     | `go vet ./... ./datastartest/... ./static/...`                 | Clean      |
+| Per-module isolation       | `GOWORK=off go build + go test` per module                     | All 3 pass |
+| Replace directive audit    | `grep 'replace.*=>/' go.mod datastartest/go.mod static/go.mod` | No matches |
 
 ### README.md Review
 
 Reviewed README.md in full (379 lines). No stale references to the old module
 structure found. The README correctly documents:
+
 - `go get github.com/larsartmann/go-datastar` (root)
 - Optional sub-modules: `static` and `datastartest` with separate `go get` lines
 - No mention of root depending on datastartest
@@ -96,22 +97,22 @@ remain as future work:
 1. ~~**FEATURES.md update** — no mention of the modularization fix~~ done at `b5465f2` (module-structure rows; re-verified 2026-08-16)
 2. **Version drift detection CI check** — proposed in real-world-patterns.md
 3. ~~**Regression guard test** — a test verifying root's go.mod does NOT contain
-  datastartest~~ done at `fda70c7` (`module_boundary_test.go`)
+   datastartest~~ done at `fda70c7` (`module_boundary_test.go`)
 4. ~~**Programmatic DAG acyclicity check** — test that verifies the module
-  dependency graph is acyclic~~ NOT-DO — superseded by `fda70c7`; the boundary guard covers the only cycle risk in this 3-module layout
+   dependency graph is acyclic~~ NOT-DO — superseded by `fda70c7`; the boundary guard covers the only cycle risk in this 3-module layout
 5. ~~**erraudit on updated codebase** — verify no new error handling issues~~ done — CI erraudit job added at `eb8bf29`, runs every push
 6. ~~**govulncheck on all 3 modules** — run vulnerability scan~~ done — CI govulncheck job added at `eb8bf29`; 2026-08-16 run flags 4 stdlib vulns fixed in go1.26.6 (routed to TODO_LIST)
 7. **v0.0.0 vs v0.1.0 normalization** — real-world-patterns.md recommends
-  v0.0.0 for internal module references ← open, routed to ROADMAP "Open questions" 2026-08-16
+   v0.0.0 for internal module references ← open, routed to ROADMAP "Open questions" 2026-08-16
 8. **go.work.sum git tracking decision** — currently gitignored ← open, routed to ROADMAP "Open questions" 2026-08-16
 9. **result symlink cleanup** — stale Nix build output in project root ← open, routed to TODO_LIST 2026-08-16
 10. **Per-module Nix checks** — flake.nix TODO mentions hermeticCheckStatic,
-  hermeticCheckDatastartest ← open, routed to TODO_LIST 2026-08-16
+    hermeticCheckDatastartest ← open, routed to TODO_LIST 2026-08-16
 11. **nix flake check** — verify the flake is healthy
 12. **14 gopls warnings** — stdversion (4), bloop (4), writestring (3),
-  errorsastype (1) — all pre-existing, not introduced by modularization work ← mostly open — only writestring fixed (`fd3a5ac`); the rest persist (2026-08-16)
+    errorsastype (1) — all pre-existing, not introduced by modularization work ← mostly open — only writestring fixed (`fd3a5ac`); the rest persist (2026-08-16)
 13. ~~**Pre-publish consumer experience tests** — `go get` root should NOT pull
-  datastartest; `go get` datastartest/static should work independently~~ done — v0.1.0/v0.2.0 released with per-module tags
+    datastartest; `go get` datastartest/static should work independently~~ done — v0.1.0/v0.2.0 released with per-module tags
 14. ~~**go mod verify** on all 3 modules~~ done — verified in the 08-13 02:58 session (and again 2026-08-16)
 15. **Coverage across all 3 modules** — consider a merged coverage output ← open, routed to TODO_LIST 2026-08-16
 
