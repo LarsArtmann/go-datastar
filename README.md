@@ -58,7 +58,7 @@ Both libraries emit the exact same DataStar wire format. The difference is what 
 | Error handling                          | Standard `error` values                 | Every error classified with a stable code, family, and retryability ([go-error-family](https://github.com/LarsArtmann/go-error-family)) |
 | E2E test helpers for your handlers      | None                                    | `datastartest` module: SSE parsing, typed decoding, assertions                                                                          |
 | Serve the DataStar JS client            | Bring your own                          | `ScriptHandler()` with ETag + Cache-Control, embedded zero-dep `static` module (JS client v1.0.2)                                       |
-| SSE compression (gzip, Brotli, Zstd)    | Yes, built in                           | No (bring your own middleware)                                                                                                          |
+| SSE compression (gzip, Brotli, Zstd)    | Yes, built in                           | Bring your own middleware (example included)                                                                                                          |
 | Templ / GoStar rendering                | Yes                                     | Yes                                                                                                                                     |
 | Printf-style variants (`…f`)            | Yes                                     | Yes                                                                                                                                     |
 
@@ -66,7 +66,7 @@ Both libraries emit the exact same DataStar wire format. The difference is what 
 
 Honesty first:
 
-- **Built-in SSE compression** — gzip, Brotli, Zstd, and Deflate with client- or server-priority negotiation. go-datastar leaves compression to middleware.
+- **Built-in SSE compression** — gzip, Brotli, Zstd, and Deflate with client- or server-priority negotiation. go-datastar leaves compression to the HTTP layer (a reverse proxy does this best); a working gzip middleware pattern ships in `example/sse_middleware.go`.
 - **Fewer environment constraints** — works on Go 1.24+ with standard tooling. go-datastar requires Go 1.26.7+ and `GOEXPERIMENT=jsonv2` (transitive, via go-sse).
 - **First-party cadence** — the reference implementation, tracking DataStar client releases day one.
 

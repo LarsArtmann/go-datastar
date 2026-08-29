@@ -99,8 +99,6 @@ Raw ideas:
 - Subscribe to upstream `starfederation/datastar` for protocol changes
 - Renovate rule for upstream DataStar JS releases
 - Protocol version negotiation if DataStar introduces breaking wire changes
-- SSE compression support (gzip/Brotli/Zstd) — the last substantial feature
-  gap vs upstream
 
 ## Non-goals
 
