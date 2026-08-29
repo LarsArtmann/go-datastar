@@ -247,6 +247,12 @@
               go test ./... ./datastartest/... ./static/... -coverprofile=coverage.out -covermode=atomic "$@"
               go tool cover -func=coverage.out
             '';
+
+            bench = mkApp "bench" [ goPkg ] ''
+              export GOEXPERIMENT=jsonv2
+              go test -run '^$' -bench . -benchmem "$@"
+              (cd datastartest && go test -run '^$' -bench . -benchmem "$@")
+            '';
           };
         };
     };

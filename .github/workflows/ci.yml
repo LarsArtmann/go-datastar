@@ -102,6 +102,17 @@ jobs:
         with:
           go-version: "1.26.7"
 
+      # golangci-lint's analysis cache is the lint job's long pole (1m33s cold).
+      # setup-go already caches the Go build/module caches (so `go install`
+      # of the linter is warm); this adds the linter's own analysis cache.
+      - name: Cache golangci-lint analysis
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.cache/golangci-lint
+          key: golangci-lint-${{ runner.os }}-v2.12.2-go1.26.7-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            golangci-lint-${{ runner.os }}-v2.12.2-go1.26.7-
+
       - name: Install golangci-lint
         run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
 

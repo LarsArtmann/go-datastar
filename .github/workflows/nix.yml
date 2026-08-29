@@ -1,0 +1,46 @@
+name: nix
+
+# Runs the canonical hermetic gate (`nix flake check`: three Go modules
+# built/tested in isolation + treefmt format check) on GitHub runners.
+# Non-required (continue-on-error) until the job has proven stable in CI —
+# the flake builds go1.26.7 from source on first run, so cold runs take
+# several minutes. erraudit is deliberately NOT part of the flake (private
+# deps); CI's probe-gated erraudit job covers it instead.
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "**.go"
+      - "**.nix"
+      - "go.mod"
+      - "go.sum"
+      - "go.work"
+      - ".github/workflows/nix.yml"
+      - "static/datastar.js"
+      - "datastartest/testdata/**"
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "**.go"
+      - "**.nix"
+      - "go.mod"
+      - "go.sum"
+      - "go.work"
+      - ".github/workflows/nix.yml"
+      - "static/datastar.js"
+      - "datastartest/testdata/**"
+
+jobs:
+  flake-check:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: cachix/install-nix-action@b85815f71a6de0ddee80b8a80a98d43f4bcc66c7 # v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Nix flake check (hermetic: 3 Go modules + format)
+        run: nix flake check
