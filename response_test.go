@@ -304,7 +304,7 @@ func TestResponse_Actions(t *testing.T) {
 		},
 		{
 			name: "ReplaceURLQuerystring",
-			run: func(s *sse.Stream) error {
+			run: func(stream *sse.Stream) error {
 				req := httptest.NewRequestWithContext(
 					context.Background(),
 					http.MethodGet,
@@ -312,7 +312,7 @@ func TestResponse_Actions(t *testing.T) {
 					nil,
 				)
 
-				return datastar.NewResponse(s).
+				return datastar.NewResponse(stream).
 					ReplaceURLQuerystring(req, url.Values{"q": {"new"}, "page": {"2"}})
 			},
 			assert: assertContains(
