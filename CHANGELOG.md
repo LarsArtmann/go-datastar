@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-08-29
+
 ### Changed
 
 - **Go directives pinned to 1.26.7 across all modules** (go.mod ×3, go.work,
@@ -89,7 +91,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   govulncheck job red on master (GO-2026-5972, GO-2026-6089, GO-2026-6090,
   GO-2026-6218; all "Fixed in go1.26.6"). The Nix flake pins
   `go_1_26` to 1.26.6 via `overrideAttrs` until nixpkgs ships it, so
-  `nix flake check` stays hermetic and green alongside CI.
+  `nix flake check` stays hermetic and green alongside CI. _Superseded
+  within this release by the 1.26.7 pin in "Changed" above — see that entry
+  for the final toolchain state._
 - **erraudit CI job probe-gated and un-red-X'd** — the job now probes
   `go list -m github.com/larsartmann/erraudit@v0.3.0` first: while the
   erraudit repository is private (as of 2026-08-16) the job skips with a
@@ -426,7 +430,8 @@ values producing `sse.Event`, built on [go-sse](https://github.com/LarsArtmann/g
 - Removed local `replace` directive — the module now resolves `go-sse v0.4.0`
   and `go-error-family v0.10.0` from the Go module proxy.
 
-[Unreleased]: https://github.com/LarsArtmann/go-datastar/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/LarsArtmann/go-datastar/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/LarsArtmann/go-datastar/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/LarsArtmann/go-datastar/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/LarsArtmann/go-datastar/compare/v0.0.3...v0.1.0
 [0.0.3]: https://github.com/LarsArtmann/go-datastar/compare/v0.0.2...v0.0.3
