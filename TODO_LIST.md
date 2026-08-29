@@ -27,6 +27,7 @@
 | golangci-lint CI caching (1m33s long pole on every push).                                                                                                                                                                                     | 🔴 `TODO` | Low      | 30min  | CI run 33258092947; 12-43 report f-table item 13                                                   |
 | PR template: mark CI-dependent checklist boxes as "checked by CI", not pre-checked by agents.                                                                                                                                                 | 🔴 `TODO` | Low      | 10min  | `.github/PULL_REQUEST_TEMPLATE.md`; 12-43 report f-table item 14                                   |
 | CONTRIBUTING.md: how to run the fuzz tests (`go test -fuzz=FuzzReadEvents -fuzztime=30s`, per-module).                                                                                                                                        | 🔴 `TODO` | Low      | 15min  | `CONTRIBUTING.md` (no fuzz section); 11-07 report F11                                              |
+| Prune AGENTS.md toward the 5–15KB target: drop resolved-incident gotchas (protected-master landing ceremony), compress the file-layout table toward links. Preserve load-bearing gotchas — verify each removed line isn't referenced elsewhere. | 🔴 `TODO` | Low      | 45min  | `AGENTS.md` (28.7KB, flag line 30KB); 2026-08-29 health report watch item                          |
 
 ## Notes
 
