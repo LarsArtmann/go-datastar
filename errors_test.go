@@ -233,14 +233,13 @@ func TestWrapStreamError_DoubleWrapComposition(t *testing.T) {
 		t.Errorf("errors.Is(err, errWriteFailed) = false; want true (chain traversal)")
 	}
 
-	// The error is an *errorfamily.Error (extractable via errors.As).
-	var classifiedErr *errorfamily.Error
-	if !errors.As(err, &classifiedErr) {
-		t.Errorf("errors.As(err, &*errorfamily.Error) = false; want true")
+	// The error is an *errorfamily.Error (extractable via AsType).
+	if _, ok := errors.AsType[*errorfamily.Error](err); !ok {
+		t.Errorf("errors.AsType[*errorfamily.Error](err) = false; want true")
 	}
 }
 
-// --- errors.As coverage: every error path must be an *errorfamily.Error ---
+// --- AsType coverage: every error path must be an *errorfamily.Error ---
 
 func TestError_AllPaths_AreErrorFamilyType(t *testing.T) {
 	t.Parallel()
@@ -284,10 +283,8 @@ func TestError_AllPaths_AreErrorFamilyType(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		var classifiedErr *errorfamily.Error
-
-		if !errors.As(tc.err, &classifiedErr) {
-			t.Errorf("%s: errors.As(err, &*errorfamily.Error) = false; want true", tc.name)
+		if _, ok := errors.AsType[*errorfamily.Error](tc.err); !ok {
+			t.Errorf("%s: errors.AsType[*errorfamily.Error](err) = false; want true", tc.name)
 		}
 	}
 }

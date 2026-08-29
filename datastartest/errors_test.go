@@ -30,9 +30,8 @@ func TestError_ReadEvents_ScanFailed_Transient(t *testing.T) {
 		t.Errorf("errors.Is(err, errTestReadFailure) = false; want true (chain traversal)")
 	}
 
-	var classifiedErr *errorfamily.Error
-	if !errors.As(err, &classifiedErr) {
-		t.Errorf("errors.As(err, &*errorfamily.Error) = false; want true")
+	if _, ok := errors.AsType[*errorfamily.Error](err); !ok {
+		t.Errorf("errors.AsType[*errorfamily.Error](err) = false; want true")
 	}
 }
 
@@ -84,7 +83,7 @@ func TestError_UnmarshalSignals_Rejection(t *testing.T) {
 }
 
 // TestError_AllPaths_AreErrorFamilyType verifies that every error returned by
-// the test helpers is an *errorfamily.Error extractable via errors.As.
+// the test helpers is an *errorfamily.Error extractable via AsType.
 func TestError_AllPaths_AreErrorFamilyType(t *testing.T) {
 	t.Parallel()
 
@@ -116,9 +115,8 @@ func TestError_AllPaths_AreErrorFamilyType(t *testing.T) {
 			continue
 		}
 
-		var classifiedErr *errorfamily.Error
-		if !errors.As(testCase.err, &classifiedErr) {
-			t.Errorf("%s: errors.As(err, &*errorfamily.Error) = false; want true", testCase.name)
+		if _, ok := errors.AsType[*errorfamily.Error](testCase.err); !ok {
+			t.Errorf("%s: errors.AsType[*errorfamily.Error](err) = false; want true", testCase.name)
 		}
 	}
 }

@@ -95,15 +95,15 @@ func MustReadNEvents(tb testing.TB, r io.Reader, count int) []Event {
 // The two types are field-identical (Type, DataLines, ID, Retry), so the
 // conversion is a straight copy.
 func toEvents(events []ssetest.Event) []Event {
-	out := make([]Event, len(events))
+	out := make([]Event, 0, len(events))
 
-	for i, evt := range events {
-		out[i] = Event{
+	for _, evt := range events {
+		out = append(out, Event{
 			Type:      evt.Type,
 			DataLines: evt.DataLines,
 			ID:        evt.ID,
 			Retry:     evt.Retry,
-		}
+		})
 	}
 
 	return out

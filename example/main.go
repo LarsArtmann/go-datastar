@@ -28,6 +28,7 @@ const addr = ":8765"
 const (
 	readHeaderTimeout = 5 * time.Second
 	shutdownTimeout   = 5 * time.Second
+	heartbeatInterval = 15 * time.Second
 )
 
 func main() {
@@ -150,7 +151,7 @@ func eventsHandler(broadcaster *sse.Broadcaster[sse.Event]) http.HandlerFunc {
 		events := broadcaster.Subscribe()
 		defer broadcaster.Unsubscribe(events)
 
-		go stream.Heartbeat(request.Context(), 15*time.Second)
+		go stream.Heartbeat(request.Context(), heartbeatInterval)
 
 		for {
 			select {
