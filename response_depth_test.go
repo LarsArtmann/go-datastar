@@ -9,10 +9,9 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/larsartmann/go-datastar"
 	errorfamily "github.com/larsartmann/go-error-family"
 	"github.com/larsartmann/go-sse"
-
-	"github.com/larsartmann/go-datastar"
 )
 
 // signalsPayload decodes the patch-signals payload from raw SSE output. The
@@ -57,7 +56,9 @@ func TestErrorResponseFromError_TypedPayload(t *testing.T) {
 		t.Fatalf("payload should carry an error object; got %v", payload)
 	}
 
-	if errObj["message"] != "invalid input" {
+	// message is err.Error() — errorfamily's Error() includes the
+	// "[family:code] " prefix, so it repeats the family/code fields.
+	if errObj["message"] != "[rejection:test.bad_input] invalid input" {
 		t.Errorf("message: got %v", errObj["message"])
 	}
 
@@ -112,7 +113,7 @@ func TestErrorResponseFromError_NilDetailDispatchCustomEvent(t *testing.T) {
 
 	evt := patch.Event()
 
-	if !strings.Contains(evt.Data, "detail null") {
+	if !strings.Contains(evt.Data, "detail: null") {
 		t.Errorf("nil detail should marshal to null; data: %q", evt.Data)
 	}
 }
@@ -142,12 +143,12 @@ func TestErrorResponseAndNotification_EdgeCases(t *testing.T) {
 		t.Parallel()
 
 		stream, buf := newTestStream()
-		if err := datastar.ErrorResponse(stream, "Fehler: Zahlungsdaten ungültig — 断线 🚨", "pay.unicode"); err != nil {
+		if err := datastar.ErrorResponse(stream, "Fehler: Zahlungsdaten ungültig — Verbindungsabbruch 🚨", "pay.unicode"); err != nil {
 			t.Fatalf("ErrorResponse: %v", err)
 		}
 
 		errObj := signalsPayload(t, buf.String())["error"].(map[string]any)
-		if errObj["message"] != "Fehler: Zahlungsdaten ungültig — 断线 🚨" {
+		if errObj["message"] != "Fehler: Zahlungsdaten ungültig — Verbindungsabbruch 🚨" {
 			t.Errorf("unicode message should survive; got %q", errObj["message"])
 		}
 	})
@@ -197,19 +198,15 @@ func TestResponse_ConcurrentMethods(t *testing.T) {
 	stream, buf := newTestStream()
 	resp := datastar.NewResponse(stream)
 
-	var wg sync.WaitGroup
+	var waitGroup sync.WaitGroup
 	for i := range goroutines {
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
-
+		waitGroup.Go(func() {
 			if err := resp.PatchElements("<div>event</div>", datastar.WithSelectorf("#n%d", i)); err != nil {
 				t.Errorf("PatchElements: %v", err)
 			}
-		}()
+		})
 	}
-	wg.Wait()
+	waitGroup.Wait()
 	if got := strings.Count(buf.String(), "event: datastar-patch-elements"); got != goroutines {
 		t.Errorf("sent %d events, want %d", got, goroutines)
 	}
