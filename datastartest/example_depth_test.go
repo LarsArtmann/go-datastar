@@ -17,22 +17,22 @@ import (
 // ExampleCollectPost demonstrates testing a POST handler that reads signals
 // from the JSON body — the most common mutation pattern.
 func ExampleCollectPost() {
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := http.HandlerFunc(func(writer http.ResponseWriter, r *http.Request) {
 		var signals struct {
 			Name string `json:"name"`
 		}
 
 		if err := datastar.ReadSignals(r, &signals); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(writer, err.Error(), http.StatusBadRequest)
 
 			return
 		}
 
-		stream := sse.NewStream(w, r)
+		stream := sse.NewStream(writer, r)
 		defer func() { _ = stream.Close() }()
 
 		resp := datastar.NewResponse(stream)
-		_ = resp.PatchElements("<div>Welcome, " + signals.Name + "</div>", datastar.WithSelector("#greeting"))
+		_ = resp.PatchElements("<div>Welcome, "+signals.Name+"</div>", datastar.WithSelector("#greeting"))
 	})
 
 	// In your test: events := datastartest.CollectPost(t, handler, `{"name":"ada"}`)
@@ -54,8 +54,8 @@ func ExampleCollectPost() {
 // ExampleCollectN demonstrates reading an exact number of events from a
 // streaming handler — useful when the handler keeps the connection open.
 func ExampleCollectN() {
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		stream := sse.NewStream(w, r)
+	handler := http.HandlerFunc(func(writer http.ResponseWriter, r *http.Request) {
+		stream := sse.NewStream(writer, r)
 		defer func() { _ = stream.Close() }()
 
 		resp := datastar.NewResponse(stream)
