@@ -143,12 +143,14 @@ func TestErrorResponseAndNotification_EdgeCases(t *testing.T) {
 		t.Parallel()
 
 		stream, buf := newTestStream()
-		if err := datastar.ErrorResponse(stream, "Fehler: Zahlungsdaten ungültig — Verbindungsabbruch 🚨", "pay.unicode"); err != nil {
+
+		msg := "Fehler: Zahlungsdaten ungültig — Verbindungsabbruch 🚨"
+		if err := datastar.ErrorResponse(stream, msg, "pay.unicode"); err != nil {
 			t.Fatalf("ErrorResponse: %v", err)
 		}
 
 		errObj := signalsPayload(t, buf.String())["error"].(map[string]any)
-		if errObj["message"] != "Fehler: Zahlungsdaten ungültig — Verbindungsabbruch 🚨" {
+		if errObj["message"] != msg {
 			t.Errorf("unicode message should survive; got %q", errObj["message"])
 		}
 	})
@@ -206,7 +208,9 @@ func TestResponse_ConcurrentMethods(t *testing.T) {
 			}
 		})
 	}
+
 	waitGroup.Wait()
+
 	if got := strings.Count(buf.String(), "event: datastar-patch-elements"); got != goroutines {
 		t.Errorf("sent %d events, want %d", got, goroutines)
 	}
@@ -234,6 +238,7 @@ func TestResponse_LargeMultiLineElements(t *testing.T) {
 	}
 
 	dataLines := 0
+
 	for line := range strings.SplitSeq(buf.String(), "\n") {
 		if strings.HasPrefix(line, "data: elements ") {
 			dataLines++
@@ -298,7 +303,9 @@ func TestReadSignals_SourcePrecedence(t *testing.T) {
 		t.Parallel()
 
 		r := httptest.NewRequestWithContext(
-			context.Background(), http.MethodGet, "/?datastar="+`{"source":"query"}`, strings.NewReader(`{"source":"body"}`),
+			context.Background(), http.MethodGet,
+			"/?datastar="+`{"source":"query"}`,
+			strings.NewReader(`{"source":"body"}`),
 		)
 
 		var got payload
@@ -315,7 +322,9 @@ func TestReadSignals_SourcePrecedence(t *testing.T) {
 		t.Parallel()
 
 		r := httptest.NewRequestWithContext(
-			context.Background(), http.MethodPost, "/?datastar="+`{"source":"query"}`, strings.NewReader(`{"source":"body"}`),
+			context.Background(), http.MethodPost,
+			"/?datastar="+`{"source":"query"}`,
+			strings.NewReader(`{"source":"body"}`),
 		)
 
 		var got payload
@@ -332,7 +341,9 @@ func TestReadSignals_SourcePrecedence(t *testing.T) {
 		t.Parallel()
 
 		r := httptest.NewRequestWithContext(
-			context.Background(), http.MethodDelete, "/?datastar="+`{"source":"query"}`, strings.NewReader(`{"source":"body"}`),
+			context.Background(), http.MethodDelete,
+			"/?datastar="+`{"source":"query"}`,
+			strings.NewReader(`{"source":"body"}`),
 		)
 
 		var got payload
