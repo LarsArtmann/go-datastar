@@ -45,6 +45,13 @@
 // DataStar JavaScript client. The data-line construction order, mode/namespace
 // gating, retry logic, and script wrapping all match the upstream SDK behavior.
 //
+// # Modules
+//
+// The embedded DataStar JavaScript client lives in the separate zero-dependency
+// module github.com/larsartmann/go-datastar/static (static.Bytes,
+// static.Version), served ready-to-use via ScriptHandler. The E2E test helpers
+// for consumers live in github.com/larsartmann/go-datastar/datastartest.
+//
 // # Classified errors
 //
 // Every error returned by this library is a classified *errorfamily.Error

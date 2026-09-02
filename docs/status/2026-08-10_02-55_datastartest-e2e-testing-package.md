@@ -90,19 +90,19 @@ Created a `datastartest/` subpackage with:
 
 ## (c) NOT STARTED
 
-1. ❌ **`go.mod` — no new module needed**, but the subpackage creates a new
-   import path (`github.com/larsartmann/go-datastar/datastartest`). This works
-   fine with Go modules (subpackage in same module), but it's worth confirming
-   pkg.go.dev renders it correctly.
+1. ~~❌ **`go.mod` — no new module needed**, but the subpackage creates a new~~ done (verified 2026-09-02 — pkg.go.dev renders datastartest v0.3.0 with full docs)
+   ~~import path (`github.com/larsartmann/go-datastar/datastartest`). This works~~
+   ~~fine with Go modules (subpackage in same module), but it's worth confirming~~
+   ~~pkg.go.dev renders it correctly.~~
 2. ❌ **CI pipeline verification** — `.github/workflows/ci.yml` was not modified.
    It should already work (runs `go test ./...`), but the new subpackage was
    never verified in the CI environment. The `GOEXPERIMENT=jsonv2` env var is
    already set globally in CI, so this should be fine. ~~→ done — CI has run the package since v0.1.0 (all-module test job)~~
 3. ❌ **Integration test with cqrs-htmx/datastar** — the domain-layer consumer
    was not tested to confirm the package API works for their EventBridge pattern.
-4. ❌ **Benchmark** — no `benchmark_test.go` in `datastartest/`. The SSE parser
+4. ~~❌ **Benchmark** — no `benchmark_test.go` in `datastartest/`. The SSE parser
    is untested for performance. For a test helper this is low priority, but the
-   parent package has benchmarks so the bar is set. ~~→ done — `BenchmarkReadEvents` (~131 MB/s)~~
+   parent package has benchmarks so the bar is set.~~ done — `BenchmarkReadEvents` (~131 MB/s) + Collect round-trip benchmark (`88c1eed`)
 
 ---
 
@@ -215,9 +215,9 @@ Nothing is broken or regressively damaged. However:
 
 ### Medium impact (P1)
 
-12. **Add `RedirectURL()` accessor** — extract URL from redirect script patch
-13. **Add `CustomEventName()` accessor** — extract event name from dispatch patch
-14. **Add `CustomEventDetail()` accessor** — extract JSON detail from dispatch patch
+12. ~~**Add `RedirectURL()` accessor** — extract URL from redirect script patch~~ done (done — datastartest/script_accessors.go RedirectURL (671e57c))
+13. ~~**Add `CustomEventName()` accessor** — extract event name from dispatch patch~~ done (done — CustomEventName (671e57c))
+14. ~~**Add `CustomEventDetail()` accessor** — extract JSON detail from dispatch patch~~ done (done — CustomEventDetail (671e57c))
 15. ~~**Add `DataValue(key string) string`** — generic dataline lookup fallback~~ done at `c1ca7ce`
 16. **Add `RawSSE()` method on Event** — for debugging test failures
 17. ~~**Add `Event.String()` method** — readable debug representation~~ done at `c1ca7ce`
@@ -225,37 +225,37 @@ Nothing is broken or regressively damaged. However:
 19. ~~**Dedicated test for each `Require*` helper** — including failure message quality~~ mostly done — failure paths covered in `assert_test.go` (2026-08-16)
 20. ~~**Test concurrent Collect calls explicitly**~~ done (`TestEvent_ConcurrentCollect`)
 21. ~~**Add godoc examples on individual exported functions**~~ done (`ExampleCollect`, `ExampleFindElement`, etc.)
-22. **Promote testing section in README** — link from Quick Start
-23. **Add `Reader` struct with configurable max line size** — for edge cases
+22. ~~**Promote testing section in README** — link from Quick Start~~ done (done — README 'Testing your handlers' section documents the helpers end to end)
+23. ~~**Add `Reader` struct with configurable max line size** — for edge cases~~ **Won't implement — parser delegated to go-sse/ssetest (reader.go) — configurability belongs upstream now.**
 24. ~~**Improve `UnmarshalSignals` error** — include JSON payload in error message~~ done at `9f9b7ba` era (v0.1.0)
 25. ~~**Test the `parseSSEField` edge case: line with multiple colons** (e.g., `data: {"a":"b"}`)~~ done (`TestParseSSEField_MultiColon`)
 26. ~~**Test the `parseSSEField` edge case: empty data field** (`data:` with nothing after)~~ done (`TestParseSSEField_EmptyData`)
 
 ### Lower impact (P2)
 
-27. **Add `FindElement(t, events, selector)` helper** — search by selector
-28. **Add `FindSignals(t, events)` helper** — return first signals event
+27. ~~**Add `FindElement(t, events, selector)` helper** — search by selector~~ done (done — datastartest/search.go FindElement)
+28. ~~**Add `FindSignals(t, events)` helper** — return first signals event~~ done (done — datastartest/search.go FindSignals)
 29. **Add `RequireElementsOrdered(t, events, selectors...)` — assert ordering
-30. **Add `SignalsContain(t, evt, key)` helper** — check signal key exists
+30. ~~**Add `SignalsContain(t, evt, key)` helper** — check signal key exists~~ done (done — RequireSignalsContain (datastartest/assert.go))
 31. **Add `ElementsMatch(t, evt, selector, mode, html)` — alias for RequireElements
-32. **Add benchmark for ReadEvents** — establish perf baseline
-33. **Add fuzz test for ReadEvents** — SSE parser is a boundary, should be fuzzed
+32. ~~**Add benchmark for ReadEvents** — establish perf baseline~~ done (done — collect_bench_test.go + BenchmarkReadEvents (88c1eed))
+33. ~~**Add fuzz test for ReadEvents** — SSE parser is a boundary, should be fuzzed~~ done (done — FuzzReadEvents with 51-seed committed conformance corpus (testdata/fuzz/))
 34. **Add `ServeSSE(handler)` returning `(*httptest.Server, func())`** — lower-level than Collect
 35. **Consider `datastartest.NewRecorder()`** — like httptest.NewRecorder but for SSE
-36. **Verify pkg.go.dev rendering** — check the subpackage appears correctly
+36. ~~**Verify pkg.go.dev rendering** — check the subpackage appears correctly~~ done (verified 2026-09-02 — pkg.go.dev renders datastartest v0.3.0)
 37. **Consider a testify-like fluent API** — `datastartest.Assert(t, events).HasElements(2).First().SelectorIs("#feed")`
-38. **Add Ginkgo/Gomega matchers** — if the project uses BDD (see bdd-testing skill)
+38. ~~**Add Ginkgo/Gomega matchers** — if the project uses BDD (see bdd-testing skill)~~ **Won't implement — no BDD dependency was ever added; stdlib-only helpers shipped since datastartest/v0.1.0.**
 39. **Test with real browser (Playwright)** — true E2E beyond wire format
-40. **Document the relationship to go-sse's EventStore** — datastartest reads, EventStore stores
-41. **Add `CollectWithOptions(t, handler, opts)`** — extensible config pattern
+40. ~~**Document the relationship to go-sse's EventStore** — datastartest reads, EventStore stores~~ done (done — datastartest/README.md documents the shared-parser relationship with go-sse/ssetest)
+41. ~~**Add `CollectWithOptions(t, handler, opts)`** — extensible config pattern~~ done (superseded by the variadic RequestOption pattern (options.go: WithPath/WithHeader/WithLastEventID/WithDatastarSignals))
 42. **Consider `Snapshot(t, events)` helper** — golden-file testing for SSE output
 43. **Add `Diff(expected, actual []Event) string`** — readable diff of event sequences
-44. **Add `EventsString(events) string`** — human-readable multi-event debug dump
+44. ~~**Add `EventsString(events) string`** — human-readable multi-event debug dump~~ done (done — EventsString (datastartest/event.go))
 45. **Test handler that sends patches from a goroutine** — concurrency within handler
 46. **Test handler that calls `stream.Close()` with an error**
-47. **Add CI check that `datastartest/` is included in coverage reports**
-48. **Consider whether `datastartest` should be a separate Go module** — for consumers who don't want test deps in their go.sum
-49. **Add versioning note** — if datastartest evolves, how does it version vs the core package?
+47. ~~**Add CI check that `datastartest/` is included in coverage reports**~~ done (done — coverage.yml covers root + datastartest + static (ed815c7))
+48. ~~**Consider whether `datastartest` should be a separate Go module** — for consumers who don't want test deps in their go.sum~~ done (done — datastartest is its own Go module (datastartest/go.mod))
+49. ~~**Add versioning note** — if datastartest evolves, how does it version vs the core package?~~ done (done — CONTRIBUTING.md documents lockstep per-module tagging)
 50. **Review all doc comments for godoc rendering** — ensure formatting is correct on pkg.go.dev
 
 ---

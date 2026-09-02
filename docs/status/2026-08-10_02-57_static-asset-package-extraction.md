@@ -54,8 +54,8 @@ Nothing is half-finished. The refactor itself is complete and verified.
 | - | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 1 | **CHANGELOG.md `[Unreleased]` entry** | Structural refactor (new package); the `[Unreleased]` section exists but was not updated. Clear miss. ~~→ done at `7c18089`~~                                                                    |
 | 2 | **FEATURES.md line 66**               | Says "v1.0.2 embedded. ScriptHandler() ... (`script_handler.go`)." The embed now lives in `static/`. File reference is stale. ~~→ done at `222353e` (later updated again for the module split)~~ |
-| 3 | **README.md API surface table**       | Does not mention `static.Bytes()` / `static.Version` for consumers who want raw access to the JS bundle without HTTP.                                                                            |
-| 4 | **Root `doc.go`**                     | Doesn't mention that the JS client is served from the `static` subpackage. Minor.                                                                                                                |
+| ~~3~~ | ~~**README.md API surface table**~~ done — README 'Serving the JS client' table now lists static.Bytes()/static.Version (2026-09-02) | ~~Does not mention `static.Bytes()` / `static.Version` for consumers who want raw access to the JS bundle without HTTP.~~ |
+| ~~4~~ | ~~**Root `doc.go`**~~ done — doc.go '# Modules' section documents the static + datastartest modules (2026-09-02) | ~~Doesn't mention that the JS client is served from the `static` subpackage. Minor.~~ |
 | 5 | **`.github/workflows/ci.yml` review** | Not checked for embed-path references that may now be stale. ~~→ moot — CI covers all three modules since v0.1.0~~                                                                               |
 
 ## d) TOTALLY FUCKED UP
@@ -89,14 +89,14 @@ The closest thing to a fuckup is the **interpretation ambiguity** (see Questions
 1. ~~Add `[Unreleased]` CHANGELOG entry for the `static` package extraction~~ done at `7c18089`
 2. ~~Update FEATURES.md line 66: replace `script_handler.go` with `static/` for the embed location~~ done at `222353e`
 3. ~~Update FEATURES.md line 67: same file-reference check for HEAD support~~ done at `222353e`
-4. Add `static.Bytes()` and `static.Version` to the README API surface table
-5. Mention the `static` subpackage in root `doc.go` package documentation
-6. Add a CONTRIBUTING.md note about how to update the embedded `datastar.js` bundle
-7. Consider adding an ADR entry (`docs/adr/002-static-asset-package.md`) documenting the extraction decision
+4. ~~Add `static.Bytes()` and `static.Version` to the README API surface table~~ done (done — README serving table now lists static.Bytes()/static.Version (2026-09-02))
+5. ~~Mention the `static` subpackage in root `doc.go` package documentation~~ done (done — doc.go '# Modules' section added (2026-09-02))
+6. ~~Add a CONTRIBUTING.md note about how to update the embedded `datastar.js` bundle~~ done (done — docs/static-js.md documents the bundle upgrade process)
+7. ~~Consider adding an ADR entry (`docs/adr/002-static-asset-package.md`) documenting the extraction decision~~ **Won't implement — superseded — ADR 002 documents the static-module decision.**
 
 ### Correctness & Safety
 
-8. Decide whether `Bytes()` should return a defensive copy (safety) or shared slice (zero-alloc)
+8. ~~Decide whether `Bytes()` should return a defensive copy (safety) or shared slice (zero-alloc)~~ done (done — static/static_test.go TestBytes_StableAcrossCalls pins the shared-slice semantics)
 9. ~~Add a consistency test asserting `datastar.DatastarJSVersion == static.Version`~~ done (`TestStaticVersionConsistency`, `response_test.go`)
 10. ~~Add a test that `ScriptHandler()` serves the exact bytes from `static.Bytes()` (not a stale copy)~~ done (`TestScriptHandler_ServesStaticBytes`, `response_test.go`)
 11. ~~Check `.github/workflows/ci.yml` for embed-path or file-location references that are now stale~~ moot — CI covers all three modules since v0.1.0
@@ -107,18 +107,18 @@ The closest thing to a fuckup is the **interpretation ambiguity** (see Questions
 ### Upstream Asset Tracking
 
 15. ~~Check whether upstream DataStar has released a version newer than 1.0.2~~ done — confirmed latest in the v0.0.3 session (T13, 2026-08-08; re-check periodically)
-16. If newer exists, update `static/datastar.js` and `static.Version`
-17. Add a `go:generate` or flake target to download/verify the upstream bundle
+16. ~~If newer exists, update `static/datastar.js` and `static.Version`~~ done (done — renovate.json tracks upstream releases and proposes bumps (1a72616); Version currently 1.0.2)
+17. ~~Add a `go:generate` or flake target to download/verify the upstream bundle~~ **Won't implement — superseded — renovate.json automates bump proposals; manual process documented in static-js.md.**
 18. Consider pinning the upstream commit SHA in a comment for reproducibility
 19. Add a checksum verification step for the downloaded bundle
 
 ### API Surface Polish
 
-20. Consider whether `Bytes()` should be renamed to `JavaScript()` or `Bundle()` for clarity
-21. Consider whether `Version` should be a function (`Version() string`) to match the root package's `Version()` style
+20. ~~Consider whether `Bytes()` should be renamed to `JavaScript()` or `Bundle()` for clarity~~ **Won't implement — kept as Bytes through static/v0.3.0 (docs/static-js.md); no shadowing surfaced.**
+21. ~~Consider whether `Version` should be a function (`Version() string`) to match the root package's `Version()` style~~ **Won't implement — kept as const Version; root Version() wraps it deliberately (dual surface, parity test pins them).**
 22. Consider deprecating `DatastarJSVersion` root alias with a `// Deprecated:` comment
 23. Add godoc `// Example` functions for the `static` package
-24. Consider whether the `static` package should export `ETag()` for consumers building custom handlers
+24. ~~Consider whether the `static` package should export `ETag()` for consumers building custom handlers~~ **Won't implement — static exports stay minimal (Bytes/Version); ETag is a root ScriptHandler concern.**
 25. Evaluate whether `ScriptHandler` should add a `Last-Modified` header for better CDN caching
 
 ### Performance
@@ -132,34 +132,34 @@ The closest thing to a fuckup is the **interpretation ambiguity** (see Questions
 
 30. Add a fuzz test for `ScriptHandlerWith` with random byte inputs (ETag stability)
 31. Add a test for `ScriptHandler` with empty/zero-length custom bytes (edge case)
-32. Dogfood the `static` package in `e2e_test.go` (currently only tests `ScriptHandler` HTTP behavior)
+32. ~~Dogfood the `static` package in `e2e_test.go` (currently only tests `ScriptHandler` HTTP behavior)~~ **Won't implement — moot — the wire-format E2E relocated to datastartest by design (ADR 002).**
 33. Add a race-detector-specific test that calls `Bytes()` concurrently from many goroutines
 34. Add a test verifying the `If-None-Match` conditional request with the static-package ETag
 
 ### Architecture
 
-35. Consider whether the `static` package should eventually own JS bundling/minification
-36. Evaluate whether `static` should be split further (e.g., `static/asset` + `static/version`)
-37. Consider whether the `static` package needs any build tags (e.g., `//go:build !wasm`)
-38. Evaluate whether `static` should support multiple assets (maps, icons) or stay single-file
-39. Consider whether the root package should re-export `Bytes()` directly (not just via `ScriptHandler`)
+35. ~~Consider whether the `static` package should eventually own JS bundling/minification~~ **Won't implement — decided — hand-pinned bundle, zero client-side build tooling (docs/static-js.md).**
+36. ~~Evaluate whether `static` should be split further (e.g., `static/asset` + `static/version`)~~ **Won't implement — ADR 002 — no further module splits.**
+37. ~~Consider whether the `static` package needs any build tags (e.g., `//go:build !wasm`)~~ **Won't implement — no platform-specific need surfaced across static v0.1.0–v0.3.0.**
+38. ~~Evaluate whether `static` should support multiple assets (maps, icons) or stay single-file~~ **Won't implement — ROADMAP non-goal — no bundling beyond the DataStar JS client.**
+39. ~~Consider whether the root package should re-export `Bytes()` directly (not just via `ScriptHandler`)~~ **Won't implement — consumers go-get the static module directly (README install section); root exposes ScriptHandler/Version.**
 
 ### DevOps & CI
 
-40. Add a flake.nix target for updating/regenerating the embedded bundle
-41. Add a CI step that fails if `static/datastar.js` and `static.Version` are out of sync
-42. Review whether the auto-commit message (`44147a2`) accurately describes the change for future readers
-43. Add the `static` package to any coverage tracking/thresholds in CI
+40. ~~Add a flake.nix target for updating/regenerating the embedded bundle~~ **Won't implement — superseded by renovate.json + the documented manual upgrade process.**
+41. ~~Add a CI step that fails if `static/datastar.js` and `static.Version` are out of sync~~ done (done — banner/version-sync guard runs in the CI test job)
+42. ~~Review whether the auto-commit message (`44147a2`) accurately describes the change for future readers~~ **Won't implement — one-off review of a transient daemon commit; nothing verifiable remains.**
+43. ~~Add the `static` package to any coverage tracking/thresholds in CI~~ done (done — coverage.yml covers ./static/...)
 44. Consider whether `erraudit` should be run on `./static/...` specifically (currently covered by `./...`) — moot: CI erraudit scans all three modules
 
 ### Misc
 
-45. Consider whether the package name `static` could shadow anything in consumer code
-46. Add a `static/doc.go` if the package grows beyond one file
+45. ~~Consider whether the package name `static` could shadow anything in consumer code~~ **Won't implement — shipped as package static since static/v0.1.0; no conflict surfaced.**
+46. ~~Add a `static/doc.go` if the package grows beyond one file~~ **Won't implement — condition never met — static/ is still one source file.**
 47. Evaluate whether the `Cache-Control: max-age=86400` (24h) is appropriate for a versioned, ETagged asset
 48. Consider whether `ScriptHandler` should set `X-Content-Type-Options: nosniff`
 49. Add a test for `ScriptTag()` with edge-case paths (empty, with query params, with fragments)
-50. Evaluate whether the `static` package should have its own version separate from the module version
+50. ~~Evaluate whether the `static` package should have its own version separate from the module version~~ done (done — static/go.mod + lockstep tags (ADR 002; CONTRIBUTING))
 
 ---
 
