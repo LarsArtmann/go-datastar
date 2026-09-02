@@ -1,0 +1,37 @@
+# Skeleton for tag-triggered releases of the example binary. NOT wired into
+# CI: the library release path is the lockstep tags + GitHub Release per
+# docs/release-checklist.md. Validate only:
+#
+#   goreleaser check
+#   goreleaser build --snapshot --clean
+#
+# Never run `goreleaser release` without re-reading the checklist — tags are
+# irreversible (proxy poisoning).
+version: 2
+
+project_name: go-datastar-example
+
+builds:
+  - id: example
+    main: ./example
+    binary: go-datastar-example
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/larsartmann/go-datastar/version.Version={{.Version}}
+
+archives:
+  - formats: [tar.gz]
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  disable: true # the CHANGELOG.md is maintained by hand (append-only policy)

@@ -389,3 +389,37 @@ func TestErrorResponseFromError_WireShape(t *testing.T) {
 		}
 	}
 }
+
+// TestResponse_MethodForms pins the fluent method forms of the three
+// package-level response helpers: same payloads, routed through the
+// response's own stream.
+func TestResponse_MethodForms(t *testing.T) {
+	t.Parallel()
+
+	stream, buf := newTestStream()
+	resp := datastar.NewResponse(stream)
+
+	if err := resp.ErrorResponse("boom", "test.method"); err != nil {
+		t.Fatalf("ErrorResponse method: %v", err)
+	}
+
+	if err := resp.ErrorResponseFromError(errorfamily.NewTransient("test.transient", "io")); err != nil {
+		t.Fatalf("ErrorResponseFromError method: %v", err)
+	}
+
+	if err := resp.NotificationResponse("saved", "success"); err != nil {
+		t.Fatalf("NotificationResponse method: %v", err)
+	}
+
+	output := buf.String()
+
+	for _, want := range []string{"boom", "test.method", "test.transient", `"kind":"success"`} {
+		if !strings.Contains(output, want) {
+			t.Errorf("method-form output should contain %q; got:\n%s", want, output)
+		}
+	}
+
+	if got := strings.Count(output, "event: datastar-patch-signals"); got != 3 {
+		t.Errorf("expected 3 signals events, got %d", got)
+	}
+}

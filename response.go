@@ -237,6 +237,24 @@ func NotificationResponse(stream *sse.Stream, message string, kind string) error
 	})
 }
 
+// ErrorResponse is the method form of [ErrorResponse] on this response's
+// stream — the fluent spelling when you already hold a [Response].
+func (r *Response) ErrorResponse(message, code string) error {
+	return ErrorResponse(r.stream, message, code)
+}
+
+// ErrorResponseFromError is the method form of [ErrorResponseFromError] on
+// this response's stream.
+func (r *Response) ErrorResponseFromError(err error) error {
+	return ErrorResponseFromError(r.stream, err)
+}
+
+// NotificationResponse is the method form of [NotificationResponse] on this
+// response's stream.
+func (r *Response) NotificationResponse(message, kind string) error {
+	return NotificationResponse(r.stream, message, kind)
+}
+
 // NewResponseFromHTTP is a convenience that creates an [sse.Stream] from the
 // ResponseWriter and Request, then wraps it in a [Response].
 func NewResponseFromHTTP(w http.ResponseWriter, r *http.Request) *Response {
