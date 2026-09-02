@@ -53,6 +53,10 @@ go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 \
   run ./... ./datastartest/... ./static/... --timeout 5m
 # (or: nix run .#lint-ci)
 
+# Doc-snippet compile check (guides under docs/ + example/README.md):
+nix run .#docspec
+# (or: go test -tags docspec -run TestDocspec ./... ./datastartest/...)
+
 # Vet:
 go vet ./... ./datastartest/... ./static/...
 ```
@@ -132,3 +136,17 @@ them.
 ## Reporting Issues
 
 Please use GitHub Issues to report bugs or request features.
+
+## Doc snippets must compile (docspec)
+
+Guide snippets under `docs/` and in `example/README.md` are mirrored as
+compile-checked functions in `docspec_test.go` (root) and
+`datastartest/docspec_test.go`, behind the `docspec` build tag so they stay
+out of the default test run. The contract:
+
+- When you change a public API that a guide snippet uses, update the snippet
+  AND its mirrored function in the same commit.
+- Run `nix run .#docspec` (or `go test -tags docspec -run TestDocspec
+  ./... ./datastartest/...`) before pushing doc or API changes.
+- New guide snippet? Add a mirrored function — compile-only is the floor;
+  executing the cheap path is better (semantic drift fails the run too).
