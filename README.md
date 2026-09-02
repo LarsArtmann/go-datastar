@@ -438,6 +438,7 @@ go-datastar reproduces the exact DataStar wire format expected by the DataStar J
 
 Consumer guides under [`docs/`](docs/):
 
+- [`docs/architecture.md`](docs/architecture.md) — the three-layer architecture (transport → protocol → domain) with a diagram and file map
 - [`docs/replay.md`](docs/replay.md) — MemoryStore + Last-Event-ID reconnection
 - [`docs/error-system.md`](docs/error-system.md) — the three error-matching dimensions, codes + families
 - [`docs/wire-format.md`](docs/wire-format.md) — annotated datalines per patch family

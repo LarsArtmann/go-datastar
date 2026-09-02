@@ -59,3 +59,10 @@ above.
 - **No fuzz target for the bundle:** `Bytes()` is an embedded, trusted asset,
   not parsed input; fuzzing belongs at the protocol boundaries
   (`FuzzReadSignals`, `FuzzReadEvents`).
+
+## Constraint check
+
+The pinned client version is enforced twice by tests: the bundle header must
+contain `static.Version` (`static/static_test.go`), and the CHANGELOG must
+mention the pinned version so a bundle bump can never land without release
+history (`version_constraint_test.go`, runs in CI's test job).
