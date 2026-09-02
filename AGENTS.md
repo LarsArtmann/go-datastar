@@ -244,6 +244,7 @@ when adding helpers.
 | `docs/error-system.md`        | The three error-matching dimensions, codes + families        |
 | `docs/wire-format.md`         | Annotated datalines per patch family (+ golden tests)        |
 | `docs/architecture.md`        | Three-layer architecture diagram + file map                  |
+| `docs/migration-starfederation.md` | Upstream SDK → go-datastar migration mapping             |
 | `docs/testing.md`             | datastartest quick start, fuzzing, coverage story            |
 | `docs/ci-watch.md`            | Promote/drop/verify runbook for the non-required workflows   |
 | `docs/performance.md`         | Measured benchmark table                                     |

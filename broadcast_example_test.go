@@ -1,11 +1,12 @@
 // Testable examples for the go-sse routing primitives as used with
-// go-datastar patches: Broadcaster fan-out, typed event-type filtering via
+// go-datastar patches: Broadcaster fan-out, event-type filtering via
 // SubscribeFilter, and reconnection replay through MemoryStore.
 
 package datastar_test
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/larsartmann/go-datastar"
 	"github.com/larsartmann/go-sse"
@@ -18,8 +19,8 @@ func ExampleNewBroadcaster() {
 	broadcaster := sse.NewBroadcaster[sse.Event]()
 	defer broadcaster.Close()
 
-	ch := broadcaster.Subscribe()
-	defer broadcaster.Unsubscribe(ch)
+	subscriber := broadcaster.Subscribe()
+	defer broadcaster.Unsubscribe(subscriber)
 
 	patch := datastar.NewElementsPatch("<div>hello everyone</div>",
 		datastar.WithSelectorID("feed"),
@@ -28,9 +29,9 @@ func ExampleNewBroadcaster() {
 
 	broadcaster.Broadcast(patch.Event())
 
-	evt := <-ch
+	evt := <-subscriber
 	fmt.Println("fanned out:", evt.Event)
-	fmt.Println("has selector line:", containsLine(evt.Data, "selector #feed"))
+	fmt.Println("has selector line:", strings.Contains(evt.Data, "selector #feed"))
 
 	// Output:
 	// fanned out: datastar-patch-elements
@@ -38,7 +39,7 @@ func ExampleNewBroadcaster() {
 }
 
 // ExampleBroadcaster_SubscribeFilter demonstrates per-subscriber filtering:
-// only signals patches reach this subscriber, elements patches are dropped
+// only signals patches reach this subscriber; elements patches are dropped
 // before entering its buffer.
 func ExampleBroadcaster_SubscribeFilter() {
 	broadcaster := sse.NewBroadcaster[sse.Event]()
@@ -50,7 +51,13 @@ func ExampleBroadcaster_SubscribeFilter() {
 	defer broadcaster.Unsubscribe(signalsOnly)
 
 	broadcaster.Broadcast(datastar.NewElementsPatch("<div>ignored</div>").Event())
-	broadcaster.Broadcast(mustSignalsEvent(tExample, `{"count":1}`))
+
+	signals, err := datastar.NewSignalsPatch(map[string]any{"count": 1})
+	if err != nil {
+		panic(err)
+	}
+
+	broadcaster.Broadcast(signals.Event())
 	broadcaster.Broadcast(datastar.NewElementsPatch("<div>ignored too</div>").Event())
 
 	evt := <-signalsOnly
@@ -67,17 +74,27 @@ func ExampleMemoryStore() {
 	store := datastar.NewMemoryStore(16)
 
 	first := datastar.NewElementsPatch("<div>one</div>").Event()
-	second := datastar.NewSignalsPatchIfMissing(map[string]any{"count": 2}).Event()
+	first.ID = sse.NewEventID("1")
 
-	first.ID = sse.NewEventID("1").String()
-	second.ID = sse.NewEventID("2").String()
+	second, err := datastar.NewSignalsIfMissingPatch(map[string]any{"count": 2})
+	if err != nil {
+		panic(err)
+	}
+
+	secondEvt := second.Event()
+	secondEvt.ID = sse.NewEventID("2")
 
 	store.Append(first)
-	store.Append(second)
+	store.Append(secondEvt)
 
 	fmt.Println("stored:", store.Len())
 
-	for _, evt := range store.EventsAfter(sse.NewEventID("1")) {
+	replay, err := store.EventsAfter(sse.NewEventID("1"))
+	if err != nil {
+		panic(err)
+	}
+
+	for _, evt := range replay {
 		fmt.Println("replay after 1:", evt.Event)
 	}
 

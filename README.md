@@ -76,6 +76,12 @@ Choose the **official SDK** for single-connection request/response handlers wher
 
 Choose **go-datastar** when patches are part of your application's state: live feeds and dashboards (broadcast), replay on reconnect (event store), per-user event filtering, machine-readable error handling, or E2E-tested DataStar handlers.
 
+## Learn DataStar
+
+New to DataStar itself? The [DataStar site](https://data-star.dev) hosts the
+interactive playground and the full client documentation — the wire protocol
+this library speaks is defined there.
+
 ## Requirements
 
 - **Go 1.26.7+**
@@ -439,6 +445,8 @@ go-datastar reproduces the exact DataStar wire format expected by the DataStar J
 Consumer guides under [`docs/`](docs/):
 
 - [`docs/architecture.md`](docs/architecture.md) — the three-layer architecture (transport → protocol → domain) with a diagram and file map
+- [`docs/migration-starfederation.md`](docs/migration-starfederation.md) — migrating from the official SDK (method mapping, gains, tradeoffs)
+- [`docs/ci-watch.md`](docs/ci-watch.md) — promote/drop/verify runbook for the non-required CI workflows
 - [`docs/replay.md`](docs/replay.md) — MemoryStore + Last-Event-ID reconnection
 - [`docs/error-system.md`](docs/error-system.md) — the three error-matching dimensions, codes + families
 - [`docs/wire-format.md`](docs/wire-format.md) — annotated datalines per patch family
