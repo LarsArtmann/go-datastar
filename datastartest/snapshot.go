@@ -20,10 +20,10 @@ var updateSnapshots = flag.Bool(
 	"rewrite datastartest golden snapshot files",
 )
 
-var (
-	// snapshotDirMode and snapshotFileMode keep golden files private.
-	snapshotDirMode  = 0o750
-	snapshotFileMode = 0o600
+// Named file modes keep golden files private.
+const (
+	snapshotDirMode  = os.FileMode(0o750)
+	snapshotFileMode = os.FileMode(0o600)
 )
 
 // Snapshot compares events against the golden file testdata/<test name>.golden

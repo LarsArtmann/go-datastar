@@ -15,9 +15,12 @@ var snapshotEvents = []datastartest.Event{
 // TestSnapshot exercises the golden round trip: with -datastartest-update the
 // snapshot is (re)written; a following plain call passes. The golden file it
 // writes (testdata/TestSnapshot.golden) is a committed fixture.
+// The three Snapshot tests mutate the package-level -datastartest-update
+// flag; parallel execution would let one test's update window swallow
+// another's read. Serial by design.
+//
+//nolint:paralleltest // global flag mutation is not parallel-safe
 func TestSnapshot(t *testing.T) {
-	t.Parallel()
-
 	if err := flag.Set("datastartest-update", "true"); err != nil {
 		t.Fatalf("set update flag: %v", err)
 	}
@@ -34,9 +37,9 @@ func TestSnapshot(t *testing.T) {
 // TestSnapshot_Mismatch writes its own golden first (update mode), then
 // replays a mutated stream against it through a recordingTB — the genuine
 // mismatch path.
+//
+//nolint:paralleltest // global flag mutation is not parallel-safe
 func TestSnapshot_Mismatch(t *testing.T) {
-	t.Parallel()
-
 	if err := flag.Set("datastartest-update", "true"); err != nil {
 		t.Fatalf("set update flag: %v", err)
 	}
