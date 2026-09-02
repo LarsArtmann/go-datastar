@@ -44,8 +44,11 @@ When a DataStar client reconnects, the browser sends
 
 ```go
 func handler(w http.ResponseWriter, r *http.Request) {
-	stream, _ := sse.NewStream(w, r)
-	defer stream.Close()
+	stream, err := sse.NewStream(w, r)
+	if err != nil {
+		return
+	}
+	defer func() { _ = stream.Close() }()
 	resp := datastar.NewResponse(stream)
 
 	// 1. Backlog: everything the client missed. The browser sends the
