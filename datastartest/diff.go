@@ -43,16 +43,16 @@ func renderEvents(events []Event) []string {
 // diffLines returns a longest-common-subsequence line diff of the two line
 // slices. Streams are small (test outputs), so the O(n*m) table is fine.
 func diffLines(want, got []string) string {
-	n, m := len(want), len(got)
+	wantLen, gotLen := len(want), len(got)
 
 	// lcs[i][j] = length of the LCS of want[i:] and got[j:].
-	lcs := make([][]int, n+1)
+	lcs := make([][]int, wantLen+1) //nolint:makezero // dense DP table, no appends
 	for i := range lcs {
-		lcs[i] = make([]int, m+1)
+		lcs[i] = make([]int, gotLen+1) //nolint:makezero // dense DP table, no appends
 	}
 
-	for i := n - 1; i >= 0; i-- {
-		for j := m - 1; j >= 0; j-- {
+	for i := wantLen - 1; i >= 0; i-- {
+		for j := gotLen - 1; j >= 0; j-- {
 			if want[i] == got[j] {
 				lcs[i][j] = lcs[i+1][j+1] + 1
 			} else {
@@ -63,28 +63,28 @@ func diffLines(want, got []string) string {
 
 	var b strings.Builder
 
-	i, j := 0, 0
-	for i < n && j < m {
+	wantIdx, gotIdx := 0, 0
+	for wantIdx < wantLen && gotIdx < gotLen {
 		switch {
-		case want[i] == got[j]:
-			b.WriteString("  " + want[i] + "\n")
-			i++
-			j++
-		case lcs[i+1][j] >= lcs[i][j+1]:
-			b.WriteString("- " + want[i] + "\n")
-			i++
+		case want[wantIdx] == got[gotIdx]:
+			b.WriteString("  " + want[wantIdx] + "\n")
+			wantIdx++
+			gotIdx++
+		case lcs[wantIdx+1][gotIdx] >= lcs[wantIdx][gotIdx+1]:
+			b.WriteString("- " + want[wantIdx] + "\n")
+			wantIdx++
 		default:
-			b.WriteString("+ " + got[j] + "\n")
-			j++
+			b.WriteString("+ " + got[gotIdx] + "\n")
+			gotIdx++
 		}
 	}
 
-	for ; i < n; i++ {
-		b.WriteString("- " + want[i] + "\n")
+	for ; wantIdx < wantLen; wantIdx++ {
+		b.WriteString("- " + want[wantIdx] + "\n")
 	}
 
-	for ; j < m; j++ {
-		b.WriteString("+ " + got[j] + "\n")
+	for ; gotIdx < gotLen; gotIdx++ {
+		b.WriteString("+ " + got[gotIdx] + "\n")
 	}
 
 	return b.String()

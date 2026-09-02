@@ -12,7 +12,19 @@ import (
 // -datastartest-update=true is passed to the test binary. The flag is
 // namespaced so it cannot collide with flags a consumer's test binary
 // registers.
-var updateSnapshots = flag.Bool("datastartest-update", false, "rewrite datastartest golden snapshot files")
+//
+//nolint:gochecknoglobals // flag registration is inherently package-level
+var updateSnapshots = flag.Bool(
+	"datastartest-update",
+	false,
+	"rewrite datastartest golden snapshot files",
+)
+
+var (
+	// snapshotDirMode and snapshotFileMode keep golden files private.
+	snapshotDirMode  = 0o750
+	snapshotFileMode = 0o600
+)
 
 // Snapshot compares events against the golden file testdata/<test name>.golden
 // (relative to the CALLING test's package directory) and fails the test on any
@@ -29,11 +41,11 @@ func Snapshot(tb testing.TB, events []Event) {
 	want := strings.Join(renderEvents(events), "\n") + "\n"
 
 	if *updateSnapshots {
-		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		if err := os.MkdirAll(filepath.Dir(path), snapshotDirMode); err != nil {
 			tb.Fatalf("create snapshot dir: %v", err)
 		}
 
-		if err := os.WriteFile(path, []byte(want), 0o644); err != nil {
+		if err := os.WriteFile(path, []byte(want), snapshotFileMode); err != nil {
 			tb.Fatalf("write snapshot %s: %v", path, err)
 		}
 

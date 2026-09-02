@@ -16,6 +16,8 @@ var snapshotEvents = []datastartest.Event{
 // snapshot is (re)written; a following plain call passes. The golden file it
 // writes (testdata/TestSnapshot.golden) is a committed fixture.
 func TestSnapshot(t *testing.T) {
+	t.Parallel()
+
 	if err := flag.Set("datastartest-update", "true"); err != nil {
 		t.Fatalf("set update flag: %v", err)
 	}
@@ -33,6 +35,8 @@ func TestSnapshot(t *testing.T) {
 // replays a mutated stream against it through a recordingTB — the genuine
 // mismatch path.
 func TestSnapshot_Mismatch(t *testing.T) {
+	t.Parallel()
+
 	if err := flag.Set("datastartest-update", "true"); err != nil {
 		t.Fatalf("set update flag: %v", err)
 	}
@@ -57,6 +61,8 @@ func TestSnapshot_Mismatch(t *testing.T) {
 // does not exist, exercising the creation-guidance path. Skipped under
 // -datastartest-update (which would create the file and defeat the test).
 func TestSnapshot_MissingGoldenFile(t *testing.T) {
+	t.Parallel()
+
 	if flag.Lookup("datastartest-update").Value.String() == "true" {
 		t.Skip("-datastartest-update would create the golden this test needs missing")
 	}
