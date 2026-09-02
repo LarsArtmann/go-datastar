@@ -274,8 +274,12 @@ No CQRS, no event bus, no domain opinions. It is a pure protocol layer. Consumer
   directive-satisfying `go` first on PATH, the sandbox tries a network
   toolchain download. Keep `flakeCheck = false` + a guarded `checks.format`
   that prepends `goPkg` to `buildInputs`.
-- **Go patch bumps move `vendorHash`.** `go mod vendor` output (modules.txt
-  format) changes between Go versions. Re-discover via the fakeHash dance.
+- **vendorHash sensitivity (verified 2026-09-02, ADR 004 correction).** Root
+  `vendorHash` moves only on requires (go.mod/go.sum) or toolchain
+  `modules.txt` changes. `datastartestVendorHash` moves on ANY
+  root/static/datastartest source edit too: `go mod vendor` copies the
+  directory-replaced packages' source into the vendor tree. Re-discover via
+  the fakeHash dance; refresh at the release gate, not ad hoc.
 - **`buildGoModule` `modRoot` attribute** points into the repo source for
   submodule builds. The vendor + main derivations both `cd "$modRoot"` — no
   manual `postPatch` cd hacks needed. Available in nixpkgs at the locked rev.

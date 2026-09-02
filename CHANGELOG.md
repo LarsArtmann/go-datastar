@@ -56,6 +56,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `ScriptAttributes`) for intent-level assertions, with the new
   `datastartest.custom_event_detail_unmarshal_failed` code.
 
+### Changed
+
+- Root benchmarks migrated from `for range b.N` to `for b.Loop()` (the
+  modern Go benchmark loop with automatic timer handling); benchmark
+  semantics and results are unchanged.
+- The flake's `vendorHash` comments and AGENTS.md Nix gotcha corrected to the
+  verified sensitivity mechanism (ADR 004): root `vendorHash` moves only on
+  requires/toolchain changes, while `datastartestVendorHash` additionally
+  moves on any root/static source edit (directory-replaced package source is
+  copied into the vendor tree). Both hashes refreshed to the current module
+  set; ADR 004 gained the evidence matrix and the v0.3.0 tag flake verdict.
+
 ### Changed — dependencies
 
 - **go-sse bumped from v0.5.1 to v0.6.0** in the root module, and
@@ -85,9 +97,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   CI `go-version` ×6) and the Nix flake `go_1_26` pin re-pointed at the
   go1.26.7 source tarball with re-discovered vendor hashes (the patch bump
   moves the module-set hash). Consumers must use Go ≥ 1.26.7.
-- Root benchmarks migrated from `for range b.N` to `for b.Loop()` (the
-  modern Go benchmark loop with automatic timer handling); benchmark
-  semantics and results are unchanged.
 
 ### Added — datastartest
 
