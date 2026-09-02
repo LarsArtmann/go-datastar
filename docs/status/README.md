@@ -43,6 +43,7 @@ Policy:
 | 2026-08-16 | [git-town skip recovery, PR5/PR6 landing](2026-08-16_12-43_git-town-skip-recovery-pr5-pr6-landing.md)                           | git-town lineage fixes; PR template lesson (open items remain)                                                                        |
 | 2026-08-29 | [docs health audit: annotate, archive, living-doc sync](2026-08-29_17-05_docs-health-audit-annotate-archive-living-doc-sync.md) | Full audit; 8 historical files annotated, 5 archived, living docs synced; 3 owner questions                                           |
 | 2026-08-29 | [pareto execution T01–T27, v0.3.0, full status + debrief](2026-08-29_20-12_pareto-execution-t01-t27-v0.3.0-full-status.md)      | Plan executed (T04 blocked); v0.3.0 shipped and verified; honest debrief incl. tag-flake finding and 50 next steps; 3 owner questions |
+| 2026-09-02 | [docs-health audit: 31 files annotated, harvest, living-doc sync](2026-09-02_23-55_docs-health-audit-31-files-annotated-harvest-and-living-doc-sync.md) | Full AUDIT over all 2026-0* files; ~370 inline verdicts; zero archives (residue routed); TODO_LIST/ROADMAP rebuilt; 3 owner questions |
 
 ## Archived (fully resolved)
 
