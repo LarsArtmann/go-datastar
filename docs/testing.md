@@ -4,13 +4,13 @@ How this repo tests itself, and how to test your own DataStar handlers.
 
 ## The layers
 
-| Layer | Tool | What it proves |
-| ----- | ---- | -------------- |
-| Wire format | golden tests + testable examples | patches render the exact upstream-compatible bytes |
-| Transport | go-sse tests + `TestE2E_SSEHeaders` | SSE headers, flush, heartbeat behavior |
-| E2E | `datastartest` | real HTTP server → real SSE parsing → decoded patches |
-| Conformance | WPT corpus + chunked re-reads + fuzz | parser matches the spec, independent of TCP chunking |
-| Consumer E2E | `datastartest` in YOUR repo | your handler emits what your UI needs |
+| Layer        | Tool                                 | What it proves                                        |
+| ------------ | ------------------------------------ | ----------------------------------------------------- |
+| Wire format  | golden tests + testable examples     | patches render the exact upstream-compatible bytes    |
+| Transport    | go-sse tests + `TestE2E_SSEHeaders`  | SSE headers, flush, heartbeat behavior                |
+| E2E          | `datastartest`                       | real HTTP server → real SSE parsing → decoded patches |
+| Conformance  | WPT corpus + chunked re-reads + fuzz | parser matches the spec, independent of TCP chunking  |
+| Consumer E2E | `datastartest` in YOUR repo          | your handler emits what your UI needs                 |
 
 ## Testing your handlers with datastartest
 

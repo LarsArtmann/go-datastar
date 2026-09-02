@@ -53,11 +53,11 @@ clones of a sentinel still match.
 
 ### 3. By family — "whose fault, and should I retry"
 
-| Family        | When                                                            | Retryable |
-| ------------- | --------------------------------------------------------------- | --------- |
-| Rejection     | bad or missing caller input (malformed JSON, empty name, invalid mode/namespace, closed body, unmarshallable value) | no |
-| Transient     | temporary I/O failure reading a request body; stream Send failure | yes |
-| Orchestration | internal render failure producing HTML (templ, gostar)          | no |
+| Family        | When                                                                                                                | Retryable |
+| ------------- | ------------------------------------------------------------------------------------------------------------------- | --------- |
+| Rejection     | bad or missing caller input (malformed JSON, empty name, invalid mode/namespace, closed body, unmarshallable value) | no        |
+| Transient     | temporary I/O failure reading a request body; stream Send failure                                                   | yes       |
+| Orchestration | internal render failure producing HTML (templ, gostar)                                                              | no        |
 
 ```go
 if errorfamily.IsRetryable(err) {

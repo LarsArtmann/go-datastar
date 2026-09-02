@@ -99,16 +99,16 @@
 
 ## Remaining (in plan order)
 
-| Task | Content                                                                                                      | Notes                                   |
-| ---- | ------------------------------------------------------------------------------------------------------------ | --------------------------------------- |
-| ~~T11~~  | ~~Per-module Nix hermetic checks (`hermeticCheckStatic` with `vendorHash = null`, `hermeticCheckDatastartest`)~~ done at `83d7c60`, `b269bbb` | ~~remove flake TODO comment~~ |
-| ~~T12~~  | ~~README comparison re-verify (v1.2.2 pin), JS-version row decision, `docs/release-checklist.md`~~ done at `83d7c60` | ~~~~ |
-| ~~T13~~  | ~~De-flake `TestCollect_WithLastEventID_HeaderArrives` (channel-sync, G6: no sleeps)~~ done at `83d7c60`, `496a18b` | ~~passed race here; still worth hardening~~ |
-| ~~T14~~  | ~~`docs/modularization/README.md` index + AGENTS link~~ done at `83d7c60` | ~~~~ |
-| ~~T15~~  | ~~`docs/DOMAIN_LANGUAGE.md` (Q3 ruling: create)~~ done at `83d7c60` | ~~~~ |
-| ~~T16~~  | ~~go.work.sum tracking decision, v0.0.0 vs real sibling requires~~ done at `496a18b` | ~~rulings recorded, mechanics pending~~ |
-| ~~T04~~  | ~~Branch protection (gh api), pkg.go.dev verify, coverage badge~~ done at `496a18b`, `ed815c7` | ~~last — after everything else lands~~ |
-| —    | Final sync: TODO_LIST harvest-out (19 rows → done), CHANGELOG pass, AGENTS notes, full gate                  | → done at `496a18b`, `83d7c60` (completed by the 11:07 session) |
+| Task    | Content                                                                                                                                       | Notes                                                           |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| ~~T11~~ | ~~Per-module Nix hermetic checks (`hermeticCheckStatic` with `vendorHash = null`, `hermeticCheckDatastartest`)~~ done at `83d7c60`, `b269bbb` | ~~remove flake TODO comment~~                                   |
+| ~~T12~~ | ~~README comparison re-verify (v1.2.2 pin), JS-version row decision, `docs/release-checklist.md`~~ done at `83d7c60`                          | ~~~~                                                            |
+| ~~T13~~ | ~~De-flake `TestCollect_WithLastEventID_HeaderArrives` (channel-sync, G6: no sleeps)~~ done at `83d7c60`, `496a18b`                           | ~~passed race here; still worth hardening~~                     |
+| ~~T14~~ | ~~`docs/modularization/README.md` index + AGENTS link~~ done at `83d7c60`                                                                     | ~~~~                                                            |
+| ~~T15~~ | ~~`docs/DOMAIN_LANGUAGE.md` (Q3 ruling: create)~~ done at `83d7c60`                                                                           | ~~~~                                                            |
+| ~~T16~~ | ~~go.work.sum tracking decision, v0.0.0 vs real sibling requires~~ done at `496a18b`                                                          | ~~rulings recorded, mechanics pending~~                         |
+| ~~T04~~ | ~~Branch protection (gh api), pkg.go.dev verify, coverage badge~~ done at `496a18b`, `ed815c7`                                                | ~~last — after everything else lands~~                          |
+| —       | Final sync: TODO_LIST harvest-out (19 rows → done), CHANGELOG pass, AGENTS notes, full gate                                                   | → done at `496a18b`, `83d7c60` (completed by the 11:07 session) |
 
 ## Uncommitted working tree (mine, verified)
 

@@ -84,24 +84,24 @@ Long-tail: modularization docs index, DOMAIN_LANGUAGE execution (blocked Q3), ow
 
 16 tasks. Sorted by importance / impact / effort / customer-value.
 
-| Task | Title                                                                            | Pareto | Impact   | Effort | Depends on                            | Category | Status     |
-| ---- | -------------------------------------------------------------------------------- | ------ | -------- | ------ | ------------------------------------- | -------- | ---------- |
-| ~~T01~~  | ~~Green master CI: toolchain 1.26.6 + erraudit job disposition~~ done at `bf68063` | ~~1%~~ | ~~Critical~~ | ~~30min~~ | ~~Owner Q1 + Q2~~ | ~~CI~~ | ~~🔵 BLOCKED~~ |
-| ~~T02~~  | ~~Hygiene one-liners pack (result symlink, ROADMAP/AGENTS notes, nix flake check)~~ done at `bf68063` | ~~1%~~ | ~~High~~ | ~~30min~~ | ~~—~~ | ~~Repo~~ | ~~Ready~~ |
-| ~~T03~~  | ~~Formatter & lint wiring (dprint disposition, actionlint step, erraudit devShell)~~ done at `83d7c60` | ~~4%~~ | ~~High~~ | ~~45min~~ | ~~—~~ | ~~Tooling~~ | ~~Ready~~ |
-| ~~T04~~  | ~~Public-trust pack (branch protection, pkg.go.dev verify, coverage badge)~~ done at `496a18b` | ~~4%~~ | ~~High~~ | ~~30min~~ | ~~T01 (CI green first)~~ | ~~Repo~~ | ~~Ready~~ |
-| ~~T05~~  | ~~ADR 002: multi-module split + mutual-replace pattern~~ done at `affbe30` | ~~4%~~ | ~~Medium~~ | ~~30min~~ | ~~—~~ | ~~Docs~~ | ~~Ready~~ |
-| ~~T06~~  | ~~CONTRIBUTING.md multi-module development section~~ done at `496a18b` | ~~4%~~ | ~~Medium~~ | ~~30min~~ | ~~—~~ | ~~Docs~~ | ~~Ready~~ |
-| ~~T07~~  | ~~`CollectPost` error-path tests~~ done at `83d7c60` | ~~20%~~ | ~~High~~ | ~~30min~~ | ~~—~~ | ~~Testing~~ | ~~Ready~~ |
-| ~~T08~~  | ~~e2e dogfood expansion (`CollectPost`, `CollectN`)~~ done at `83d7c60` | ~~20%~~ | ~~Medium~~ | ~~30min~~ | ~~—~~ | ~~Testing~~ | ~~Ready~~ |
-| ~~T09~~  | ~~Example `WithOnDrop` integration test~~ done at `496a18b` | ~~20%~~ | ~~Medium~~ | ~~30min~~ | ~~—~~ | ~~Testing~~ | ~~Ready~~ |
-| ~~T10~~  | ~~`UnmarshalSignals` fuzz test~~ done at `496a18b` | ~~20%~~ | ~~Medium~~ | ~~30min~~ | ~~—~~ | ~~Testing~~ | ~~Ready~~ |
-| ~~T11~~  | ~~Per-module Nix hermetic checks~~ done at `83d7c60`, `b269bbb` | ~~20%~~ | ~~Medium~~ | ~~60min~~ | ~~—~~ | ~~CI~~ | ~~Ready~~ |
-| ~~T12~~  | ~~README comparison maintenance + release checklist~~ done at `83d7c60` | ~~20%~~ | ~~Medium~~ | ~~30min~~ | ~~—~~ | ~~Docs~~ | ~~Ready~~ |
-| ~~T13~~  | ~~De-flake `TestCollect_WithLastEventID_HeaderArrives`~~ done at `83d7c60`, `496a18b` | ~~20%~~ | ~~Medium~~ | ~~30min~~ | ~~Coordinate with parallel session (G1)~~ | ~~Testing~~ | ~~Ready~~ |
-| ~~T14~~  | ~~`docs/modularization/README.md` index~~ done at `83d7c60` | ~~Rest~~ | ~~Low~~ | ~~30min~~ | ~~—~~ | ~~Docs~~ | ~~Ready~~ |
-| ~~T15~~  | ~~DOMAIN_LANGUAGE.md execution (create or record waiver)~~ done at `83d7c60` | ~~Rest~~ | ~~Low~~ | ~~30min~~ | ~~Owner Q3~~ | ~~Docs~~ | ~~🔵 BLOCKED~~ |
-| ~~T16~~  | ~~Owner-ruling execution pack (go.work.sum, v0.0.0 siblings, directive doc)~~ done at `496a18b` | ~~Rest~~ | ~~Medium~~ | ~~30min~~ | ~~Owner rulings~~ | ~~Modules~~ | ~~🔵 BLOCKED~~ |
+| Task    | Title                                                                                                  | Pareto   | Impact       | Effort    | Depends on                                | Category    | Status         |
+| ------- | ------------------------------------------------------------------------------------------------------ | -------- | ------------ | --------- | ----------------------------------------- | ----------- | -------------- |
+| ~~T01~~ | ~~Green master CI: toolchain 1.26.6 + erraudit job disposition~~ done at `bf68063`                     | ~~1%~~   | ~~Critical~~ | ~~30min~~ | ~~Owner Q1 + Q2~~                         | ~~CI~~      | ~~🔵 BLOCKED~~ |
+| ~~T02~~ | ~~Hygiene one-liners pack (result symlink, ROADMAP/AGENTS notes, nix flake check)~~ done at `bf68063`  | ~~1%~~   | ~~High~~     | ~~30min~~ | ~~—~~                                     | ~~Repo~~    | ~~Ready~~      |
+| ~~T03~~ | ~~Formatter & lint wiring (dprint disposition, actionlint step, erraudit devShell)~~ done at `83d7c60` | ~~4%~~   | ~~High~~     | ~~45min~~ | ~~—~~                                     | ~~Tooling~~ | ~~Ready~~      |
+| ~~T04~~ | ~~Public-trust pack (branch protection, pkg.go.dev verify, coverage badge)~~ done at `496a18b`         | ~~4%~~   | ~~High~~     | ~~30min~~ | ~~T01 (CI green first)~~                  | ~~Repo~~    | ~~Ready~~      |
+| ~~T05~~ | ~~ADR 002: multi-module split + mutual-replace pattern~~ done at `affbe30`                             | ~~4%~~   | ~~Medium~~   | ~~30min~~ | ~~—~~                                     | ~~Docs~~    | ~~Ready~~      |
+| ~~T06~~ | ~~CONTRIBUTING.md multi-module development section~~ done at `496a18b`                                 | ~~4%~~   | ~~Medium~~   | ~~30min~~ | ~~—~~                                     | ~~Docs~~    | ~~Ready~~      |
+| ~~T07~~ | ~~`CollectPost` error-path tests~~ done at `83d7c60`                                                   | ~~20%~~  | ~~High~~     | ~~30min~~ | ~~—~~                                     | ~~Testing~~ | ~~Ready~~      |
+| ~~T08~~ | ~~e2e dogfood expansion (`CollectPost`, `CollectN`)~~ done at `83d7c60`                                | ~~20%~~  | ~~Medium~~   | ~~30min~~ | ~~—~~                                     | ~~Testing~~ | ~~Ready~~      |
+| ~~T09~~ | ~~Example `WithOnDrop` integration test~~ done at `496a18b`                                            | ~~20%~~  | ~~Medium~~   | ~~30min~~ | ~~—~~                                     | ~~Testing~~ | ~~Ready~~      |
+| ~~T10~~ | ~~`UnmarshalSignals` fuzz test~~ done at `496a18b`                                                     | ~~20%~~  | ~~Medium~~   | ~~30min~~ | ~~—~~                                     | ~~Testing~~ | ~~Ready~~      |
+| ~~T11~~ | ~~Per-module Nix hermetic checks~~ done at `83d7c60`, `b269bbb`                                        | ~~20%~~  | ~~Medium~~   | ~~60min~~ | ~~—~~                                     | ~~CI~~      | ~~Ready~~      |
+| ~~T12~~ | ~~README comparison maintenance + release checklist~~ done at `83d7c60`                                | ~~20%~~  | ~~Medium~~   | ~~30min~~ | ~~—~~                                     | ~~Docs~~    | ~~Ready~~      |
+| ~~T13~~ | ~~De-flake `TestCollect_WithLastEventID_HeaderArrives`~~ done at `83d7c60`, `496a18b`                  | ~~20%~~  | ~~Medium~~   | ~~30min~~ | ~~Coordinate with parallel session (G1)~~ | ~~Testing~~ | ~~Ready~~      |
+| ~~T14~~ | ~~`docs/modularization/README.md` index~~ done at `83d7c60`                                            | ~~Rest~~ | ~~Low~~      | ~~30min~~ | ~~—~~                                     | ~~Docs~~    | ~~Ready~~      |
+| ~~T15~~ | ~~DOMAIN_LANGUAGE.md execution (create or record waiver)~~ done at `83d7c60`                           | ~~Rest~~ | ~~Low~~      | ~~30min~~ | ~~Owner Q3~~                              | ~~Docs~~    | ~~🔵 BLOCKED~~ |
+| ~~T16~~ | ~~Owner-ruling execution pack (go.work.sum, v0.0.0 siblings, directive doc)~~ done at `496a18b`        | ~~Rest~~ | ~~Medium~~   | ~~30min~~ | ~~Owner rulings~~                         | ~~Modules~~ | ~~🔵 BLOCKED~~ |
 
 **Total estimated effort: ~8h15m of ready work** (+~1h blocked, pending 3 rulings).
 
@@ -357,25 +357,25 @@ across the 09:55 session (T01–T10, commits `bf68063`, `301fa76`, `affbe30`,
 `83d7c60`, `496a18b`, `b269bbb`). The T-table above carries the per-task
 hashes. Post-execution notes:
 
-| Item | Resolution | Evidence |
-| ---- | ---------- | -------- |
-| P1-1 | → T01 done at `bf68063` | CI green (run 31933895108); superseded further by the in-flight go 1.26.7 bump of 2026-08-29 |
-| P1-2 | → T01 done at `bf68063` | erraudit job probe-gated |
-| P1-3 | → T02 done at `bf68063` | `result` trashed, ROADMAP sharpened, AGENTS corrected |
-| P4-1 | → T03 done at `83d7c60` | dprint: deleted in T03, later KEPT by owner decision (CHANGELOG [Unreleased] "dprint.json kept for non-Go formatting") |
-| P4-2 | → T03 done at `83d7c60` | actionlint CI job + devShell |
-| P4-3 | → T03 done — attempted and reverted by design | erraudit dep tree has private modules; app go-installs instead (CHANGELOG) |
-| P4-4 | → T04 done at `496a18b` | protection set 08-16, then REMOVED same day by owner decision (`257c395`) |
-| P4-5 | → T05 done at `affbe30` | docs/adr/002-multi-module-split.md |
-| P4-6 | → T06 done at `496a18b` | CONTRIBUTING "Multi-Module Development" section |
-| P20-1 | → T07 done at `83d7c60` | datastartest/collect_error_test.go |
-| P20-2 | → T08 done at `83d7c60` | TestE2E_CollectPostRoundTrip / CollectNStreaming |
-| P20-3 | → T09 done at `496a18b` | example/ondrop_test.go |
-| P20-4 | → T10 done at `496a18b` | datastartest/event_fuzz_test.go |
-| P20-5 | → T11 done at `83d7c60`, `b269bbb` | checks.buildStatic / buildDatastartest |
-| P20-6 | → T04 done at `496a18b`, `ed815c7` | pkg.go.dev verified at v0.2.0; badge made live by `ed815c7` |
-| P20-7 | → T12 done at `83d7c60` | v1.2.2 re-verified; docs/release-checklist.md |
-| P20-8 | → T13 done at `83d7c60`, `496a18b` | channel-sync de-flake |
+| Item  | Resolution                                    | Evidence                                                                                                               |
+| ----- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| P1-1  | → T01 done at `bf68063`                       | CI green (run 31933895108); superseded further by the in-flight go 1.26.7 bump of 2026-08-29                           |
+| P1-2  | → T01 done at `bf68063`                       | erraudit job probe-gated                                                                                               |
+| P1-3  | → T02 done at `bf68063`                       | `result` trashed, ROADMAP sharpened, AGENTS corrected                                                                  |
+| P4-1  | → T03 done at `83d7c60`                       | dprint: deleted in T03, later KEPT by owner decision (CHANGELOG [Unreleased] "dprint.json kept for non-Go formatting") |
+| P4-2  | → T03 done at `83d7c60`                       | actionlint CI job + devShell                                                                                           |
+| P4-3  | → T03 done — attempted and reverted by design | erraudit dep tree has private modules; app go-installs instead (CHANGELOG)                                             |
+| P4-4  | → T04 done at `496a18b`                       | protection set 08-16, then REMOVED same day by owner decision (`257c395`)                                              |
+| P4-5  | → T05 done at `affbe30`                       | docs/adr/002-multi-module-split.md                                                                                     |
+| P4-6  | → T06 done at `496a18b`                       | CONTRIBUTING "Multi-Module Development" section                                                                        |
+| P20-1 | → T07 done at `83d7c60`                       | datastartest/collect_error_test.go                                                                                     |
+| P20-2 | → T08 done at `83d7c60`                       | TestE2E_CollectPostRoundTrip / CollectNStreaming                                                                       |
+| P20-3 | → T09 done at `496a18b`                       | example/ondrop_test.go                                                                                                 |
+| P20-4 | → T10 done at `496a18b`                       | datastartest/event_fuzz_test.go                                                                                        |
+| P20-5 | → T11 done at `83d7c60`, `b269bbb`            | checks.buildStatic / buildDatastartest                                                                                 |
+| P20-6 | → T04 done at `496a18b`, `ed815c7`            | pkg.go.dev verified at v0.2.0; badge made live by `ed815c7`                                                            |
+| P20-7 | → T12 done at `83d7c60`                       | v1.2.2 re-verified; docs/release-checklist.md                                                                          |
+| P20-8 | → T13 done at `83d7c60`, `496a18b`            | channel-sync de-flake                                                                                                  |
 
 The 57 sub-tasks in Step 3 were consumed by their parent tasks (each sub-table
 is a decomposition of the T-row it lives under; no sub-task was executed

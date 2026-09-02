@@ -8,7 +8,7 @@
 package main
 
 import (
-	"encoding/json"
+	"encoding/json/v2"
 	"errors"
 	"fmt"
 	"log"
@@ -185,7 +185,7 @@ func handlePost(
 		Message string `json:"message"`
 	}
 
-	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+	if err := json.UnmarshalRead(r.Body, &payload); err != nil {
 		http.Error(writer, "bad json", http.StatusBadRequest)
 
 		return

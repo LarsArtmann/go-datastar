@@ -25,18 +25,18 @@ All 27 `docs/status/*.md` + 1 `docs/planning/*.md` + 1 archived plan + 2 `docs/m
 
 ### 3. ANNOTATE — 8 historical files, ~130 inline item verdicts
 
-Every numbered item received a verdict (`~~struck~~ done at `<hash>`` / Won't-implement / verified-evidence / left bare = open), using the skill's `annotate-rows.py` / `annotate-prose.py` with mandatory dry-runs and post-write shape checks:
+Every numbered item received a verdict (`~~struck~~ done at`<hash>`` / Won't-implement / verified-evidence / left bare = open), using the skill's `annotate-rows.py` / `annotate-prose.py` with mandatory dry-runs and post-write shape checks:
 
-| File | Verdicts | Highlights |
-| ---- | -------- | ---------- |
-| `docs/planning/2026-08-16_08-53` pareto plan | 16 T-rows + 17 P-items (resolution table) + 3 owner questions + appendix | All T01–T16 executed across `bf68063`/`affbe30`/`83d7c60`/`496a18b`; erraudit-devShell marked done-by-reversal; dprint removed-then-kept documented |
-| `2026-08-16_09-55` full-execution progress | 7 table rows + final-sync row + stale Q3 claim + appendix | "Remaining" T11–T16/T04 all done at `83d7c60`/`496a18b`/`ed815c7` |
-| `2026-08-16_11-07` T11–T16 completion | E×3, G×2, F×20 of 50 + 2 stale-claim corrections | Dynamic badge `ed815c7`; lint `ce3b4bc`+4; system Go now 1.26.7; 9 items verified-done (SECURITY.md, CoC, dependabot, issue templates, v0.2.0 release, doc.go, constants_test, benchmark, checks.format) |
-| `2026-08-16_12-24` master recovery | 12 f-rows + b/c items | nix gate run today with honest FAIL verdict recorded; CHANGELOG fix done; badge superseded by live badge |
-| `2026-08-16_12-43` git-town recovery | 25 f-rows + g×2 | 6 items superseded by the same-day branch-protection removal (`257c395`); go.work checks verified today |
-| `2026-08-16_08-47` audit completion | 25 f-items + g×3 + c×5 | Every item resolved by the pareto execution or verified today |
-| `2026-08-16_08-20` audit annotations | f×4 + g×3 + c×1 | All three owner questions (go directive, go.work.sum, sibling requires) resolved by T16 |
-| `2026-08-16_07-52` README comparison | 3 marker upgrades | "routed to TODO_LIST" upgraded to final resolution (T12, `83d7c60`) |
+| File                                         | Verdicts                                                                 | Highlights                                                                                                                                                                                               |
+| -------------------------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `docs/planning/2026-08-16_08-53` pareto plan | 16 T-rows + 17 P-items (resolution table) + 3 owner questions + appendix | All T01–T16 executed across `bf68063`/`affbe30`/`83d7c60`/`496a18b`; erraudit-devShell marked done-by-reversal; dprint removed-then-kept documented                                                      |
+| `2026-08-16_09-55` full-execution progress   | 7 table rows + final-sync row + stale Q3 claim + appendix                | "Remaining" T11–T16/T04 all done at `83d7c60`/`496a18b`/`ed815c7`                                                                                                                                        |
+| `2026-08-16_11-07` T11–T16 completion        | E×3, G×2, F×20 of 50 + 2 stale-claim corrections                         | Dynamic badge `ed815c7`; lint `ce3b4bc`+4; system Go now 1.26.7; 9 items verified-done (SECURITY.md, CoC, dependabot, issue templates, v0.2.0 release, doc.go, constants_test, benchmark, checks.format) |
+| `2026-08-16_12-24` master recovery           | 12 f-rows + b/c items                                                    | nix gate run today with honest FAIL verdict recorded; CHANGELOG fix done; badge superseded by live badge                                                                                                 |
+| `2026-08-16_12-43` git-town recovery         | 25 f-rows + g×2                                                          | 6 items superseded by the same-day branch-protection removal (`257c395`); go.work checks verified today                                                                                                  |
+| `2026-08-16_08-47` audit completion          | 25 f-items + g×3 + c×5                                                   | Every item resolved by the pareto execution or verified today                                                                                                                                            |
+| `2026-08-16_08-20` audit annotations         | f×4 + g×3 + c×1                                                          | All three owner questions (go directive, go.work.sum, sibling requires) resolved by T16                                                                                                                  |
+| `2026-08-16_07-52` README comparison         | 3 marker upgrades                                                        | "routed to TODO_LIST" upgraded to final resolution (T12, `83d7c60`)                                                                                                                                      |
 
 Open items were left bare (no marker) and routed — none skipped.
 
@@ -115,18 +115,18 @@ Items 1–10 are the verified TODO_LIST (harvested this session, evidence-cited)
 
 **Verified open work (TODO_LIST, ranked):**
 
-| # | Task | Status | Impact | Effort |
-|---|------|--------|--------|--------|
-| 1 | Finish or revert the in-flight go 1.26.7 bump (go.mod ×3 + go.work + ci.yml + flake `overrideAttrs` as ONE change, or restore 1.26.6) — workspace `go` commands fail until then | 🟡 IN_PROGRESS (parallel session) | Critical | 30min |
-| 2 | Restore master CI green: commit the pending gofumpt reformat of `reader_fuzz_test.go` (also fixes the nix format gate), fix mnd `example/main.go:153`, makezero `reader.go:98`, migrate `errors.As`→`AsType` ×4 via go-error-modernization | 🔴 TODO | Critical | 45min |
-| 3 | Cut v0.3.0 per `docs/release-checklist.md` (tag ×3 lockstep, pkg.go.dev verify) | 🔴 TODO | High | 1h |
-| 4 | Delete merged `pr/docs-test-consolidation` (local + remote) | 🔵 BLOCKED (owner) | Medium | 5min |
-| 5 | Rehome or drop `preserve/status-report-coderabbit-pr3` (sole copy of the 11-37 report) | 🔵 BLOCKED (owner) | Medium | 15min |
-| 6 | CI path filters: docs-only PRs skip test/lint/govulncheck | 🔴 TODO | Medium | 15min |
-| 7 | `docs/status/README.md` index (date, one-liner, outcome per report) | 🔴 TODO | Medium | 30min |
-| 8 | golangci-lint CI caching (1m33s long pole) | 🔴 TODO | Low | 30min |
-| 9 | PR template: CI-dependent boxes become "checked by CI" | 🔴 TODO | Low | 10min |
-| 10 | CONTRIBUTING.md: how to run fuzz tests per module | 🔴 TODO | Low | 15min |
+| #  | Task                                                                                                                                                                                                                                       | Status                            | Impact   | Effort |
+| -- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------- | -------- | ------ |
+| 1  | Finish or revert the in-flight go 1.26.7 bump (go.mod ×3 + go.work + ci.yml + flake `overrideAttrs` as ONE change, or restore 1.26.6) — workspace `go` commands fail until then                                                            | 🟡 IN_PROGRESS (parallel session) | Critical | 30min  |
+| 2  | Restore master CI green: commit the pending gofumpt reformat of `reader_fuzz_test.go` (also fixes the nix format gate), fix mnd `example/main.go:153`, makezero `reader.go:98`, migrate `errors.As`→`AsType` ×4 via go-error-modernization | 🔴 TODO                           | Critical | 45min  |
+| 3  | Cut v0.3.0 per `docs/release-checklist.md` (tag ×3 lockstep, pkg.go.dev verify)                                                                                                                                                            | 🔴 TODO                           | High     | 1h     |
+| 4  | Delete merged `pr/docs-test-consolidation` (local + remote)                                                                                                                                                                                | 🔵 BLOCKED (owner)                | Medium   | 5min   |
+| 5  | Rehome or drop `preserve/status-report-coderabbit-pr3` (sole copy of the 11-37 report)                                                                                                                                                     | 🔵 BLOCKED (owner)                | Medium   | 15min  |
+| 6  | CI path filters: docs-only PRs skip test/lint/govulncheck                                                                                                                                                                                  | 🔴 TODO                           | Medium   | 15min  |
+| 7  | `docs/status/README.md` index (date, one-liner, outcome per report)                                                                                                                                                                        | 🔴 TODO                           | Medium   | 30min  |
+| 8  | golangci-lint CI caching (1m33s long pole)                                                                                                                                                                                                 | 🔴 TODO                           | Low      | 30min  |
+| 9  | PR template: CI-dependent boxes become "checked by CI"                                                                                                                                                                                     | 🔴 TODO                           | Low      | 10min  |
+| 10 | CONTRIBUTING.md: how to run fuzz tests per module                                                                                                                                                                                          | 🔴 TODO                           | Low      | 15min  |
 
 **ROADMAP fuel (11–50):**
 

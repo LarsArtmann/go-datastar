@@ -1,7 +1,7 @@
 # Replay: serving events to reconnecting clients
 
-Replay is the answer to one question: *a browser reconnects after a network
-blip — what does it missed?* Server-Sent Events give the client a way to say
+Replay is the answer to one question: _a browser reconnects after a network
+blip — what does it missed?_ Server-Sent Events give the client a way to say
 "resume from here" (the `Last-Event-ID` header, or `?datastar=` reconnects);
 your server needs an event history to answer with.
 
@@ -11,12 +11,12 @@ produced — nothing about replay is special-cased.
 
 ## The pieces
 
-| Piece | Where | Role |
-| ----- | ----- | ----- |
-| `Patch.Event() sse.Event` | go-datastar | every patch renders to a storable event |
-| `sse.EventStore` | go-sse | the storage contract: `Append` + `EventsAfter(lastID)` |
-| `MemoryStore` | go-datastar (`store.go`) | in-memory ring buffer implementing `EventStore` |
-| `Last-Event-ID` | go-sse (`Stream.LastEventID()`) | the client's resume cursor |
+| Piece                     | Where                           | Role                                                   |
+| ------------------------- | ------------------------------- | ------------------------------------------------------ |
+| `Patch.Event() sse.Event` | go-datastar                     | every patch renders to a storable event                |
+| `sse.EventStore`          | go-sse                          | the storage contract: `Append` + `EventsAfter(lastID)` |
+| `MemoryStore`             | go-datastar (`store.go`)        | in-memory ring buffer implementing `EventStore`        |
+| `Last-Event-ID`           | go-sse (`Stream.LastEventID()`) | the client's resume cursor                             |
 
 ## Minimal replay setup
 

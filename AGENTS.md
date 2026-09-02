@@ -276,12 +276,12 @@ when adding helpers.
 
 ## Docs Map
 
-| Path                          | Content                                                        |
-| ----------------------------- | -------------------------------------------------------------- |
-| `doc.go`                      | Package docs: design rationale, quick start, error contract    |
-| `docs/adr/`                   | Architecture decision records (multi-module, …)                |
-| `docs/release-checklist.md`   | Pre-release gate, versioning, lockstep tags, verification      |
-| `docs/status/` (+ its README) | Point-in-time status reports and audits (index + policy)       |
-| `docs/planning/`              | Pareto plans; `archived/` holds executed plans                 |
-| `CONTRIBUTING.md`             | Dev setup, workspace rules, fuzzing                            |
-| `CHANGELOG.md`                | Released history (append-only) + `[Unreleased]` draft          |
+| Path                          | Content                                                     |
+| ----------------------------- | ----------------------------------------------------------- |
+| `doc.go`                      | Package docs: design rationale, quick start, error contract |
+| `docs/adr/`                   | Architecture decision records (multi-module, …)             |
+| `docs/release-checklist.md`   | Pre-release gate, versioning, lockstep tags, verification   |
+| `docs/status/` (+ its README) | Point-in-time status reports and audits (index + policy)    |
+| `docs/planning/`              | Pareto plans; `archived/` holds executed plans              |
+| `CONTRIBUTING.md`             | Dev setup, workspace rules, fuzzing                         |
+| `CHANGELOG.md`                | Released history (append-only) + `[Unreleased]` draft       |

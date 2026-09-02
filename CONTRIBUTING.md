@@ -104,12 +104,12 @@ Four fuzz targets guard the parsers and serializers. Their seed corpora are
 committed, so every regular `go test` run replays them as regression cases;
 `-fuzz` explores beyond the seeds.
 
-| Target | Module | What it shakes out |
-| ------ | ------ | ------------------ |
-| `FuzzReadSignals` | root | `ReadSignals` request-body parsing (malformed JSON, closed bodies) |
-| `FuzzMarshalSignalsRoundtrip` | root | signals marshal → unmarshal roundtrip stability |
-| `FuzzReadEvents` | `datastartest` | SSE wire-format parser conformance (51-seed corpus in `testdata/fuzz/FuzzReadEvents/`) |
-| `FuzzUnmarshalSignals` | `datastartest` | dataline signals decoding |
+| Target                        | Module         | What it shakes out                                                                     |
+| ----------------------------- | -------------- | -------------------------------------------------------------------------------------- |
+| `FuzzReadSignals`             | root           | `ReadSignals` request-body parsing (malformed JSON, closed bodies)                     |
+| `FuzzMarshalSignalsRoundtrip` | root           | signals marshal → unmarshal roundtrip stability                                        |
+| `FuzzReadEvents`              | `datastartest` | SSE wire-format parser conformance (51-seed corpus in `testdata/fuzz/FuzzReadEvents/`) |
+| `FuzzUnmarshalSignals`        | `datastartest` | dataline signals decoding                                                              |
 
 Quick smoke (30 seconds, per module — fuzzing runs one target at a time):
 

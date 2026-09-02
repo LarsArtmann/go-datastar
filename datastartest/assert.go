@@ -34,34 +34,17 @@ func RequireEventType(tb testing.TB, evt Event, want string) {
 func RequireElements(tb testing.TB, evt Event, wantSelector, wantMode, wantHTML string) {
 	tb.Helper()
 
-	if !evt.IsElements() {
-		tb.Fatalf("expected patch-elements event, got %q", evt.Type)
-
-		return
-	}
-
-	if got := evt.Selector(); got != wantSelector {
-		tb.Errorf("selector: got %q, want %q", got, wantSelector)
-	}
-
-	if got := evt.Mode(); got != wantMode {
-		tb.Errorf("mode: got %q, want %q", got, wantMode)
-	}
+	requireElementsPatch(tb, evt, wantSelector, wantMode)
 
 	if got := evt.Elements(); got != wantHTML {
 		tb.Errorf("elements: got %q, want %q", got, wantHTML)
 	}
 }
 
-// RequireElementsContains fails the test unless evt is a patch-elements event
-// with the exact selector and mode, and Elements() contains wantHTMLContains
-// as a substring. Useful for script patches where the HTML includes wrapper
-// elements (e.g., <script>) around the content you want to verify.
-func RequireElementsContains(
-	tb testing.TB,
-	evt Event,
-	wantSelector, wantMode, wantHTMLContains string,
-) {
+// requireElementsPatch fails the test unless evt is a patch-elements event
+// with the exact selector and mode. The elements comparison is left to the
+// caller so exact and substring variants can share it.
+func requireElementsPatch(tb testing.TB, evt Event, wantSelector, wantMode string) {
 	tb.Helper()
 
 	if !evt.IsElements() {
@@ -77,6 +60,20 @@ func RequireElementsContains(
 	if got := evt.Mode(); got != wantMode {
 		tb.Errorf("mode: got %q, want %q", got, wantMode)
 	}
+}
+
+// RequireElementsContains fails the test unless evt is a patch-elements event
+// with the exact selector and mode, and Elements() contains wantHTMLContains
+// as a substring. Useful for script patches where the HTML includes wrapper
+// elements (e.g., <script>) around the content you want to verify.
+func RequireElementsContains(
+	tb testing.TB,
+	evt Event,
+	wantSelector, wantMode, wantHTMLContains string,
+) {
+	tb.Helper()
+
+	requireElementsPatch(tb, evt, wantSelector, wantMode)
 
 	if got := evt.Elements(); !strings.Contains(got, wantHTMLContains) {
 		tb.Errorf("elements should contain %q; got %q", wantHTMLContains, got)

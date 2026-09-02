@@ -5,12 +5,12 @@ holds the proposal, execution plan, and architecture decisions that shaped it.
 
 ## Documents
 
-| Document                                                             | Type           | Description                                                                   |
-| -------------------------------------------------------------------- | -------------- | ----------------------------------------------------------------------------- |
-| [2026-08-10_PROPOSAL.html](2026-08-10_PROPOSAL.html)                 | Proposal       | Original case for splitting go-datastar into independently versioned modules (executed — shipped in v0.1.0) |
+| Document                                                             | Type           | Description                                                                                                       |
+| -------------------------------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------- |
+| [2026-08-10_PROPOSAL.html](2026-08-10_PROPOSAL.html)                 | Proposal       | Original case for splitting go-datastar into independently versioned modules (executed — shipped in v0.1.0)       |
 | [2026-08-10_EXECUTION_PLAN.html](2026-08-10_EXECUTION_PLAN.html)     | Execution plan | Step-by-step migration from single module to multi-module workspace (fully executed; outcome recorded in ADR 002) |
-| [../adr/001-architecture.md](../adr/001-architecture.md)             | ADR 001        | Architecture: go-datastar, go-sse, and the DataStar SDK (layer separation)    |
-| [../adr/002-multi-module-split.md](../adr/002-multi-module-split.md) | ADR 002        | Multi-module split: three modules, strict DAG, mutual replaces, lockstep tags |
+| [../adr/001-architecture.md](../adr/001-architecture.md)             | ADR 001        | Architecture: go-datastar, go-sse, and the DataStar SDK (layer separation)                                        |
+| [../adr/002-multi-module-split.md](../adr/002-multi-module-split.md) | ADR 002        | Multi-module split: three modules, strict DAG, mutual replaces, lockstep tags                                     |
 
 ## Module structure
 

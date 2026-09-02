@@ -15,9 +15,9 @@ go-branded-id through go-sse).
 
 ## Dependency changes
 
-| Module | Change |
-| ------ | ------ |
-| root | go-sse v0.5.0 → **v0.5.1** |
+| Module       | Change                                                             |
+| ------------ | ------------------------------------------------------------------ |
+| root         | go-sse v0.5.0 → **v0.5.1**                                         |
 | datastartest | go-sse v0.5.1 + **go-sse/ssetest v0.2.0** (shared SSE test parser) |
 
 ## datastartest: what's new (all additive)

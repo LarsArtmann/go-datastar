@@ -4,7 +4,7 @@ A DataStar "patch" is one SSE event whose `data:` lines carry a small
 key-value protocol. This page shows the exact bytes per patch family, as
 produced by `Patch.Event()` — the same bytes pinned by `wire_golden_test.go`
 and asserted by the testable examples. All keys have a **trailing space**
-(`selector `, `elements `, …); that is part of the upstream-compatible
+(`selector`, `elements`, …); that is part of the upstream-compatible
 format, not a typo.
 
 Anatomy of one event on the wire:
@@ -65,13 +65,13 @@ elements <script data-effect="el.remove()">console.log("hi")</script>
 
 Sugar variants and their shapes:
 
-| Constructor | Inner JS |
-| ----------- | -------- |
-| `NewRedirectPatch(u)` | `setTimeout(() => window.location.href = "u")` |
-| `NewConsoleLogPatch(msg)` / `NewConsoleErrorPatch(err)` | `console.log(%q)` / `console.error(%q)` — `%q` quoting |
-| `NewDispatchCustomEventPatch(name, detail)` | `new CustomEvent("name", {bubbles: true, cancelable: true, composed: true, detail: …})` dispatched on `document` (default) |
-| `NewReplaceURLPatch(u)` / `NewReplaceURLQuerystringPatch(r, values)` | `window.history.replaceState({}, "", "…")` |
-| `NewPrefetchPatch(urls...)` | speculation-rules JSON, `type="speculationrules"`, no auto-remove |
+| Constructor                                                          | Inner JS                                                                                                                   |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `NewRedirectPatch(u)`                                                | `setTimeout(() => window.location.href = "u")`                                                                             |
+| `NewConsoleLogPatch(msg)` / `NewConsoleErrorPatch(err)`              | `console.log(%q)` / `console.error(%q)` — `%q` quoting                                                                     |
+| `NewDispatchCustomEventPatch(name, detail)`                          | `new CustomEvent("name", {bubbles: true, cancelable: true, composed: true, detail: …})` dispatched on `document` (default) |
+| `NewReplaceURLPatch(u)` / `NewReplaceURLQuerystringPatch(r, values)` | `window.history.replaceState({}, "", "…")`                                                                                 |
+| `NewPrefetchPatch(urls...)`                                          | speculation-rules JSON, `type="speculationrules"`, no auto-remove                                                          |
 
 ## Retry and event IDs
 

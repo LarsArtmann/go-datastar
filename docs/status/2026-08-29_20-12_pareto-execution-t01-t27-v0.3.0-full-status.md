@@ -9,12 +9,12 @@ all five CI workflows green, v0.3.0 shipped and rendered on pkg.go.dev.
 
 ## Verdict at a glance
 
-| Tier | Tasks | Verdict |
-| ---- | ----- | ------- |
-| 1% (T01–T03) | toolchain, green master, v0.3.0 | ✅ fully done |
-| 4% (T04–T09) | trust surface | ✅ 5/6 done, T04 blocked by design |
-| 20% (T10–T20) | CI depth, docs, features | ✅ done (T20 includes decision spike) |
-| Rest (T21–T27) | long tail | 🟡 5 done, T21/T27 delivered as scoped deferrals, not spikes |
+| Tier           | Tasks                           | Verdict                                                      |
+| -------------- | ------------------------------- | ------------------------------------------------------------ |
+| 1% (T01–T03)   | toolchain, green master, v0.3.0 | ✅ fully done                                                |
+| 4% (T04–T09)   | trust surface                   | ✅ 5/6 done, T04 blocked by design                           |
+| 20% (T10–T20)  | CI depth, docs, features        | ✅ done (T20 includes decision spike)                        |
+| Rest (T21–T27) | long tail                       | 🟡 5 done, T21/T27 delivered as scoped deferrals, not spikes |
 
 17 commits pushed. Every gate re-verified at HEAD: race ×5 packages, vet,
 lint 0 issues ×3 modules, `GOWORK=off` isolation ×3, `go work sync`
@@ -89,12 +89,12 @@ clean, and all five CI workflows **success** on the final push (run
 
 ### What to improve (systemic, not task-level)
 
-- **Linter version parity as a gate**: lint locally with the *exact* CI
+- **Linter version parity as a gate**: lint locally with the _exact_ CI
   build (`go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2`)
   or add a flake app pinning it — the "green locally, red in CI" class dies
   only with build parity.
 - **vendorHash structural fragility needs a real ADR update**: evidence
-  today suggests the datastartest FOD hash moved with *tree state*, not just
+  today suggests the datastartest FOD hash moved with _tree state_, not just
   go.mod — likely because the local `replace => ..` puts repo source into
   the module graph under `proxyVendor`. ADR 004 currently blames "Go patch
   bumps"; the mechanism may be broader (and explain the daemon-era breaks).
@@ -112,45 +112,45 @@ clean, and all five CI workflows **success** on the final push (run
 
 ## a) FULLY DONE
 
-| Task | Result | Evidence |
-| ---- | ------ | -------- |
-| T01 toolchain settle (adopt 1.26.7, G2 atomic set) | go.mod ×3, go.work, ci.yml ×5, coverage.yml, flake `overrideAttrs` + tarball hash + root vendorHash re-discovered; `go work sync` idempotent | `b37d11a`; sync idempotency re-run at session end |
-| T02 green master | 4× `errors.As`→`AsType` (type extraction only; `errors.Is` sentinels untouched per G4), mnd heartbeat const, makezero append; race/vet/lint green | `489256b`; local 0 issues; CI green on follow-ups |
-| T03 v0.3.0 release | checklist gate fully executed; CHANGELOG promoted + supersession note; lockstep tags ×3 pushed; GitHub Release with CHANGELOG excerpt; `go get` ×3 resolves from proxy; pkg.go.dev renders v0.3.0 (root page verified) | tag `v0.3.0`; release page; `go get` logs; pkg.go.dev fetch |
-| T05 CI path filters | `paths` allowlists on ci.yml + coverage.yml; `actionlint.yml` runs on every push (docs-only signal) | `5887043`; actionlint workflow green in CI |
-| T06 AGENTS.md pruning | 28,711 → 16,635 bytes; file-layout + datastartest API tables → pointers to `doc.go` / `datastartest/README.md`; resolved protected-master ceremony removed; G9 cross-reference check done (only point-in-time reports referenced pruned content) | `5887043`; `wc -c` |
-| T07 status index | `docs/status/README.md`: 25 active rows + archived table + policy + planning/archived pointer | `12a2de4` |
-| T08 PR template honesty | local-run boxes kept with "tick only what you ran"; CI-attest boxes removed with the reason stated | `5887043` |
-| T09 CONTRIBUTING fuzz section | 4 targets table, 30s smoke commands, crash-seed policy; both documented commands executed (PASS) | `5887043`; fuzz smoke runs |
-| T10 nix CI job | `nix.yml` (pinned install-nix-action v31, `continue-on-error`, code paths only); **green in CI on its first master run** (32s) | `88c1eed`; run 33266637891 success |
-| T12 lint caching | `actions/cache` (SHA resolved via API, not guessed) for `~/.cache/golangci-lint` keyed on go.sum; rationale comment (setup-go already covers build/module caches) | `88c1eed` |
-| T13 ADR 003 error classification | context/decision/consequences incl. family table, `error`-interface rationale, go-sse layering | `cf19bf1` |
-| T15 ADR 005 coverage strategy | badged-not-gated decision with soft-floor thresholds | `cf19bf1` |
-| T16 guides A | `docs/replay.md` (APIs verified against go-sse source: `BroadcastMany`, `Stream.LastEventID`), `docs/error-system.md` | `3fa96f0` |
-| T17 guides B | `docs/wire-format.md` (annotated datalines, parity notes), `docs/testing.md` | `3fa96f0` |
-| T19 ReplaceURLQuerystring | `NewReplaceURLQuerystringPatch` + `Response.ReplaceURLQuerystring`; upstream semantics confirmed from the v1.2.2 module source; wire/parity tests, Response table case, testable Example; README gap row removed; ROADMAP idea removed | `3d3cba0` |
-| T20 SSE compression | decision: middleware over in-library (README honesty kept); working `gzipSSEMiddleware` with per-event flush, Vary, Content-Length strip; 2 tests green | `8f190ea` |
-| T22 typed script accessors | `RedirectURL`, `CustomEventName`, `CustomEventDetail`, `UnmarshalCustomEventDetail` (new classified code), `ScriptAttributes`; 4 tests green; datastartest README section; AGENTS codes updated | `671e57c` |
-| T23 domain-adapter example | domain events → `Bridge() → []Patch` → broadcaster+MemoryStore; boundary-clean E2E (raw SSE, no datastartest); README pointer | `efde465`, `1dda530` |
-| T24 CI expansions | `fuzz.yml` (daily 60s ×4 targets, crash artifacts), `codeql.yml` (SHA-pinned v3), `renovate.json` (custom manager for the embedded JS); erraudit transition probe judged redundant (already in ci.yml) and documented | `1a72616` |
-| T25 community polish | `example/README.md` (heartbeat docs with proxy-timeout rationale), `Dockerfile` (base image fixed to `golang:…`), `docker-compose.yml`, `.github/FUNDING.yml` | `cf7b3f4` |
-| T26 formatter ADR | ADR 006 (treefmt canonical; dprint.json as non-Go intent; hermeticity rationale) | `cf19bf1` |
-| Final verification sweep | full local gate green (see Verdict at a glance) + all 5 CI workflows success on master | run 33266637847 et al. |
-| Living-doc sync | TODO_LIST rebuilt (open set now: watch items + owner-blocked rows); CHANGELOG `[Unreleased]` consolidated; ROADMAP policy note → 1.26.7; `docs/status/README.md` policy created | `1dda530` |
+| Task                                               | Result                                                                                                                                                                                                                                           | Evidence                                                    |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| T01 toolchain settle (adopt 1.26.7, G2 atomic set) | go.mod ×3, go.work, ci.yml ×5, coverage.yml, flake `overrideAttrs` + tarball hash + root vendorHash re-discovered; `go work sync` idempotent                                                                                                     | `b37d11a`; sync idempotency re-run at session end           |
+| T02 green master                                   | 4× `errors.As`→`AsType` (type extraction only; `errors.Is` sentinels untouched per G4), mnd heartbeat const, makezero append; race/vet/lint green                                                                                                | `489256b`; local 0 issues; CI green on follow-ups           |
+| T03 v0.3.0 release                                 | checklist gate fully executed; CHANGELOG promoted + supersession note; lockstep tags ×3 pushed; GitHub Release with CHANGELOG excerpt; `go get` ×3 resolves from proxy; pkg.go.dev renders v0.3.0 (root page verified)                           | tag `v0.3.0`; release page; `go get` logs; pkg.go.dev fetch |
+| T05 CI path filters                                | `paths` allowlists on ci.yml + coverage.yml; `actionlint.yml` runs on every push (docs-only signal)                                                                                                                                              | `5887043`; actionlint workflow green in CI                  |
+| T06 AGENTS.md pruning                              | 28,711 → 16,635 bytes; file-layout + datastartest API tables → pointers to `doc.go` / `datastartest/README.md`; resolved protected-master ceremony removed; G9 cross-reference check done (only point-in-time reports referenced pruned content) | `5887043`; `wc -c`                                          |
+| T07 status index                                   | `docs/status/README.md`: 25 active rows + archived table + policy + planning/archived pointer                                                                                                                                                    | `12a2de4`                                                   |
+| T08 PR template honesty                            | local-run boxes kept with "tick only what you ran"; CI-attest boxes removed with the reason stated                                                                                                                                               | `5887043`                                                   |
+| T09 CONTRIBUTING fuzz section                      | 4 targets table, 30s smoke commands, crash-seed policy; both documented commands executed (PASS)                                                                                                                                                 | `5887043`; fuzz smoke runs                                  |
+| T10 nix CI job                                     | `nix.yml` (pinned install-nix-action v31, `continue-on-error`, code paths only); **green in CI on its first master run** (32s)                                                                                                                   | `88c1eed`; run 33266637891 success                          |
+| T12 lint caching                                   | `actions/cache` (SHA resolved via API, not guessed) for `~/.cache/golangci-lint` keyed on go.sum; rationale comment (setup-go already covers build/module caches)                                                                                | `88c1eed`                                                   |
+| T13 ADR 003 error classification                   | context/decision/consequences incl. family table, `error`-interface rationale, go-sse layering                                                                                                                                                   | `cf19bf1`                                                   |
+| T15 ADR 005 coverage strategy                      | badged-not-gated decision with soft-floor thresholds                                                                                                                                                                                             | `cf19bf1`                                                   |
+| T16 guides A                                       | `docs/replay.md` (APIs verified against go-sse source: `BroadcastMany`, `Stream.LastEventID`), `docs/error-system.md`                                                                                                                            | `3fa96f0`                                                   |
+| T17 guides B                                       | `docs/wire-format.md` (annotated datalines, parity notes), `docs/testing.md`                                                                                                                                                                     | `3fa96f0`                                                   |
+| T19 ReplaceURLQuerystring                          | `NewReplaceURLQuerystringPatch` + `Response.ReplaceURLQuerystring`; upstream semantics confirmed from the v1.2.2 module source; wire/parity tests, Response table case, testable Example; README gap row removed; ROADMAP idea removed           | `3d3cba0`                                                   |
+| T20 SSE compression                                | decision: middleware over in-library (README honesty kept); working `gzipSSEMiddleware` with per-event flush, Vary, Content-Length strip; 2 tests green                                                                                          | `8f190ea`                                                   |
+| T22 typed script accessors                         | `RedirectURL`, `CustomEventName`, `CustomEventDetail`, `UnmarshalCustomEventDetail` (new classified code), `ScriptAttributes`; 4 tests green; datastartest README section; AGENTS codes updated                                                  | `671e57c`                                                   |
+| T23 domain-adapter example                         | domain events → `Bridge() → []Patch` → broadcaster+MemoryStore; boundary-clean E2E (raw SSE, no datastartest); README pointer                                                                                                                    | `efde465`, `1dda530`                                        |
+| T24 CI expansions                                  | `fuzz.yml` (daily 60s ×4 targets, crash artifacts), `codeql.yml` (SHA-pinned v3), `renovate.json` (custom manager for the embedded JS); erraudit transition probe judged redundant (already in ci.yml) and documented                            | `1a72616`                                                   |
+| T25 community polish                               | `example/README.md` (heartbeat docs with proxy-timeout rationale), `Dockerfile` (base image fixed to `golang:…`), `docker-compose.yml`, `.github/FUNDING.yml`                                                                                    | `cf7b3f4`                                                   |
+| T26 formatter ADR                                  | ADR 006 (treefmt canonical; dprint.json as non-Go intent; hermeticity rationale)                                                                                                                                                                 | `cf19bf1`                                                   |
+| Final verification sweep                           | full local gate green (see Verdict at a glance) + all 5 CI workflows success on master                                                                                                                                                           | run 33266637847 et al.                                      |
+| Living-doc sync                                    | TODO_LIST rebuilt (open set now: watch items + owner-blocked rows); CHANGELOG `[Unreleased]` consolidated; ROADMAP policy note → 1.26.7; `docs/status/README.md` policy created                                                                  | `1dda530`                                                   |
 
 ## b) PARTIALLY DONE
 
-| Item | Done | Missing |
-| ---- | ---- | ------- |
-| T11 hermetic checks + vendorHash hardening | `apps.bench`, `datastartest/collect_bench_test.go`, ADR 004 with the lint/vet/govulncheck non-sandboxing verdict; full `nix flake check` green | Sandbox `checks.lint/vet/govulncheck` deliberately NOT built (verdict recorded); the vendorHash *sensitivity mechanism* is likely misdiagnosed in ADR 004 (see improvements) — needs the investigation, then an ADR correction |
-| T14 ADR 004 | written and linked | Must be revised once the FOD-sensitivity question is answered (today's evidence contradicts "only Go patch bumps move it") |
-| T21 headless E2E | driver decision (chromedp), scope, and deferral rationale recorded in ROADMAP | No spike was run, no build-tag scaffold exists — by the plan's letter this is a deferral, not execution |
-| T27 website spike | deferral + trigger conditions ("next release worth a launch") recorded in ROADMAP | No Astro/Starlight spike, no demo-video decision artifact |
-| 16.3 guide cross-linking | guides internal-consistent, doc-indexed nowhere | README/AGENTS do not link `docs/replay.md` etc. yet |
-| Coverage prose | testing.md/performance.md state numbers with date | Numbers are the morning's; re-measure now that new code landed (badge is live-current; prose lags) |
-| 12.3 lint caching measurement | cache wired, rationale documented | No before/after timing was captured |
-| 05.3 docs-only fast-path verification | configured | Never observed an actual docs-only push skipping CI |
-| T25 "contributor list" | FUNDING.yml added | No AUTHORS/contributor file (deliberate: GitHub renders it); counted as a choice, noted here for completeness |
+| Item                                       | Done                                                                                                                                           | Missing                                                                                                                                                                                                                        |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| T11 hermetic checks + vendorHash hardening | `apps.bench`, `datastartest/collect_bench_test.go`, ADR 004 with the lint/vet/govulncheck non-sandboxing verdict; full `nix flake check` green | Sandbox `checks.lint/vet/govulncheck` deliberately NOT built (verdict recorded); the vendorHash _sensitivity mechanism_ is likely misdiagnosed in ADR 004 (see improvements) — needs the investigation, then an ADR correction |
+| T14 ADR 004                                | written and linked                                                                                                                             | Must be revised once the FOD-sensitivity question is answered (today's evidence contradicts "only Go patch bumps move it")                                                                                                     |
+| T21 headless E2E                           | driver decision (chromedp), scope, and deferral rationale recorded in ROADMAP                                                                  | No spike was run, no build-tag scaffold exists — by the plan's letter this is a deferral, not execution                                                                                                                        |
+| T27 website spike                          | deferral + trigger conditions ("next release worth a launch") recorded in ROADMAP                                                              | No Astro/Starlight spike, no demo-video decision artifact                                                                                                                                                                      |
+| 16.3 guide cross-linking                   | guides internal-consistent, doc-indexed nowhere                                                                                                | README/AGENTS do not link `docs/replay.md` etc. yet                                                                                                                                                                            |
+| Coverage prose                             | testing.md/performance.md state numbers with date                                                                                              | Numbers are the morning's; re-measure now that new code landed (badge is live-current; prose lags)                                                                                                                             |
+| 12.3 lint caching measurement              | cache wired, rationale documented                                                                                                              | No before/after timing was captured                                                                                                                                                                                            |
+| 05.3 docs-only fast-path verification      | configured                                                                                                                                     | Never observed an actual docs-only push skipping CI                                                                                                                                                                            |
+| T25 "contributor list"                     | FUNDING.yml added                                                                                                                              | No AUTHORS/contributor file (deliberate: GitHub renders it); counted as a choice, noted here for completeness                                                                                                                  |
 
 ## c) NOT STARTED
 
@@ -172,7 +172,7 @@ Severity-ordered; nothing data-destroying, all recoverable, two already
 mitigated on master.
 
 1. **`nix flake check` fails at tag `v0.3.0`.** The release commit carried
-   the requires bump but the vendorHash harvested *before* it
+   the requires bump but the vendorHash harvested _before_ it
    (`nkJghg…`); the FOD at that tree produces `GciltFE7…`. My in-flight
    verification job was left unread while I tagged. Master is fixed
    (`1f3cd93`) and consumers are unaffected (module proxy ≠ flake), but the
@@ -182,7 +182,7 @@ mitigated on master.
    hash — it is tagging while my own verification was still running.
 2. **Red master from a linter build I didn't reproduce** (run
    33266437052). Local lint green, CI lint red (`varnamelen` on `s`),
-   fixed one commit later (`8cc56a7`). Violates the *spirit* of G8 even
+   fixed one commit later (`8cc56a7`). Violates the _spirit_ of G8 even
    with local "green" in hand: parity of toolchain build matters as much as
    presence of the gate.
 3. **Master's CHANGELOG references an uncommitted file.** My `1dda530`
@@ -209,7 +209,7 @@ mitigated on master.
    004.** Today's evidence (hash changed across tree states with identical
    go.mod/go.sum) suggests the local `replace` directives pull repo source
    into the module FOD under `proxyVendor`. If confirmed: vendorHash moves
-   on *any* root/static/datastartest source change — the "broke twice under
+   on _any_ root/static/datastartest source change — the "broke twice under
    the daemon" incidents and today's break share one root cause, and the
    durable fix is restructuring the FOD inputs (e.g., minimal src fileset of
    go.mod/go.sum only), not hash dances.
@@ -235,58 +235,58 @@ mitigated on master.
 
 ## f) Up to 50 things to do next (prioritized)
 
-| # | Thing | Why / notes |
-| - | ----- | ----------- |
-| 1 | Add exact-CI-version golangci-lint app (`go run …@v2.12.2`) to flake + use pre-push | kills linter-parity reds |
-| 2 | Verify tag `v0.3.0` flake state via a `git worktree` of the tag + `nix flake check`; record verdict | confirms (d)1 empirically |
-| 3 | Investigate datastartest FOD source-sensitivity; correct or confirm ADR 004 mechanism | stops repeat vendorHash breaks |
-| 4 | Decide Renovate vs Dependabot; disable the loser | duplicate-bot churn (Q2) |
-| 5 | Commit or strip the `wire_golden_test.go` CHANGELOG bullet | master consistency (Q3) |
-| 6 | Run `erraudit` loop locally over the new code (`script_accessors.go` etc.) | audit gap from today |
-| 7 | Link the 7 guides from README (docs section) + AGENTS docs map | plan 16.3 leftover |
-| 8 | Update FEATURES.md: typed accessors, domain-adapter, guides, new CI, compression middleware | FEATURES drifted today |
-| 9 | Sync AGENTS CI section: nix.yml, fuzz.yml, codeql.yml, renovate.json | AGENTS stale same-day |
-| 10 | Re-measure coverage (root/datastartest) post-changes; correct prose numbers | badge vs prose drift |
-| 11 | `docker build example/` (and compose up) to verify packaging actually builds | unverified Dockerfile |
-| 12 | Watch/promote `nix.yml`: after a week green, drop `continue-on-error` | TODO_LIST watch item |
-| 13 | Observe one docs-only push skipping CI (and actionlint still running) | 05.3 leftover |
-| 14 | Verify Renovate regex against real upstream tags on first run | TODO_LIST item |
-| 15 | Watch `fuzz.yml` nightly run; confirm artifacts upload path correctness | new workflow |
-| 16 | Check CodeQL first analysis results for surprises | new workflow |
-| 17 | Record CHANGELOG `[Unreleased]` Fixed: tag-flake vendorHash note + varnamelen fix | honest release history |
-| 18 | Owner: branch deletions + lineage prune (`git config` cleanup afterwards) | T04, blocked (Q1) |
-| 19 | Owner: rehome 11-37 report from `preserve/…` as a PR (or drop) | T04 companion |
-| 20 | Configure `git-town.observed-branches` for `preserve/…` while deletion is blocked | stops town aborts |
-| 21 | Fix `docs/performance.md` numbers with a default-benchtime re-run for stable stats | 100x sample was small |
-| 22 | Add compile-checked snippets for guides (small `internal/docspec` test) | doc drift class |
-| 23 | Verify `static/v0.3.0` and `datastartest/v0.3.0` pkg.go.dev pages render | only root verified visually |
-| 24 | Re-read the v0.3.0 GitHub Release page formatting | created blind from excerpt |
-| 25 | Decide on `datastartest/v0.3.0` consumer announcement (CHANGELOG excerpt tweet/RSS?) — optional | visibility |
-| 26 | Add `docs/replay.md` backlog/live duplicate-window example test (dedupe pattern) | guide honesty upgrade |
-| 27 | Extend `wire-format.md` with the golden-test file reference once `wire_golden_test.go` lands | pending (Q3) |
-| 28 | Consider `AnimatedEventsString`-style debug helpers… (or) prune: not needed | skip-worthy, listed to resist it |
-| 29 | Add Renovate `:label`/schedule tuning after first run | noise control |
-| 30 | Confirm dependabot/renovate paths don't fight over `go.mod` (lockfile overlap) | part of #4 |
-| 31 | Add `checks.govulncheck` sandbox derivation IF the ADR-004 investigation shows it's cheap | revisit trigger from ADR |
-| 32 | Benchmark CI: record lint job duration pre/post cache (close 12.3) | measurement debt |
-| 33 | Add `example/domain-adapter` to the example README table of ports/routes | small doc polish |
-| 34 | Heartbeat interval in `example/main.go`: make the 2s producer ticker a named constant too (mnd ignored-list covers `2` today; fragile) | latent mnd regression |
-| 35 | `gzipSSEWriter`: consider `http.NewResponseController` for flush-depth correctness on Go 1.2x | correctness hardening |
-| 36 | Add a test asserting the root module go.mod never gains `datastartest` after a `go mod tidy` (extend module_boundary_test to run tidy in check mode) | near-miss today |
-| 37 | Ensure `renovate.json` `:disableDependencyDashboard` is the owner's preference | config taste |
-| 38 | Post-release: watch `go get .../datastartest@latest` resolves (not just @v0.3.0) | proxy latest-tagging |
-| 39 | Re-run `docs-health VERIFY` on the seven guides after the next code change | keep guides honest |
-| 40 | Add the report row + archive ritual to `docs/status/README.md` (done for this report; keep it per-report) | policy adherence |
-| 41 | Plan v0.4.0 scope: batch the post-0.3.0 `[Unreleased]` items (accessors, ReplaceURLQuerystring, guides-linked fixes) | release cadence |
-| 42 | Evaluate `actions/upload-artifact` v5 / current major when touching fuzz.yml next | pin freshness |
-| 43 | Consider adding `constraintlint`-style check that `static.Version` matches a CHANGELOG mention | pinning hygiene |
-| 44 | Review `nix.yml` 32s runtime — confirm it actually built (not vacuously skipped) | trust the green |
-| 45 | Add CI job summary table to AGENTS CI section after promotion decisions settle | doc single-source |
-| 46 | Prune `docs/planning/2026-08-29_18-32_*.md` task statuses (mark executed) or archive it per policy | plan lifecycle |
-| 47 | Make `nix run .#bench` output stable headers for future comparisons | measurement hygiene |
-| 48 | Sweep TODO_LIST watch items after first CI week; close or convert | keep list honest |
-| 49 | Decide favicon/branding assets if website deferral flips to go | T27 trigger prep |
-| 50 | Post-owner-answers: execute T04 + erraudit-flip watch + close blocked rows | unblocks the list |
+| #  | Thing                                                                                                                                                | Why / notes                      |
+| -- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| 1  | Add exact-CI-version golangci-lint app (`go run …@v2.12.2`) to flake + use pre-push                                                                  | kills linter-parity reds         |
+| 2  | Verify tag `v0.3.0` flake state via a `git worktree` of the tag + `nix flake check`; record verdict                                                  | confirms (d)1 empirically        |
+| 3  | Investigate datastartest FOD source-sensitivity; correct or confirm ADR 004 mechanism                                                                | stops repeat vendorHash breaks   |
+| 4  | Decide Renovate vs Dependabot; disable the loser                                                                                                     | duplicate-bot churn (Q2)         |
+| 5  | Commit or strip the `wire_golden_test.go` CHANGELOG bullet                                                                                           | master consistency (Q3)          |
+| 6  | Run `erraudit` loop locally over the new code (`script_accessors.go` etc.)                                                                           | audit gap from today             |
+| 7  | Link the 7 guides from README (docs section) + AGENTS docs map                                                                                       | plan 16.3 leftover               |
+| 8  | Update FEATURES.md: typed accessors, domain-adapter, guides, new CI, compression middleware                                                          | FEATURES drifted today           |
+| 9  | Sync AGENTS CI section: nix.yml, fuzz.yml, codeql.yml, renovate.json                                                                                 | AGENTS stale same-day            |
+| 10 | Re-measure coverage (root/datastartest) post-changes; correct prose numbers                                                                          | badge vs prose drift             |
+| 11 | `docker build example/` (and compose up) to verify packaging actually builds                                                                         | unverified Dockerfile            |
+| 12 | Watch/promote `nix.yml`: after a week green, drop `continue-on-error`                                                                                | TODO_LIST watch item             |
+| 13 | Observe one docs-only push skipping CI (and actionlint still running)                                                                                | 05.3 leftover                    |
+| 14 | Verify Renovate regex against real upstream tags on first run                                                                                        | TODO_LIST item                   |
+| 15 | Watch `fuzz.yml` nightly run; confirm artifacts upload path correctness                                                                              | new workflow                     |
+| 16 | Check CodeQL first analysis results for surprises                                                                                                    | new workflow                     |
+| 17 | Record CHANGELOG `[Unreleased]` Fixed: tag-flake vendorHash note + varnamelen fix                                                                    | honest release history           |
+| 18 | Owner: branch deletions + lineage prune (`git config` cleanup afterwards)                                                                            | T04, blocked (Q1)                |
+| 19 | Owner: rehome 11-37 report from `preserve/…` as a PR (or drop)                                                                                       | T04 companion                    |
+| 20 | Configure `git-town.observed-branches` for `preserve/…` while deletion is blocked                                                                    | stops town aborts                |
+| 21 | Fix `docs/performance.md` numbers with a default-benchtime re-run for stable stats                                                                   | 100x sample was small            |
+| 22 | Add compile-checked snippets for guides (small `internal/docspec` test)                                                                              | doc drift class                  |
+| 23 | Verify `static/v0.3.0` and `datastartest/v0.3.0` pkg.go.dev pages render                                                                             | only root verified visually      |
+| 24 | Re-read the v0.3.0 GitHub Release page formatting                                                                                                    | created blind from excerpt       |
+| 25 | Decide on `datastartest/v0.3.0` consumer announcement (CHANGELOG excerpt tweet/RSS?) — optional                                                      | visibility                       |
+| 26 | Add `docs/replay.md` backlog/live duplicate-window example test (dedupe pattern)                                                                     | guide honesty upgrade            |
+| 27 | Extend `wire-format.md` with the golden-test file reference once `wire_golden_test.go` lands                                                         | pending (Q3)                     |
+| 28 | Consider `AnimatedEventsString`-style debug helpers… (or) prune: not needed                                                                          | skip-worthy, listed to resist it |
+| 29 | Add Renovate `:label`/schedule tuning after first run                                                                                                | noise control                    |
+| 30 | Confirm dependabot/renovate paths don't fight over `go.mod` (lockfile overlap)                                                                       | part of #4                       |
+| 31 | Add `checks.govulncheck` sandbox derivation IF the ADR-004 investigation shows it's cheap                                                            | revisit trigger from ADR         |
+| 32 | Benchmark CI: record lint job duration pre/post cache (close 12.3)                                                                                   | measurement debt                 |
+| 33 | Add `example/domain-adapter` to the example README table of ports/routes                                                                             | small doc polish                 |
+| 34 | Heartbeat interval in `example/main.go`: make the 2s producer ticker a named constant too (mnd ignored-list covers `2` today; fragile)               | latent mnd regression            |
+| 35 | `gzipSSEWriter`: consider `http.NewResponseController` for flush-depth correctness on Go 1.2x                                                        | correctness hardening            |
+| 36 | Add a test asserting the root module go.mod never gains `datastartest` after a `go mod tidy` (extend module_boundary_test to run tidy in check mode) | near-miss today                  |
+| 37 | Ensure `renovate.json` `:disableDependencyDashboard` is the owner's preference                                                                       | config taste                     |
+| 38 | Post-release: watch `go get .../datastartest@latest` resolves (not just @v0.3.0)                                                                     | proxy latest-tagging             |
+| 39 | Re-run `docs-health VERIFY` on the seven guides after the next code change                                                                           | keep guides honest               |
+| 40 | Add the report row + archive ritual to `docs/status/README.md` (done for this report; keep it per-report)                                            | policy adherence                 |
+| 41 | Plan v0.4.0 scope: batch the post-0.3.0 `[Unreleased]` items (accessors, ReplaceURLQuerystring, guides-linked fixes)                                 | release cadence                  |
+| 42 | Evaluate `actions/upload-artifact` v5 / current major when touching fuzz.yml next                                                                    | pin freshness                    |
+| 43 | Consider adding `constraintlint`-style check that `static.Version` matches a CHANGELOG mention                                                       | pinning hygiene                  |
+| 44 | Review `nix.yml` 32s runtime — confirm it actually built (not vacuously skipped)                                                                     | trust the green                  |
+| 45 | Add CI job summary table to AGENTS CI section after promotion decisions settle                                                                       | doc single-source                |
+| 46 | Prune `docs/planning/2026-08-29_18-32_*.md` task statuses (mark executed) or archive it per policy                                                   | plan lifecycle                   |
+| 47 | Make `nix run .#bench` output stable headers for future comparisons                                                                                  | measurement hygiene              |
+| 48 | Sweep TODO_LIST watch items after first CI week; close or convert                                                                                    | keep list honest                 |
+| 49 | Decide favicon/branding assets if website deferral flips to go                                                                                       | T27 trigger prep                 |
+| 50 | Post-owner-answers: execute T04 + erraudit-flip watch + close blocked rows                                                                           | unblocks the list                |
 
 ## g) Questions for the owner (that I cannot answer myself)
 
@@ -307,5 +307,5 @@ mitigated on master.
 
 ---
 
-*Point-in-time report — see [`docs/status/README.md`](README.md) for the
-index and archiving policy.*
+_Point-in-time report — see [`docs/status/README.md`](README.md) for the
+index and archiving policy._
