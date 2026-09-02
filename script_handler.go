@@ -11,6 +11,11 @@ import (
 
 // DatastarJSVersion is the version of the embedded DataStar JavaScript client.
 // It re-exports [static.Version] for backward compatibility with the root API.
+//
+// Deprecated: use [Version] (which returns the same string) or
+// github.com/larsartmann/go-datastar/static.Version directly. This constant
+// exists only so existing consumers keep compiling; it will be removed in the
+// next minor release after the migration window.
 const DatastarJSVersion = static.Version
 
 func computeETag(data []byte) string {
@@ -39,6 +44,7 @@ func ScriptHandlerWith(scriptBytes []byte, _ string) http.Handler {
 		}
 
 		responseWriter.Header().Set("Content-Type", "text/javascript; charset=utf-8")
+		responseWriter.Header().Set("X-Content-Type-Options", "nosniff")
 		responseWriter.Header().Set("ETag", etag)
 		responseWriter.Header().Set("Cache-Control", "public, max-age=86400") // 24h
 

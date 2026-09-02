@@ -3,6 +3,15 @@
 // protocol package can serve the client without owning the bytes directly.
 //
 // The returned byte slice is the shared embedded value and must not be modified.
+//
+// # Provenance
+//
+// datastar.js is the upstream minified client bundle from
+// github.com/starfederation/datastar at the release matching [Version],
+// fetched from the project's release assets and committed verbatim.
+// Renovate's custom manager proposes Version bumps from upstream releases;
+// the upgrade process (replace the file, bump Version, run the wire-format
+// goldens) is documented in docs/static-js.md.
 package static
 
 import _ "embed"
