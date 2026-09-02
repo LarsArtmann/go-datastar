@@ -72,24 +72,24 @@ The in-flight go 1.26.7 go.mod bump and all dprint formatting changes were prese
 ## b) PARTIALLY DONE
 
 1. **The three newest reports (11-07, 12-24, 12-43) are annotated but not archived** — they still carry routed-open residue (release, branches, CI work). Correct per the archive rule, but their open items now have two homes (report + TODO_LIST) until executed.
-2. **Harvest routing had a residue class:** two 11-07 items (coverage-floor policy, PR labels) were left unrouted — too vague for TODO_LIST, too trivial for ROADMAP. They exist only as bare lines in the report.
+2. ~~**Harvest routing had a residue class:** two 11-07 items (coverage-floor policy, PR labels) were left unrouted — too vague for TODO_LIST, too trivial for ROADMAP. They exist only as bare lines in the report.~~ done (both now dispositioned — coverage-floor policy routed to ROADMAP; PR labels rejected (filtered history unneeded without branch protection))
 3. **AGENTS.md grew while being audited for size:** I added 5 gotchas to a file already above the 5–15KB target (now 28.7KB, under the 30KB flag line). The additions are load-bearing, but the net direction was +, not −.
 4. **CodeRabbit thread replies on PR #3** (12-24 b.1/f.9) were left open unverified — checking review-thread reply state via API was skipped as external courtesy state.
 5. **dprint alignment of my edited tables** — my TODO_LIST rewrite and FEATURES/CHANGELOG row edits are pipe-aligned by hand, not by dprint; the pending formatting pass across the repo uses dprint's exact padding. Cosmetic drift possible.
-6. **Master redness documented but not fixed:** the gofumpt fix sits unstaged in the working tree; the mnd/makezero/AsType findings are routed with exact file:line but no fix landed this session (docs-health scope).
+6. ~~**Master redness documented but not fixed:** the gofumpt fix sits unstaged in the working tree; the mnd/makezero/AsType findings are routed with exact file:line but no fix landed this session (docs-health scope).~~ done (done — master greened by the same-day pareto execution (T02, 489256b + 8cc56a7))
 
 ## c) NOT STARTED
 
-1. `docs/status/README.md` navigation index (30 snapshots) — routed TODO_LIST.
-2. CI path filters for docs-only changes — routed TODO_LIST.
-3. golangci-lint CI caching — routed TODO_LIST.
-4. PR-template honesty guard ("CI will verify" boxes) — routed TODO_LIST.
-5. CONTRIBUTING fuzz-test how-to section — routed TODO_LIST.
-6. **v0.3.0 release** — routed TODO_LIST High; [Unreleased] CHANGELOG is ready and now accurate.
-7. Branch deletions (`pr/docs-test-consolidation`, rehoming `preserve/...`) — Blocked on owner.
-8. All lint fixes (mnd, makezero, `errors.As`→`AsType` ×4) + committing the pending gofumpt reformat — routed TODO_LIST Critical; the AsType migration requires the go-error-modernization skill before touching code.
-9. Toolchain bump completion/reversion — deliberately untouched (parallel session's in-flight work).
-10. ROADMAP engineering items (ReplaceURLQuerystring, SSE compression, nix CI job, ADRs 003–005, consumer guides, headless E2E, …) — harvested as ideas, none started.
+1. ~~`docs/status/README.md` navigation index (30 snapshots) — routed TODO_LIST.~~ done (done — docs/status/README.md index (12a2de4))
+2. ~~CI path filters for docs-only changes — routed TODO_LIST.~~ done (done — CI path filters (5887043))
+3. ~~golangci-lint CI caching — routed TODO_LIST.~~ done (done — golangci-lint CI caching (88c1eed))
+4. ~~PR-template honesty guard ("CI will verify" boxes) — routed TODO_LIST.~~ done (done — PR-template honesty guard (5887043))
+5. ~~CONTRIBUTING fuzz-test how-to section — routed TODO_LIST.~~ done (done — CONTRIBUTING fuzz section (5887043))
+6. ~~**v0.3.0 release** — routed TODO_LIST High; [Unreleased] CHANGELOG is ready and now accurate.~~ done (done — v0.3.0 cut 2026-08-29, proxy-verified)
+7. ~~Branch deletions (`pr/docs-test-consolidation`, rehoming `preserve/...`) — Blocked on owner.~~ done (still open — owner-blocked; routed TODO_LIST)
+8. ~~All lint fixes (mnd, makezero, `errors.As`→`AsType` ×4) + committing the pending gofumpt reformat — routed TODO_LIST Critical; the AsType migration requires the go-error-modernization skill before touching code.~~ done (done — all lint findings fixed (T02: 489256b, 8cc56a7))
+9. ~~Toolchain bump completion/reversion — deliberately untouched (parallel session's in-flight work).~~ done (done — toolchain settled at 1.26.7 (T01, b37d11a))
+10. ~~ROADMAP engineering items (ReplaceURLQuerystring, SSE compression, nix CI job, ADRs 003–005, consumer guides, headless E2E, …) — harvested as ideas, none started.~~ done (done — most shipped in the pareto execution (ADRs 003-006, guides, ReplaceURLQuerystring, typed accessors, domain-adapter, compression, CI expansions); the rest remain ROADMAP ideas)
 
 ## d) TOTALLY FUCKED UP
 
@@ -166,16 +166,16 @@ Items 1–10 are the verified TODO_LIST (harvested this session, evidence-cited)
 44. Contributor list / all-contributors
 45. Reply to the 5 CodeRabbit threads on merged PR #3 (closure)
 46. Human review of the 5 parallel-session commits merged in PR #3 (`ce3b4bc` set)
-47. Coverage-floor policy decision (optional CI gate)
-48. PR labels (`docs`) for filterable history
+47. ~~Coverage-floor policy decision (optional CI gate)~~ done (routed — coverage-floor policy now a ROADMAP raw idea)
+48. ~~PR labels (`docs`) for filterable history~~ **Won't implement — trivial — filtered history is unneeded now that branch protection is gone and nothing is a required check.**
 49. Migrate deleted `dprint`-vs-treefmt learnings into a single formatter-decision ADR if the topic resurfaces
-50. AGENTS.md pruning pass: remove resolved-incident gotchas, target ≤15KB
+50. ~~AGENTS.md pruning pass: remove resolved-incident gotchas, target ≤15KB~~ done (done — AGENTS.md pruned to ~17KB by T06 (5887043))
 
 ## g) Questions I cannot answer myself
 
 1. **Branch deletions:** May I delete `pr/docs-test-consolidation` (local + remote; PR #3 is merged) and rehome-or-delete `preserve/status-report-coderabbit-pr3` (sole copy of the 11-37 report)? Both irreversible; not mine to decide alone.
-2. **The in-flight go 1.26.7 bump:** is root go.mod's `1.26.7` an intentional bump by you/another session that I should COMPLETE per guard G2 (go.mod ×3 + go.work + ci.yml + flake pin), or accidental and I should restore 1.26.6? The workspace is broken until this resolves either way.
-3. **v0.3.0 timing:** cut the release now (CHANGELOG [Unreleased] is ready and freshly corrected, but master CI is lint-red and the toolchain question is open), or hold until items 1–2 land?
+2. ~~**The in-flight go 1.26.7 bump:** is root go.mod's `1.26.7` an intentional bump by you/another session that I should COMPLETE per guard G2 (go.mod ×3 + go.work + ci.yml + flake pin), or accidental and I should restore 1.26.6? The workspace is broken until this resolves either way.~~ done (resolved — toolchain settled at 1.26.7 by the same-day pareto execution (T01, b37d11a))
+3. ~~**v0.3.0 timing:** cut the release now (CHANGELOG [Unreleased] is ready and freshly corrected, but master CI is lint-red and the toolchain question is open), or hold until items 1–2 land?~~ done (resolved — v0.3.0 cut 2026-08-29 (tags ×3, GitHub Release, proxy-verified))
 
 ---
 

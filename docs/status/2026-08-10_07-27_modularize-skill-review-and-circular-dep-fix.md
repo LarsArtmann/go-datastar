@@ -147,13 +147,13 @@ However, there are honest criticisms:
 
 6. **The `static` module's `go.mod` has no `require` block at all.** This is correct (zero deps), but it means the module has no go.sum. If someone adds a dependency to static in the future, they need to create go.sum from scratch. Not a problem, just a note.
 7. **The `datastartest/go.mod` marks `static` as `// indirect`** — This is correct (datastartest gets static transitively through root), but it means datastartest's go.sum includes static's checksum. If root ever drops its static dependency, datastartest would lose the transitive. Not a risk given the architecture.
-8. **No versioning tags exist yet.** The modules use `v0.1.0` in require blocks but there are no git tags. When publishing, tags need to be created. This is a pre-existing condition, not introduced by this session.
-9. **The `example/` package is in root module** — It imports only `datastar` and `go-sse`. It could be a separate module, but the AGENTS.md explicitly says "cmd/ stays in root" for simple projects. Correct decision.
+8. ~~**No versioning tags exist yet.** The modules use `v0.1.0` in require blocks but there are no git tags. When publishing, tags need to be created. This is a pre-existing condition, not introduced by this session.~~ **Won't implement — superseded — tags exist for all three modules through v0.3.0.**
+9. ~~**The `example/` package is in root module** — It imports only `datastar` and `go-sse`. It could be a separate module, but the AGENTS.md explicitly says "cmd/ stays in root" for simple projects. Correct decision.~~ **Won't implement — deliberate — AGENTS.md assigns cmd/ and examples to the root module.**
 
 ### Skill Feedback
 
-10. **The go-modularize skill is thorough but heavyweight for small fixes.** The 7-phase process with HTML proposal + execution plan is excellent for greenfield modularization of a 15-package monolith. For a "break one circular dependency" fix, it's overkill. The skill could benefit from a "quick fix" mode that skips the HTML proposal for changes under N files.
-11. **The skill's Phase 7 documentation checklist was easy to miss.** I ran all the technical verification (DAG, build, test, lint, isolation) but skipped the documentation update step. The skill could enforce this more strongly.
+10. ~~**The go-modularize skill is thorough but heavyweight for small fixes.** The 7-phase process with HTML proposal + execution plan is excellent for greenfield modularization of a 15-package monolith. For a "break one circular dependency" fix, it's overkill. The skill could benefit from a "quick fix" mode that skips the HTML proposal for changes under N files.~~ **Won't implement — go-modularize skill change, not this repo.**
+11. ~~**The skill's Phase 7 documentation checklist was easy to miss.** I ran all the technical verification (DAG, build, test, lint, isolation) but skipped the documentation update step. The skill could enforce this more strongly.~~ **Won't implement — go-modularize skill change, not this repo.**
 
 ---
 
@@ -180,29 +180,29 @@ However, there are honest criticisms:
 
 ### Testing
 
-14. Review `response_test.go` — it imports `static` directly; verify this is the right approach vs. using `datastar.DatastarJSVersion`
+14. ~~Review `response_test.go` — it imports `static` directly; verify this is the right approach vs. using `datastar.DatastarJSVersion`~~ done (done — parity test pins DatastarJSVersion == static.Version (response_test.go))
 15. ~~Consider adding a test that verifies root's go.mod does NOT contain datastartest (regression guard)~~ done at `fda70c7` (`module_boundary_test.go`)
 16. ~~Consider adding a test that verifies the DAG is acyclic (programmatic check)~~ NOT-DO — superseded by `fda70c7`; the boundary guard covers the only cycle risk in this 3-module layout
 17. ~~Run erraudit on the updated codebase to verify no new error handling issues~~ done — CI erraudit job added at `eb8bf29`, runs every push
 18. ~~Run govulncheck on all 3 modules~~ done — CI govulncheck job added at `eb8bf29`, runs every push
-19. Add a test for `TestE2E_DataStarPatches` that exercises `CollectPost` and `CollectN` paths ← open, routed to TODO_LIST 2026-08-16
+19. ~~Add a test for `TestE2E_DataStarPatches` that exercises `CollectPost` and `CollectN` paths ← open, routed to TODO_LIST 2026-08-16~~ done (done — TestE2E_CollectPostRoundTrip + TestE2E_CollectNStreaming (datastartest/e2e_test.go))
 20. ~~Consider property-based testing for the SSE parser in datastartest~~ done at `fd3a5ac` (`FuzzReadEvents`)
 
 ### Modularization Refinement
 
-21. Consider whether `static/` should have a go.sum file preemptively (even with zero deps)
+21. ~~Consider whether `static/` should have a go.sum file preemptively (even with zero deps)~~ **Won't implement — static is a zero-dep module; checksum strategy documented (ROADMAP 'Resolved questions').**
 22. Evaluate whether the `example/` package should get its own go.mod (currently in root)
-23. Consider adding a `docs/modularization/README.md` index for the modularization docs
-24. Review whether the `datastartest/go.mod` replace directives should use `v0.0.0` instead of `v0.1.0` (the real-world-patterns.md recommends `v0.0.0`) ← open, routed to ROADMAP "Open questions" 2026-08-16
-25. Evaluate whether `go.work.sum` should be tracked in git (currently gitignored) ← open, routed to ROADMAP "Open questions" 2026-08-16
+23. ~~Consider adding a `docs/modularization/README.md` index for the modularization docs~~ done (done — docs/modularization/README.md index)
+24. ~~Review whether the `datastartest/go.mod` replace directives should use `v0.0.0` instead of `v0.1.0` (the real-world-patterns.md recommends `v0.0.0`) ← open, routed to ROADMAP "Open questions" 2026-08-16~~ done (resolved — siblings use real published versions (ROADMAP 'Resolved questions'))
+25. ~~Evaluate whether `go.work.sum` should be tracked in git (currently gitignored) ← open, routed to ROADMAP "Open questions" 2026-08-16~~ done (resolved — go.work.sum intentionally gitignored (ROADMAP 'Resolved questions'))
 
 ### Code Quality
 
 26. Fix gopls `stdversion` warnings — `json.Unmarshal` requires go1.27 in 4 files (datastartest/event.go, inbound.go, script_convenience.go, signals.go)
 27. Fix gopls `bloop` warnings — modernize `b.N` to `b.Loop()` in benchmark_test.go (4 instances) and reader_fuzz_test.go ← open — benchmarks use `for range b.N`, not `b.Loop()` (2026-08-16)
 28. ~~Fix gopls `writestring` warnings — inefficient string concatenation in reader_fuzz_test.go (3 instances)~~ done at `fd3a5ac` — `strings.Builder.WriteString` now used
-29. Fix gopls `errorsastype` hint — simplify `errors.As` in errors_test.go:253 ← open — `errors.As` still used (errors_test.go:289, 2026-08-16)
-30. Review the `result` symlink in project root — points to a Nix store path, may be stale ← open, routed to TODO_LIST 2026-08-16
+29. ~~Fix gopls `errorsastype` hint — simplify `errors.As` in errors_test.go:253 ← open — `errors.As` still used (errors_test.go:289, 2026-08-16)~~ done (done — errors.AsType migration (489256b))
+30. ~~Review the `result` symlink in project root — points to a Nix store path, may be stale ← open, routed to TODO_LIST 2026-08-16~~ **Won't implement — superseded — result symlink gone from the root; .gitignore covers it.**
 
 ### Architecture
 
@@ -225,11 +225,11 @@ However, there are honest criticisms:
 
 ### Nix/Build
 
-44. Consider adding per-module Nix checks (`hermeticCheckStatic`, `hermeticCheckDatastartest`) as the flake.nix TODO mentions ← open, routed to TODO_LIST 2026-08-16
-45. Run `nix flake check` to verify the flake is healthy
+44. ~~Consider adding per-module Nix checks (`hermeticCheckStatic`, `hermeticCheckDatastartest`) as the flake.nix TODO mentions ← open, routed to TODO_LIST 2026-08-16~~ done (done — flake.nix hermeticCheckStatic/hermeticCheckDatastartest)
+45. ~~Run `nix flake check` to verify the flake is healthy~~ done (done — nix.yml runs nix flake check in CI)
 46. ~~Consider adding `nix run .#erraudit` and `nix run .#govulncheck` to CI~~ done at `eb8bf29` — both are CI jobs
 47. ~~Update the flake.nix `vendorHash` if go.sum changes in the future~~ done — maintained routinely (e.g. `5b70bb1`)
-48. Consider adding a `nix run .#coverage` output that merges coverage across all 3 modules ← open, routed to TODO_LIST 2026-08-16
+48. ~~Consider adding a `nix run .#coverage` output that merges coverage across all 3 modules ← open, routed to TODO_LIST 2026-08-16~~ done (done — flake.nix apps.coverage merges all three modules)
 
 ### Process
 
@@ -244,19 +244,19 @@ However, there are honest criticisms:
 
 Currently `.gitignore` excludes both `go.work.sum` AND `go.work` — but `go.work` IS tracked (it was force-added). `go.work.sum` is NOT tracked. The real-world-patterns.md says "Always commit `go.work` and `go.work.sum` together." But the project has `go.work.sum` in `.gitignore`. This seems intentional (the `d8d2c9c` commit explicitly added both to `.gitignore`, then `a73a8fb` force-committed `go.work`). I cannot determine whether this was a deliberate decision or an oversight. If `go.work.sum` should be tracked, it needs to be force-added like `go.work` was.
 
-_Routed to ROADMAP.md "Open questions" (2026-08-16) — still awaiting an owner decision._
+_~~Routed to ROADMAP.md "Open questions" (2026-08-16) — still awaiting an owner decision.~~ Resolved 2026-08-16: `go.work.sum` stays intentionally gitignored (ROADMAP "Resolved questions")._
 
 ### 2. Should the internal module references use `v0.0.0` instead of `v0.1.0`?
 
 The real-world-patterns.md recommends `v0.0.0` for all internal requires to eliminate pseudo-version churn. Currently all three modules use `v0.1.0` for sibling references. This works fine with replace directives (version is irrelevant), but `go mod tidy` may generate pseudo-versions in some edge cases. Should we normalize to `v0.0.0` as the skill recommends, or keep `v0.1.0` since it works and is already in place?
 
-_Routed to ROADMAP.md "Open questions" (2026-08-16) — still awaiting an owner decision._
+_~~Routed to ROADMAP.md "Open questions" (2026-08-16) — still awaiting an owner decision.~~ Resolved 2026-08-16: siblings keep real published versions (ROADMAP "Resolved questions")._
 
 ### 3. Is the `result` symlink in the project root intentional or stale?
 
 The project root contains a symlink: `result -> /nix/store/s2g7l4i6p5i8042fxfwgw36vz40h2kwb-go-datastar-8d5c0b902955c73ad3f22de9a528e14f181032db-dirty`. This appears to be a Nix build output symlink, but it points to a specific store path that may be stale (the hash doesn't match the current build output hash `a4712ab63d2086f16b0c770abb80cd33c0ddf2b8`). I cannot determine if this is expected behavior from the Nix build system or if it should be cleaned up.
 
-_Routed to TODO_LIST.md (2026-08-16) — `trash result` pending owner; `.gitignore` already covers it._
+_~~Routed to TODO_LIST.md (2026-08-16) — `trash result` pending owner; `.gitignore` already covers it.~~ Resolved: symlink gone from the root._
 
 ---
 

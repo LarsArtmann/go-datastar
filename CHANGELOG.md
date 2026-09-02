@@ -65,6 +65,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `encoding/json/v2` (`json.UnmarshalRead`) for consistency with the
   `GOEXPERIMENT=jsonv2` build requirement.
 
+### Fixed
+
+- **The v0.3.0 tag's Nix flake vendorHash was stale** — the release commit
+  bumped the lockstep `requires` after the hash was harvested, so
+  `nix flake check` at the tag fails while master is fixed (`1f3cd93`).
+  Consumers via `go get` are unaffected (module proxy ≠ flake); re-tagging
+  is forbidden (proxy poisoning), so the tag's flake state stands as
+  documented. Recorded here for honest release history.
+- **`varnamelen` lint fix** — a short stream parameter name that passed the
+  devShell linter but failed the CI build (`8cc56a7`); motivates running the
+  exact CI linter build locally.
+
 ## [0.3.0] - 2026-08-29
 
 ### Changed
