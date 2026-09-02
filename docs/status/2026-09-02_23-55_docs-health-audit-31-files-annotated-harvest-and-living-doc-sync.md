@@ -329,6 +329,34 @@ session-specific follow-ups and smaller residue, ranked roughly by value.
 
 ---
 
+## Appendix: 2026-09-03 execution-pass resolutions (pareto plan T01–T27)
+
+Section b caveats closed by the 2026-09-03 execution session:
+
+2. **Agent-verdict reliance — spot-check performed:** 10% sample (5 of ~50
+   classified items in `2026-08-10_07-27`): `fd3a5ac` (FuzzReadEvents exists,
+   diff touches reader_fuzz_test.go), `eb8bf29` (ci.yml modified, erraudit +
+   govulncheck jobs), `dc0d6f2` (ci.yml, go.work sync hardening), `3cd669e`
+   (AGENTS.md ×2, circular-dep fix), `06bb019` (datastartest request options +
+   README). **5/5 pass** — every hash reachable and its diff matches the claim.
+5. **performance.md numbers re-verified** with `-benchtime=1s`
+   (2026-09-03, multi-million samples): tables + methodology updated.
+6. **README comparison table re-verified against upstream v1.2.2** via
+   pkg.go.dev (compression built-in ✅, no broadcast/replay ✅,
+   ReplaceURLQuerystring upstream-only ✅ — README's wins-list already updated
+   when go-datastar added it).
+7. **actionlint captured and green** (nix shell run, 2026-09-03) and on every
+   push via the actionlint workflow (green on the v0.4.0 release commit).
+3. **AGENTS.md now 14.8KB** (≤15KB target met by the pruning pass).
+1./8./9. remain as stated (consolidation depth is owner-questioned; table
+padding is cosmetic; HTML files remain inventory-only).
+
+Section c items 1–4 (tag verdict, docker, exact-CI lint app, FOD
+investigation) were ALL executed 2026-09-03: the tag verdict and the FOD
+mechanism (with the never-converging self-reference discovery) are in ADR
+004; `nix run .#lint-ci` is the documented pre-push gate; docker builds and
+serves live SSE.
+
 _Point-in-time snapshot. Written by the 2026-09-02 docs-health session
 (AUDIT over all `2026-0*` files: VERIFY + ANNOTATE + ARCHIVE decision +
 HARVEST + living-doc BUILD). See `docs/status/README.md` for the index and
