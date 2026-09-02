@@ -57,11 +57,11 @@
           # vendor tree.
           vendorHash = "sha256-dgqHjh3F0QFtRwgFD+2ntKmdfJqs/uCd8EZhJxg+7EQ=";
           # datastartest vendors root + static through its directory replaces:
-          # `go mod vendor` copies the replaced packages' SOURCE into the
-          # vendor tree, so this hash moves on ANY root/static/datastartest
-          # source edit (plus requires/toolchain changes) — verified 2026-09-02
-          # (ADR 004 correction, evidence matrix).
-          datastartestVendorHash = "sha256-xc54T9ga/qsw9ugsuV1vuJCbQMYhCQjFJvdePjwvRnA=";
+          # `go mod vendor` copies the replaced directories ENTIRELY (docs
+          # included), so this hash moves on ANY edit to any tracked file
+          # under the repo root or static/ (plus requires/toolchain changes)
+          # — verified 2026-09-02 (ADR 004 correction, evidence matrix).
+          datastartestVendorHash = "sha256-Qp5algG6UQzlPnC4cEQSkUi6npnWJm69Gue6odNzWoU=";
 
           maintainer = {
             name = "Lars Artmann";

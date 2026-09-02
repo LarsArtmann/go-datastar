@@ -30,14 +30,16 @@ An earlier draft of this ADR attributed hash movement to Go patch bumps
 controlled experiment (2026-09-02, worktree, nix FOD builds + manual
 `go mod vendor` tree hashes) established the real mechanism:
 
-**`go mod vendor` copies the source of imported packages provided by
-directory-replaced modules into the vendor tree.** `datastartest` imports the
-root `datastar` package and `static` through its `=> ..` / `=> ../static`
-replaces, so every byte of root/static package source lands in
-`datastartest`'s vendor tree — and its FOD hash moves on ANY root or static
-source edit, even with byte-identical go.mod/go.sum. The root module imports
-no replaced package (`go-datastar/static` is never imported by root code), so
-root's `vendorHash` is INSENSITIVE to repo source; it moves only when the
+**`go mod vendor` copies the ENTIRE directory of a directory-replaced module
+into the vendor tree — not just package source.** `datastartest` replaces
+`go-datastar => ..` and `static => ../static`, so every tracked file under the
+repo root and `static/` (docs, AGENTS.md, CHANGELOG.md, CI config, everything)
+lands in `datastartest`'s vendor tree — and its FOD hash moves on ANY edit to
+any such file, even with byte-identical go.mod/go.sum. (Proven twice: a root
+package comment moved the tree hash, and a docs/AGENTS/CHANGELOG-only edit
+moved the nix FOD from `xc54T9…` to `Qp5algG…`.) The root module imports no
+replaced package (`go-datastar/static` is never imported by root code), so
+root's `vendorHash` is INSENSITIVE to repo files; it moves only when the
 module set (go.mod/go.sum requires) or the toolchain's `modules.txt` format
 changes.
 
@@ -61,7 +63,7 @@ reports `specified: nkJghgIG… / got: 2o8l28pR…`, while the root FOD builds
 clean. Exactly the mechanism above predicts: the datastartest hash had been
 harvested before late source/requires changes; the root hash was current.
 
-### Decision on the durable mitigation
+### Durable-mitigation decision (2026-09-02 correction)
 
 A "minimal fileset" vendor FOD (go.mod/go.sum only) is IMPOSSIBLE while
 datastartest uses directory replaces: `go mod vendor` must read the replaced
@@ -71,8 +73,10 @@ false-green class worse than a loud hash mismatch. Vendoring the replaced
 modules into the repo would duplicate root source (split-brain). Therefore:
 
 - **Accept the dance for `datastartestVendorHash`**, now with the correct
-  mechanism documented: it moves on any root/static/datastartest package-source
-  edit, any requires change, and any toolchain `modules.txt` format change.
+  mechanism documented: it moves on any tracked-file edit under the repo root
+  or static/ (docs included; datastartest's own files are the main module and
+  are never vendored), any requires change, and any toolchain `modules.txt`
+  format change.
 - **Root `vendorHash` moves only on requires/toolchain changes** — predictable,
   reviewable in the diff of go.mod.
 - Both failures are loud (`nix flake check` mismatch) and the fix is
