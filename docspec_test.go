@@ -39,10 +39,7 @@ func docspecReplayPublish(store *datastar.MemoryStore, broadcaster *sse.Broadcas
 // docs/replay.md — "The reconnection path": backlog then live merge.
 func docspecReconnectHandler(store *datastar.MemoryStore, broadcaster *sse.Broadcaster[sse.Event]) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		stream, err := sse.NewStream(w, r)
-		if err != nil {
-			return
-		}
+		stream := sse.NewStream(w, r)
 		defer func() { _ = stream.Close() }()
 
 		resp := datastar.NewResponse(stream)
@@ -93,25 +90,12 @@ func docspecErrorMatching(err error, stream *sse.Stream) {
 
 // example/README.md — heartbeat keep-alive.
 func docspecHeartbeat(w http.ResponseWriter, r *http.Request) {
-	stream, err := sse.NewStream(w, r)
-	if err != nil {
-		return
-	}
+	stream := sse.NewStream(w, r)
 
 	go stream.Heartbeat(r.Context(), 15*time.Second) //nolint:mnd // documented typical interval
 }
 
 // docs/error-system.md — the three matching dimensions.
-func docspecErrorMatching(err error) {
-	if errorfamily.Code(err) == datastar.CodeSignalsMarshalFailed {
-		return
-	}
-
-	if err2 := errorfamily.Code(err); false {
-		_ = err2
-	}
-}
-
 // TestDocspec_GuideSnippets executes the cheap snippet paths so semantic
 // drift (a renamed dataline key, a changed error payload shape) fails loudly.
 func TestDocspec_GuideSnippets(t *testing.T) {

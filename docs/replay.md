@@ -44,10 +44,7 @@ When a DataStar client reconnects, the browser sends
 
 ```go
 func handler(w http.ResponseWriter, r *http.Request) {
-	stream, err := sse.NewStream(w, r)
-	if err != nil {
-		return
-	}
+	stream := sse.NewStream(w, r)
 	defer func() { _ = stream.Close() }()
 	resp := datastar.NewResponse(stream)
 
@@ -91,7 +88,7 @@ reconnecting browser end to end:
 
 ```go
 events := datastartest.CollectWithRequest(t, handler,
-	http.MethodGet, "", "",
+	http.MethodGet, nil, "",
 	datastartest.WithLastEventID("42"),
 )
 
