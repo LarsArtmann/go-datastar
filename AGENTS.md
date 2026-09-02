@@ -17,9 +17,12 @@ go.mod replaces `go-datastar => ..` and `static => ../static`. All resolve local
 for `GOWORK=off` builds (CI, Nix, consumers). Root must NEVER require
 datastartest (circular dependency; `module_boundary_test.go` enforces it).
 
-Decisions: `go.work.sum` is intentionally gitignored (advisory — the toolchain
-regenerates it; per-module `go.sum` files are the reproducibility source of
-truth, and replaces make sibling checksums unnecessary). Sibling requires use
+Decisions: `go.work.sum` is intentionally gitignored (the toolchain regenerates
+it on demand). Per-module `go.sum` files are the reproducibility source of
+truth for consumers; the replace directives make sibling-module checksums
+unnecessary locally, while workspace-mode hashes for EXTERNAL modules
+accumulate in `go.work.sum` without a reproducibility contract — consumers
+never see it. Sibling requires use
 real published versions (not `v0.0.0`) so consumers testing without replaces
 resolve to a real published module. The `go` directive pins the exact patch
 release (currently **1.26.7** across go.mod ×3, go.work, CI, and the flake

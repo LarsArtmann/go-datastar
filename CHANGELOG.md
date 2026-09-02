@@ -92,6 +92,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **`go.work.sum` policy wording narrowed** (CodeRabbit PR #3 thread): the
+  per-module `go.sum` files are the reproducibility source of truth for
+  consumers, and the replace directives make sibling checksums unnecessary —
+  but workspace-mode hashes for external modules do accumulate in
+  `go.work.sum`, so calling it wholesale "advisory" was too broad. AGENTS.md
+  and the ROADMAP decision now state the scoped policy; the released v0.3.0
+  note stands as written (append-only history).
 - **The datastartest hermetic Nix check could never converge** — with the
   repo-root fileset, the `datastartestVendorHash` constant sat inside its own
   fixed-output derivation's input (`go mod vendor` copies replaced module
