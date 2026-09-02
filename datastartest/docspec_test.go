@@ -53,7 +53,11 @@ func TestDocspec_DatastartestSnippets(t *testing.T) {
 		defer func() { _ = stream.Close() }()
 
 		resp := datastar.NewResponse(stream)
-		_ = resp.PatchElements("<div>hello</div>", datastar.WithSelector("#feed"), datastar.WithModeAppend())
+		_ = resp.PatchElements(
+			"<div>hello</div>",
+			datastar.WithSelector("#feed"),
+			datastar.WithModeAppend(),
+		)
 		_ = resp.MarshalAndPatchSignals(map[string]any{"count": 1})
 	})
 

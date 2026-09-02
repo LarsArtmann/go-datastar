@@ -212,7 +212,10 @@ func ErrorResponse(stream *sse.Stream, message string, code string) error {
 // ([CodeErrorResponseNilError]) without sending anything.
 func ErrorResponseFromError(stream *sse.Stream, err error) error {
 	if err == nil {
-		return errorfamily.NewRejection(CodeErrorResponseNilError, "ErrorResponseFromError called with nil error")
+		return errorfamily.NewRejection(
+			CodeErrorResponseNilError,
+			"ErrorResponseFromError called with nil error",
+		)
 	}
 
 	return sendSignalsMap(stream, map[string]any{

@@ -203,7 +203,10 @@ func TestResponse_ConcurrentMethods(t *testing.T) {
 	var waitGroup sync.WaitGroup
 	for i := range goroutines {
 		waitGroup.Go(func() {
-			if err := resp.PatchElements("<div>event</div>", datastar.WithSelectorf("#n%d", i)); err != nil {
+			if err := resp.PatchElements(
+				"<div>event</div>",
+				datastar.WithSelectorf("#n%d", i),
+			); err != nil {
 				t.Errorf("PatchElements: %v", err)
 			}
 		})
@@ -403,7 +406,9 @@ func TestResponse_MethodForms(t *testing.T) {
 		t.Fatalf("ErrorResponse method: %v", err)
 	}
 
-	if err := resp.ErrorResponseFromError(errorfamily.NewTransient("test.transient", "io")); err != nil {
+	if err := resp.ErrorResponseFromError(
+		errorfamily.NewTransient("test.transient", "io"),
+	); err != nil {
 		t.Fatalf("ErrorResponseFromError method: %v", err)
 	}
 

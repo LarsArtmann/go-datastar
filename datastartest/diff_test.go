@@ -31,8 +31,12 @@ func TestDiff_BothEmpty(t *testing.T) {
 func TestDiff_ShowsChangedLine(t *testing.T) {
 	t.Parallel()
 
-	want := []datastartest.Event{elementsEvent("selector #feed", "mode append", "elements <div>one</div>")}
-	got := []datastartest.Event{elementsEvent("selector #feed", "mode append", "elements <div>one edited</div>")}
+	want := []datastartest.Event{
+		elementsEvent("selector #feed", "mode append", "elements <div>one</div>"),
+	}
+	got := []datastartest.Event{
+		elementsEvent("selector #feed", "mode append", "elements <div>one edited</div>"),
+	}
 
 	diff := datastartest.Diff(want, got)
 
@@ -52,7 +56,9 @@ func TestDiff_ShowsMissingAndExtraEvents(t *testing.T) {
 		elementsEvent("selector #a", "mode append", "elements <div>a</div>"),
 		elementsEvent("selector #b", "mode append", "elements <div>b</div>"),
 	}
-	got := []datastartest.Event{elementsEvent("selector #a", "mode append", "elements <div>a</div>")}
+	got := []datastartest.Event{
+		elementsEvent("selector #a", "mode append", "elements <div>a</div>"),
+	}
 
 	diff := datastartest.Diff(want, got)
 

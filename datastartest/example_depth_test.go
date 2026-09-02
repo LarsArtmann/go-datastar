@@ -32,7 +32,10 @@ func ExampleCollectPost() {
 		defer func() { _ = stream.Close() }()
 
 		resp := datastar.NewResponse(stream)
-		_ = resp.PatchElements("<div>Welcome, "+signals.Name+"</div>", datastar.WithSelector("#greeting"))
+		_ = resp.PatchElements(
+			"<div>Welcome, "+signals.Name+"</div>",
+			datastar.WithSelector("#greeting"),
+		)
 	})
 
 	// In your test: events := datastartest.CollectPost(t, handler, `{"name":"ada"}`)

@@ -54,7 +54,11 @@ func Snapshot(tb testing.TB, events []Event) {
 
 	existing, err := os.ReadFile(path)
 	if err != nil {
-		tb.Fatalf("read snapshot %s (run with -datastartest-update=true to create it): %v", path, err)
+		tb.Fatalf(
+			"read snapshot %s (run with -datastartest-update=true to create it): %v",
+			path,
+			err,
+		)
 
 		return
 	}

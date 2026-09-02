@@ -30,14 +30,21 @@ import (
 )
 
 // docs/replay.md — "Minimal replay setup": render, store, broadcast.
-func docspecReplayPublish(store *datastar.MemoryStore, broadcaster *sse.Broadcaster[sse.Event], p datastar.Patch) {
+func docspecReplayPublish(
+	store *datastar.MemoryStore,
+	broadcaster *sse.Broadcaster[sse.Event],
+	p datastar.Patch,
+) {
 	evt := p.Event()
 	store.Append(evt)
 	broadcaster.BroadcastMany(evt)
 }
 
 // docs/replay.md — "The reconnection path": backlog then live merge.
-func docspecReconnectHandler(store *datastar.MemoryStore, broadcaster *sse.Broadcaster[sse.Event]) http.HandlerFunc {
+func docspecReconnectHandler(
+	store *datastar.MemoryStore,
+	broadcaster *sse.Broadcaster[sse.Event],
+) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		stream := sse.NewStream(w, r)
 		defer func() { _ = stream.Close() }()
