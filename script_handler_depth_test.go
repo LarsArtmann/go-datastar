@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-datastar"
-	"github.com/larsartmann/go-datastar/static"
 )
 
 // TestScriptTag_EdgeCases pins the pure-concatenation contract: whatever path
