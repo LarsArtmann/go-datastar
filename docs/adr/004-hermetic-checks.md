@@ -63,25 +63,30 @@ reports `specified: nkJghgIG… / got: 2o8l28pR…`, while the root FOD builds
 clean. Exactly the mechanism above predicts: the datastartest hash had been
 harvested before late source/requires changes; the root hash was current.
 
-### Durable-mitigation decision (2026-09-02 correction)
+### Durable-mitigation decision (2026-09-03: corrected by the release gate)
 
-A "minimal fileset" vendor FOD (go.mod/go.sum only) is IMPOSSIBLE while
-datastartest uses directory replaces: `go mod vendor` must read the replaced
-directories to resolve them. Dropping the replaces inside the hermetic check
-would make it test the PUBLISHED library instead of the working tree — a
-false-green class worse than a loud hash mismatch. Vendoring the replaced
-modules into the repo would duplicate root source (split-brain). Therefore:
+The first decision draft said "accept the dance". The v0.4.0 release gate
+DISPROVED it: with flake.nix inside the FOD's src fileset, the vendorHash
+constant sits inside its own FOD input, so pasting a freshly measured hash
+changes flake.nix, which changes the vendor output, which invalidates the
+hash — an unsolvable self-reference (verified: two paste-and-rebuild
+iterations, `PV2V+… → Gsz4kq…`, never converge). **The dance is unwinnable
+for `datastartestVendorHash` as long as metadata files enter the vendor
+tree.**
 
-- **Accept the dance for `datastartestVendorHash`**, now with the correct
-  mechanism documented: it moves on any tracked-file edit under the repo root
-  or static/ (docs included; datastartest's own files are the main module and
-  are never vendored), any requires change, and any toolchain `modules.txt`
-  format change.
-- **Root `vendorHash` moves only on requires/toolchain changes** — predictable,
-  reviewable in the diff of go.mod.
-- Both failures are loud (`nix flake check` mismatch) and the fix is
-  mechanical (paste the `got:` hash). Refresh hashes at the release gate, not
-  ad hoc during development.
+The durable fix (implemented in flake.nix, verified converging on the first
+paste): give the datastartest hermetic check a MINIMAL src fileset —
+datastartest itself, the replaced modules' package sources (root `*.go` +
+root `go.mod`, `static/`) — so root-level metadata (flake.nix, *.md, CI
+config) never enters `go mod vendor`'s output. The FOD then only moves on
+genuine module-set changes (requires/toolchain), like the root hash, and the
+paste-once dance converges.
+
+Rejected alternatives, for the record: dropping the replaces inside the
+hermetic check would test the PUBLISHED library instead of the working tree
+(false-green class worse than a loud mismatch); committing a vendor/ tree
+would duplicate root source (split-brain); go.mod/go.sum-only filesets are
+impossible because `go mod vendor` must read the replaced directories.
 
 ## Decision
 

@@ -61,7 +61,7 @@
           # included), so this hash moves on ANY edit to any tracked file
           # under the repo root or static/ (plus requires/toolchain changes)
           # — verified 2026-09-02 (ADR 004 correction, evidence matrix).
-          datastartestVendorHash = "sha256-PV2V+/jdD1E8QWkL/9PcXqKneDxNgL4TmlQNfAcD/Uw=";
+          datastartestVendorHash = "sha256-KmTASe3SCWWBFTrzeo1+O8p7ZPdIzHMLS2GRe8NQKas=";
 
           maintainer = {
             name = "Lars Artmann";
@@ -115,14 +115,27 @@
 
           # datastartest module: modRoot points into the repo source so the
           # sibling replaces (=> .., => ../static) resolve inside the sandbox.
+          # The src fileset is deliberately MINIMAL: datastartest itself, the
+          # replaced modules' package sources (root *.go + go.mod, static/).
+          # Root-level metadata (flake.nix, *.md, CI config) MUST be excluded:
+          # `go mod vendor` copies replaced module directories ENTIRELY, so
+          # with flake.nix inside the fileset the vendorHash constant would
+          # sit inside its own FOD input — an unsolvable self-reference (the
+          # hash could never converge; verified 2026-09-02, ADR 004).
+          datastartestSrc = lib.fileset.toSource {
+            root = ./.;
+            fileset = lib.fileset.unions [
+              (lib.fileset.gitTracked ./datastartest)
+              (lib.fileset.gitTracked ./static)
+              ./go.mod
+              (lib.fileset.fileFilter (file: lib.hasSuffix ".go" file.name) ./.)
+            ];
+          };
           hermeticCheckDatastartest = buildGoModule {
             pname = "go-datastar-datastartest";
             inherit version;
             vendorHash = datastartestVendorHash;
-            src = lib.fileset.toSource {
-              root = ./.;
-              fileset = lib.fileset.difference (lib.fileset.gitTracked ./.) ./go.work;
-            };
+            src = datastartestSrc;
             modRoot = "datastartest";
             subPackages = [ "." ];
             doCheck = true;

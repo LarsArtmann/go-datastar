@@ -274,12 +274,14 @@ No CQRS, no event bus, no domain opinions. It is a pure protocol layer. Consumer
   directive-satisfying `go` first on PATH, the sandbox tries a network
   toolchain download. Keep `flakeCheck = false` + a guarded `checks.format`
   that prepends `goPkg` to `buildInputs`.
-- **vendorHash sensitivity (verified 2026-09-02, ADR 004 correction).** Root
-  `vendorHash` moves only on requires (go.mod/go.sum) or toolchain
-  `modules.txt` changes. `datastartestVendorHash` moves on ANY edit to ANY
-  tracked file under the repo root or static/ — `go mod vendor` copies the
-  directory-replaced module directories entirely (docs included). Re-discover
-  via the fakeHash dance; refresh at the release gate, not ad hoc.
+- **vendorHash sensitivity (verified 2026-09-02/03, ADR 004 correction).**
+  Root `vendorHash` moves only on requires (go.mod/go.sum) or toolchain
+  `modules.txt` changes. `datastartestVendorHash` used to move on ANY edit to
+  any tracked file under the repo root or static/ — and with flake.nix in the
+  FOD input the paste-dance could NEVER converge (unsolvable self-reference).
+  FIXED: the datastartest check now uses a MINIMAL src fileset (datastartest,
+  root *.go + go.mod, static/), so metadata edits don't touch it; the FOD
+  converges on one paste. Don't widen that fileset.
 - **`buildGoModule` `modRoot` attribute** points into the repo source for
   submodule builds. The vendor + main derivations both `cd "$modRoot"` — no
   manual `postPatch` cd hacks needed. Available in nixpkgs at the locked rev.
