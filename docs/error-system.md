@@ -31,7 +31,7 @@ Root codes: `datastar.templ_render_failed`, `datastar.gostar_render_failed`,
 `datastar.signals_unmarshal_failed`, `datastar.signals_marshal_failed`,
 `datastar.custom_event_detail_marshal_failed`, `datastar.event_name_required`,
 `datastar.element_patch_mode_invalid`, `datastar.namespace_invalid`,
-`datastar.stream_send_failed`.
+`datastar.stream_send_failed`, `datastar.error_response_nil_error`.
 
 datastartest codes: `datastartest.sse_scan_failed`,
 `datastartest.signals_unmarshal_failed`,

@@ -207,7 +207,14 @@ func ErrorResponse(stream *sse.Stream, message string, code string) error {
 // For non-errorfamily errors, code will be empty and Classify defaults to
 // Transient (fail-open for retry), so family will be "transient", retryable
 // will be true, and HTTPStatus will be 503.
+//
+// A nil error is caller misuse and returns a classified Rejection
+// ([CodeErrorResponseNilError]) without sending anything.
 func ErrorResponseFromError(stream *sse.Stream, err error) error {
+	if err == nil {
+		return errorfamily.NewRejection(CodeErrorResponseNilError, "ErrorResponseFromError called with nil error")
+	}
+
 	return sendSignalsMap(stream, map[string]any{
 		"error": map[string]any{
 			signalKeyMessage: err.Error(),

@@ -76,6 +76,10 @@ const (
 	// CodeStreamSendFailed: [Response] could not deliver an SSE event to the
 	// underlying stream. Wraps any error returned by the transport.
 	CodeStreamSendFailed = "datastar.stream_send_failed"
+
+	// CodeErrorResponseNilError: [ErrorResponseFromError] was called with a nil
+	// error — caller misuse, rejected instead of dereferenced.
+	CodeErrorResponseNilError = "datastar.error_response_nil_error"
 )
 
 // Sentinel errors for fixed-message failure modes. Match with [errors.Is]:

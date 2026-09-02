@@ -428,6 +428,7 @@ if errorfamily.Classify(err) == errorfamily.Transient { /* backoff + retry */ }
 | `datastar.element_patch_mode_invalid`         | Rejection     | no        |
 | `datastar.namespace_invalid`                  | Rejection     | no        |
 | `datastar.stream_send_failed`                 | Transient     | yes       |
+| `datastar.error_response_nil_error`           | Rejection     | no        |
 
 ## Wire format parity
 
