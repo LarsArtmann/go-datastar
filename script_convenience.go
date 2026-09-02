@@ -1,6 +1,7 @@
 package datastar
 
 import (
+	"bytes"
 	"encoding/json/v2"
 	"fmt"
 	"net/http"
@@ -102,13 +103,14 @@ func NewDispatchCustomEventPatch(
 		return DispatchCustomEventPatch{}, ErrEventNameRequired
 	}
 
-	detailJSON, err := json.Marshal(detail)
-	if err != nil {
+	var detailBuf bytes.Buffer
+	if err := json.MarshalWrite(&detailBuf, detail); err != nil {
 		return DispatchCustomEventPatch{}, errorfamily.Wrapf(err, errorfamily.Rejection,
 			CodeCustomEventDetailMarshalFailed,
 			"marshal custom event detail of type %T", detail).
 			WithContext("eventName", eventName)
 	}
+	detailJSON := detailBuf.Bytes()
 
 	patch := DispatchCustomEventPatch{
 		EventName:  eventName,

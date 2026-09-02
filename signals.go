@@ -83,13 +83,13 @@ func NewSignalsIfMissingPatch(v any, opts ...SignalsPatchOption) (SignalsPatch, 
 // MarshalSignals marshals a Go value to JSON for use as a DataStar signals
 // payload. Returns an error instead of panicking.
 func MarshalSignals(v any) ([]byte, error) {
-	b, err := json.Marshal(v)
-	if err != nil {
+	var buf bytes.Buffer
+	if err := json.MarshalWrite(&buf, v); err != nil {
 		return nil, errorfamily.Wrapf(err, errorfamily.Rejection,
 			CodeSignalsMarshalFailed, "marshal signals value of type %T", v)
 	}
 
-	return b, nil
+	return buf.Bytes(), nil
 }
 
 // Event returns the [sse.Event] for this signals patch. The data lines are:

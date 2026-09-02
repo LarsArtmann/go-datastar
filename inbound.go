@@ -1,6 +1,7 @@
 package datastar
 
 import (
+	"bytes"
 	"encoding/json/v2"
 	"errors"
 	"io"
@@ -33,7 +34,7 @@ func ReadSignals(req *http.Request, signals any) error {
 		return nil
 	}
 
-	if err := json.Unmarshal(input, signals); err != nil {
+	if err := json.UnmarshalRead(bytes.NewReader(input), signals); err != nil {
 		preview := string(input)
 		if len(preview) > maxInputPreviewLen {
 			preview = preview[:200]
