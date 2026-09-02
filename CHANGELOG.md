@@ -85,6 +85,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   CI `go-version` ×6) and the Nix flake `go_1_26` pin re-pointed at the
   go1.26.7 source tarball with re-discovered vendor hashes (the patch bump
   moves the module-set hash). Consumers must use Go ≥ 1.26.7.
+- Root benchmarks migrated from `for range b.N` to `for b.Loop()` (the
+  modern Go benchmark loop with automatic timer handling); benchmark
+  semantics and results are unchanged.
 
 ### Added — datastartest
 
