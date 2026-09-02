@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`Response` method forms of the response helpers** — `resp.ErrorResponse(msg, code)`,
+  `resp.ErrorResponseFromError(err)`, and `resp.NotificationResponse(msg, kind)`
+  mirror the package-level functions on the response's own stream (additive;
+  the package functions are unchanged).
+- **`version` package** — a build-time `Version` var for binary consumers
+  (`-ldflags "-X …/version.Version=vX.Y.Z"`); documented in CONTRIBUTING.
+- **`.goreleaser.yaml` skeleton** for tag-triggered example-binary releases
+  (check-validated only; the library release path remains the lockstep tags
+  per docs/release-checklist.md).
+
 ### Added — datastartest
 
 - **Three debug-grade helpers** (the head of the consolidated helper-expansion

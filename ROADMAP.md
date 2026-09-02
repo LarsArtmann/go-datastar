@@ -140,6 +140,11 @@ Things we are deliberately NOT pursuing and why:
 
 ## Resolved questions
 
+- **Changelog automation (decided 2026-09-03):** manual keep-a-changelog
+  stays. Evaluated changie and GitHub-native auto-notes: with ~monthly
+  releases, an append-only hand-maintained file plus the release-checklist
+  gate is less machinery than a bot config, and the append-only policy (G4)
+  is easier to enforce by eye. Revisit if release cadence reaches weekly.
 - **datastartest CHANGELOG placement (decided 2026-09-03):** datastartest has
   NO module-level CHANGELOG file; its changes are recorded in the root
   CHANGELOG under "Added — datastartest" sections. Rationale: the lockstep
