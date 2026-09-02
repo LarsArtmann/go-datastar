@@ -16,10 +16,68 @@ compared:
    pinning** — removes the vendorHash constant but either weakens purity or
    re-downloads on every commit.
 
-`vendorHash` DID break twice in practice (the Go 1.26.5 → 1.26.6 patch bump
-changed the `go mod vendor` `modules.txt` format; the 1.26.7 bump moved the
-module-set hash again). Both failures were caught immediately by
+`vendorHash` broke in practice several times: the Go 1.26.5 → 1.26.6 patch
+bump changed the `go mod vendor` `modules.txt` format; the 1.26.7 bump moved
+the module-set hash again; dependency bumps (go-sse v0.6.0) moved both hashes;
+and the v0.3.0 tag shipped with a stale `datastartestVendorHash` (see the
+verified verdict below). All failures were caught immediately by
 `nix flake check` — the failure mode is fail-visible, never fail-silent.
+
+### 2026-09-02 correction: the vendorHash sensitivity mechanism (verified)
+
+An earlier draft of this ADR attributed hash movement to Go patch bumps
+(module-set changes) only. That is wrong for `datastartestVendorHash`. A
+controlled experiment (2026-09-02, worktree, nix FOD builds + manual
+`go mod vendor` tree hashes) established the real mechanism:
+
+**`go mod vendor` copies the source of imported packages provided by
+directory-replaced modules into the vendor tree.** `datastartest` imports the
+root `datastar` package and `static` through its `=> ..` / `=> ../static`
+replaces, so every byte of root/static package source lands in
+`datastartest`'s vendor tree — and its FOD hash moves on ANY root or static
+source edit, even with byte-identical go.mod/go.sum. The root module imports
+no replaced package (`go-datastar/static` is never imported by root code), so
+root's `vendorHash` is INSENSITIVE to repo source; it moves only when the
+module set (go.mod/go.sum requires) or the toolchain's `modules.txt` format
+changes.
+
+Evidence matrix (vendor-tree content hash unless noted):
+
+| State | go.mod/go.sum | Source toggle | datastartest hash | Moved? |
+| ----- | ------------- | ------------- | ----------------- | ------ |
+| replaces active | unchanged | — (baseline) | `d4dd09ac…` | — |
+| replaces active | unchanged | comment in root `response.go` | `fde17bae…` | **YES** |
+| replaces active | unchanged | comment in `static/static.go` | FOD `ZEoxiszp…` (nix) | **YES** |
+| replaces removed | + published v0.3.0 entries | — | `16aafda9…` | — |
+| replaces removed | unchanged | comment in root `response.go` | `16aafda9…` | **NO** |
+
+Nix-level cross-check: with replaces active, a root-source comment alone moved
+the datastartest FOD from `xc54T9…` to `Hsut8cL…`, while the root FOD stayed
+at `dgqHjh3…` across BOTH root- and static-source toggles.
+
+Tag `v0.3.0` flake verdict (T06, verified 2026-09-02 via `git worktree` of the
+tag): `nix flake check` at `60cf5b1` FAILS — the datastartest go-modules FOD
+reports `specified: nkJghgIG… / got: 2o8l28pR…`, while the root FOD builds
+clean. Exactly the mechanism above predicts: the datastartest hash had been
+harvested before late source/requires changes; the root hash was current.
+
+### Decision on the durable mitigation
+
+A "minimal fileset" vendor FOD (go.mod/go.sum only) is IMPOSSIBLE while
+datastartest uses directory replaces: `go mod vendor` must read the replaced
+directories to resolve them. Dropping the replaces inside the hermetic check
+would make it test the PUBLISHED library instead of the working tree — a
+false-green class worse than a loud hash mismatch. Vendoring the replaced
+modules into the repo would duplicate root source (split-brain). Therefore:
+
+- **Accept the dance for `datastartestVendorHash`**, now with the correct
+  mechanism documented: it moves on any root/static/datastartest package-source
+  edit, any requires change, and any toolchain `modules.txt` format change.
+- **Root `vendorHash` moves only on requires/toolchain changes** — predictable,
+  reviewable in the diff of go.mod.
+- Both failures are loud (`nix flake check` mismatch) and the fix is
+  mechanical (paste the `got:` hash). Refresh hashes at the release gate, not
+  ad hoc during development.
 
 ## Decision
 

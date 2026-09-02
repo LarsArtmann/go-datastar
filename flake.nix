@@ -50,13 +50,18 @@
           });
           buildGoModule = pkgs.buildGoModule.override { go = goPkg; };
           version = self.rev or self.dirtyRev or "dev";
-          # go1.26.6+ `go mod vendor` output differs from 1.26.5's (modules.txt
-          # format), and the hash covers module-mode (GOWORK=off) downloads —
-          # both moved it from earlier values.
-          vendorHash = "sha256-X9xB6/Spsqq3dMUGxMyUzFTBHcHzMP8ZggsjbKlYEZw=";
-          # datastartest vendors root + static via local replaces plus its own
-          # public deps, so its module set hashes differently from the root's.
-          datastartestVendorHash = "sha256-G0orQHjxJ+7VE6Wk/gHpqTVi0S+dUwIxiimk8L6sQiU=";
+          # Root vendorHash moves ONLY on requires changes (go.mod/go.sum) or
+          # toolchain modules.txt format changes (e.g. go1.26.5 -> 1.26.6) —
+          # verified 2026-09-02 (ADR 004 correction): root imports no
+          # directory-replaced package, so repo source never enters its
+          # vendor tree.
+          vendorHash = "sha256-dgqHjh3F0QFtRwgFD+2ntKmdfJqs/uCd8EZhJxg+7EQ=";
+          # datastartest vendors root + static through its directory replaces:
+          # `go mod vendor` copies the replaced packages' SOURCE into the
+          # vendor tree, so this hash moves on ANY root/static/datastartest
+          # source edit (plus requires/toolchain changes) — verified 2026-09-02
+          # (ADR 004 correction, evidence matrix).
+          datastartestVendorHash = "sha256-xc54T9ga/qsw9ugsuV1vuJCbQMYhCQjFJvdePjwvRnA=";
 
           maintainer = {
             name = "Lars Artmann";
