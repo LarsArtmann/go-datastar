@@ -23,6 +23,15 @@ context ends the heartbeat when the client disconnects or the handler
 returns. Typical intervals: 15–30s — shorter wastes bytes, longer risks
 proxy idle timeouts (nginx's default proxy_read_timeout is 60s).
 
+## Drop observability
+
+The broadcaster registers go-sse's `WithOnDrop` callback, logging events that
+are dropped when a subscriber's buffer is full (`ondrop_test.go` exercises
+it). This is deliberately a **broadcaster-level** concern: go-sse's `OnDrop`
+lives on `Broadcaster`, not `Stream`, so `Response` (which wraps a stream)
+cannot expose it. Route lossy-feed logging through your broadcaster, not
+through per-connection responses.
+
 ## docker-compose
 
 `docker-compose.yml` builds and runs the demo; the Dockerfile pattern is

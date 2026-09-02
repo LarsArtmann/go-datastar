@@ -6,9 +6,12 @@
 //  2. Decoding DataStar datalines (selector/mode/elements/signals key-value
 //     pairs) back into typed, assertable values.
 //
-// The library's own e2e_test.go in the parent package hand-rolls parsing code
-// for the same purpose. This package exports that logic so consumers don't have
-// to reinvent it.
+// The SSE parsing is delegated to the shared go-sse/ssetest parser, so
+// conformance fixes land once for both consumers and the fuzz corpora stay in
+// lockstep. Helper errors are classified per the go-error-family contract:
+// stable codes live in errors.go (datastartest.sse_scan_failed,
+// datastartest.signals_unmarshal_failed,
+// datastartest.custom_event_detail_unmarshal_failed).
 //
 // # Quick start
 //
