@@ -35,10 +35,8 @@ GOEXPERIMENT=jsonv2 golangci-lint run ./... ./datastartest/... ./static/...
 # Pre-push lint = EXACT CI parity (flake: `nix run .#lint-ci`):
 GOEXPERIMENT=jsonv2 go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run ./... ./datastartest/... ./static/... --timeout 5m
 
-# Isolation mode (GOWORK=off, per-module) — verifies replace directives:
-GOWORK=off GOEXPERIMENT=jsonv2 go test ./...                      # root only
-GOWORK=off GOEXPERIMENT=jsonv2 go test ./...                      # datastartest (run from datastartest/)
-GOWORK=off GOEXPERIMENT=jsonv2 go test ./...                      # static (run from static/)
+# Isolation mode (GOWORK=off, per-module — verifies replace directives; run from each module dir):
+GOWORK=off GOEXPERIMENT=jsonv2 go test ./...
 
 # Error audit (all modules — erraudit v0.3.0 takes ONE directory per run, never package patterns):
 for mod in . ./datastartest ./static; do
@@ -50,7 +48,10 @@ GOEXPERIMENT=jsonv2 go test -run '^$' -fuzz '^FuzzReadSignals$' -fuzztime 30s .
 (cd datastartest && GOEXPERIMENT=jsonv2 go test -run '^$' -fuzz '^FuzzReadEvents$' -fuzztime 30s .)
 
 # CI also enforces (run locally to pre-empt CI failures):
-GOEXPERIMENT=jsonv2 go work sync  # go.work must not change after sync (idempotency)
+GOEXPERIMENT=jsonv2 go work sync        # go.work must not change after sync (idempotency)
+go work use . ./datastartest ./static   # go.work must match this exactly
+GOWORK=off go mod tidy -diff            # per module; must print nothing
+GOWORK=off go mod verify                # per module; "all modules verified"
 grep -rn 'replace.*=>/' go.mod datastartest/go.mod static/go.mod  # must find nothing (relative paths only)
 ```
 
@@ -86,107 +87,76 @@ Every DataStar protocol message is a value that produces an `sse.Event`. This ma
 
 ### File layout
 
-One flat package; file roles are documented in `doc.go` (design rationale,
-quick start, error-system contract) and discoverable via `ls`. Key entry
-points: `patch.go` (Patch interface), `errors.go` (error catalog),
-`constants.go` (dataline keys), `response.go` (fluent SSE builder),
-`store.go` (MemoryStore replay), `script_handler.go` (static JS serving),
-`example/` (live-feed demo). Multi-module rationale:
-[docs/modularization/README.md](docs/modularization/README.md).
+One flat package; roles in `doc.go`, discoverable via `ls`. Key files:
+`patch.go` (Patch interface), `errors.go` (catalog), `response.go` (fluent
+builder), `store.go` (replay), `script_handler.go` (JS serving), `example/`.
 
 ## Wire-Format Parity Requirements
 
-These behaviors reproduce the upstream SDK exactly:
+The exact upstream-parity behaviors (dataline keys/order, splitting, defaults,
+elision) are pinned by `wire_golden_test.go` and documented in
+[docs/wire-format.md](docs/wire-format.md). A golden change IS a wire-format
+change — make it deliberately, against the DataStar SDK, and record it in the
+CHANGELOG.
 
-1. Mode `outer` is never emitted (default)
-2. Namespace `html` is never emitted (default)
-3. Retry emitted when `> 0 && != DefaultRetryDuration (1000ms)`
-4. AutoRemove `*bool`: nil and true both add `data-effect="el.remove()"`
-5. ExecuteScript always uses `selector: body` + `mode: append`
-6. Elements split on `\n`; each line gets `data: elements ...`
-7. Signals split on `\n`; every line emitted unconditionally
-8. ReadSignals: GET/DELETE from `?datastar=` query; others from JSON body
-9. Dataline keys have trailing space: `"selector "`, `"elements "`, etc.
-10. ConsoleLog/Error use `%q` for JS string quoting
-11. DispatchCustomEvent defaults: bubbles/cancelable/composed=true, selector=document
-12. HEAD requests to ScriptHandler return `200 OK` with headers but no message body (RFC 7231 §4.3.2)
-
-> **Note:** go-sse v0.5.0 added `JoinLines`/`KeyedLines` helpers for multi-line
-> SSE data. go-datastar does NOT adopt them because `KeyedLines` normalizes
-> CRLF to LF (items 6-7 split on `\n` only, matching upstream), and its key
-> convention (`key + " "`) conflicts with go-datastar's trailing-space dataline
-> constants (item 9). Revisit if upstream adopts CRLF normalization.
+> go-sse's `JoinLines`/`KeyedLines` are deliberately NOT adopted: `KeyedLines`
+> normalizes CRLF to LF (upstream splits on `\n` only) and its key convention
+> conflicts with the trailing-space dataline constants.
 
 ## CI
 
-- `ci.yml` — test (build/vet/race + GOWORK=off ×3 + sync idempotency +
-  replace audit), lint (golangci-lint v2.12.2 go-installed, analysis cache
-  cached), erraudit (probe-gated while the repo is private), govulncheck.
-  Runs ONLY on code-affecting paths (`paths` filter) — docs-only pushes skip
-  it entirely.
+- `ci.yml` — test (build/vet/race + GOWORK=off ×3 + `go mod verify` +
+  go.work use-vs-disk + tidy-diff + sync idempotency + replace audit +
+  JS-version-in-CHANGELOG drift test), lint (golangci-lint v2.12.2
+  go-installed, analysis cache cached), erraudit (probe-gated while the repo
+  is private), govulncheck. Runs ONLY on code-affecting paths (`paths`
+  filter) — docs-only pushes skip it entirely.
 - `actionlint.yml` — workflow YAML validation on EVERY push/PR (the signal
   that still fires when ci.yml skips).
 - `coverage.yml` — master-push coverage badge to the orphan `coverage`
   branch (same `paths` filter).
-- `nix.yml` — hermetic `nix flake check` on code-affecting paths
-  (`continue-on-error` until proven stable; promote or drop after a green
-  week).
+- `nix.yml` — hermetic `nix flake check` on code-affecting paths (first
+  green run 2026-09-03; `continue-on-error` until proven stable).
 - `fuzz.yml` — scheduled daily 60s fuzz runs over all four fuzz targets,
   crash artifacts uploaded.
 - `codeql.yml` — GitHub CodeQL Go security analysis (SHA-pinned action).
 - `renovate.json` — custom manager proposing embedded-DataStar-JS bumps from
   upstream releases into `static/static.go`; coexists with
   `.github/dependabot.yml` (one-bot decision pending, see TODO_LIST).
-- Actions are SHA-pinned (`checkout`, `setup-go` verified against their v7
-  tags); nothing is a required check (branch protection removed); local
-  gates are the real gate.
+- Actions are SHA-pinned; nothing is a required check (branch protection
+  removed); local gates are the real gate.
 
 ## Gotchas
 
 - **gopls `stdversion` warnings on `encoding/json/v2` are false positives — do
-  not "fix" them.** gopls (v0.23.0) flags ANY json/v2 symbol (`Marshal`,
-  `Unmarshal`, `UnmarshalRead`, `MarshalWrite`, …) as "requires go1.27" because
-  its stdlib DB records the graduated API version and has no GOEXPERIMENT
-  awareness; under `GOEXPERIMENT=jsonv2` the package is fully available in
-  go1.26. `go vet` and golangci-lint (the real gates) never flag it. Verified
-  2026-09-02: every alternative spelling triggers the same warning, and
-  switching to the v1 `encoding/json` API would change error types and default
-  HTML escaping (wire format). Leave the v2 direct calls; benchmark `b.N`
-  loops are the only genuine modernization (fixed via `b.Loop()`).
+  not "fix" them.** gopls (v0.23.0) flags ANY json/v2 symbol as "requires
+  go1.27" (its stdlib DB has no GOEXPERIMENT awareness); under
+  `GOEXPERIMENT=jsonv2` the package is fully available in go1.26. `go vet` and
+  golangci-lint never flag it. Every alternative spelling triggers the same
+  warning, and the v1 `encoding/json` API would change error types and HTML
+  escaping (wire format). Leave the v2 direct calls.
+- **Shared checkout — one section for the whole operational reality:** the
+  auto-commit daemon commits and pushes dirty files to whatever branch is
+  checked out, multiple crush sessions share this checkout, and `git town`
+  (v24) manages syncs. Branch tips can move or lose commits at any moment.
+  Re-verify with `git log`/`git reflog` before and after every git operation;
+  stage by explicit path list (never `git add -A`); re-read files before
+  every edit (mod-time races); quarantine risky work in a `git worktree`.
+  A failed `git sync` leaves an unfinished run: `git town status`, then
+  `skip`/`continue` (they abort on missing lineage — fix via
+  `git config --add git-town.observed-branches <branch>` or
+  `git config git-town-branch.<branch>.parent master` without moving HEAD;
+  prune stale lineage after branch deletions). `git town propose` =
+  one-command branch+push+PR. Session ritual: `git town status`, `git status`,
+  `gh pr list` at start; clean tree + synced master at end.
 - `go.work` is committed, but a **global** gitignore (`~/.config/git/ignore`)
   can still hide it on some machines. After touching `.gitignore` or creating
   module files, run `git check-ignore -v <file>` and `git ls-files <file>` —
   `git status` alone lies when a global ignore is in play.
-- `dprint.json` exists in the repo root but is NOT wired into treefmt/flake —
-  it documents the project's intent for non-Go files (JSON, YAML, Markdown,
-  Dockerfile) and supports editor/external integrations. Canonical formatting
-  is treefmt (gofumpt/goimports/golines/nixfmt) via `nix flake check`; wiring
-  dprint into the hermetic check would make it depend on network-fetched WASM
-  plugins.
-- `origin/master` has NO branch protection (removed 2026-08-16, owner
-  decision): CI is informational, nothing blocks a bad push — run the gates
-  locally first. The auto-commit daemon can commit straight to master.
-- Multiple crush sessions share this checkout, plus an auto-commit daemon
-  that commits dirty files to whatever branch is checked out. Branch tips
-  can move or lose commits at any moment (for example a hard reset by a
-  parallel session). Re-verify with `git log` and `git reflog <branch>`
-  before and after every git operation, and quarantine work in a
-  `git worktree` outside the main checkout. Stage by explicit path list;
-  never `git add -A`; re-read files before every edit (mod-time races).
-- `git town` (v24) manages syncs. A failed `git sync` leaves an unfinished
-  run: check `git town status`, then `git town skip` (finish without the
-  failing step; the checkout may end on another branch of the stack) or
-  `git town continue` (retry). `skip`/`continue` abort non-interactively
-  when a local branch has no configured lineage — fix without moving HEAD
-  via `git config --add git-town.observed-branches <branch>` (snapshot
-  branches) or `git config git-town-branch.<branch>.parent master` (stack
-  children). All lineage/branchtype metadata lives in git config. After any
-  branch deletion, prune its stale lineage.
-- `git town propose` is the one-command branch+push+PR flow. `gh pr merge
-  --merge --delete-branch` from master also deletes the LOCAL PR branch.
-- Session-entry ritual: `git town status`, `git status`, `gh pr list` before
-  starting work. End-of-session ritual: clean tree, synced master, no
-  unfinished git-town run.
+- `dprint.json` documents formatting intent for non-Go files but is NOT wired
+  into treefmt/flake (canonical formatting = treefmt via `nix flake check`).
+- `origin/master` has NO branch protection (owner decision): CI is
+  informational, nothing blocks a bad push — run the gates locally first.
 - Status reports live in `docs/status/*.md` (indexed by its README) and are
   point-in-time snapshots — excluded from CHANGELOG entries by policy.
   `.md` is the repo's report format (the status-report skill's HTML default
@@ -196,41 +166,9 @@ These behaviors reproduce the upstream SDK exactly:
 
 Every error returned by go-datastar is a classified `*errorfamily.Error` carrying
 a stable machine-readable **code**, a behavioral **family**, and structured
-**context**. The catalog lives in `errors.go`.
-
-### Three strongly typed ways to handle errors
-
-```go
-// 1. By code (stable string, no string-matching on messages):
-if errorfamily.Code(err) == datastar.CodeSignalsMarshalFailed { ... }
-
-// 2. By sentinel (errors.Is matches by code+family, so context clones match too):
-if errors.Is(err, datastar.ErrEventNameRequired) { ... }
-
-// 3. By family (behavioral: retryable? whose fault?):
-if errorfamily.IsRetryable(err) { /* backoff + retry */ }
-```
-
-### Family assignments
-
-| Family        | When                                                                                                                            | Retryable |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| Rejection     | Bad/missing caller input (malformed JSON, empty name, unrecognized mode/namespace, body closed by misuse, unmarshallable value) | no        |
-| Transient     | Temporary I/O failure reading the request body                                                                                  | yes       |
-| Orchestration | Internal render failure producing HTML output (templ, gostar)                                                                   | no        |
-
-### Codes
-
-`datastar.templ_render_failed`, `datastar.gostar_render_failed`,
-`datastar.body_read_after_close`, `datastar.body_read_failed`,
-`datastar.signals_unmarshal_failed`, `datastar.signals_marshal_failed`,
-`datastar.custom_event_detail_marshal_failed`, `datastar.event_name_required`,
-`datastar.element_patch_mode_invalid`, `datastar.namespace_invalid`,
-`datastar.stream_send_failed`.
-
-datastartest codes: `datastartest.sse_scan_failed`,
-`datastartest.signals_unmarshal_failed`,
-`datastartest.custom_event_detail_unmarshal_failed`.
+**context**. The catalog lives in `errors.go`; the full matching guide (by
+code / sentinel / family, with the family table and every code) is
+[docs/error-system.md](docs/error-system.md) and the README.
 
 ### Sentinels
 
@@ -239,24 +177,20 @@ datastartest codes: `datastartest.sse_scan_failed`,
 
 ### Design decisions
 
-1. **Library contract: go-error-family only, never samber/oops.** Per the
-   go-error-family README, libraries classify but never presume the app's
-   observability stack. Applications enrich with oops; this library does not.
-2. **Return `error` interface, not `*errorfamily.Error`.** Idiomatic Go and
-   consistent with go-sse (the direct dependency). Typed access is via
-   `errorfamily.Code` / `errors.Is` / `errors.As`. erraudit's `generic_return`
-   warnings on these signatures are accepted by design.
+1. **Library contract: go-error-family only, never samber/oops.** Libraries
+   classify but never presume the app's observability stack.
+2. **Return `error` interface, not `*errorfamily.Error`.** Idiomatic Go;
+   typed access via `errorfamily.Code` / `errors.Is` / `errors.As`. erraudit's
+   `generic_return` warnings on these signatures are accepted by design.
 3. **Sentinels stay context-pristine.** `WithContext` returns a clone, so shared
    sentinels never leak caller-specific context.
 4. **Context loss is a bug.** Wrapping errors include relevant in-scope values
    (HTTP method, input byte length, value type) so diagnosis needs no re-run.
-5. **Layered composition with go-sse v0.5+.** Since go-sse v0.5.0, the
-   transport also classifies its errors via go-error-family (codes like
-   `sse.send_failed`). `wrapStreamError` wraps Send errors as
-   `datastar.stream_send_failed` (Transient). Because `errorfamily.Classify`
-   returns the outermost family, go-datastar's classification wins — correct,
-   since Send failures are transient I/O errors. `errors.Is` traverses the
-   chain, so callers matching go-sse codes work transparently through the wrap.
+5. **Layered composition with go-sse v0.5+.** The transport classifies its own
+   errors; `wrapStreamError` wraps Send failures as
+   `datastar.stream_send_failed` (Transient). `errorfamily.Classify` returns
+   the outermost family, so go-datastar's classification wins; `errors.Is`
+   traverses the chain, so callers matching go-sse codes work transparently.
 
 ## What This Library Is NOT
 
@@ -264,9 +198,6 @@ No CQRS, no event bus, no domain opinions. It is a pure protocol layer. Consumer
 
 ## Nix / Build Gotchas
 
-- **erraudit v0.3.0 CLI takes ONE directory arg.** Multi-pattern invocations
-  (e.g., `erraudit ./... ./datastartest/...`) silently fail. Loop per-module:
-  `(cd $mod && erraudit . --type-aware --enforce-go-error-family)`.
 - **erraudit + go-finding are private repos** → no hermetic Nix build possible.
   CI probe-gates with `go list -m`; the flake app go-installs with credentials.
 - **treefmt-nix `flakeCheck = true` registers its OWN unguarded `checks.treefmt`**
@@ -282,22 +213,18 @@ No CQRS, no event bus, no domain opinions. It is a pure protocol layer. Consumer
   FIXED: the datastartest check now uses a MINIMAL src fileset (datastartest,
   root *.go + go.mod, static/), so metadata edits don't touch it; the FOD
   converges on one paste. Don't widen that fileset.
-- **`buildGoModule` `modRoot` attribute** points into the repo source for
-  submodule builds. The vendor + main derivations both `cd "$modRoot"` — no
-  manual `postPatch` cd hacks needed. Available in nixpkgs at the locked rev.
-- **BOM in Go source = compile error** ("illegal byte order mark"). Use the
-  escape `"\xef\xbb\xbf"` for UTF-8 BOM in test seed data.
-- **Auto-commit daemon is active.** It commits and pushes the working tree
-  automatically. Check `git log` before assuming what's committed.
+- **`buildGoModule` `modRoot`** builds a submodule in place (vendor + main
+  derivations both `cd "$modRoot"`).
+- **BOM in Go source = compile error.** Use the escape `"\xef\xbb\xbf"` in
+  test seed data.
 
 ## E2E Testing for Consumers: `datastartest/`
 
 `datastartest` is a separate module of reusable E2E helpers (SSE parsing,
-DataStar dataline decoding, `Collect*` helpers, assertions). Quick start,
-request options, and the full API tour: [datastartest/README.md](datastartest/README.md).
-The wire-format E2E test (`TestE2E_DataStarPatches`) lives in
-`datastartest/e2e_test.go`; root's `e2e_test.go` retains only the
-go-sse-owned header checks. Root must never require datastartest.
+dataline decoding, `Collect*` helpers, assertions). Full API tour:
+[datastartest/README.md](datastartest/README.md). The wire-format E2E test
+lives in `datastartest/e2e_test.go`; root's retains only go-sse-owned header
+checks. Root must never require datastartest.
 
 **Invariant:** all public helpers accept `testing.TB` (not `*testing.T`), so
 they work with `*testing.T`, `*testing.B`, and Ginkgo's `GinkgoT()`. Keep this
