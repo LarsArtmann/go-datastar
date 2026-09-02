@@ -91,7 +91,7 @@ I fixed a real bug (godoc example) and a spec violation (HEAD body-writing), but
 - ~~**CONTRIBUTING.md is broken** — says `go test ./... -race` without `GOEXPERIMENT=jsonv2`. Anyone following it fails immediately. Explicitly called out in the v0.0.2 retrospective (item e4) as "embarrassingly skeletal." I read that retrospective and still didn't fix it.~~ done at `4f7595e` (v0.0.3)
 - ~~**AGENTS.md HEAD compliance documentation** — the wire-format parity section lists 11 requirements but doesn't mention HEAD/RFC 7231 compliance.~~ done at `4f7595e` (requirement #12)
 - ~~**Benchmark tests** — the retrospective suggested these (item 21). I had the context open and didn't do it.~~ done at `32d36a7`
-- **`example/main.go` verification** — I changed `ScriptHandler` behavior but didn't run the example to confirm it still works end-to-end.
+- ~~**`example/main.go` verification** — I changed `ScriptHandler` behavior but didn't run the example to confirm it still works end-to-end.~~ done — example tested in CI and `go run ./example/` verified serving (docs-health pass 2026-09-02)
 - ~~**`WithScriptAttributeKVs` silent truncation** — noticed while reading `script.go`: it silently drops odd-numbered arguments. The doc comment says "Returns an error via the patch if the argument count is odd" but the implementation (`scriptAttributeKVs`) silently truncates. Did not flag or fix.~~ resolved at `4f7595e` — doc corrected to match the silent drop (API change rejected)
 - ~~**e2e_test.go review** — 260-line e2e test file exists. I never read it to check whether HEAD support needs integration coverage there.~~ done — e2e fully reworked into `datastartest/e2e_test.go` (`a4712ab`)
 
@@ -149,7 +149,7 @@ Each required a separate edit-test cycle. **Root cause:** I didn't run `golangci
 ### Documentation (from v0.0.2 retrospective, still open)
 
 7. ~~Add GitHub repo topics (`datastar`, `sse`, `go`, `hypermedia`, `htmx`, `dom-patching`)~~ done — 6 topics set in the 09-36 session (`cfe328d`)
-8. Verify pkg.go.dev docs rendered for latest version
+8. ~~Verify pkg.go.dev docs rendered for latest version~~ done (verified 2026-09-02 — pkg.go.dev renders v0.3.0 for all 3 modules)
 9. ~~Disable GitHub wiki (empty wiki looks unfinished)~~ done (`cfe328d`)
 10. ~~Add error codes table to README (9 codes from AGENTS.md, also in errors.go)~~ done at `eb8bf29` (11 codes)
 11. Add "Migrating from starfederation/datastar-go" guide
@@ -158,18 +158,18 @@ Each required a separate edit-test cycle. **Root cause:** I didn't run `golangci
 14. ~~Create PR template~~ done at `3cebe14`
 15. ~~Add SECURITY.md~~ done at `3cebe14`
 16. ~~Add CODE_OF_CONDUCT.md~~ done at `3cebe14`
-17. Add coverage badge (codecov or similar)
+17. ~~Add coverage badge (codecov or similar)~~ done (done — README coverage badge + coverage.yml (ed815c7))
 
 ### CI/CD improvements (from v0.0.2 retrospective)
 
-18. Set up branch protection on master (require CI pass)
+18. ~~Set up branch protection on master (require CI pass)~~ **Won't implement — moot — branch protection removed entirely by owner decision (257c395).**
 19. ~~Pin golangci-lint version instead of `@latest` in CI~~ done in v0.0.3 — pinned v2.12.2
 20. ~~Upgrade `actions/checkout` to v5~~ done in v0.0.3 — later superseded by SHA-pinned v7 (`01a1c5d`)
 21. ~~Upgrade `actions/setup-go` to v6~~ done in v0.0.3 — later superseded by SHA-pinned v7 (`01a1c5d`)
 22. ~~Add `govulncheck` step to CI~~ done in v0.0.3
 23. ~~Add Dependabot or Renovate config~~ done in v0.0.3
 24. ~~Consider adding `erraudit` to CI~~ done in v0.0.3 (non-blocking until the repo is public)
-25. Consider adding fuzz testing to CI (`go test -fuzz` on a schedule)
+25. ~~Consider adding fuzz testing to CI (`go test -fuzz` on a schedule)~~ done (done — fuzz.yml daily scheduled 60s runs (1a72616))
 
 ### Testing improvements
 
@@ -184,7 +184,7 @@ Each required a separate edit-test cycle. **Root cause:** I didn't run `golangci
 31. ~~**Fix `WithScriptAttributeKVs` doc/code mismatch** — doc says "Returns an error via the patch if the argument count is odd" but `scriptAttributeKVs` silently drops the trailing element. Either make it error or fix the doc.~~ **Won't implement** (error return) — doc corrected instead (`4f7595e`)
 32. ~~**Audit `DispatchCustomEventPatch.Event()` silent error swallowing** — marshal failure sets `detailsJSON = []byte("null")` with no logging. Consider whether this masks real bugs.~~ done at `eb8bf29` — marshaled in constructor, classified error
 33. ~~Address `nestif` complexity in `inbound.go` `ReadSignals` (complexity 6, from retrospective)~~ done at `5bab343`
-34. Consider splitting `response.go` — 195 lines with 18 methods (from retrospective)
+34. ~~Consider splitting `response.go` — 195 lines with 18 methods (from retrospective)~~ **Won't implement — response.go is a cohesive fluent builder; splitting is churn.**
 35. Add `Broadcaster[datastar.Patch]` typed-filtering example
 36. Add `SubscribeFilter` usage example
 
@@ -193,8 +193,8 @@ Each required a separate edit-test cycle. **Root cause:** I didn't run `golangci
 37. ~~Add `golangci-lint` as a nix check (hermetic lint in `nix flake check`)~~ done as a nix **app** (`nix run .#lint`), not a check
 38. ~~Add `erraudit` as a nix check~~ done as a nix **app** (`nix run .#erraudit`), not a check
 39. ~~Add `govulncheck` as a nix check~~ done as a nix **app** + devShell package
-40. Add markdown formatter to treefmt (currently only Go + Nix)
-41. Add `erraudit` to the devShell
+40. ~~Add markdown formatter to treefmt (currently only Go + Nix)~~ **Won't implement — ADR 006 — dprint.json deliberately unwired into treefmt/CI (cf19bf1).**
+41. ~~Add `erraudit` to the devShell~~ **Won't implement — not hermetically buildable while the erraudit repo is private; nix run .#erraudit app covers local use (flake documents the exclusion).**
 
 ### Release tooling
 

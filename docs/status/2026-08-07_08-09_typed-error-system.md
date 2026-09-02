@@ -55,9 +55,9 @@ I added an Error System section to `AGENTS.md` but did **not** check whether `RE
 | 1  | ~~`CHANGELOG.md` entry for the error system~~ done — included in v0.0.1 CHANGELOG (`6af9dc4`)                   |
 | 2  | ~~`FEATURES.md` update~~ done at `b1e2063` — FEATURES.md built with full error system inventory                 |
 | 3  | ~~`README.md` error-handling section~~ done at `391db38` (three typed handles documented)                       |
-| 4  | `doc.go` package doc update (never read this session)                                                           |
-| 5  | CI integration — `.github/workflows/ci.yml` was never checked; erraudit not added to CI                         |
-| 6  | `flake.nix` integration — erraudit command not added to the flake devShell/checks                               |
+| ~~4~~  | ~~`doc.go` package doc update (never read this session)~~ done — doc.go 'Classified errors' section documents the three matching patterns |
+| ~~5~~  | ~~CI integration — `.github/workflows/ci.yml` was never checked; erraudit not added to CI~~ done — ci.yml erraudit job runs per module with --enforce-go-error-family |
+| ~~6~~  | ~~`flake.nix` integration — erraudit command not added to the flake devShell/checks~~ done — flake.nix apps.erraudit (nix run .#erraudit); devShell exclusion documented in the flake |
 | 7  | Evaluating domain-specific error return types (see Partially Done #2)                                           |
 | 8  | ~~Running the example end-to-end~~ done at `a8ba8be` — example updated and verified; `go vet ./example/` passes |
 | 9  | ~~Reading `elements.go` and `http.go`~~ done — reviewed during deep-review session (`0d30c94`)                  |
@@ -139,8 +139,8 @@ The `sugar.go:105:13 undefined: fmt` error persisted in the diagnostics for the 
 11. ~~Add a test verifying `errors.As(err, &target)` works for `*errorfamily.Error` on every error path.~~ done at `eb8bf29` (`errors_test.go`, all 10 paths)
 12. ~~Add a test for `ErrBodyReadAfterClose` cause-chain depth~~ done at `54e3158` (`errors_test.go:74` — `errors.Is(err, http.ErrBodyReadAfterClose)`).
 13. ~~Add a test verifying a context-enriched clone still matches the sentinel~~ done at `54e3158` (`errors_test.go:70` enriched error matches sentinel; `:184` pristine test).
-14. Add an `errorfamilytest.AssertExitCode` assertion for each error (Rejection→1, Transient→75, Orchestration→70).
-15. Add an `errorfamilytest.AssertHTTPStatus` assertion for each error (Rejection→400, Transient→503, Orchestration→500).
+14. ~~Add an `errorfamilytest.AssertExitCode` assertion for each error (Rejection→1, Transient→75, Orchestration→70).~~ **Won't implement — assertion helpers like AssertExitCode belong to the go-error-family repo, not this one.**
+15. ~~Add an `errorfamilytest.AssertHTTPStatus` assertion for each error (Rejection→400, Transient→503, Orchestration→500).~~ **Won't implement — AssertHTTPStatus belongs to the go-error-family repo, not this one.**
 16. ~~Add a fuzz test for `ReadSignals` with arbitrary malformed JSON.~~ done at `3efb8ce` (`inbound_fuzz_test.go`, 1.2M+ executions, 0 failures).
 17. ~~Add a test that `MarshalSignals` error message includes the Go type name for diagnosis.~~ done — `signals.go:89` marshals `"of type %T"` (`d2a9580`)
 18. Snapshot-test error messages (`go-snaps`) for stable wire output across versions.
@@ -150,14 +150,14 @@ The `sugar.go:105:13 undefined: fmt` error persisted in the diagnostics for the 
 19. ~~Write `CHANGELOG.md` entry~~ done — included in v0.0.1 CHANGELOG (`6af9dc4`).
 20. ~~Update `README.md` with an "Error Handling" section~~ done at `391db38`.
 21. ~~Update `doc.go` package comment to mention classified errors. ← still open (TODO_LIST).~~ done at `4f7595e`
-22. Add a `docs/error-system.md` deep-dive (or website page) with the full contract + decision rationale.
+22. ~~Add a `docs/error-system.md` deep-dive (or website page) with the full contract + decision rationale.~~ done (done — docs/error-system.md contract + docs/adr/003-error-classification.md rationale)
 23. ~~Document why `--enforce-samber-oops` must NOT be used with this library in CI config comments.~~ done — documented in `AGENTS.md` (Error System, decision 1)
 
 ### CI / tooling
 
 24. ~~Add `erraudit ./... --enforce-go-error-family` (without `--enforce-samber-oops`) to `.github/workflows/ci.yml`.~~ done at `eb8bf29` (v0.0.3 CI job)
 25. ~~Add `erraudit` to `flake.nix` checks (`nix run .#lint` should include it).~~ done as a nix **app** (`nix run .#erraudit`, `flake.nix`), not a check
-26. Add an `erraudit` pre-commit hook.
+26. ~~Add an `erraudit` pre-commit hook.~~ **Won't implement — repo precedent is CI-level guards (module_boundary_test.go), not pre-commit hooks.**
 27. Add `erraudit --format sarif` output for GitHub code scanning.
 28. ~~Pin the `erraudit` version in CI to prevent surprise breaking changes.~~ done — pinned `@v0.3.0` (`ci.yml:91`)
 
@@ -174,13 +174,13 @@ The `sugar.go:105:13 undefined: fmt` error persisted in the diagnostics for the 
 34. ~~Run `govulncheck ./...` to confirm no CVEs in the new direct dependency surface.~~ done — govulncheck CI job since v0.0.3 (`ci.yml:96`), green
 35. ~~Run `gosec ./...` as a baseline security scan.~~ done — `gosec` enabled in `.golangci.yml`, 0 issues
 36. ~~Verify `go-error-family` version (v0.10.0) is the latest; update if a newer one exists.~~ done — confirmed latest in the v0.0.3 session (T13)
-37. Consider whether `go-branded-id` should also become a direct dependency (it's used transitively but go-datastar's API may surface branded IDs via go-sse).
+37. ~~Consider whether `go-branded-id` should also become a direct dependency (it's used transitively but go-datastar's API may surface branded IDs via go-sse).~~ **Won't implement — go-branded-id remains transitive via go-sse; promoting it buys nothing.**
 
 ### Architecture
 
-38. Evaluate whether `errors.go` should split into `codes.go` + `sentinels.go` as the catalog grows.
+38. ~~Evaluate whether `errors.go` should split into `codes.go` + `sentinels.go` as the catalog grows.~~ **Won't implement — errors.go is a cohesive 108-line catalog (11 codes, 2 sentinels); splitting is churn.**
 39. ~~Consider an `errors_example_test.go` (compileable documentation) showing all three error-handling patterns.~~ done at `eb8bf29`
-40. NOT-DO — domain layer (`cqrs-htmx/datastar`) is a separate repo; error families there are out of scope.
+40. ~~NOT-DO — domain layer (`cqrs-htmx/datastar`) is a separate repo; error families there are out of scope.~~ **Won't implement — the domain layer is a separate repo (cqrs-htmx/datastar).**
 
 ### Polish
 
@@ -189,9 +189,9 @@ The `sugar.go:105:13 undefined: fmt` error persisted in the diagnostics for the 
 43. ~~Add `//nolint` comments with rationale on the 4 accepted `generic_return` sites (so future audits are quiet).~~ **Won't implement** — superseded by the `--severity-threshold error` CI strategy (T09, v0.0.3)
 44. ~~Add `//nolint` on the accepted `silent_swallow` in the example with rationale.~~ **Won't implement** — superseded by the `--severity-threshold error` CI strategy (T09, v0.0.3)
 45. Verify the `input_bytes` context value type — string-ified int via `strconv.Itoa` may be better as a structured numeric field if errorfamily supported it.
-46. Consider adding `WithExitCode` overrides if any error needs a non-default exit code.
-47. Add a benchmark for error creation overhead (hot path: `NewSignalsPatch` marshaling + error path).
-48. Review whether the `example/` directory should have its own `CHANGELOG` or be excluded from versioning.
+46. ~~Consider adding `WithExitCode` overrides if any error needs a non-default exit code.~~ **Won't implement — condition never triggered — no error needs a non-default exit code.**
+47. ~~Add a benchmark for error creation overhead (hot path: `NewSignalsPatch` marshaling + error path).~~ **Won't implement — micro-benchmark without a consumer need; benchmarks cover the hot paths.**
+48. ~~Review whether the `example/` directory should have its own `CHANGELOG` or be excluded from versioning.~~ **Won't implement — the example is unversioned demo code inside the root module; a CHANGELOG would be ceremony.**
 49. ~~Check if the embedded `datastar.js` version (`1.0.2`) is outdated; update if a newer client exists.~~ done — confirmed latest in the v0.0.3 session (T13)
 50. ~~Confirm the `flake.nix` `devShell` includes `erraudit` so contributors have it available.~~ still open — devShell has golangci-lint + govulncheck but not erraudit (TODO_LIST)
 
