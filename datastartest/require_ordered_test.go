@@ -6,31 +6,13 @@ import (
 	"github.com/larsartmann/go-datastar/datastartest"
 )
 
-func elementsEvent(selector, mode, html string) datastartest.Event {
-	return datastartest.Event{
-		Type: "datastar-patch-elements",
-		DataLines: []string{
-			"selector " + selector,
-			"mode " + mode,
-			"elements " + html,
-		},
-	}
-}
-
-func signalsEvent(json string) datastartest.Event {
-	return datastartest.Event{
-		Type:      "datastar-patch-signals",
-		DataLines: []string{"signals " + json},
-	}
-}
-
 func TestRequireElementsOrdered(t *testing.T) {
 	t.Parallel()
 
 	events := []datastartest.Event{
-		elementsEvent("#feed", "append", "<div>one</div>"),
+		elementsEvent("selector #feed", "mode append", "elements <div>one</div>"),
 		signalsEvent(`{"count":1}`),
-		elementsEvent("#feed", "append", "<div>two</div>"),
+		elementsEvent("selector #feed", "mode append", "elements <div>two</div>"),
 	}
 
 	datastartest.RequireElementsOrdered(t, events,
@@ -44,7 +26,7 @@ func TestRequireElementsOrdered_CountMismatch(t *testing.T) {
 
 	tb := &recordingTB{}
 	datastartest.RequireElementsOrdered(tb, []datastartest.Event{
-		elementsEvent("#feed", "append", "<div>one</div>"),
+		elementsEvent("selector #feed", "mode append", "elements <div>one</div>"),
 	})
 
 	if len(tb.fatals) != 1 {
@@ -57,15 +39,15 @@ func TestRequireElementsOrdered_OrderMismatch(t *testing.T) {
 
 	tb := &recordingTB{}
 	datastartest.RequireElementsOrdered(tb, []datastartest.Event{
-		elementsEvent("#feed", "append", "<div>two</div>"),
-		elementsEvent("#feed", "append", "<div>one</div>"),
+		elementsEvent("selector #feed", "mode append", "elements <div>two</div>"),
+		elementsEvent("selector #feed", "mode append", "elements <div>one</div>"),
 	},
 		datastartest.ElementExpectation{Selector: "#feed", Mode: "append", HTML: "<div>one</div>"},
 		datastartest.ElementExpectation{Selector: "#feed", Mode: "append", HTML: "<div>two</div>"},
 	)
 
-	if len(tb.errors) != 1 {
-		t.Fatalf("expected exactly one Error (elements[0] mismatch), got %v", tb.errors)
+	if len(tb.errors) != 2 {
+		t.Fatalf("expected both order mismatches reported, got %v", tb.errors)
 	}
 }
 
@@ -74,8 +56,8 @@ func TestRequireElementsOrdered_ExtraElementsEventFails(t *testing.T) {
 
 	tb := &recordingTB{}
 	datastartest.RequireElementsOrdered(tb, []datastartest.Event{
-		elementsEvent("#feed", "append", "<div>one</div>"),
-		elementsEvent("#feed", "append", "<div>duplicate</div>"),
+		elementsEvent("selector #feed", "mode append", "elements <div>one</div>"),
+		elementsEvent("selector #feed", "mode append", "elements <div>duplicate</div>"),
 	},
 		datastartest.ElementExpectation{Selector: "#feed", Mode: "append", HTML: "<div>one</div>"},
 	)
@@ -90,7 +72,7 @@ func TestRequireElementsOrdered_WrongSelectorFails(t *testing.T) {
 
 	tb := &recordingTB{}
 	datastartest.RequireElementsOrdered(tb, []datastartest.Event{
-		elementsEvent("#other", "append", "<div>one</div>"),
+		elementsEvent("selector #other", "mode append", "elements <div>one</div>"),
 	},
 		datastartest.ElementExpectation{Selector: "#feed", Mode: "append", HTML: "<div>one</div>"},
 	)

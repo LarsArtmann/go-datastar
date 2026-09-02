@@ -13,6 +13,10 @@ func Diff(want, got []Event) string {
 	wantLines := renderEvents(want)
 	gotLines := renderEvents(got)
 
+	if strings.Join(wantLines, "\n") == strings.Join(gotLines, "\n") {
+		return ""
+	}
+
 	return strings.TrimRight(diffLines(wantLines, gotLines), "\n")
 }
 

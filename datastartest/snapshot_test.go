@@ -8,7 +8,7 @@ import (
 )
 
 var snapshotEvents = []datastartest.Event{
-	elementsEvent("#feed", "append", "<div>snapshot</div>"),
+	elementsEvent("selector #feed", "mode append", "elements <div>snapshot</div>"),
 	signalsEvent(`{"total":1}`),
 }
 
@@ -43,9 +43,9 @@ func TestSnapshot_Mismatch(t *testing.T) {
 		t.Fatalf("reset update flag: %v", err)
 	}
 
-	tb := &recordingTB{}
+	tb := &recordingTB{name: t.Name()}
 	datastartest.Snapshot(tb, []datastartest.Event{
-		elementsEvent("#feed", "append", "<div>changed</div>"),
+		elementsEvent("selector #feed", "mode append", "elements <div>changed</div>"),
 	})
 
 	if len(tb.fatals) != 1 {
@@ -61,7 +61,7 @@ func TestSnapshot_MissingGoldenFile(t *testing.T) {
 		t.Skip("-datastartest-update would create the golden this test needs missing")
 	}
 
-	tb := &recordingTB{}
+	tb := &recordingTB{name: t.Name()}
 	datastartest.Snapshot(tb, snapshotEvents)
 
 	if len(tb.fatals) != 1 {

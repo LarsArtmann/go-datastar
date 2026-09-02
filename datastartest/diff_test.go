@@ -11,7 +11,7 @@ func TestDiff_IdenticalStreams(t *testing.T) {
 	t.Parallel()
 
 	events := []datastartest.Event{
-		elementsEvent("#feed", "append", "<div>one</div>"),
+		elementsEvent("selector #feed", "mode append", "elements <div>one</div>"),
 		signalsEvent(`{"count":1}`),
 	}
 
@@ -31,8 +31,8 @@ func TestDiff_BothEmpty(t *testing.T) {
 func TestDiff_ShowsChangedLine(t *testing.T) {
 	t.Parallel()
 
-	want := []datastartest.Event{elementsEvent("#feed", "append", "<div>one</div>")}
-	got := []datastartest.Event{elementsEvent("#feed", "append", "<div>one edited</div>")}
+	want := []datastartest.Event{elementsEvent("selector #feed", "mode append", "elements <div>one</div>")}
+	got := []datastartest.Event{elementsEvent("selector #feed", "mode append", "elements <div>one edited</div>")}
 
 	diff := datastartest.Diff(want, got)
 
@@ -49,10 +49,10 @@ func TestDiff_ShowsMissingAndExtraEvents(t *testing.T) {
 	t.Parallel()
 
 	want := []datastartest.Event{
-		elementsEvent("#a", "append", "<div>a</div>"),
-		elementsEvent("#b", "append", "<div>b</div>"),
+		elementsEvent("selector #a", "mode append", "elements <div>a</div>"),
+		elementsEvent("selector #b", "mode append", "elements <div>b</div>"),
 	}
-	got := []datastartest.Event{elementsEvent("#a", "append", "<div>a</div>")}
+	got := []datastartest.Event{elementsEvent("selector #a", "mode append", "elements <div>a</div>")}
 
 	diff := datastartest.Diff(want, got)
 

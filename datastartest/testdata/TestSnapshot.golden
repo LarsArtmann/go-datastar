@@ -1,0 +1,6 @@
+Event{type=datastar-patch-elements datalines=3}
+  selector #feed
+  mode append
+  elements <div>snapshot</div>
+Event{type=datastar-patch-signals datalines=1}
+  signals {"total":1}

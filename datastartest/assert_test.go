@@ -15,9 +15,12 @@ import (
 type recordingTB struct {
 	testing.TB
 
+	name   string
 	fatals []string
 	errors []string
 }
+
+func (r *recordingTB) Name() string { return r.name }
 
 func (r *recordingTB) Helper() {}
 
