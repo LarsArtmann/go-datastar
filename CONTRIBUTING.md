@@ -26,7 +26,8 @@ nix develop                    # enter dev shell (Go, golangci-lint, govulncheck
 nix flake check                # run all checks (format + build)
 nix run .#test                 # run tests
 nix run .#test-race            # run tests with -race
-nix run .#lint                 # run golangci-lint
+nix run .#lint                 # run golangci-lint (nixpkgs version)
+nix run .#lint-ci              # EXACT CI linter parity — THE pre-push gate
 nix run .#coverage             # generate coverage report
 nix run .#build                # build the library
 nix run .#vet                  # run go vet
@@ -44,8 +45,13 @@ export GOEXPERIMENT=jsonv2
 # Run the full test suite (workspace mode — see next section):
 go test ./... ./datastartest/... ./static/... -race -count=1
 
-# Lint:
+# Lint (dev-shell / nixpkgs version):
 golangci-lint run ./... ./datastartest/... ./static/...
+
+# Pre-push, ALWAYS use the exact-CI lint (same version CI installs):
+go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 \
+  run ./... ./datastartest/... ./static/... --timeout 5m
+# (or: nix run .#lint-ci)
 
 # Vet:
 go vet ./... ./datastartest/... ./static/...

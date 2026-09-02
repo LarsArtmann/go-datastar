@@ -32,6 +32,8 @@ release (currently **1.26.7** across go.mod ×3, go.work, CI, and the flake
 GOEXPERIMENT=jsonv2 go test ./... ./datastartest/... ./static/... -race -count=1
 GOEXPERIMENT=jsonv2 go vet ./... ./datastartest/... ./static/...
 GOEXPERIMENT=jsonv2 golangci-lint run ./... ./datastartest/... ./static/...
+# Pre-push lint = EXACT CI parity (flake: `nix run .#lint-ci`):
+GOEXPERIMENT=jsonv2 go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run ./... ./datastartest/... ./static/... --timeout 5m
 
 # Isolation mode (GOWORK=off, per-module) — verifies replace directives:
 GOWORK=off GOEXPERIMENT=jsonv2 go test ./...                      # root only

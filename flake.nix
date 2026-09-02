@@ -224,6 +224,15 @@
               golangci-lint run ./... ./datastartest/... ./static/...
             '';
 
+            # EXACT CI parity: pins the same golangci-lint version the CI lint
+            # job installs (nixpkgs' golangci-lint drifts between versions,
+            # which caused "green locally, red in CI" masters). THE pre-push
+            # gate; first run compiles the linter from source (module cache).
+            lint-ci = mkApp "lint-ci" [ goPkg ] ''
+              export GOEXPERIMENT=jsonv2
+              go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run ./... ./datastartest/... ./static/... --timeout 5m
+            '';
+
             # erraudit is NOT hermetically buildable (its dependency tree
             # contains private modules, e.g. go-finding), so this app
             # go-installs it and requires local GitHub credentials. One
