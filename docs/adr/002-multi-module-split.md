@@ -104,3 +104,14 @@ compatibility contract; the replaces are the developer convenience.
   `e2e_test.go` retains only transport-level checks (go-sse-owned behavior).
   Anyone changing root's wire format runs the datastartest suite to see the
   full round-trip.
+
+## Addendum 2026-09-03: example/ stays in the root module (decision)
+
+`example/` (the live-feed demo + domain-adapter) remains part of the root
+module rather than becoming a fourth module. Rationale: the demo's
+dependencies (go-sse, and nothing else beyond stdlib) are already root
+requirements, so a separate module would duplicate requires and lockstep-tag
+ceremony for zero isolation benefit; the demo is documentation, and its
+packages are excluded from the datastartest hermetic fileset already (they
+never enter the vendor tree). Revisit only if the demo grows dependencies the
+library itself must not have.

@@ -39,3 +39,13 @@ gate** (fail below N%)?
   color, and the docs-health VERIFY pass re-measures on every audit.
 - If a future maintainer wants a hard floor, the thresholds in
   `coverage.yml` are the natural place to enforce them.
+
+## Addendum 2026-09-03: coverage-floor policy (decision)
+
+No hard floor, confirmed. The measured values (root 98.4%, datastartest
+93.4%, static 100%) are an OUTPUT of behavior-driven suites, not a target;
+gating them would incentivize assertion-free tests to protect the number. The
+existing safeguards stay: the live badge makes collapse visible, the
+coverage.yml job re-measures on every master push, and docs-health VERIFY
+pass re-quotes the numbers with dates. A future floor belongs in
+`coverage.yml`, per the original decision.

@@ -140,6 +140,17 @@ Things we are deliberately NOT pursuing and why:
 
 ## Resolved questions
 
+- **datastartest CHANGELOG placement (decided 2026-09-03):** datastartest has
+  NO module-level CHANGELOG file; its changes are recorded in the root
+  CHANGELOG under "Added — datastartest" sections. Rationale: the lockstep
+  release train (ADR 002) means one release = one history; a second file
+  would duplicate every entry and drift. Revisit only if datastartest ever
+  releases independently of root.
+- **AGENTS CI summary table (decided 2026-09-03):** no separate summary table
+  — the CI section's bullets already carry per-workflow state (active /
+  probe-gated / watch) and the promotion triggers live in
+  [docs/ci-watch.md](docs/ci-watch.md). A table would duplicate both and push
+  AGENTS.md over its 15KB budget.
 - **`go.work.sum` tracking (decided 2026-08-16, Full Execution Mode; refined
   2026-09-03 per CodeRabbit PR #3 thread):**
   intentionally gitignored. `go.work` is force-added for workspace development;
