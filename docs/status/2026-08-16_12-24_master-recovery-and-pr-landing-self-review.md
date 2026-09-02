@@ -30,20 +30,20 @@ But the session also surfaced a **mid-session incident**: local master's tip sil
 
 ## b) PARTIALLY DONE
 
-1. **CodeRabbit thread replies on PR #3** — the five inline fixes were verified and merged, but the review threads were never answered (courtesy/closure gap; not a merge blocker — `required_conversation_resolution` is off).
-2. **Local verification before merge** — actionlint and coverage parsing were validated in the _prior_ session; this session merged without ever running `nix flake check` / `nix run .#test-race` locally. CI covered the Go jobs (green), but **CI has no nix jobs**: treefmt formatting, hermetic builds, and `go.work` idempotency beyond what ci.yml does are unverified on master. My own AGENTS.md markdown edit specifically was never format-checked.
+1. **CodeRabbit thread replies on PR #3** — the five inline fixes were verified and merged, but the review threads were never answered (courtesy/closure gap; not a merge blocker — `required_conversation_resolution` is off). _Still open — routed to TODO_LIST (low)._
+2. ~~**Local verification before merge** — actionlint and coverage parsing were validated in the _prior_ session; this session merged without ever running `nix flake check` / `nix run .#test-race` locally. CI covered the Go jobs (green), but **CI has no nix jobs**: treefmt formatting, hermetic builds, and `go.work` idempotency beyond what ci.yml does are unverified on master. My own AGENTS.md markdown edit specifically was never format-checked.~~ done (done — nix.yml runs the hermetic gate in CI (88c1eed); nix flake check green)
 3. ~~**Prior session's 3 open questions** — push scope: resolved (moot, everything was pushed); master reconciliation: resolved (this session); badge semantics (all 3 modules at 88.9% vs root-only): **still unanswered** — the badge now publishes all-modules by default.~~ done (resolved by the live CI badge (ed815c7))
 4. ~~**TODO_LIST routing** — master's TODO_LIST.md was updated by the parallel session (via PR #3 merge) but contains a stale item (see d/e); this report's next-actions list is not yet harvested into it.~~ done (docs-health pass 2026-08-29)
 
 ## c) NOT STARTED
 
 1. ~~CHANGELOG stale coverage claim fix — L29 still says "92.9%"; real number is 88.9% (prior session's finding, still true on master).~~ done (docs-health pass 2026-08-29)
-2. Rehoming `preserve/status-report-coderabbit-pr3` (the 11-37 report with the 50-item ranked table).
-3. Coverage-floor policy (optional CI gate at a threshold) — undecided.
-4. Merged-branch cleanup: remote `pr/docs-test-consolidation` and local tracking branch still exist (`delete_branch_on_merge` is false).
+2. Rehoming `preserve/status-report-coderabbit-pr3` (the 11-37 report with the 50-item ranked table). _Still open — owner-blocked; routed TODO_LIST._
+3. Coverage-floor policy (optional CI gate at a threshold) — undecided. _Still open — routed to ROADMAP._
+4. Merged-branch cleanup: remote `pr/docs-test-consolidation` and local tracking branch still exist (`delete_branch_on_merge` is false). _Still open — owner-blocked; routed TODO_LIST._
 5. ~~Adding `nix flake check` to CI as a required check — the gap that let master merge on Go-only evidence.~~ **Won't implement — superseded — owner removed branch protection entirely (257c395); nix-in-CI idea routed to ROADMAP.**
-6. Reviewing the parallel session's 5 merged commits for content (they were CI-verified but never read by this session).
-7. Next release cut — CHANGELOG on master now carries multiple unreleased entries (coverage badge, gotchas, datastartest fixes).
+6. Reviewing the parallel session's 5 merged commits for content (they were CI-verified but never read by this session). _Still open — routed TODO_LIST (low)._
+7. ~~Next release cut — CHANGELOG on master now carries multiple unreleased entries (coverage badge, gotchas, datastartest fixes).~~ done (v0.3.0 cut 2026-08-29 — the unreleased entries shipped)
 
 ## d) TOTALLY FUCKED UP
 
@@ -107,25 +107,25 @@ But the session also surfaced a **mid-session incident**: local master's tip sil
 | ~~7~~  | ~~Fix CHANGELOG L29 stale "92.9%" → measured 88.9%~~ done (docs-health pass 2026-08-29)                                                                                                                                                                       | ~~Medium~~                      | ~~5min~~         |
 | ~~8~~  | ~~Decide badge semantics (all-modules 88.9% vs root-only higher number) and update README label if changed~~ done (resolved by the live CI badge (ed815c7))                                                                                                   | ~~Medium~~                      | ~~15min~~        |
 | 9      | Reply to the 5 CodeRabbit threads on merged PR #3 (closure; mention fixes landed in `ed815c7`)                                                                                                                                                                | Medium                          | 15min            |
-| 10     | Adopt parallel-session policy: one session per checkout or mandatory per-session worktrees; constrain auto-commit daemon to non-master branches                                                                                                               | High                            | decision + 15min |
+| ~~10~~     | ~~Adopt parallel-session policy: one session per checkout or mandatory per-session worktrees; constrain auto-commit daemon to non-master branches~~ done — answered in practice — shared-checkout concurrency + daemon norm documented as AGENTS.md gotchas | ~~High~~ | ~~decision + 15min~~ |
 | ~~11~~ | ~~Route future status reports through quick PRs instead of direct master commits~~ done (done — reports rode PRs #5/#6 (86d549a, cb86344, a8b8316))                                                                                                           | ~~Medium~~                      | ~~5min~~         |
 | 12     | Read the 5 parallel-session commits now on master (`ed815c7` content, `ce3b4bc`, `66a637e`, `ffeedea`, `52cfac8`, `7dec1d3`) — human review never happened                                                                                                    | Medium                          | 30min            |
 | ~~13~~ | ~~Consider requiring 1 approving review on master protection (currently checks-only; everything merged with zero human review)~~ **Won't implement — superseded — protection removed (257c395).**                                                             | ~~Medium~~                      | ~~decision~~     |
 | ~~14~~ | ~~Consider enabling `required_conversation_resolution` once thread replies (item 9) are done~~ **Won't implement — superseded — protection removed (257c395).**                                                                                               | ~~Low~~                         | ~~2min~~         |
-| 15     | Cut next release: CHANGELOG has unreleased entries (badge, gotchas, datastartest fixes); follow go-release skill                                                                                                                                              | Medium                          | 1h               |
+| ~~15~~     | ~~Cut next release: CHANGELOG has unreleased entries (badge, gotchas, datastartest fixes); follow go-release skill~~ done — v0.3.0 cut 2026-08-29 (tags ×3, GitHub Release, pkg.go.dev renders) | ~~Medium~~ | ~~1h~~ |
 | 16     | Add coverage-floor gate to coverage.yml if a policy is chosen (item 8)                                                                                                                                                                                        | Low                             | 15min            |
 | ~~17~~ | ~~Verify Dependabot covers all three modules (root, static, datastartest)~~ done (.github/dependabot.yml covers root, datastartest, static + github-actions)                                                                                                  | ~~Low~~                         | ~~10min~~        |
-| 18     | Verify pkg.go.dev renders current docs after next release                                                                                                                                                                                                     | Low                             | 10min            |
+| ~~18~~     | ~~Verify pkg.go.dev renders current docs after next release~~ done — verified 2026-09-02 — root, static, and datastartest all render v0.3.0 on pkg.go.dev | ~~Low~~ | ~~10min~~ |
 | ~~19~~ | ~~Annotate older docs/status reports that reference pre-merge state (e.g., 09-55 "full-execution" report) via docs-health ANNOTATE~~ done (done — 08-47 pass covered pre-merge reports; docs-health 2026-08-29 covered 09-55 onward)                          | ~~Low~~                         | ~~20min~~        |
 | ~~20~~ | ~~Re-verify README comparison table against upstream `starfederation/datastar-go` changes since last check~~ done (re-verified v1.2.2 on 2026-08-16 (T12, 83d7c60); standing re-check in docs/release-checklist.md)                                           | ~~Low~~                         | ~~30min~~        |
 | 21     | Un-block erraudit CI job: probe step skips while the erraudit repo is private; revisit when public                                                                                                                                                            | Low                             | deferred         |
-| 22     | Roadmap: domain-adapter example (EventBridge-style) demonstrating the Patch-as-value payoff                                                                                                                                                                   | Low                             | deferred         |
+| ~~22~~     | ~~Roadmap: domain-adapter example (EventBridge-style) demonstrating the Patch-as-value payoff~~ done — example/domain-adapter/ shipped (efde465) | ~~Low~~ | ~~deferred~~ |
 
 ## g) Questions (cannot be figured out from the repo)
 
-1. **Who reset master at 12:00:11?** Was it you manually, one of the parallel sessions, or a `git town` side effect? I can't attribute it from the reflog, and the answer decides whether `git town skip` is safe to use unprompted in this repo.
-2. **Parallel-session policy:** do you want a hard rule (one crush session per checkout / mandatory per-session worktrees, daemon off master), or do you accept the current concurrency and its occasional lost commits?
-3. **The preserved 11-37 report:** rehome it to master via PR (it contains the 50-item ranked table that feeds TODO_LIST) or drop it permanently?
+1. ~~**Who reset master at 12:00:11?** Was it you manually, one of the parallel sessions, or a `git town` side effect? I can't attribute it from the reflog, and the answer decides whether `git town skip` is safe to use unprompted in this repo.~~ **Won't implement — attribution window closed — reflog evidence exhausted 2026-08-16, no owner answer; reflog-derived facts stand in d.1.**
+2. ~~**Parallel-session policy:** do you want a hard rule (one crush session per checkout / mandatory per-session worktrees, daemon off master), or do you accept the current concurrency and its occasional lost commits?~~ done (answered in practice — shared-checkout concurrency + daemon norm are documented AGENTS.md gotchas (owner accepted current posture))
+3. **The preserved 11-37 report:** rehome it to master via PR (it contains the 50-item ranked table that feeds TODO_LIST) or drop it permanently? _Still open — owner-blocked; routed TODO_LIST._
 
 ---
 

@@ -14,7 +14,7 @@
 2. **Zero local verification this session.** I never ran the test suite, `go vet`, or lint locally — I outsourced 100% of verification to CI. Justifiable for docs-only diffs, but it means my "verified" claim rests entirely on CI runs I only watched, plus a wrong-looking claim would only surface after merge.
 3. **I noticed stale `pr/docs-test-consolidation` (local + remote) mid-session and did nothing.** It appeared in every `git branch -vv` output. PR #3 was already merged; the branch is dead weight. I noticed it, flagged nothing, and left it.
 4. **No TODO_LIST.md harvest.** The status-report skill's own loop-closer (feeding section (f) into TODO_LIST/ROADMAP via docs-health HARVEST) is being deferred again — this is the documented anti-pattern of reports piling up as entombed snapshots. I deferred because the user said "wait for instructions", but the deferral itself should be recorded as debt. It now is.
-5. **The AGENTS.md gotcha I added is incomplete.** I also manually unset stale git-town lineage after each branch deletion (`git config --unset git-town-branch.<b>.parent`) — twice this session — but did not write that half of the procedure into the gotcha entry.
+5. ~~**The AGENTS.md gotcha I added is incomplete.** I also manually unset stale git-town lineage after each branch deletion (`git config --unset git-town-branch.<b>.parent`) — twice this session — but did not write that half of the procedure into the gotcha entry.~~ done (done — the AGENTS.md git-town gotcha now covers lineage pruning and git town propose (see b.1))
 
 ### What is stupid that we do anyway?
 
@@ -61,17 +61,17 @@ No. Every claim in the session was verifiable and verified. The closest to a lie
 
 ## b) PARTIALLY DONE
 
-1. **AGENTS.md git-town gotcha entry** — landed, but covers only the observed-branches fix; missing the lineage-unset-after-branch-delete half and the `git town propose` one-command alternative (both practiced this session, neither documented).
-2. **Master-landing runbook consolidation** — the knowledge exists (AGENTS.md + two reports) but is not consolidated into one canonical home; risk of drift remains.
-3. **This report's next-steps → TODO_LIST.md harvest** — section (f) below is written but not yet harvested (docs-health HARVEST deferred pending user instruction).
+1. ~~**AGENTS.md git-town gotcha entry** — landed, but covers only the observed-branches fix; missing the lineage-unset-after-branch-delete half and the `git town propose` one-command alternative (both practiced this session, neither documented).~~ done (done — the AGENTS.md git-town gotcha now covers lineage pruning after branch deletion AND git town propose (docs-health 2026-08-29))
+2. ~~**Master-landing runbook consolidation** — the knowledge exists (AGENTS.md + two reports) but is not consolidated into one canonical home; risk of drift remains.~~ **Won't implement — moot — branch protection removed (257c395); the landing ceremony is obsolete.**
+3. ~~**This report's next-steps → TODO_LIST.md harvest** — section (f) below is written but not yet harvested (docs-health HARVEST deferred pending user instruction).~~ done (done — docs-health HARVEST executed 2026-08-29 and 2026-09-02)
 
 ## c) NOT STARTED
 
-1. Root-cause fix for recurring blocked-master incidents (branch-first rule / pre-push guard / lighter docs CI path).
+1. ~~Root-cause fix for recurring blocked-master incidents (branch-first rule / pre-push guard / lighter docs CI path).~~ **Won't implement — moot — branch protection removed (257c395); direct pushes are the norm again.**
 2. Stale branch cleanup: `pr/docs-test-consolidation` (local + remote; PR #3 merged), `preserve/status-report-coderabbit-pr3` (snapshot already entombed in docs/status).
-3. `docs/status/` index (28 reports, no README).
-4. CI acceleration for docs-only PRs (path filters) and golangci-lint caching (1m33s long pole).
-5. PR-template honesty guard (agents must not pre-check CI-dependent boxes).
+3. ~~`docs/status/` index (28 reports, no README).~~ done (done — docs/status/README.md index (12a2de4))
+4. ~~CI acceleration for docs-only PRs (path filters) and golangci-lint caching (1m33s long pole).~~ done (done — CI path filters (5887043) + golangci-lint analysis cache (88c1eed))
+5. ~~PR-template honesty guard (agents must not pre-check CI-dependent boxes).~~ done (done — PR-template honesty guard (5887043))
 
 ## d) TOTALLY FUCKED UP
 
@@ -83,12 +83,12 @@ No. Every claim in the session was verifiable and verified. The closest to a lie
 
 ## e) WHAT WE SHOULD IMPROVE
 
-1. **Stop committing to local master, ever.** Branch first; the auto-commit daemon makes accidental master commits worse. One AGENTS.md rule + optionally a pre-push/pre-commit guard.
-2. **Automate the landing ceremony** — `git town propose` or a flake app; the manual sequence was executed flawlessly three times now, which means it is ripe for automation.
-3. **Stop pre-checking unverifiable checklist boxes.** PR template guidance: CI-dependent items get checked by CI, not predicted by agents.
-4. **Consolidate the recovery runbook into ONE canonical location** and have reports reference it.
-5. **Speed up docs-only CI** — full 5-job matrix for Markdown changes is ceremony without risk reduction.
-6. **Harvest status reports on schedule** — 28 snapshots and counting; TODO_LIST/ROADMAP are the living artifacts.
+1. ~~**Stop committing to local master, ever.** Branch first; the auto-commit daemon makes accidental master commits worse. One AGENTS.md rule + optionally a pre-push/pre-commit guard.~~ **Won't implement — moot — branch protection removed (257c395); daemon-to-master is the documented norm.**
+2. ~~**Automate the landing ceremony** — `git town propose` or a flake app; the manual sequence was executed flawlessly three times now, which means it is ripe for automation.~~ done (done — git town propose documented as the one-command flow (AGENTS.md gotchas))
+3. ~~**Stop pre-checking unverifiable checklist boxes.** PR template guidance: CI-dependent items get checked by CI, not predicted by agents.~~ done (done — PR-template honesty guard (5887043))
+4. ~~**Consolidate the recovery runbook into ONE canonical location** and have reports reference it.~~ **Won't implement — moot — landing ceremony obsolete after protection removal (257c395).**
+5. ~~**Speed up docs-only CI** — full 5-job matrix for Markdown changes is ceremony without risk reduction.~~ done (done — docs-only paths skip the code gates (5887043))
+6. ~~**Harvest status reports on schedule** — 28 snapshots and counting; TODO_LIST/ROADMAP are the living artifacts.~~ done (done — docs-health passes 2026-08-29 and 2026-09-02; open items stay routed to TODO_LIST)
 
 ## f) Things we should get done next
 
@@ -107,10 +107,10 @@ Ordered roughly by impact / effort. Everything here is grounded in what this ses
 | ~~9~~  | ~~Consolidate master-landing runbook into one canonical doc~~ **Won't implement — superseded — protection removed; landing ceremony obsolete (257c395).**                          | ~~Kill the 3-way split-brain risk~~                          |
 | ~~10~~ | ~~Verify TODO_LIST.md exists and is current (docs-health VERIFY)~~ done (docs-health pass 2026-08-29)                                                                              | ~~Unknown state; reports keep deferring to it~~              |
 | ~~11~~ | ~~Confirm erraudit CI job status in AGENTS.md (informational, not required)~~ done (AGENTS.md documents the single-directory erraudit invocation + CI probe-gate)                  | ~~Prevents future 4-vs-5 confusion~~                         |
-| 12     | Path-filter CI so docs-only PRs skip test/lint/govulncheck                                                                                                                         | ~2 min saved per docs PR                                     |
-| 13     | Investigate golangci-lint CI caching                                                                                                                                               | 1m33s long pole on every PR                                  |
-| 14     | PR template: "CI-dependent boxes are checked by CI" guard                                                                                                                          | Honesty fix from this session                                |
-| 15     | docs/status/README.md index (date, one-liner, outcome per report)                                                                                                                  | 28 files, no navigation                                      |
+| ~~12~~     | ~~Path-filter CI so docs-only PRs skip test/lint/govulncheck~~ done — docs-only paths skip the code gates (5887043) | ~~~2 min saved per docs PR~~ |
+| ~~13~~     | ~~Investigate golangci-lint CI caching~~ done — golangci-lint analysis cache (88c1eed) | ~~1m33s long pole on every PR~~ |
+| ~~14~~     | ~~PR template: "CI-dependent boxes are checked by CI" guard~~ done — PR-template honesty guard (5887043) | ~~Honesty fix from this session~~ |
+| ~~15~~     | ~~docs/status/README.md index (date, one-liner, outcome per report)~~ done — docs/status/README.md index (12a2de4) | ~~28 files, no navigation~~ |
 | ~~16~~ | ~~Codify CHANGELOG policy: docs/status snapshots excluded (status quo, unwritten)~~ done (docs-health pass 2026-08-29)                                                             | ~~PR #5/#6 both had to argue this ad hoc~~                   |
 | ~~17~~ | ~~Session-entry ritual in AGENTS.md: `git town status`, `git status`, `gh pr list`~~ done (docs-health pass 2026-08-29)                                                            | ~~Caught an unfinished run only because the user pasted it~~ |
 | ~~18~~ | ~~Investigate `origin/coverage` force-pushes observed twice this session~~ done (explained — the CI coverage workflow publishes to the orphan coverage branch by design (ed815c7)) | ~~Parallel session activity; coordinate~~                    |

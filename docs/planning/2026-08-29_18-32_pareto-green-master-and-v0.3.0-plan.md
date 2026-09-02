@@ -123,33 +123,33 @@ customer-value. (User instruction: ≤12min sub-tasks in Step 3; the skill's
 
 | Task | Title                                                                                                                                                                                         | Pareto | Impact   | Effort | Depends on          | Category  | Status                    |
 | ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | -------- | ------ | ------------------- | --------- | ------------------------- |
-| T01  | Settle the toolchain: complete go 1.26.7 bump atomically (go.mod ×3, go.work, ci.yml ×5, flake pin + vendorHash) or restore 1.26.6 — coordinate with parallel session, revert path documented | 1%     | Critical | 60min  | G1 coordination     | Toolchain | 🟡 IN_PROGRESS (parallel) |
-| T02  | Green master: commit gofumpt reformat; fix mnd `example/main.go:153` + makezero `reader.go:98`; migrate `errors.As`→`AsType` ×4 via go-error-modernization; full gate; push                   | 1%     | Critical | 45min  | —                   | CI        | Ready                     |
-| T03  | Ship v0.3.0: release-checklist gate, version bumps ×3, lockstep tags, GitHub Release, pkg.go.dev verify                                                                                       | 1%     | Critical | 60min  | T01, T02 (G10)      | Release   | Ready                     |
+| ~~T01~~  | ~~Settle the toolchain: complete go 1.26.7 bump atomically (go.mod ×3, go.work, ci.yml ×5, flake pin + vendorHash) or restore 1.26.6 — coordinate with parallel session, revert path documented~~ done at `b37d11a` | ~~1%~~ | ~~Critical~~ | ~~60min~~ | ~~G1 coordination~~ | ~~Toolchain~~ | ~~🟡 IN_PROGRESS (parallel)~~ |
+| ~~T02~~  | ~~Green master: commit gofumpt reformat; fix mnd `example/main.go:153` + makezero `reader.go:98`; migrate `errors.As`→`AsType` ×4 via go-error-modernization; full gate; push~~ done at `489256b`, `8cc56a7` | ~~1%~~ | ~~Critical~~ | ~~45min~~ | ~~—~~ | ~~CI~~ | ~~Ready~~ |
+| ~~T03~~  | ~~Ship v0.3.0: release-checklist gate, version bumps ×3, lockstep tags, GitHub Release, pkg.go.dev verify~~ done at `1f3cd93` | ~~1%~~ | ~~Critical~~ | ~~60min~~ | ~~T01, T02 (G10)~~ | ~~Release~~ | ~~Ready~~ |
 | T04  | Branch hygiene: delete `pr/docs-test-consolidation` (local+remote), rehome or drop `preserve/status-report-coderabbit-pr3`                                                                    | 4%     | High     | 15min  | Owner approval (G7) | Repo      | 🔵 BLOCKED                |
-| T05  | CI path filters: docs-only changes skip test/lint/govulncheck                                                                                                                                 | 4%     | High     | 30min  | —                   | CI        | Ready                     |
-| T06  | AGENTS.md pruning: ≤15KB, drop resolved-incident gotchas, compress file-layout table                                                                                                          | 4%     | High     | 45min  | —                   | Docs      | Ready                     |
-| T07  | `docs/status/README.md` index: date + one-liner + outcome per report                                                                                                                          | 20%    | Medium   | 30min  | —                   | Docs      | Ready                     |
-| T08  | PR template: CI-dependent boxes become "checked by CI"                                                                                                                                        | 4%     | Medium   | 15min  | —                   | Repo      | Ready                     |
-| T09  | CONTRIBUTING: fuzz-test how-to (`-fuzz=FuzzReadEvents`, per-module, corpus layout)                                                                                                            | 20%    | Medium   | 15min  | —                   | Docs      | Ready                     |
-| T10  | Nix CI job (`install-nix-action` + `nix flake check`, non-required first)                                                                                                                     | 20%    | High     | 60min  | T02                 | CI        | Ready                     |
-| T11  | Hermetic `checks.lint`/`checks.vet`/`checks.govulncheck` + `apps.bench` + collect bench + vendorHash fragility hardening                                                                      | 20%    | Medium   | 100min | T10                 | CI        | Ready                     |
-| T12  | golangci-lint CI caching                                                                                                                                                                      | 20%    | Medium   | 30min  | —                   | CI        | Ready                     |
-| T13  | ADR 003: error classification (go-error-family contract, no-samber/oops rule)                                                                                                                 | 20%    | Medium   | 45min  | —                   | Docs      | Ready                     |
-| T14  | ADR 004: nix per-module hermetic checks pattern                                                                                                                                               | Rest   | Low      | 30min  | T11                 | Docs      | Ready                     |
-| T15  | ADR 005: coverage strategy + coverage-floor decision                                                                                                                                          | Rest   | Low      | 30min  | —                   | Docs      | Ready                     |
-| T16  | Consumer guides pack A: `docs/replay.md` + `docs/error-system.md`                                                                                                                             | Rest   | Medium   | 100min | —                   | Docs      | Ready                     |
-| T17  | Consumer guides pack B: `docs/wire-format.md` + `docs/testing.md`                                                                                                                             | Rest   | Medium   | 100min | —                   | Docs      | Ready                     |
-| T18  | Docs pack C: `docs/performance.md` + `docs/migration-guide.md` + JS-pinning + heartbeat docs                                                                                                  | Rest   | Low      | 100min | T03                 | Docs      | Ready                     |
-| T19  | Implement `ReplaceURLQuerystring` + tests + README row update                                                                                                                                 | 20%    | High     | 90min  | —                   | Feature   | Ready                     |
-| T20  | SSE compression: implement or ship middleware example + honest README update                                                                                                                  | Rest   | High     | 100min | —                   | Feature   | Ready                     |
-| T21  | Headless-browser E2E spike (chromedp) exercising the real DataStar JS client                                                                                                                  | Rest   | Medium   | 100min | —                   | Testing   | Ready                     |
-| T22  | Typed script-patch accessors in datastartest (`RedirectURL`, `CustomEventName/Detail`, `ScriptAttributes`)                                                                                    | Rest   | Medium   | 60min  | —                   | Feature   | Ready                     |
-| T23  | Domain-adapter example (EventBridge-style) demonstrating Patch-as-value                                                                                                                       | Rest   | Medium   | 100min | —                   | Example   | Ready                     |
-| T24  | CI expansions: scheduled fuzz cron, CodeQL, erraudit-transition probe test, renovate for upstream DataStar JS                                                                                 | Rest   | Low      | 100min | T10                 | CI        | Ready                     |
-| T25  | Community + example polish: sponsors/funding, contributor list, `example/README.md`, `example/docker-compose.yml`                                                                             | Rest   | Low      | 45min  | —                   | Repo      | Ready                     |
-| T26  | Formatter decision ADR (dprint kept for non-Go, treefmt canonical — codify)                                                                                                                   | Rest   | Low      | 30min  | —                   | Docs      | Ready                     |
-| T27  | Website launch spike (Astro + Starlight pattern, demo video decision)                                                                                                                         | Rest   | Low      | 60min  | —                   | Website   | Ready                     |
+| ~~T05~~  | ~~CI path filters: docs-only changes skip test/lint/govulncheck~~ done at `5887043` | ~~4%~~ | ~~High~~ | ~~30min~~ | ~~—~~ | ~~CI~~ | ~~Ready~~ |
+| ~~T06~~  | ~~AGENTS.md pruning: ≤15KB, drop resolved-incident gotchas, compress file-layout table~~ done at `5887043` | ~~4%~~ | ~~High~~ | ~~45min~~ | ~~—~~ | ~~Docs~~ | ~~Ready~~ |
+| ~~T07~~  | ~~`docs/status/README.md` index: date + one-liner + outcome per report~~ done at `12a2de4` | ~~20%~~ | ~~Medium~~ | ~~30min~~ | ~~—~~ | ~~Docs~~ | ~~Ready~~ |
+| ~~T08~~  | ~~PR template: CI-dependent boxes become "checked by CI"~~ done at `5887043` | ~~4%~~ | ~~Medium~~ | ~~15min~~ | ~~—~~ | ~~Repo~~ | ~~Ready~~ |
+| ~~T09~~  | ~~CONTRIBUTING: fuzz-test how-to (`-fuzz=FuzzReadEvents`, per-module, corpus layout)~~ done at `5887043` | ~~20%~~ | ~~Medium~~ | ~~15min~~ | ~~—~~ | ~~Docs~~ | ~~Ready~~ |
+| ~~T10~~  | ~~Nix CI job (`install-nix-action` + `nix flake check`, non-required first)~~ done at `88c1eed` | ~~20%~~ | ~~High~~ | ~~60min~~ | ~~T02~~ | ~~CI~~ | ~~Ready~~ |
+| ~~T11~~  | ~~Hermetic `checks.lint`/`checks.vet`/`checks.govulncheck` + `apps.bench` + collect bench + vendorHash fragility hardening~~ done — at 88c1eed, cf19bf1 — bench + ADR 004 landed; sandbox checks deliberately not built (ADR 004 verdict); vendorHash-sensitivity investigation still open | ~~20%~~ | ~~Medium~~ | ~~100min~~ | ~~T10~~ | ~~CI~~ | ~~Ready~~ |
+| ~~T12~~  | ~~golangci-lint CI caching~~ done at `88c1eed` | ~~20%~~ | ~~Medium~~ | ~~30min~~ | ~~—~~ | ~~CI~~ | ~~Ready~~ |
+| ~~T13~~  | ~~ADR 003: error classification (go-error-family contract, no-samber/oops rule)~~ done at `cf19bf1` | ~~20%~~ | ~~Medium~~ | ~~45min~~ | ~~—~~ | ~~Docs~~ | ~~Ready~~ |
+| ~~T14~~  | ~~ADR 004: nix per-module hermetic checks pattern~~ done — at cf19bf1 — revision pending the FOD-sensitivity investigation (see ADR 004) | ~~Rest~~ | ~~Low~~ | ~~30min~~ | ~~T11~~ | ~~Docs~~ | ~~Ready~~ |
+| ~~T15~~  | ~~ADR 005: coverage strategy + coverage-floor decision~~ done at `cf19bf1` | ~~Rest~~ | ~~Low~~ | ~~30min~~ | ~~—~~ | ~~Docs~~ | ~~Ready~~ |
+| ~~T16~~  | ~~Consumer guides pack A: `docs/replay.md` + `docs/error-system.md`~~ done at `3fa96f0` | ~~Rest~~ | ~~Medium~~ | ~~100min~~ | ~~—~~ | ~~Docs~~ | ~~Ready~~ |
+| ~~T17~~  | ~~Consumer guides pack B: `docs/wire-format.md` + `docs/testing.md`~~ done at `3fa96f0` | ~~Rest~~ | ~~Medium~~ | ~~100min~~ | ~~—~~ | ~~Docs~~ | ~~Ready~~ |
+| ~~T18~~  | ~~Docs pack C: `docs/performance.md` + `docs/migration-guide.md` + JS-pinning + heartbeat docs~~ done at `3fa96f0`, `cf7b3f4` | ~~Rest~~ | ~~Low~~ | ~~100min~~ | ~~T03~~ | ~~Docs~~ | ~~Ready~~ |
+| ~~T19~~  | ~~Implement `ReplaceURLQuerystring` + tests + README row update~~ done at `3d3cba0` | ~~20%~~ | ~~High~~ | ~~90min~~ | ~~—~~ | ~~Feature~~ | ~~Ready~~ |
+| ~~T20~~  | ~~SSE compression: implement or ship middleware example + honest README update~~ done at `8f190ea` | ~~Rest~~ | ~~High~~ | ~~100min~~ | ~~—~~ | ~~Feature~~ | ~~Ready~~ |
+| ~~T21~~  | ~~Headless-browser E2E spike (chromedp) exercising the real DataStar JS client~~ **Won't implement — deferred by decision — chromedp chosen; scope + rationale recorded in ROADMAP (no spike run).** | ~~Rest~~ | ~~Medium~~ | ~~100min~~ | ~~—~~ | ~~Testing~~ | ~~Ready~~ |
+| ~~T22~~  | ~~Typed script-patch accessors in datastartest (`RedirectURL`, `CustomEventName/Detail`, `ScriptAttributes`)~~ done at `671e57c` | ~~Rest~~ | ~~Medium~~ | ~~60min~~ | ~~—~~ | ~~Feature~~ | ~~Ready~~ |
+| ~~T23~~  | ~~Domain-adapter example (EventBridge-style) demonstrating Patch-as-value~~ done at `efde465`, `1dda530` | ~~Rest~~ | ~~Medium~~ | ~~100min~~ | ~~—~~ | ~~Example~~ | ~~Ready~~ |
+| ~~T24~~  | ~~CI expansions: scheduled fuzz cron, CodeQL, erraudit-transition probe test, renovate for upstream DataStar JS~~ done at `1a72616` | ~~Rest~~ | ~~Low~~ | ~~100min~~ | ~~T10~~ | ~~CI~~ | ~~Ready~~ |
+| ~~T25~~  | ~~Community + example polish: sponsors/funding, contributor list, `example/README.md`, `example/docker-compose.yml`~~ done at `cf7b3f4` | ~~Rest~~ | ~~Low~~ | ~~45min~~ | ~~—~~ | ~~Repo~~ | ~~Ready~~ |
+| ~~T26~~  | ~~Formatter decision ADR (dprint kept for non-Go, treefmt canonical — codify)~~ done at `cf19bf1` | ~~Rest~~ | ~~Low~~ | ~~30min~~ | ~~—~~ | ~~Docs~~ | ~~Ready~~ |
+| ~~T27~~  | ~~Website launch spike (Astro + Starlight pattern, demo video decision)~~ **Won't implement — deferred by decision — trigger conditions ('next release worth a launch') recorded in ROADMAP.** | ~~Rest~~ | ~~Low~~ | ~~60min~~ | ~~—~~ | ~~Website~~ | ~~Ready~~ |
 
 **Total estimated effort: ~32h.** The 1% is ~2h45; cumulative 4% ~4h50;
 cumulative 20% ~10h45.
@@ -516,3 +516,14 @@ _Sources: TODO_LIST.md (2026-08-29 harvest), status report 2026-08-29_17-05,
 ROADMAP.md themes, archived pareto plans (guard lineage). Owner questions
 from the 17-05 report's g) section remain open: branch deletions (T04),
 1.26.7 intent (T01), release timing (T03)._
+
+---
+
+## Resolution (2026-09-02)
+
+Executed by the same-day session — full verdicts in
+[`docs/status/2026-08-29_20-12_pareto-execution-t01-t27-v0.3.0-full-status.md`](../status/2026-08-29_20-12_pareto-execution-t01-t27-v0.3.0-full-status.md).
+T01–T03, T05–T20, T22–T26 done (row strikes above cite the commits); T21/T27
+delivered as recorded deferrals in ROADMAP; T04 remains owner-blocked (the
+only bare row). Post-release residue (tag-flake vendorHash, linter-parity,
+living-doc sync gaps) is tracked in the execution report and TODO_LIST.
