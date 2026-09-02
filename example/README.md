@@ -36,6 +36,9 @@ through per-connection responses.
 
 `docker-compose.yml` builds and runs the demo; the Dockerfile pattern is
 a plain multi-stage Go build (no Node toolchain — the JS bundle is embedded).
+The build context is the repository root (the example is part of the root Go
+module), so build with `docker build -f example/Dockerfile .` or via compose;
+a bare `docker build example/` fails by design (no go.mod in that context).
 
 ## Compression
 
