@@ -23,7 +23,8 @@ func TestStaticVersionRecordedInChangelog(t *testing.T) {
 	pinned := "v" + static.Version
 	if !strings.Contains(string(changelog), pinned) {
 		t.Errorf(
-			"CHANGELOG.md never mentions the pinned JS client version %s — record the bundle bump in release history (or bump static.Version deliberately)",
+			"CHANGELOG.md never mentions the pinned JS client version %s — "+
+				"record the bundle bump in release history (or bump static.Version deliberately)",
 			pinned,
 		)
 	}
