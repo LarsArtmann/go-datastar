@@ -199,17 +199,17 @@ fd3a5ac refactor(datastartest): improve code clarity with named constants and cl
 
 ## (b) PARTIALLY DONE
 
-1. 🟡 **AGENTS.md file layout change is uncommitted.** The auto-commit daemon
-   committed 9 of my changes but the AGENTS.md file layout table edit
-   (`datastartest/` row description update) was the last change and hasn't
-   been committed yet. The working tree shows `M AGENTS.md` with 1 line
-   changed. This is a trivial diff (just a description string update).
+1. ~~🟡 **AGENTS.md file layout change is uncommitted.** The auto-commit daemon~~ done (done — AGENTS.md documents the datastartest module (Module Structure table))
+   ~~committed 9 of my changes but the AGENTS.md file layout table edit~~
+   ~~(`datastartest/` row description update) was the last change and hasn't~~
+   ~~been committed yet. The working tree shows `M AGENTS.md` with 1 line~~
+   ~~changed. This is a trivial diff (just a description string update).~~
 
-2. 🟡 **Fuzz test seeds are minimal.** The 9 seeds cover basic SSE shapes but
-   don't exercise exotic edge cases like deeply nested JSON in signals
-   datalines, very long attribute lists in script tags, or mixed CRLF/LF
-   endings. The fuzz engine will explore these when run with `-fuzz`, but
-   the seed corpus as regression tests is intentionally minimal.
+2. ~~🟡 **Fuzz test seeds are minimal.** The 9 seeds cover basic SSE shapes but~~ done (done — WPT vectors/BOM/crashers seeded; 51-seed corpus committed (testdata/fuzz/))
+   ~~don't exercise exotic edge cases like deeply nested JSON in signals~~
+   ~~datalines, very long attribute lists in script tags, or mixed CRLF/LF~~
+   ~~endings. The fuzz engine will explore these when run with `-fuzz`, but~~
+   ~~the seed corpus as regression tests is intentionally minimal.~~
 
 3. 🟡 **`CollectWithTimeout` uses `1 << 30` as max count internally.** This
    is a sentinel "infinite" value passed to `ReadNEvents` so it reads
@@ -226,44 +226,44 @@ fd3a5ac refactor(datastartest): improve code clarity with named constants and cl
 
 ## (c) NOT STARTED
 
-1. ❌ **`CollectWithOptions(t, handler, opts...)`** — The functional-options
-   pattern that would consolidate Collect, CollectPost, CollectWithRequest,
-   CollectN, CollectWithTimeout into one extensible function. Listed as
-   item #21 in the prior report. Deliberately deferred — the current
-   individual functions are clearer for the 80% case.
+1. ~~❌ **`CollectWithOptions(t, handler, opts...)`** — The functional-options~~ done (superseded by per-helper RequestOptions (options.go: WithPath/WithHeader/WithLastEventID/WithDatastarSignals))
+   ~~pattern that would consolidate Collect, CollectPost, CollectWithRequest,~~
+   ~~CollectN, CollectWithTimeout into one extensible function. Listed as~~
+   ~~item #21 in the prior report. Deliberately deferred — the current~~
+   ~~individual functions are clearer for the 80% case.~~
 
-2. ❌ **`RedirectURL() string`** — Regex/string extraction of the URL from
-   `ScriptContent()` for redirect patches. Still possible via
-   `strings.Contains(ScriptContent(), url)`.
+2. ~~❌ **`RedirectURL() string`** — Regex/string extraction of the URL from~~ done (done — RedirectURL (script_accessors.go, 671e57c))
+   ~~`ScriptContent()` for redirect patches. Still possible via~~
+   ~~`strings.Contains(ScriptContent(), url)`.~~
 
-3. ❌ **`CustomEventName()` / `CustomEventDetail()`** — Structured extraction
-   from DispatchCustomEvent JS blobs. `ScriptContent()` + string matching
-   covers the testing need.
+3. ~~❌ **`CustomEventName()` / `CustomEventDetail()`** — Structured extraction~~ done (done — CustomEventName + CustomEventDetail (671e57c))
+   ~~from DispatchCustomEvent JS blobs. `ScriptContent()` + string matching~~
+   ~~covers the testing need.~~
 
-4. ❌ **`ScriptAttributes() map[string]string`** — Parse opening `<script>`
-   tag attributes. Consumers who need `type="speculationrules"` verification
-   must use `Elements()` and parse manually.
+4. ~~❌ **`ScriptAttributes() map[string]string`** — Parse opening `<script>`~~ done (done — ScriptAttributes (script_accessors.go, 671e57c))
+   ~~tag attributes. Consumers who need `type="speculationrules"` verification~~
+   ~~must use `Elements()` and parse manually.~~
 
 5. ❌ **`RawSSE() string` on Event** — Reconstruct wire format for debugging.
    `String()` and `EventsString()` partially cover this.
 
-6. ❌ **`CollectPost` malformed-body error-path test** — Handler returns 400,
-   CollectPost gets non-SSE body, `MustReadEvents` tries to parse. Untested.
+6. ~~❌ **`CollectPost` malformed-body error-path test** — Handler returns 400,~~ done (done — collect_error_test.go covers 400/422/500 with non-SSE bodies)
+   ~~CollectPost gets non-SSE body, `MustReadEvents` tries to parse. Untested.~~
 
-7. ❌ **`CollectPost` non-200 response code test** — Same as above, testing
-   the error behavior when handler returns an HTTP error status.
+7. ~~❌ **`CollectPost` non-200 response code test** — Same as above, testing~~ done (done — garbage frames + SSE-in-error covered (collect_error_test.go))
+   ~~the error behavior when handler returns an HTTP error status.~~
 
-8. ❌ **CI pipeline verification** — `.github/workflows/ci.yml` was not
-   modified or verified. The tests should work (runs `go test ./...`), but
-   the expanded package was never run in the CI environment.
+8. ~~❌ **CI pipeline verification** — `.github/workflows/ci.yml` was not~~ done (done — CI tests all three modules)
+   ~~modified or verified. The tests should work (runs `go test ./...`), but~~
+   ~~the expanded package was never run in the CI environment.~~
 
 9. ❌ **Windows CRLF in Collect pipeline** — `ReadEvents` CRLF handling is
    tested directly, but not through the full `Collect` → httptest.Server →
    HTTP response path. The Go HTTP stack normalizes line endings, so this
    is likely fine, but it's not explicitly verified.
 
-10. ❌ **`datastartest` as separate Go module** — Still the same module as
-    the parent. Still unresolved (see Questions).
+10. ~~❌ **`datastartest` as separate Go module** — Still the same module as~~ done (done — datastartest/go.mod (separate module since v0.1.0))
+    ~~the parent. Still unresolved (see Questions).~~
 
 ---
 
@@ -313,10 +313,10 @@ Nothing is broken or regressively damaged. However:
 
 ### Design improvements
 
-1. **Fix `RequireSignalsContain` doc comment.** It says "top-level property"
-   but uses substring matching. Either fix the doc to say "any nesting
-   level" or implement actual JSON key parsing. Low effort, correctness
-   issue.
+1. ~~**Fix `RequireSignalsContain` doc comment.** It says "top-level property"~~ done (done — RequireSignalsContain matches at any nesting level (assert.go))
+   ~~but uses substring matching. Either fix the doc to say "any nesting~~
+   ~~level" or implement actual JSON key parsing. Low effort, correctness~~
+   ~~issue.~~
 
 2. **Replace `CollectWithTimeout` magic number.** `1 << 30` as "infinite
    count" is a code smell. Consider `ReadAllEvents(r io.Reader) ([]Event,
@@ -339,39 +339,39 @@ Nothing is broken or regressively damaged. However:
 
 ### Test improvements
 
-6. **`CollectPost` error-path tests.** Handler returns 400 or 500,
-   CollectPost/MustReadEvents tries to parse the error body as SSE. This
-   path is completely untested.
+6. ~~**`CollectPost` error-path tests.** Handler returns 400 or 500,~~ done (done — collect_error_test.go covers the error paths)
+   ~~CollectPost/MustReadEvents tries to parse the error body as SSE. This~~
+   ~~path is completely untested.~~
 
-7. **Table-driven fuzz seeds.** Instead of 9 hand-picked seeds, consider
-   generating seeds from the existing test suite (each test's SSE input
-   becomes a seed). This gives broader initial coverage.
+7. ~~**Table-driven fuzz seeds.** Instead of 9 hand-picked seeds, consider~~ done (done — 51-seed conformance corpus + WPT vectors (reader_fuzz_test.go))
+   ~~generating seeds from the existing test suite (each test's SSE input~~
+   ~~becomes a seed). This gives broader initial coverage.~~
 
 8. **Table-driven benchmark.** Multiple input shapes: single small event,
    single large event, many small events, many large events. Shows how
    performance scales.
 
-9. **`ReadEvents` BOM handling test.** The SSE spec mentions UTF-8 BOM
-   handling. The parser doesn't explicitly handle BOM. Untested edge case.
+9. ~~**`ReadEvents` BOM handling test.** The SSE spec mentions UTF-8 BOM~~ done (done — BOM vectors in wpt_format_corpus_test.go)
+   ~~handling. The parser doesn't explicitly handle BOM. Untested edge case.~~
 
 10. **`CollectWithTimeout` with immediate deadline (timeout=0).** Should
     return empty slice immediately. Untested.
 
 ### Documentation improvements
 
-11. **`doc.go` line count reference is stale again.** I changed "~260 lines"
-    to "parsing code" (removing the specific number). But it's still
-    referencing the parent package's `e2e_test.go` indirectly. Consider
-    removing the comparison entirely — the package stands on its own now.
+11. ~~**`doc.go` line count reference is stale again.** I changed "~260 lines"~~ done (done — datastartest/doc.go rewritten (2026-09-02): ssetest delegation + error codes documented)
+    ~~to "parsing code" (removing the specific number). But it's still~~
+    ~~referencing the parent package's `e2e_test.go` indirectly. Consider~~
+    ~~removing the comparison entirely — the package stands on its own now.~~
 
-12. **No CONTRIBUTING.md note about datastartest.** Contributors adding new
-    patch types should know to add corresponding `datastartest` helpers and
-    tests. This is documented in AGENTS.md but not in a contributor-facing
-    file.
+12. ~~**No CONTRIBUTING.md note about datastartest.** Contributors adding new~~ done (done — CONTRIBUTING.md three-module workspace section)
+    ~~patch types should know to add corresponding `datastartest` helpers and~~
+    ~~tests. This is documented in AGENTS.md but not in a contributor-facing~~
+    ~~file.~~
 
-13. **pkg.go.dev rendering not verified.** The godoc comments use proper
-    `[Function]` link syntax but the actual rendering on pkg.go.dev hasn't
-    been checked.
+13. ~~**pkg.go.dev rendering not verified.** The godoc comments use proper~~ done (verified 2026-09-02 — pkg.go.dev renders datastartest v0.3.0 with linked docs)
+    ~~`[Function]` link syntax but the actual rendering on pkg.go.dev hasn't~~
+    ~~been checked.~~
 
 ### Polish
 
@@ -398,10 +398,10 @@ Nothing is broken or regressively damaged. However:
 
 1. ~~**Fix `RequireSignalsContain` doc comment** — says "top-level" but matches
    any nesting. Either fix doc or implement JSON parsing.~~ done in the v0.1.0 session — doc corrected to "any nesting level"
-2. **Add `CollectPost` error-path test** — handler returns 400,
-   MustReadEvents behavior on non-SSE response.
-3. **Add `CollectPost` non-200 status test** — handler returns 500, verify
-   error handling.
+2. ~~**Add `CollectPost` error-path test** — handler returns 400,~~ done (done — collect_error_test.go 400/422/500 non-SSE bodies)
+   ~~MustReadEvents behavior on non-SSE response.~~
+3. ~~**Add `CollectPost` non-200 status test** — handler returns 500, verify~~ done (done — garbage frames + SSE-in-error (collect_error_test.go))
+   ~~error handling.~~
 4. **Add `CollectWithTimeout(timeout=0)` edge-case test** — should return
    empty immediately.
 5. **Replace `1 << 30` in CollectWithTimeout with `ReadAllEvents`** —
@@ -416,8 +416,8 @@ Nothing is broken or regressively damaged. However:
    match actual capability.
 9. **Handle unquoted HTML attributes in script tag parsing** —
    `<script type=module>` support.
-10. **Add `CollectWithOptions(t, handler, opts...)`** — functional options
-    to consolidate the 5 Collect variants.
+10. ~~**Add `CollectWithOptions(t, handler, opts...)`** — functional options~~ done (resolved via per-helper RequestOptions (options.go))
+    ~~to consolidate the 5 Collect variants.~~
 11. **Split `collect.go` into `collect.go` + `streaming.go`** — separate
     synchronous from streaming code.
 12. **Split `event.go` into `event.go` + `accessors.go`** — separate core
@@ -425,16 +425,16 @@ Nothing is broken or regressively damaged. However:
 13. **Split `event_test.go` by concern** — `script_test.go`,
     `search_test.go`, etc.
 14. **Table-driven benchmark** — multiple input shapes (small, large, many).
-15. **Add fuzz seeds from existing test inputs** — broader initial coverage.
-16. **Add `ReadEvents` BOM handling test** — UTF-8 BOM edge case per SSE spec.
+15. ~~**Add fuzz seeds from existing test inputs** — broader initial coverage.~~ done (done — fuzz seeds ported from the conformance corpus (reader_fuzz_test.go))
+16. ~~**Add `ReadEvents` BOM handling test** — UTF-8 BOM edge case per SSE spec.~~ done (done — BOM vectors (wpt_format_corpus_test.go))
 17. **Add `RawSSE() string` on Event** — reconstruct wire format for
     debugging.
-18. **Add `RedirectURL() string` accessor** — extract URL from redirect
-    script patches.
-19. **Add `ScriptAttributes() map[string]string`** — parse `<script>` tag
-    attributes.
-20. **Add `CustomEventName()` / `CustomEventDetail()` accessors** —
-    structured extraction from DispatchCustomEvent JS.
+18. ~~**Add `RedirectURL() string` accessor** — extract URL from redirect~~ done (done — RedirectURL (script_accessors.go))
+    ~~script patches.~~
+19. ~~**Add `ScriptAttributes() map[string]string`** — parse `<script>` tag~~ done (done — ScriptAttributes (script_accessors.go))
+    ~~attributes.~~
+20. ~~**Add `CustomEventName()` / `CustomEventDetail()` accessors** —~~ done (done — CustomEventName + CustomEventDetail (script_accessors.go))
+    ~~structured extraction from DispatchCustomEvent JS.~~
 
 ### Lower impact (P2)
 
@@ -449,28 +449,28 @@ Nothing is broken or regressively damaged. However:
     sequences.
 26. **Add `ServeSSE(handler) (*httptest.Server, func())`** — lower-level
     than Collect for custom request logic.
-27. **Document `ReadNEvents` graceful-close behavior** — scanner error after
-    events collected is silently ignored (already documented but could be
-    clearer).
+27. ~~**Document `ReadNEvents` graceful-close behavior** — scanner error after~~ done (done — graceful-close behavior documented (reader.go))
+    ~~events collected is silently ignored (already documented but could be~~
+    ~~clearer).~~
 28. **Add `parseSSEField` edge case: line with only spaces** — spec edge.
-29. **Add `ReadEvents` test with very long lines** — near maxLineBytes limit.
+29. ~~**Add `ReadEvents` test with very long lines** — near maxLineBytes limit.~~ done (done — TestReadEvents_ExceedsMaxLineSize)
 30. **Consider configurable maxLineBytes** — via Reader struct or option.
-31. **Add CI check for datastartest coverage** — ensure new tests don't
-    regress coverage.
+31. ~~**Add CI check for datastartest coverage** — ensure new tests don't~~ done (done — coverage.yml includes datastartest (ed815c7))
+    ~~regress coverage.~~
 32. ~~**Consider separate Go module for datastartest** — opt-in test dep.~~ done — separate module since v0.1.0
 33. ~~**Add versioning note** — how datastartest versions vs core.~~ done — independent versioning (`datastartest/v0.1.0`)
 34. **Review all doc comments for godoc rendering** — formatting check.
 35. **Add `Event.LogJSON() string`** — structured JSON representation for
     logging.
-36. **Add `CONTRIBUTING.md` note about datastartest** — how to use it when
-    contributing new patch types.
-37. **Add concurrent `ReadEvents` test** — multiple goroutines reading
-    independent streams.
+36. ~~**Add `CONTRIBUTING.md` note about datastartest** — how to use it when~~ done (done — CONTRIBUTING.md three-module section)
+    ~~contributing new patch types.~~
+37. ~~**Add concurrent `ReadEvents` test** — multiple goroutines reading~~ done (done — TestEvent_ConcurrentCollect (8 goroutines))
+    ~~independent streams.~~
 38. **Add `FindAllElements(events, selector) []Event`** — return all
     matching events, not just the first.
 39. **Add `FindScript(events) (Event, bool)`** — find first script patch.
-40. **Add `RequireScript(t, evt)` assertion** — assert event is a script
-    patch.
+40. ~~**Add `RequireScript(t, evt)` assertion** — assert event is a script~~ done (done — RequireScript (assert.go, v0.3.0))
+    ~~patch.~~
 41. **Add `RequireNotScript(t, evt)` assertion** — assert event is NOT a
     script patch.
 42. **Add `EventToSelectorMap(events) map[string]Event`** — index by
@@ -484,9 +484,9 @@ Nothing is broken or regressively damaged. However:
 47. **Add `CollectWithRequest` timeout variant** — non-GET with deadline.
 48. **Add `CollectPostWithTimeout`** — POST with deadline.
 49. **Add `event.GoString() string`** — `%#v` format for deeper debugging.
-50. **Add `examples_test.go` for `datastartest` showing real-world handler
-    testing** — end-to-end example with a realistic handler, not just
-    individual function demos.
+50. ~~**Add `examples_test.go` for `datastartest` showing real-world handler~~ done (done — realistic full-handler E2E in datastartest/e2e_test.go)
+    ~~testing** — end-to-end example with a realistic handler, not just~~
+    ~~individual function demos.~~
 
 ---
 

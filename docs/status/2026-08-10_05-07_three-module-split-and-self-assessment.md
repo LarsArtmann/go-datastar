@@ -59,33 +59,33 @@ Nothing. Everything started this session was completed.
 
 ### Critical gaps (should have been done this session)
 
-1. **`go.work` is still gitignored** — `.gitignore` lines 9-10 ignore `go.work`
-   and `go.work.sum`. The file is essential for the workspace dev workflow, but
-   a fresh clone won't have it. The documented `go test ./... ./datastartest/...
-   ./static/...` commands won't work without manual `go work init`. Carried over
-   from the prior status report — **still unfixed, still critical**.
+1. ~~**`go.work` is still gitignored** — `.gitignore` lines 9-10 ignore `go.work`~~ done (done — go.work committed and tracked)
+   ~~and `go.work.sum`. The file is essential for the workspace dev workflow, but~~
+   ~~a fresh clone won't have it. The documented `go test ./... ./datastartest/...~~
+   ~~./static/...` commands won't work without manual `go work init`. Carried over~~
+   ~~from the prior status report — **still unfixed, still critical**.~~
 
-2. **`dependabot.yml` not updated** — Only monitors `/` (root). Needs entries for
-   `/datastartest` and `/static` to get dependency PRs for all modules.
+2. ~~**`dependabot.yml` not updated** — Only monitors `/` (root). Needs entries for~~ done (done — .github/dependabot.yml covers the sibling modules)
+   ~~`/datastartest` and `/static` to get dependency PRs for all modules.~~
 
-3. **`flake.nix` hermeticCheck doesn't build or test `datastartest` or `static`**
-   — `subPackages = [ "." ]` only builds the root module. Nix CI passes but
-   never compiles the other two modules. False green.
+3. ~~**`flake.nix` hermeticCheck doesn't build or test `datastartest` or `static`**~~ done (done — flake.nix per-module hermetic checks; nix.yml CI (88c1eed))
+   ~~— `subPackages = [ "." ]` only builds the root module. Nix CI passes but~~
+   ~~never compiles the other two modules. False green.~~
 
-4. **`CHANGELOG.md` not updated** — No entry for the module split.
+4. ~~**`CHANGELOG.md` not updated** — No entry for the module split.~~ done (done — CHANGELOG module entries since v0.1.0)
 
-5. **`FEATURES.md` not updated** — Still says "subpackage" for static and
-   datastartest, not "separate module."
+5. ~~**`FEATURES.md` not updated** — Still says "subpackage" for static and~~ done (done — FEATURES.md separate-module rows)
+   ~~datastartest, not "separate module."~~
 
-6. **`README.md` not updated** — Installation section only mentions
-   `go get github.com/larsartmann/go-datastar`. Doesn't mention `static` or
-   `datastartest` as separately importable modules.
+6. ~~**`README.md` not updated** — Installation section only mentions~~ done (done — README install section)
+   ~~`go get github.com/larsartmann/go-datastar`. Doesn't mention `static` or~~
+   ~~`datastartest` as separately importable modules.~~
 
 ### Minor gaps
 
-7. **`reader.go:114` stale comment** — Says `readNEvents` but the function was
-   exported to `ReadNEvents` in a prior session. Pre-existing, not introduced
-   this session.
+7. ~~**`reader.go:114` stale comment** — Says `readNEvents` but the function was~~ done (done — reader.go rewritten)
+   ~~exported to `ReadNEvents` in a prior session. Pre-existing, not introduced~~
+   ~~this session.~~
 
 8. **`go.work.sum` not generated** — Go didn't create one (workspace has no
    external deps beyond what modules already resolve). Not a problem, just
@@ -134,20 +134,20 @@ didn't do it.
 
 ### Process
 
-1. **Stop repeating the same mistake** — The `go.work` gitignore issue is now
-   documented in two consecutive status reports with no fix. Either fix it or
-   explicitly ask the user to decide. Don't leave it in limbo.
+1. ~~**Stop repeating the same mistake** — The `go.work` gitignore issue is now~~ done (done — go.work committed (a73a8fb))
+   ~~documented in two consecutive status reports with no fix. Either fix it or~~
+   ~~explicitly ask the user to decide. Don't leave it in limbo.~~
 
 2. **`git ls-files` check is mandatory after module structural changes** —
    Add this to the personal checklist: after creating any go.mod/go.work file,
    run `git ls-files <file>` to verify it's not gitignored. This takes 1 second.
 
-3. **Test fresh-clone behavior** — Not just working-tree. After module changes,
-   clone to `/tmp` and run the documented commands. The auto-commit daemon and
-   working-tree state hide gitignore problems.
+3. ~~**Test fresh-clone behavior** — Not just working-tree. After module changes,~~ done (done — CI exercises the committed workspace)
+   ~~clone to `/tmp` and run the documented commands. The auto-commit daemon and~~
+   ~~working-tree state hide gitignore problems.~~
 
-4. **Update all consumer-facing docs when module structure changes** —
-   CHANGELOG, FEATURES, README, dependabot. I consistently forget these.
+4. ~~**Update all consumer-facing docs when module structure changes** —~~ done (done — CHANGELOG/FEATURES/README/dependabot all updated)
+   ~~CHANGELOG, FEATURES, README, dependabot. I consistently forget these.~~
 
 ### Architecture
 
@@ -181,7 +181,7 @@ didn't do it.
 3. ~~**OR: restore `GOWORK=off` to devShell and document manual `go work init`** (if keeping gitignored)~~ n/a — Option A chosen
 4. ~~**Test fresh-clone behavior** — clone to `/tmp`, run documented commands~~ done — CI exercises the committed workspace
 5. ~~**Add dependabot entries for `/datastartest` and `/static`**~~ done in the v0.1.0 session
-6. **Update `flake.nix` hermeticCheck** to build + test all three modules (or add separate checks) ← still open (`flake.nix` TODO)
+6. ~~**Update `flake.nix` hermeticCheck** to build + test all three modules (or add separate checks) ← still open (`flake.nix` TODO)~~ done (done — flake.nix hermetic checks for all three modules; nix.yml)
 
 ### P0 — Documentation sync
 
@@ -191,14 +191,14 @@ didn't do it.
 
 ### P1 — Awaiting user decisions (from prior session, still open)
 
-10. **Q2: Freeze or consolidate Collect variants into `CollectWithOptions`**
-11. **Q3: `RequireSignalsContain` — substring matching (fix doc) vs JSON parsing vs both**
+10. ~~**Q2: Freeze or consolidate Collect variants into `CollectWithOptions`**~~ done (resolved — per-helper RequestOptions (options.go))
+11. ~~**Q3: `RequireSignalsContain` — substring matching (fix doc) vs JSON parsing vs both**~~ done (resolved — doc fix (assert.go); substring kept by decision)
 
 ### P1 — Code quality (carried over)
 
 12. ~~**Fix `reader.go:114` stale comment** — `readNEvents` → `ReadNEvents`~~ done in the v0.1.0 session
 13. ~~**Fix `RequireSignalsContain` doc comment** — says "top-level" but does substring~~ done in the v0.1.0 session
-14. **Add `CollectPost` error-path tests** — 400/500 response, non-SSE body
+14. ~~**Add `CollectPost` error-path tests** — 400/500 response, non-SSE body~~ done (done — collect_error_test.go)
 15. **Add `CollectWithTimeout(timeout=0)` test** — immediate deadline edge case
 16. **Replace `1<<30` magic number** in `collect.go:150`
 17. **Rename `indexTagEnd` to `indexScriptTagEnd`** — narrower than name implies
@@ -209,38 +209,38 @@ didn't do it.
 19. ~~**Verify `erraudit` works across all three modules in workspace mode**~~ done — CI erraudit scans all modules
 20. ~~**Verify `govulncheck` works across all three modules in workspace mode**~~ done — CI govulncheck scans all modules
 21. ~~**Review `.golangci.yml`** for path-specific config covering new modules~~ done — lint runs on all modules, 0 issues
-22. **Consider a `make verify-modules` flake app** that runs GOWORK=off per-module
+22. ~~**Consider a `make verify-modules` flake app** that runs GOWORK=off per-module~~ done (done — per-module GOWORK=off isolation in CI + flake checks)
 
 ### P2 — Polish
 
 23. **Add table-driven benchmark** with multiple input shapes
 24. **Add `ReadAllEvents` function** — cleaner than `ReadNEvents(1<<30)`
 25. **Add `indexTagEnd` support for unquoted HTML5 attributes**
-26. **Document the mutual-replace pattern in an ADR** (`docs/adr/`)
+26. ~~**Document the mutual-replace pattern in an ADR** (`docs/adr/`)~~ done (done — docs/adr/002-multi-module-split.md)
 27. **Add integration test: external consumer `go get` simulation**
 28. ~~**Consider versioning strategy** for sub-modules (lockstep vs independent)~~ resolved — independent (`static/v0.1.0+`, `datastartest/v0.1.0+`)
 29. **Audit go.sum consistency** across all three modules
-30. **Add `nix flake check` to CI** if not present
+30. ~~**Add `nix flake check` to CI** if not present~~ done (done — nix.yml flake-check job)
 31. **Consider `go work vendor`** for offline builds
-32. **Update CONTRIBUTING.md** with dual-module structure notes
+32. ~~**Update CONTRIBUTING.md** with dual-module structure notes~~ done (done — CONTRIBUTING.md multi-module section)
 33. **Review whether `example/` needs its own module** — currently in root
-34. **Lint the go.work file** — `go work edit -fmt`
+34. ~~**Lint the go.work file** — `go work edit -fmt`~~ done (done — go.work canonical; CI sync idempotency enforces it)
 35. ~~**Add versioned tags for sub-modules** — `static/v0.1.0`, `datastartest/v0.1.0`~~ done (plus v0.2.0 for each)
 36. **Consider semantic import versioning** for sub-modules at v1
 37. **Add module dependency D2 diagram** to docs
-38. **Extract SSE parser** into generic `ssetest` package (long-term)
+38. ~~**Extract SSE parser** into generic `ssetest` package (long-term)~~ done (done — parser delegated to go-sse/ssetest (reader.go))
 39. **Add `static.Version` to a build-time injected variable** instead of hardcoded
 40. **Consider `//go:generate` for static module** to auto-download JS bundle
-41. **Review Nix vendorHash** — may need updating when deps change in sub-modules
+41. ~~**Review Nix vendorHash** — may need updating when deps change in sub-modules~~ done (done — flake.nix separate datastartestVendorHash documented)
 42. **Add PULL_REQUEST_TEMPLATE.md checklist** for multi-module changes
 43. **Consider GitHub Actions matrix** building each module independently
 44. **Add `go-releaser` config** for multi-module tagging
-45. **Review test coverage per module** — ensure each has its own coverage report
+45. ~~**Review test coverage per module** — ensure each has its own coverage report~~ done (done — coverage.yml covers all three modules)
 46. **Consider `datastartest` CHANGELOG** if it versions independently
 47. ~~**Add `static` to FEATURES.md** as its own section, not just subpackage rows~~ done — Script Handler section rows reference the `static/` module
 48. **Consider whether `static` should live in its own repo** long-term
-49. **Review whether `example/` main.go pulls in test deps** via root go.mod
-50. **Add a "Multi-Module Development" section to CONTRIBUTING.md**
+49. ~~**Review whether `example/` main.go pulls in test deps** via root go.mod~~ done (done — example imports only datastar + go-sse (no test deps))
+50. ~~**Add a "Multi-Module Development" section to CONTRIBUTING.md**~~ done (done — CONTRIBUTING.md multi-module section)
 
 ---
 

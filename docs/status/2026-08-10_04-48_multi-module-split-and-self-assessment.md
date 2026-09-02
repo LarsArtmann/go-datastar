@@ -44,19 +44,19 @@ Nothing. Everything I started this session was completed.
 
 These are gaps I identified during the self-assessment:
 
-1. **`.gitignore` still ignores `go.work` and `go.work.sum`** — This is the single biggest oversight. `go.work` is essential for the dev workflow (workspace mode is the default now that `GOWORK=off` was removed from the devShell). A fresh clone will not have `go.work`, so `go test ./...` from root won't find `datastartest`. The replace directives keep `GOWORK=off` builds working, but the workspace dev experience is broken on fresh clone.
+1. ~~**`.gitignore` still ignores `go.work` and `go.work.sum`** — This is the single biggest oversight. `go.work` is essential for the dev workflow (workspace mode is the default now that `GOWORK=off` was removed from the devShell). A fresh clone will not have `go.work`, so `go test ./...` from root won't find `datastartest`. The replace directives keep `GOWORK=off` builds working, but the workspace dev experience is broken on fresh clone.~~ done (done — go.work committed and tracked (three-module workspace))
 
-2. **`dependabot.yml` not updated** — Only monitors `/` (root go.mod). Needs a second entry for `directory: /datastartest` to get dependency update PRs for the new module.
+2. ~~**`dependabot.yml` not updated** — Only monitors `/` (root go.mod). Needs a second entry for `directory: /datastartest` to get dependency update PRs for the new module.~~ done (done — .github/dependabot.yml covers datastartest + static)
 
-3. **`flake.nix` hermeticCheck doesn't build or test `datastartest`** — `subPackages = [ "." ]` only builds the root module. The Nix CI passes but never compiles or tests `datastartest/`. This is a false-green: CI looks healthy but doesn't cover the new module.
+3. ~~**`flake.nix` hermeticCheck doesn't build or test `datastartest`** — `subPackages = [ "." ]` only builds the root module. The Nix CI passes but never compiles or tests `datastartest/`. This is a false-green: CI looks healthy but doesn't cover the new module.~~ done (done — flake.nix hermetic checks per module; nix.yml runs nix flake check (88c1eed))
 
-4. **`CHANGELOG.md` not updated** — No entry for the module split.
+4. ~~**`CHANGELOG.md` not updated** — No entry for the module split.~~ done (done — CHANGELOG module entries since v0.1.0)
 
-5. **`FEATURES.md` not updated** — Still says `datastartest/` subpackage, not separate module.
+5. ~~**`FEATURES.md` not updated** — Still says `datastartest/` subpackage, not separate module.~~ done (done — FEATURES.md 'Consumer Test Helpers (datastartest/ — separate module)' section)
 
-6. **`README.md` not updated** — Installation instructions don't mention the separate module path for test helpers.
+6. ~~**`README.md` not updated** — Installation instructions don't mention the separate module path for test helpers.~~ done (done — README install section covers all three modules)
 
-7. **`reader.go:114` stale comment** — Says "Shared by ReadEvents and readNEvents" but `readNEvents` was exported to `ReadNEvents` in the prior session. Pre-existing, not introduced this session, but I touched the file's context and should have caught it.
+7. ~~**`reader.go:114` stale comment** — Says "Shared by ReadEvents and readNEvents" but `readNEvents` was exported to `ReadNEvents` in the prior session. Pre-existing, not introduced this session, but I touched the file's context and should have caught it.~~ done (done — reader.go rewritten; stale comment gone)
 
 ---
 
@@ -92,7 +92,7 @@ My initial edit produced a duplicated "Note: do not pass --enforce-samber-oops" 
 
 1. **Run `git status` BEFORE declaring done** — I declared Q1 done without checking whether the files were actually tracked. The auto-commit daemon committed them, but `go.work` was silently eaten by `.gitignore`. A `git ls-files go.work` check would have caught this.
 
-2. **Test fresh-clone behavior, not just working-tree behavior** — All my verification was in the working tree where `go.work` already existed. I never simulated a fresh clone. The `nix build` test is closest to fresh-clone but it uses `GOWORK=off` implicitly via the Nix sandbox, so it passed.
+2. ~~**Test fresh-clone behavior, not just working-tree behavior** — All my verification was in the working tree where `go.work` already existed. I never simulated a fresh clone. The `nix build` test is closest to fresh-clone but it uses `GOWORK=off` implicitly via the Nix sandbox, so it passed.~~ done (done — CI exercises the committed workspace (sync idempotency + isolation jobs))
 
 3. **Read `.gitignore` before creating files it might affect** — I created `go.work` without checking whether it was ignored. A 5-second `grep go.work .gitignore` would have caught this.
 
@@ -116,7 +116,7 @@ My initial edit produced a duplicated "Note: do not pass --enforce-samber-oops" 
 
 ### P0 — CI gap (false green)
 
-4. **Update `flake.nix` hermeticCheck to build and test `datastartest`** — Either add a second `buildGoModule` or restructure the fileset/subPackages ← still open (`flake.nix` TODO comment)
+4. ~~**Update `flake.nix` hermeticCheck to build and test `datastartest`** — Either add a second `buildGoModule` or restructure the fileset/subPackages ← still open (`flake.nix` TODO comment)~~ done (done — flake.nix hermeticCheckDatastartest + checks; nix.yml (88c1eed))
 5. ~~**Add CI workflow for `datastartest/`** if using GitHub Actions (check `.github/workflows/`)~~ done — CI test job covers all modules
 
 ### P1 — Documentation sync
@@ -135,7 +135,7 @@ My initial edit produced a duplicated "Note: do not pass --enforce-samber-oops" 
 
 ### P1 — Code quality (from prior session, still open)
 
-14. **Add `CollectPost` error-path tests** — handler returns 400/500, non-SSE body
+14. ~~**Add `CollectPost` error-path tests** — handler returns 400/500, non-SSE body~~ done (done — collect_error_test.go error paths)
 15. **Add `CollectWithTimeout(timeout=0)` test** — immediate deadline edge case
 16. **Replace `1<<30` magic number** in `datastartest/collect.go:150` with a cleaner `ReadAllEvents` or `math.MaxInt32`
 17. **Rename `indexTagEnd` to `indexScriptTagEnd`** at `datastartest/event.go:190` — contract is narrower than the name implies
@@ -155,9 +155,9 @@ My initial edit produced a duplicated "Note: do not pass --enforce-samber-oops" 
 25. **Add table-driven benchmark** with multiple input shapes (not just 20-event stream)
 26. **Add `ReadAllEvents` function** — reads until EOF or context cancel, cleaner than `ReadNEvents(1<<30)`
 27. **Add `indexTagEnd` support for unquoted HTML5 attributes** — `<script type=module>`
-28. **Add `CollectWithOptions` if user decides to consolidate** (Q2)
-29. **Add `RequireSignalsHasKey` if user decides Option C** (Q3)
-30. **Document the mutual-replace pattern** in a short ADR (`docs/adr/`)
+28. ~~**Add `CollectWithOptions` if user decides to consolidate** (Q2)~~ **Won't implement — consolidation rejected — per-helper RequestOptions landed instead (options.go).**
+29. ~~**Add `RequireSignalsHasKey` if user decides Option C** (Q3)~~ **Won't implement — resolved — Option A (doc fix, assert.go); Option C rejected.**
+30. ~~**Document the mutual-replace pattern** in a short ADR (`docs/adr/`)~~ done (done — docs/adr/002-multi-module-split.md)
 31. **Add `go work vendor` support** if offline builds are needed
 32. ~~**Consider `datastartest` versioning strategy** — does it version-lock with the library or independently?~~ resolved — independent versioning (`datastartest/v0.1.0`, `v0.2.0`)
 33. **Add integration test that imports `datastartest` as an external consumer would** — `GOWORK=off go get` in a temp module
@@ -166,18 +166,18 @@ My initial edit produced a duplicated "Note: do not pass --enforce-samber-oops" 
 36. **Consider `datastartest` as a standalone repo** in the future if it grows beyond DataStar-specific helpers
 37. ~~**Add versioned releases for `datastartest`** — tag `datastartest/v0.1.0` separately from root module~~ done (also `static/v0.1.0`)
 38. **Audit `datastartest/go.sum` against root `go.sum`** for checksum consistency
-39. **Add `nix flake check` to CI** if not already present
+39. ~~**Add `nix flake check` to CI** if not already present~~ done (done — nix.yml flake-check job)
 40. **Consider `go-releaser` config** for multi-module tagging
-41. **Add CONTRIBUTING.md note** about the dual-module structure
+41. ~~**Add CONTRIBUTING.md note** about the dual-module structure~~ done (done — CONTRIBUTING.md 'Multi-Module Development' section)
 42. **Review whether `example/` should be its own module** — currently in root, may pull in test deps
 43. **Add `datastartest` to the PULL_REQUEST_TEMPLATE.md** checklist
 44. **Consider semantic import versioning** if datastartest reaches v1
 45. **Add a dependency graph visualization** (D2) to docs showing module relationships
-46. **Lint the go.work file** — `go work edit -fmt`
+46. ~~**Lint the go.work file** — `go work edit -fmt`~~ done (done — go.work canonical; CI sync idempotency enforces it)
 47. **Add `make vendor` equivalent** via flake.nix app for offline development
-48. **Review test coverage per module** — ensure datastartest has its own coverage report
+48. ~~**Review test coverage per module** — ensure datastartest has its own coverage report~~ done (done — coverage.yml covers all three modules (ed815c7))
 49. **Add a `CHANGELOG.md` entry for datastartest separately** if it versions independently
-50. **Consider extracting SSE parser** (`reader.go`, `event.go`) into a generic `ssetest` package reusable beyond DataStar
+50. ~~**Consider extracting SSE parser** (`reader.go`, `event.go`) into a generic `ssetest` package reusable beyond DataStar~~ done (done — parser delegated to go-sse/ssetest (reader.go))
 
 ---
 
