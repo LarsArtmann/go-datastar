@@ -81,6 +81,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The datastartest hermetic Nix check could never converge** — with the
+  repo-root fileset, the `datastartestVendorHash` constant sat inside its own
+  fixed-output derivation's input (`go mod vendor` copies replaced module
+  directories entirely, flake.nix included), so every pasted hash changed the
+  input and re-invalidated itself. The check now builds from a minimal src
+  fileset (datastartest, root `*.go` + `go.mod`, `static/`); the hash
+  converges on one paste and moves only on genuine module-set changes. ADR
+  004 documents the full mechanism, the evidence matrix, and the v0.3.0 tag
+  flake verdict.
 - **The v0.3.0 tag's Nix flake vendorHash was stale** — the release commit
   bumped the lockstep `requires` after the hash was harvested, so
   `nix flake check` at the tag fails while master is fixed (`1f3cd93`).
