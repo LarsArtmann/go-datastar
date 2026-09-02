@@ -46,7 +46,10 @@ Raw ideas:
   RequireNotScript, FindAllElements, FindScript, EventToSelectorMap,
   ReadAllEvents, Diff, Snapshot, ServeSSE, NewRecorder, RawSSE, Event.LogJSON,
   GoString, fluent Assert API, Ginkgo/Gomega matchers, JSON-aware
-  SignalsContain, timeout variants of CollectWithRequest/CollectPost
+  SignalsContain, timeout variants of CollectWithRequest/CollectPost; plus
+  internal polish (accessor methods over the public ID/Retry fields,
+  tag-attribute parsing beyond quotes, indexTagEnd rename, table-driven
+  benchmark shapes)
 - `datastartest.NewResponse`-style helper for test ergonomics
 - Response ergonomics: `ErrorResponse`/`NotificationResponse`/
   `ErrorResponseFromError` as `Response` methods; a `signalsMap` type for the
