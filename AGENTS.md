@@ -108,9 +108,10 @@ CHANGELOG.
 
 ## CI
 
-- `ci.yml` — test (build/vet/race + GOWORK=off ×3 + `go mod verify` +
-  go.work use-vs-disk + tidy-diff + sync idempotency + replace audit +
-  JS-version-in-CHANGELOG drift test), lint (golangci-lint v2.12.2
+- `ci.yml` — test as a per-module matrix (root/datastartest/static: GOWORK=off
+  build/vet/race + `go mod verify` + tidy-diff, in parallel) plus a workspace
+  job (workspace race suite, go.work use-vs-disk, sync idempotency, replace
+  audit, JS-version-in-CHANGELOG drift test); lint (golangci-lint v2.12.2
   go-installed, analysis cache cached), erraudit (probe-gated while the repo
   is private), govulncheck. Runs ONLY on code-affecting paths (`paths`
   filter) — docs-only pushes skip it entirely.
