@@ -96,6 +96,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   copied into the vendor tree). Both hashes refreshed to the current module
   set; ADR 004 gained the evidence matrix and the v0.3.0 tag flake verdict.
 
+### Changed — CI
+
+- The ci.yml test job is split into a per-module matrix (root, datastartest,
+  static — build/vet/race/verify/tidy each in GOWORK=off isolation, in
+  parallel) plus a workspace job (workspace race suite, go.work use-vs-disk,
+  sync idempotency, replace audit). Feedback time drops from one serial job
+  to the slowest parallel leg. `go work vendor` was evaluated and deliberately
+  not adopted: the hermetic path already vendors per module through
+  buildGoModule, and a committed workspace vendor/ tree would duplicate
+  replaced source (ADR 004's split-brain warning).
+
 ### Changed — dependencies
 
 - **go-sse bumped from v0.5.1 to v0.6.0** in the root module, and

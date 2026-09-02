@@ -42,6 +42,10 @@ env:
 
 jobs:
   test:
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [".", "./datastartest", "./static"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -50,30 +54,33 @@ jobs:
         with:
           go-version: "1.26.7"
 
-      - name: Build
-        run: go build ./... ./datastartest/... ./static/...
-
-      - name: Vet
-        run: go vet ./... ./datastartest/... ./static/...
-
-      - name: Test
-        run: go test ./... ./datastartest/... ./static/... -race -count=1
-
-      - name: Per-module isolation (GOWORK=off)
+      - name: Build + Vet + Test (GOWORK=off, ${{ matrix.module }})
         run: |
-          for mod in . ./datastartest ./static; do
-            echo "::group::GOWORK=off build $mod"
-            (cd "$mod" && GOWORK=off go build ./...)
-            echo "::group::GOWORK=off test $mod"
-            (cd "$mod" && GOWORK=off go test ./... -count=1)
-          done
+          cd ${{ matrix.module }}
+          GOWORK=off go build ./...
+          GOWORK=off go vet ./...
+          GOWORK=off go test ./... -race -count=1
 
-      - name: Module checksum verification (go mod verify)
+      - name: go mod verify (${{ matrix.module }})
+        run: (cd ${{ matrix.module }} && GOWORK=off go mod verify)
+
+      - name: Tidy check (${{ matrix.module }})
+        run: (cd ${{ matrix.module }} && GOWORK=off go mod tidy -diff)
+
+  workspace:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version: "1.26.7"
+
+      - name: Workspace build + vet + test (race)
         run: |
-          for mod in . ./datastartest ./static; do
-            echo "::group::go mod verify $mod"
-            (cd "$mod" && GOWORK=off go mod verify)
-          done
+          go build ./... ./datastartest/... ./static/...
+          go vet ./... ./datastartest/... ./static/...
+          go test ./... ./datastartest/... ./static/... -race -count=1
 
       - name: go.work use-vs-disk check
         run: |
@@ -84,18 +91,6 @@ jobs:
             exit 1
           fi
           echo "go.work matches 'go work use' output"
-
-      - name: Tidy check (go mod tidy -diff)
-        run: |
-          rc=0
-          for mod in . ./datastartest ./static; do
-            echo "::group::go mod tidy -diff $mod"
-            (cd "$mod" && GOWORK=off go mod tidy -diff) || rc=1
-          done
-          if [ "$rc" -ne 0 ]; then
-            echo "::error::go.mod/go.sum diverge from 'go mod tidy' — run 'go mod tidy' locally and commit"
-            exit 1
-          fi
 
       - name: Workspace sync idempotency
         run: |
