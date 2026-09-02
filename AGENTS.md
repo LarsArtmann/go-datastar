@@ -143,6 +143,16 @@ These behaviors reproduce the upstream SDK exactly:
 
 ## Gotchas
 
+- **gopls `stdversion` warnings on `encoding/json/v2` are false positives — do
+  not "fix" them.** gopls (v0.23.0) flags ANY json/v2 symbol (`Marshal`,
+  `Unmarshal`, `UnmarshalRead`, `MarshalWrite`, …) as "requires go1.27" because
+  its stdlib DB records the graduated API version and has no GOEXPERIMENT
+  awareness; under `GOEXPERIMENT=jsonv2` the package is fully available in
+  go1.26. `go vet` and golangci-lint (the real gates) never flag it. Verified
+  2026-09-02: every alternative spelling triggers the same warning, and
+  switching to the v1 `encoding/json` API would change error types and default
+  HTML escaping (wire format). Leave the v2 direct calls; benchmark `b.N`
+  loops are the only genuine modernization (fixed via `b.Loop()`).
 - `go.work` is committed, but a **global** gitignore (`~/.config/git/ignore`)
   can still hide it on some machines. After touching `.gitignore` or creating
   module files, run `git check-ignore -v <file>` and `git ls-files <file>` —

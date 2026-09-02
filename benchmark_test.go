@@ -10,9 +10,7 @@ import (
 func BenchmarkElementsPatch_Event(b *testing.B) {
 	html := `<div class="item"><span>Hello</span></div>`
 
-	b.ResetTimer()
-
-	for range b.N {
+	for b.Loop() {
 		patch := datastar.NewElementsPatch(html,
 			datastar.WithSelector("#feed"),
 			datastar.WithMode(datastar.ElementPatchModeInner),
@@ -31,9 +29,7 @@ func BenchmarkSignalsPatch_Event(b *testing.B) {
 		"metadata": map[string]any{"version": "1.0"},
 	}
 
-	b.ResetTimer()
-
-	for range b.N {
+	for b.Loop() {
 		patch, _ := datastar.NewSignalsPatch(signals)
 
 		_ = patch.Event()
@@ -43,9 +39,7 @@ func BenchmarkSignalsPatch_Event(b *testing.B) {
 func BenchmarkScriptPatch_Event(b *testing.B) {
 	script := `console.log("hello world")`
 
-	b.ResetTimer()
-
-	for range b.N {
+	for b.Loop() {
 		patch := datastar.NewScriptPatch(script,
 			datastar.WithScriptAutoRemove(false),
 			datastar.WithScriptAttributes(`type="module"`),
@@ -64,9 +58,7 @@ func BenchmarkMarshalSignals(b *testing.B) {
 		"metadata": map[string]any{"version": "1.0"},
 	}
 
-	b.ResetTimer()
-
-	for range b.N {
+	for b.Loop() {
 		_, _ = datastar.MarshalSignals(signals)
 	}
 }
