@@ -56,8 +56,11 @@ func TestDiff_ShowsMissingAndExtraEvents(t *testing.T) {
 
 	diff := datastartest.Diff(want, got)
 
-	if !strings.Contains(diff, "Event{type=datastar-patch-elements}") ||
-		!strings.Contains(diff, "- ") {
+	if !strings.Contains(diff, "- Event{") {
 		t.Fatalf("diff should mark the missing event with -:\n%s", diff)
+	}
+
+	if strings.Contains(diff, "+ ") {
+		t.Fatalf("got stream has no extra events; diff should not contain +:\n%s", diff)
 	}
 }

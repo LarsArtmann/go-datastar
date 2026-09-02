@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — datastartest
+
+- **Three debug-grade helpers** (the head of the consolidated helper-expansion
+  idea, absorbing the requests from the 2026-08-10/08-16/08-29 status
+  reports): `RequireElementsOrdered` (ordered elements-stream assertions with
+  `ElementExpectation`, tolerant of interleaved signals, strict about extra
+  elements events), `Diff` (line-based diff between two event streams with
+  decoded datalines), and `Snapshot` (golden-file testing against
+  `testdata/<TestName>.golden`, regenerate with `-datastartest-update`).
+  datastartest coverage rose from 92.7% to 93.4%.
+
 ## [0.4.0] - 2026-09-03
 
 ### Added

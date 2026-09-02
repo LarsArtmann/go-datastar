@@ -81,6 +81,9 @@ datastartest.RequireSignals(t, events[1], `{"count":1}`)
 datastartest.RequireSignalsContain(t, events[1], "count")
 datastartest.RequireScript(t, events[2], "console.log('hi')")
 datastartest.RequireEventID(t, events[0], "42")
+datastartest.RequireElementsOrdered(t, events,
+	datastartest.ElementExpectation{Selector: "#feed", Mode: "append", HTML: "<div>hello</div>"},
+)
 ```
 
 All helpers accept [`testing.TB`](https://pkg.go.dev/testing#TB), so they work
@@ -98,7 +101,21 @@ elements := datastartest.FilterElements(events)
 
 ```go
 t.Fatalf("unexpected events:\n%s", datastartest.EventsString(events))
+
+// Line-based diff between the expected and actual event streams:
+t.Fatalf("streams differ:\n%s", datastartest.Diff(want, got))
 ```
+
+## Snapshot testing
+
+```go
+datastartest.Snapshot(t, events) // compares against testdata/<TestName>.golden
+```
+
+Golden files are committed fixtures. Regenerate after a deliberate behavior
+change with `go test ./... -args -datastartest-update=true` (or
+`go test -run TestX -datastartest-update=true`), review the diff, and commit
+it — a snapshot change is a behavior change and belongs in the CHANGELOG.
 
 ## Typed script accessors
 
