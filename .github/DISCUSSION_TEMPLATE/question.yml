@@ -1,0 +1,20 @@
+# Q&A
+
+Ask a question about go-datastar: usage, integration, wire format, testing,
+or error handling.
+
+## Checklist before asking
+
+- [ ] I searched existing issues and discussions for this question
+- [ ] I checked the README quick start and the relevant guide under `docs/`
+- [ ] I am on Go 1.26.7+ with `GOEXPERIMENT=jsonv2` set (required)
+
+## Question
+
+<!-- What are you trying to do, and what did you expect vs. observe? -->
+
+## Environment (if version-sensitive)
+
+- go-datastar version:
+- Go version:
+- DataStar JS client version (if relevant, see `datastar.Version()`):

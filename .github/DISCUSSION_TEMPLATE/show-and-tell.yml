@@ -1,0 +1,11 @@
+# Show and tell
+
+Show what you built with go-datastar — dashboards, live feeds, integrations,
+testing setups, middleware patterns.
+
+## Share
+
+- **What did you build?** (link or screenshots welcome)
+- **Which go-datastar features carried it?** (Broadcaster, MemoryStore replay,
+  patches-as-values, datastartest, …)
+- **Anything the library made hard?** Friction reports feed the roadmap.
