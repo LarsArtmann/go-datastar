@@ -42,14 +42,16 @@ Raw ideas:
   DataStar JS client — the current E2E stops at wire-format verification
 - Domain-adapter example (EventBridge-style) demonstrating the
   Patch-as-value payoff
-- datastartest helper-API expansion (consolidated): RequireElementsOrdered,
+- datastartest helper-API expansion (consolidated from the 2026-08-10
+  reports' ~40 micro-items, e.g. 2026-08-10_07-27 #34–47): RequireElementsOrdered,
   RequireNotScript, FindAllElements, FindScript, EventToSelectorMap,
   ReadAllEvents, Diff, Snapshot, ServeSSE, NewRecorder, RawSSE, Event.LogJSON,
   GoString, fluent Assert API, Ginkgo/Gomega matchers, JSON-aware
   SignalsContain, timeout variants of CollectWithRequest/CollectPost; plus
   internal polish (accessor methods over the public ID/Retry fields,
   tag-attribute parsing beyond quotes, indexTagEnd rename, table-driven
-  benchmark shapes)
+  benchmark shapes). First three shipped 2026-09-03: RequireElementsOrdered,
+  Diff, Snapshot (see CHANGELOG [Unreleased]).
 - `datastartest.NewResponse`-style helper for test ergonomics
 - Response ergonomics: `ErrorResponse`/`NotificationResponse`/
   `ErrorResponseFromError` as `Response` methods; a `signalsMap` type for the
@@ -72,9 +74,10 @@ Raw ideas:
   hermetic build regressions surface before merge, not after
 - Hermetic `checks.lint` / `checks.vet` / `checks.govulncheck` derivations;
   `flake.nix` `apps.bench` for running benchmarks
-- vendorHash fragility under the `gitTracked` fileset: pin source by git rev
-  or find a non-moving-target strategy when the daemon commits mid-session
-  (investigation routed TODO_LIST — ADR 004 correction pending)
+- vendorHash fragility under the `gitTracked` fileset — RESOLVED 2026-09-03:
+  mechanism verified and corrected in ADR 004 (`go mod vendor` copies replaced
+  directories entirely; root hash requires/toolchain-only; datastartest check
+  now builds from a minimal fileset so the hash converges)
 - Verify the erraudit probe-gate transition once the repo goes public
   (manual trigger or scheduled probe)
 - Scheduled fuzz runs in CI (`go test -fuzz` on a cron, corpus committed);
