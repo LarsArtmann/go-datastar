@@ -40,9 +40,6 @@ Raw ideas:
 - `SubscribeFilter` usage example
 - Headless-browser E2E test (chromedp or Playwright) exercising the real
   DataStar JS client — the current E2E stops at wire-format verification
-- Typed script-patch accessors in `datastartest` (`RedirectURL`,
-  `CustomEventName`/`CustomEventDetail`, `ScriptAttributes`) — structured
-  extraction instead of `strings.Contains` on `ScriptContent()`
 - Domain-adapter example (EventBridge-style) demonstrating the
   Patch-as-value payoff
 - `example/README.md` and an `example/docker-compose.yml` for easy local
@@ -99,6 +96,12 @@ Raw ideas:
 - Subscribe to upstream `starfederation/datastar` for protocol changes
 - Renovate rule for upstream DataStar JS releases
 - Protocol version negotiation if DataStar introduces breaking wire changes
+- Compat-test matrix: go-datastar × go-sse version combinations (catch
+  transport regressions before consumers do)
+- Watch go-sse for a Stream-level OnDrop (would reopen the Response
+  drop-observability question; through v0.6.0 OnDrop stays Broadcaster-only)
+- One dependency bot: decide Renovate vs Dependabot (both currently active —
+  duplicate PR churn until one is switched off; owner decision)
 
 ## Non-goals
 

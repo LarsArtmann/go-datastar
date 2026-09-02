@@ -210,6 +210,7 @@ Pre-encoded JSON? Construct directly: `datastar.SignalsPatch{Signals: []byte("{\
 | `NewConsoleLogPatch(msg)`                   | `ScriptPatch`                       | `console.log` on the client   |
 | `NewConsoleErrorPatch(err)`                 | `ScriptPatch`                       | `console.error` on the client |
 | `NewReplaceURLPatch(url)`                   | `ScriptPatch`                       | `history.replaceState`        |
+| `NewReplaceURLQuerystringPatch(req, vals)`  | `ScriptPatch`                       | Replace only the query string (upstream-parity; keeps the request path) |
 | `NewPrefetchPatch(urls...)`                 | `ScriptPatch`                       | Speculation-rules prefetch    |
 | `NewDispatchCustomEventPatch(name, detail)` | `(DispatchCustomEventPatch, error)` | Dispatch a custom DOM event   |
 
@@ -257,6 +258,7 @@ Namespace sugar: `WithNamespaceHTML`, `WithNamespaceSVG`, `WithNamespaceMathML`
 | `ConsoleError(err, opts)`                 | `console.error` on the client      |
 | `DispatchCustomEvent(name, detail, opts)` | Dispatch a custom DOM event        |
 | `ReplaceURL(url, opts)`                   | `history.replaceState`             |
+| `ReplaceURLQuerystring(req, vals, opts)`  | Replace only the URL's query string |
 | `Prefetch(urls...)`                       | Speculation-rules prefetch         |
 | `ApplyPatches(patches...)`                | Send multiple patches in sequence  |
 | `Send(evt)`                               | Send a raw `sse.Event`             |
@@ -428,7 +430,19 @@ if errorfamily.Classify(err) == errorfamily.Transient { /* backoff + retry */ }
 
 ## Wire format parity
 
-go-datastar reproduces the exact DataStar wire format expected by the DataStar JavaScript client. Mode `outer` is never emitted (default). Namespace `html` is never emitted (default). Retry is emitted only when it deviates from the 1000ms default. Data-line construction order, script wrapping, and signal splitting all match the upstream SDK.
+go-datastar reproduces the exact DataStar wire format expected by the DataStar JavaScript client. Mode `outer` is never emitted (default). Namespace `html` is never emitted (default). Retry is emitted only when it deviates from the 1000ms default. Data-line construction order, script wrapping, and signal splitting all match the upstream SDK. `wire_golden_test.go` pins the exact SSE bytes of every patch family — any golden change is a deliberate wire-format change.
+
+## Documentation
+
+Consumer guides under [`docs/`](docs/):
+
+- [`docs/replay.md`](docs/replay.md) — MemoryStore + Last-Event-ID reconnection
+- [`docs/error-system.md`](docs/error-system.md) — the three error-matching dimensions, codes + families
+- [`docs/wire-format.md`](docs/wire-format.md) — annotated datalines per patch family
+- [`docs/testing.md`](docs/testing.md) — datastartest quick start, fuzzing, coverage story
+- [`docs/performance.md`](docs/performance.md) — measured benchmark table
+- [`docs/migration-guide.md`](docs/migration-guide.md) — v0.2.0 → v0.3.0 upgrade guide
+- [`docs/static-js.md`](docs/static-js.md) — embedded JS pinning + upgrade process
 
 ## Companion libraries
 

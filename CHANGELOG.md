@@ -56,6 +56,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `ScriptAttributes`) for intent-level assertions, with the new
   `datastartest.custom_event_detail_unmarshal_failed` code.
 
+### Changed — dependencies
+
+- **go-sse bumped from v0.5.1 to v0.6.0** in the root module, and
+  `go-sse/ssetest` from v0.2.0 to v0.3.0 in `datastartest` (root go.mod,
+  datastartest/go.mod). No library API changes were required. Two
+  `encoding/json` call sites in example and test code moved to
+  `encoding/json/v2` (`json.UnmarshalRead`) for consistency with the
+  `GOEXPERIMENT=jsonv2` build requirement.
+
 ## [0.3.0] - 2026-08-29
 
 ### Changed

@@ -118,15 +118,26 @@ These behaviors reproduce the upstream SDK exactly:
 ## CI
 
 - `ci.yml` — test (build/vet/race + GOWORK=off ×3 + sync idempotency +
-  replace audit), lint, erraudit (probe-gated while the repo is private),
-  govulncheck. Runs ONLY on code-affecting paths (`paths` filter) — docs-only
-  pushes skip it entirely.
+  replace audit), lint (golangci-lint v2.12.2 go-installed, analysis cache
+  cached), erraudit (probe-gated while the repo is private), govulncheck.
+  Runs ONLY on code-affecting paths (`paths` filter) — docs-only pushes skip
+  it entirely.
 - `actionlint.yml` — workflow YAML validation on EVERY push/PR (the signal
   that still fires when ci.yml skips).
 - `coverage.yml` — master-push coverage badge to the orphan `coverage`
   branch (same `paths` filter).
-- Nothing is a required check (branch protection removed); local gates are
-  the real gate.
+- `nix.yml` — hermetic `nix flake check` on code-affecting paths
+  (`continue-on-error` until proven stable; promote or drop after a green
+  week).
+- `fuzz.yml` — scheduled daily 60s fuzz runs over all four fuzz targets,
+  crash artifacts uploaded.
+- `codeql.yml` — GitHub CodeQL Go security analysis (SHA-pinned action).
+- `renovate.json` — custom manager proposing embedded-DataStar-JS bumps from
+  upstream releases into `static/static.go`; coexists with
+  `.github/dependabot.yml` (one-bot decision pending, see TODO_LIST).
+- Actions are SHA-pinned (`checkout`, `setup-go` verified against their v7
+  tags); nothing is a required check (branch protection removed); local
+  gates are the real gate.
 
 ## Gotchas
 
@@ -281,6 +292,13 @@ when adding helpers.
 | `doc.go`                      | Package docs: design rationale, quick start, error contract |
 | `docs/adr/`                   | Architecture decision records (multi-module, …)             |
 | `docs/release-checklist.md`   | Pre-release gate, versioning, lockstep tags, verification   |
+| `docs/replay.md`              | MemoryStore + Last-Event-ID reconnection guide               |
+| `docs/error-system.md`        | The three error-matching dimensions, codes + families        |
+| `docs/wire-format.md`         | Annotated datalines per patch family (+ golden tests)        |
+| `docs/testing.md`             | datastartest quick start, fuzzing, coverage story            |
+| `docs/performance.md`         | Measured benchmark table                                     |
+| `docs/migration-guide.md`     | v0.2.0 → v0.3.0 upgrade guide                                |
+| `docs/static-js.md`           | Embedded JS pinning + upgrade process                        |
 | `docs/status/` (+ its README) | Point-in-time status reports and audits (index + policy)    |
 | `docs/planning/`              | Pareto plans; `archived/` holds executed plans              |
 | `CONTRIBUTING.md`             | Dev setup, workspace rules, fuzzing                         |

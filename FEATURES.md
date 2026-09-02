@@ -35,6 +35,7 @@
 | Redirect            | 🟢 `FULLY_FUNCTIONAL` | `NewRedirectPatch`, printf variant `NewRedirectfPatch` (`script_convenience.go`) |
 | Console log / error | 🟢 `FULLY_FUNCTIONAL` | `NewConsoleLogPatch`, `NewConsoleErrorPatch` with `%q` JS quoting                |
 | ReplaceURL          | 🟢 `FULLY_FUNCTIONAL` | `NewReplaceURLPatch` (`script_convenience.go`)                                   |
+| ReplaceURLQuerystring | 🟢 `FULLY_FUNCTIONAL` | `NewReplaceURLQuerystringPatch` + `Response.ReplaceURLQuerystring` — upstream-parity query-string replacement, path preserved (`script_convenience.go:185`, `response.go:143`); wire/parity-tested |
 | Prefetch            | 🟢 `FULLY_FUNCTIONAL` | `NewPrefetchPatch` (`script_convenience.go`)                                     |
 | SignalsIfMissing    | 🟢 `FULLY_FUNCTIONAL` | `NewSignalsIfMissingPatch` (`script_convenience.go`)                             |
 
@@ -122,6 +123,7 @@
 | `ReadEvents`         | 🟢 `FULLY_FUNCTIONAL` | SSE wire-format parser for any `io.Reader` (`datastartest/reader.go`); delegates to the shared `go-sse/ssetest` parser                     |
 | `ReadNEvents`        | 🟢 `FULLY_FUNCTIONAL` | Streaming SSE reader; returns at N events or clean close (`datastartest/collect.go`)                                                       |
 | `Event` accessors    | 🟢 `FULLY_FUNCTIONAL` | 20+ typed accessors: Selector, Mode, Elements, ScriptContent, IsScript, SignalsJSON, etc.                                                  |
+| Typed script accessors | 🟢 `FULLY_FUNCTIONAL` | `RedirectURL`, `CustomEventName`, `CustomEventDetail`, `UnmarshalCustomEventDetail`, `ScriptAttributes` for intent-level assertions (`datastartest/script_accessors.go`); new `datastartest.custom_event_detail_unmarshal_failed` code |
 | Search helpers       | 🟢 `FULLY_FUNCTIONAL` | FindElement, FindSignals (`datastartest/search.go`)                                                                                        |
 | Assertion helpers    | 🟢 `FULLY_FUNCTIONAL` | RequireElements, RequireElementsContains, RequireSignals, RequireSignalsContain, RequireScript, RequireEventID, Count                      |
 | Filter helpers       | 🟢 `FULLY_FUNCTIONAL` | FilterElements, FilterSignals (`datastartest/filter.go`)                                                                                   |
@@ -130,11 +132,26 @@
 | Fuzz test            | 🟢 `FULLY_FUNCTIONAL` | FuzzReadEvents with 51-seed committed conformance corpus incl. go-sse crasher ports (`datastartest/reader_fuzz_test.go`, `testdata/fuzz/`) |
 | Benchmark            | 🟢 `FULLY_FUNCTIONAL` | BenchmarkReadEvents: ~131 MB/s, 108 allocs/op (`datastartest/reader_fuzz_test.go`)                                                         |
 
+## Examples
+
+| Feature                       | Status                | Notes                                                                                                        |
+| ----------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Live-feed demo                | 🟢 `FULLY_FUNCTIONAL` | Broadcaster + MemoryStore replay + heartbeat + ScriptHandler (`example/`); heartbeat and gzip docs in `example/README.md` |
+| Domain-adapter mini-app       | 🟢 `FULLY_FUNCTIONAL` | Domain events → `Bridge() → []Patch` → broadcaster + MemoryStore, E2E-tested with raw SSE (`example/domain-adapter/`) |
+| gzip SSE middleware           | 🟢 `FULLY_FUNCTIONAL` | `gzipSSEMiddleware` with per-event flushing, Vary, Content-Length strip (`example/sse_middleware.go`); 2 tests |
+| Docker packaging              | 🟢 `FULLY_FUNCTIONAL` | Multi-stage `Dockerfile` + `docker-compose.yml` (build itself not yet CI-verified)                            |
+
 ## Build & CI
 
 | Feature           | Status                | Notes                                                                                                                                                           |
 | ----------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Nix flake build   | 🟢 `FULLY_FUNCTIONAL` | `buildGoModule` (root module), treefmt, devShell with golangci-lint + govulncheck; test/build/lint/erraudit/govulncheck/coverage apps                           |
-| GitHub Actions CI | 🟢 `FULLY_FUNCTIONAL` | 5 jobs: test (incl. per-module `GOWORK=off` isolation, workspace-sync idempotency, replace-directive audit), lint, actionlint, erraudit, govulncheck (`ci.yml`) |
+| GitHub Actions CI | 🟢 `FULLY_FUNCTIONAL` | 5 jobs: test (incl. per-module `GOWORK=off` isolation, workspace-sync idempotency, replace-directive audit), lint, actionlint, erraudit, govulncheck (`ci.yml`); docs-only changes skip the code gates |
 | erraudit in CI    | 🟢 `FULLY_FUNCTIONAL` | Pinned v0.3.0, probe-gated: skips with a notice while the erraudit repo is private, hard gate once public (`ci.yml`)                                            |
 | govulncheck in CI | 🟢 `FULLY_FUNCTIONAL` | Pinned v1.6.0, scans all three modules (`ci.yml:96-109`)                                                                                                        |
+| Nix CI job        | 🟢 `FULLY_FUNCTIONAL` | `nix flake check` hermetic gate on code paths, `continue-on-error` until proven stable (`nix.yml`)                                                              |
+| Scheduled fuzzing | 🟢 `FULLY_FUNCTIONAL` | Daily 60s fuzz runs over all four targets with crash-artifact upload (`fuzz.yml`)                                                                               |
+| CodeQL scanning   | 🟢 `FULLY_FUNCTIONAL` | Go security analysis, SHA-pinned action (`codeql.yml`)                                                                                                          |
+| Renovate JS bumps | 🟢 `FULLY_FUNCTIONAL` | Custom manager proposes embedded-DataStar-JS version bumps from upstream releases (`renovate.json`); coexists with dependabot (one-bot decision pending)         |
+| Wire golden tests | 🟢 `FULLY_FUNCTIONAL` | `TestPatchWireGoldens` pins exact SSE bytes per patch family (`wire_golden_test.go`)                                                                            |
+| Docs guides       | 🟢 `FULLY_FUNCTIONAL` | `docs/replay.md`, `error-system.md`, `wire-format.md`, `testing.md`, `performance.md`, `migration-guide.md`, `static-js.md`                                     |
