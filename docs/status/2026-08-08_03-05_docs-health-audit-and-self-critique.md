@@ -79,7 +79,7 @@ Evidence: commits `760ce82`, annotations visible inline with `~~strikethrough~~`
 
 ## b) PARTIALLY DONE
 
-### 1. Annotations on ~5 items lack commit hashes
+### 1. ~~Annotations on ~5 items lack commit hashes~~ done (docs-health pass 2026-08-16 — the typed-error-system report annotations were re-done citing hashes)
 
 Several annotations in the typed-error-system report say "done in subsequent sessions" without citing a specific commit hash. The ANNOTATE skill's "so what?" test requires concrete evidence (commit hash, TODO_LIST ID). Items affected:
 
@@ -89,13 +89,13 @@ Several annotations in the typed-error-system report say "done in subsequent ses
 
 **What's open:** Go back and cite the specific commit hash for each of these ~5 annotations.
 
-### 2. VERIFY mode was cursory
+### 2. ~~VERIFY mode was cursory~~ done — the 2026-08-29 docs-health pass measured coverage, ran the race gate, and enumerated lint per module (17-05 report a.2); further VERIFY passes 2026-09-02
 
 The docs-health skill's VERIFY mode requires: "Read each doc, verify against code. For every concrete claim, open the referenced code and confirm." I verified the TODO_LIST items against code (via sub-agents and grep), but I did NOT systematically verify every claim in the newly-built FEATURES.md and ROADMAP.md after writing them. The cross-file consistency check at the end was a quick grep, not a thorough audit.
 
 **What's open:** A proper VERIFY pass on the 4 new docs — open every `file:line` citation and confirm.
 
-### 3. No health report generated
+### 3. ~~No health report generated~~ done — 08-47 pass emitted Accuracy/Fitness scores; 2026-08-29 and 2026-09-02 passes re-scored inline
 
 The AUDIT mode says: "Report using the health report format — two independent scores (Accuracy + Fitness), per-doc findings table, visible math." I skipped this entirely. The user asked for superb docs, and I never scored them.
 
@@ -103,7 +103,7 @@ The AUDIT mode says: "Report using the health report format — two independent 
 
 ## c) NOT STARTED
 
-### 1. CONTRIBUTING.md fix — explicitly broken, documented, NOT FIXED
+### 1. ~~CONTRIBUTING.md fix — explicitly broken, documented, NOT FIXED~~ done at `4f7595e` (GOEXPERIMENT, GOWORK=off, nix workflow documented)
 
 **This is the biggest miss.** CONTRIBUTING.md says `go test ./... -race` without `GOEXPERIMENT=jsonv2` or `GOWORK=off`. Anyone following it fails immediately. Verified broken. Put in TODO_LIST. Moved on.
 
@@ -111,7 +111,7 @@ The deep-review report (2026-08-08) literally says: _"Fix CONTRIBUTING.md when y
 
 I then did the **exact same thing**. This is now a three-session pattern of documenting a known-broken onboarding doc without fixing it.
 
-### 2. AGENTS.md updates — missing entries, documented, NOT FIXED
+### 2. ~~AGENTS.md updates — missing entries, documented, NOT FIXED~~ done at `4f7595e` (file-layout rows + parity requirement #12)
 
 Two 10-minute edits identified and verified:
 
@@ -120,11 +120,11 @@ Two 10-minute edits identified and verified:
 
 AGENTS.md is a **living document**. The docs-health skill says: "Living docs get rewritten in place when they drift." I treated AGENTS.md as read-only and routed the work to TODO_LIST instead.
 
-### 3. SECURITY.md, CODE_OF_CONDUCT.md, issue templates, PR template
+### 3. ~~SECURITY.md, CODE_OF_CONDUCT.md, issue templates, PR template~~ done — SECURITY.md + CODE_OF_CONDUCT.md at root; .github/ISSUE_TEMPLATE + PULL_REQUEST_TEMPLATE exist
 
 All absent. All identified. All routed to TODO_LIST. None created. These are community-readiness files that any public library should have.
 
-### 4. GitHub repo polish (topics, wiki, branch protection)
+### 4. ~~GitHub repo polish (topics, wiki, branch protection)~~ done — topics/wiki `cfe328d`; branch protection set 2026-08-16 then removed by owner (`257c395`)
 
 Identified in reports. Routed to TODO_LIST. Not attempted (requires `gh` CLI access).
 
@@ -225,10 +225,10 @@ The skill says to produce two independent scores (Accuracy + Fitness) with visib
 16. ~~Pin `golangci-lint` version in CI (currently `@latest`).~~ done in v0.0.3 — v2.12.2
 17. ~~Upgrade `actions/checkout@v4`→`v5`, `actions/setup-go@v5`→`v6`.~~ done in v0.0.3 — later superseded by SHA-pinned v7 (`01a1c5d`)
 18. ~~Add `golangci-lint` / `erraudit` / `govulncheck` as nix checks in `flake.nix`.~~ done as nix **apps**, not checks
-19. Add `erraudit` to `flake.nix` devShell.
-20. Set up branch protection on master.
+19. ~~Add `erraudit` to `flake.nix` devShell.~~ **Won't implement — not hermetically buildable while the erraudit repo is private; nix run .#erraudit app covers local use.**
+20. ~~Set up branch protection on master.~~ **Won't implement — moot — branch protection removed entirely by owner decision (257c395).**
 21. ~~Add Dependabot or Renovate config.~~ done in v0.0.3
-22. Consider scheduled fuzz testing in CI.
+22. ~~Consider scheduled fuzz testing in CI.~~ done (done — fuzz.yml daily scheduled 60s runs (1a72616))
 
 ### Testing
 
@@ -245,14 +245,14 @@ The skill says to produce two independent scores (Accuracy + Fitness) with visib
 30. ~~Create issue templates and PR template.~~ done at `3cebe14`
 31. Add "Migrating from starfederation/datastar-go" guide.
 32. Add architecture diagram (D2 or mermaid).
-33. Add coverage badge to README.
+33. ~~Add coverage badge to README.~~ done (done — README coverage badge + coverage.yml (ed815c7))
 34. ~~Add `errors_example_test.go` showing all three error-handling patterns.~~ done at `eb8bf29`
-35. Add markdown formatter to treefmt.
+35. ~~Add markdown formatter to treefmt.~~ **Won't implement — ADR 006 — dprint.json deliberately unwired into treefmt/CI (cf19bf1).**
 
 ### Code quality
 
 36. ~~Address `nestif` complexity in `ReadSignals` (complexity 6).~~ done at `5bab343`
-37. Consider splitting `response.go` (195 lines, 18 methods).
+37. ~~Consider splitting `response.go` (195 lines, 18 methods).~~ **Won't implement — response.go is a cohesive fluent builder; splitting is churn.**
 38. Add `Broadcaster[datastar.Patch]` typed-filtering example.
 39. Add `SubscribeFilter` usage example.
 40. ~~Add `//nolint` comments on accepted `generic_return` / `silent_swallow` sites.~~ **Won't implement** — superseded by `--severity-threshold error` in CI (T09)
@@ -261,7 +261,7 @@ The skill says to produce two independent scores (Accuracy + Fitness) with visib
 
 41. ~~Set GitHub repo topics (`datastar`, `sse`, `go`, `hypermedia`).~~ done (`cfe328d`)
 42. ~~Disable empty GitHub wiki.~~ done (`cfe328d`)
-43. Verify pkg.go.dev docs rendered.
+43. ~~Verify pkg.go.dev docs rendered.~~ done (verified 2026-09-02 — pkg.go.dev renders v0.3.0 for all 3 modules)
 
 ### Release tooling
 
@@ -272,9 +272,9 @@ The skill says to produce two independent scores (Accuracy + Fitness) with visib
 
 ### Upstream tracking
 
-48. Document DataStar JS version pinning strategy.
+48. ~~Document DataStar JS version pinning strategy.~~ done (done — docs/static-js.md pinning strategy + upgrade process)
 49. ~~Check if upstream DataStar has released beyond v1.0.2.~~ done — confirmed latest in the v0.0.3 session (T13)
-50. Add Renovate rule for upstream DataStar JS releases.
+50. ~~Add Renovate rule for upstream DataStar JS releases.~~ done (done — renovate.json custom manager tracks upstream releases (1a72616))
 
 ---
 
@@ -290,7 +290,7 @@ The doc says "Returns an error via the patch if the argument count is odd." The 
 
 ### Q3: Should the [Unreleased] CHANGELOG entries be released as v0.0.3 now, or batched with future work?
 
-The HEAD spec-compliance fix is a real behavior change (HEAD responses now have empty bodies). It affects any client doing HEAD pre-flight checks (CDNs, proxies). The godoc fix is cosmetic. Options: tag v0.0.3 now with these changes, or wait for more accumulated work. **This is a release cadence decision I can't make for you.**
+~~The HEAD spec-compliance fix is a real behavior change (HEAD responses now have empty bodies). It affects any client doing HEAD pre-flight checks (CDNs, proxies). The godoc fix is cosmetic. Options: tag v0.0.3 now with these changes, or wait for more accumulated work. **This is a release cadence decision I can't make for you.**~~ Resolved — v0.0.3 tagged 2026-08-08; release cadence is now codified in `docs/release-checklist.md` (v0.3.0 current since 2026-08-29).
 
 ---
 

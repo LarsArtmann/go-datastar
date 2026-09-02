@@ -83,8 +83,8 @@ Tried adding `mdformat` to treefmt. It reformatted status reports and other docs
 | 1 | T12: GitHub repo polish (topics, wiki) | ~~BLOCKED — requires `gh` CLI access~~ done in the 09-36 session (`cfe328d`)  |        |
 | 2 | T14: Tag v0.0.3                        | ~~BLOCKED — release cadence decision (user)~~ done — v0.0.3 tagged 2026-08-08 |        |
 | 3 | Nestif refactor of ReadSignals         | done at `5bab343`                                                             |        |
-| 4 | Coverage badge in README               | TODO                                                                          |        |
-| 5 | pkg.go.dev rendering verification      | TODO                                                                          |        |
+| ~~4~~ | ~~Coverage badge in README~~ done — README coverage badge + coverage.yml (ed815c7) | ~~TODO~~ | ~~~~ |
+| ~~5~~ | ~~pkg.go.dev rendering verification~~ done — verified 2026-09-02 — pkg.go.dev renders v0.3.0 for all 3 modules | ~~TODO~~ | ~~~~ |
 
 ---
 
@@ -140,7 +140,7 @@ Commits `de6abaf`, `eb8bf29`, and `17325c2` have empty commit messages (just whi
 1. ~~**Upgrade `actions/checkout@v4` → `@v5` in ci.yml** — all 4 jobs.~~ done in the 07-04 session (F1); later superseded by SHA-pinned v7
 2. ~~**Upgrade `actions/setup-go@v5` → `@v6` in ci.yml** — all 4 jobs.~~ done in the 07-04 session (F1); later superseded by SHA-pinned v7
 3. ~~**Add test for `ErrorResponseFromError`** — verify it sends correct signals for Rejection, Transient, and non-errorfamily errors.~~ done in the 07-04 session (F2)
-4. **Resolve go.mod `go 1.26.5` vs CHANGELOG claim of `go 1.26`** — either lower go.mod or correct the CHANGELOG. ← still open: the F3 "fix" was never committed (verified 2026-08-16)
+4. ~~**Resolve go.mod `go 1.26.5` vs CHANGELOG claim of `go 1.26`** — either lower go.mod or correct the CHANGELOG. ← still open: the F3 "fix" was never committed (verified 2026-08-16)~~ done (resolved — go-directive policy pins the exact patch, now 1.26.7 (ROADMAP 'Resolved questions'); go.mod:3 is 1.26.7)
 
 ### Error system hardening
 
@@ -152,7 +152,7 @@ Commits `de6abaf`, `eb8bf29`, and `17325c2` have empty commit messages (just whi
 
 ### Testing gaps
 
-10. Run `FuzzMarshalSignalsRoundtrip` for 60+ seconds and verify 0 panics.
+10. ~~Run `FuzzMarshalSignalsRoundtrip` for 60+ seconds and verify 0 panics.~~ done (done — FuzzMarshalSignalsRoundtrip runs daily (fuzz.yml, 1a72616))
 11. Add fuzz test for `NewDispatchCustomEventPatch` with unmarshallable detail values.
 12. Add test that `MarshalSignals` error message includes the Go type name.
 13. Add test for `ErrorResponseFromError` with nil error (edge case).
@@ -162,14 +162,14 @@ Commits `de6abaf`, `eb8bf29`, and `17325c2` have empty commit messages (just whi
 
 15. Add `erraudit --format sarif` output for GitHub code scanning.
 16. ~~Pin `erraudit` version in CI to a specific tag (currently v0.3.0, but unpinned in the `go install` command — actually it IS pinned, verify).~~ done — verified pinned `@v0.3.0` (`ci.yml:91`)
-17. Add `erraudit` to nix `checks` (not just `apps`) — hermetic check in `nix flake check`.
-18. Add govulncheck to nix `checks`.
-19. Add golangci-lint to nix `checks`.
+17. ~~Add `erraudit` to nix `checks` (not just `apps`) — hermetic check in `nix flake check`.~~ **Won't implement — ADR 004 verdict — lint is not sandboxable while erraudit/go-finding repos are private; stays a flake app + CI job.**
+18. ~~Add govulncheck to nix `checks`.~~ **Won't implement — ADR 004 verdict — same hermeticity line as checks.lint.**
+19. ~~Add golangci-lint to nix `checks`.~~ **Won't implement — ADR 004 verdict — same hermeticity line; govulncheck stays a flake app + CI job.**
 20. ~~Investigate why `actions/checkout@v5` and `actions/setup-go@v6` were not released yet (verify they exist before upgrading).~~ done in the 07-04 session (F7) — both existed; adopted, later superseded by v7
 
 ### Documentation
 
-21. Add `docs/error-system.md` deep-dive with full contract + decision rationale.
+21. ~~Add `docs/error-system.md` deep-dive with full contract + decision rationale.~~ done (done — docs/error-system.md + docs/adr/003-error-classification.md)
 22. ~~Document why `--enforce-samber-oops` must NOT be used with this library in CI config comments.~~ done — documented in `AGENTS.md` (Error System)
 23. Update CONTRIBUTING.md to mention erraudit and govulncheck commands.
 24. Add architecture diagram (D2 or mermaid) showing go-sse → go-datastar → consumer.
@@ -180,12 +180,12 @@ Commits `de6abaf`, `eb8bf29`, and `17325c2` have empty commit messages (just whi
 26. ~~Address `nestif` complexity in `ReadSignals` (extract helpers, no logic change).~~ done at `5bab343`
 27. ~~Audit `response.go` for `ApplyPatches` error handling (does it stop on first error?).~~ done — stops on first error (`response.go:146-153`)
 28. ~~Review whether `sendSignalsMap` defensive branch (marshal error on a pre-built map) is reachable.~~ done — accepted as unreachable defensive branch
-29. Consider splitting `errors.go` into `codes.go` + `sentinels.go` as the catalog grows.
+29. ~~Consider splitting `errors.go` into `codes.go` + `sentinels.go` as the catalog grows.~~ **Won't implement — errors.go is a cohesive 108-line catalog; splitting is churn.**
 30. ~~Run `gosec ./...` as a baseline security scan.~~ done — `gosec` enabled in `.golangci.yml`, 0 issues
 
 ### Dependency hygiene
 
-31. Consider whether `go-branded-id` should become a direct dependency.
+31. ~~Consider whether `go-branded-id` should become a direct dependency.~~ **Won't implement — go-branded-id remains transitive via go-sse; promoting it buys nothing.**
 32. Investigate the `gopls stdversion` warnings — is `encoding/json/v2` actually stable in Go 1.26 or does it need 1.27?
 33. Check if `GOEXPERIMENT=jsonv2` can be replaced with a stable flag in Go 1.27+.
 
@@ -193,8 +193,8 @@ Commits `de6abaf`, `eb8bf29`, and `17325c2` have empty commit messages (just whi
 
 34. ~~Set GitHub repo topics via `gh repo edit`.~~ done (`cfe328d`)
 35. ~~Disable empty GitHub wiki via `gh repo edit --enable-wiki=false`.~~ done (`cfe328d`)
-36. Add coverage badge (codecov or similar).
-37. Verify pkg.go.dev rendering for the latest version.
+36. ~~Add coverage badge (codecov or similar).~~ done (done — README coverage badge + coverage.yml (ed815c7))
+37. ~~Verify pkg.go.dev rendering for the latest version.~~ done (verified 2026-09-02 — pkg.go.dev renders v0.3.0 for all 3 modules)
 38. ~~Create GitHub release with notes when tagging v0.0.3.~~ done in the 09-36 session
 
 ### Release
@@ -210,16 +210,16 @@ Commits `de6abaf`, `eb8bf29`, and `17325c2` have empty commit messages (just whi
 44. ~~Run `golines` on all Go files for consistent line length.~~ done — `golines` runs via treefmt (`flake.nix`)
 45. ~~Add `//nolint` comments on the 6 accepted WARNING-level erraudit violations — for documentation, not suppression.~~ **Won't implement** — superseded by `--severity-threshold error` (T09)
 46. ~~Consider adding a `Makefile` target or `justfile` for common workflows (or rather, document `nix run .#*` as the canonical interface).~~ **Won't implement** — `nix run .#*` apps are the canonical interface (`flake.nix`)
-47. Review whether the example app needs its own tests.
-48. Add a `FUNDING.yml` if the maintainer wants sponsorship.
+47. ~~Review whether the example app needs its own tests.~~ done (done — example/ondrop_test.go, sse_middleware_test.go, domain-adapter tests run in CI)
+48. ~~Add a `FUNDING.yml` if the maintainer wants sponsorship.~~ done (done — .github/FUNDING.yml (cf7b3f4))
 49. ~~Consider adding a `CHANGELOG` entry for the empty-commit cleanup (if done).~~ **Won't implement** — no cleanup done
-50. Review the entire `errors_example_test.go` output format — make sure it renders well on pkg.go.dev.
+50. ~~Review the entire `errors_example_test.go` output format — make sure it renders well on pkg.go.dev.~~ done (done — errors_example_test.go exists; pkg.go.dev renders v0.3.0)
 
 ---
 
 ## g) Questions I CANNOT figure out myself
 
-### Q1: ~~Should go.mod stay at `go 1.26.5` or be lowered to `go 1.26`?~~ **Still open (2026-08-16)** — the lowering claimed here and in the v0.0.2/v0.0.3 CHANGELOG never landed at any tag. Decision routed to TODO_LIST/ROADMAP.
+### Q1: ~~Should go.mod stay at `go 1.26.5` or be lowered to `go 1.26`?~~ **Resolved** — the go-directive policy pins the exact patch release (ROADMAP 'Resolved questions', updated 2026-08-29): every module now says `go 1.26.7`, superseding the never-landed lowering claim.
 
 The CHANGELOG v0.0.2 entry says it was lowered to `go 1.26`, but go.mod currently says `go 1.26.5`. Was the lowering reverted intentionally (perhaps to match the local toolchain), or is this a genuine drift that needs fixing? Lowering to `go 1.26` improves consumer compatibility but the patch version is functionally irrelevant for Go modules.
 

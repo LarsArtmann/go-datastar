@@ -61,8 +61,8 @@ Nothing partially done. All 4 fixes were binary: either fixed or not.
 | Tag v0.0.3                         | ~~User release cadence decision~~ done — tagged 2026-08-08   |          |
 | GitHub repo polish (topics, wiki)  | ~~No `gh` CLI access~~ done in the 09-36 session (`cfe328d`) |          |
 | `nestif` refactor of `ReadSignals` | done at `5bab343`                                            |          |
-| Coverage badge in README           | Cosmetic                                                     |          |
-| pkg.go.dev rendering verification  | Needs a published version — still open                       |          |
+| ~~Coverage badge in README~~ done — live badge via coverage.yml (ed815c7) | Cosmetic                                                     |          |
+| ~~pkg.go.dev rendering verification~~ done — verified 2026-09-02, v0.3.0 renders all 3 modules | Done                       |          |
 
 ---
 
@@ -130,25 +130,25 @@ Nothing partially done. All 4 fixes were binary: either fixed or not.
 4. ~~Push to remote and verify CI passes with the new Actions versions~~ done — CI green
 5. ~~GitHub repo polish: set topics (`datastar`, `sse`, `go`, `hypermedia`)~~ done (`cfe328d`)
 6. ~~GitHub repo polish: disable empty wiki~~ done (`cfe328d`)
-7. Verify pkg.go.dev renders docs for the published version
-8. Add coverage badge to README (once v0.0.3 is tagged)
+7. ~~Verify pkg.go.dev renders docs for the published version~~ done (verified 2026-09-02 — pkg.go.dev renders v0.3.0 for all 3 modules)
+8. ~~Add coverage badge to README (once v0.0.3 is tagged)~~ done (done — README coverage badge + coverage.yml (ed815c7))
 
 ### Code quality
 
 9. ~~Refactor `ReadSignals` to reduce `nestif` complexity (currently 6)~~ done at `5bab343`
-10. Add `actionlint` to nix flake checks or CI pipeline
+10. ~~Add `actionlint` to nix flake checks or CI pipeline~~ done (done — actionlint.yml workflow validates every push)
 11. Consider making `ErrorResponse`/`NotificationResponse`/`ErrorResponseFromError` into `Response` methods for fluent API consistency
 12. Parse JSON in `TestErrorResponseFromError` instead of substring matching
 13. Add integration test that exercises the full `ErrorResponseFromError` → client round-trip
 14. Add test for `NotificationResponse` with edge-case message content (empty, unicode, very long)
 15. Add test for `ErrorResponse` with empty code or message
-16. Review whether `signalKeyMessage` should be renamed to something clearer
+16. ~~Review whether `signalKeyMessage` should be renamed to something clearer~~ **Won't implement — internal JSON-key constant with no consumer surface; renaming is churn.**
 17. Consider extracting a `signalsMap` type to make the signals-patch pattern more explicit
 
 ### Documentation
 
-18. Verify `doc.go` examples compile and match current API
-19. Add a "Error Handling Guide" section to README showing `ErrorResponseFromError` usage
+18. ~~Verify `doc.go` examples compile and match current API~~ done (done — doc.go verified in the 2026-08-29 docs-health audit; examples use the current API)
+19. ~~Add a "Error Handling Guide" section to README showing `ErrorResponseFromError` usage~~ done (done — README 'Error handling' section covers ErrorResponseFromError + the codes table)
 20. Review all godoc comments for accuracy (the `ErrorResponseFromError` doc bug proves this is needed)
 21. Add ARCHITECTURE.md or architecture section to README explaining the 3-layer design
 22. Document the CI pipeline in CONTRIBUTING.md (what jobs run, what they check)
@@ -161,29 +161,29 @@ Nothing partially done. All 4 fixes were binary: either fixed or not.
 26. Add benchmark for `ErrorResponseFromError` (measures `errorfamily.Classify` overhead)
 27. Add test for concurrent `Response` method calls (thread safety)
 28. ~~Add test for `MemoryStore` at capacity (ring buffer behavior)~~ done (`TestMemoryStore_RingBufferEviction`, `store_test.go:106`)
-29. Add E2E test for SSE reconnection replay with DataStar patches
-30. Add test for `ScriptHandler` with custom bundle (`ScriptHandlerWith`)
+29. ~~Add E2E test for SSE reconnection replay with DataStar patches~~ done (done — TestE2E_ReplayWithLastEventID exercises SSE reconnection replay (datastartest/e2e_test.go))
+30. ~~Add test for `ScriptHandler` with custom bundle (`ScriptHandlerWith`)~~ done (done — TestScriptHandlerWith covers custom bundles (response_test.go))
 31. Add test for very large elements patches (multi-line splitting at scale)
 32. Add test for signals patches with nested JSON objects
 33. Add test for `ReadSignals` with query param + body simultaneously (which wins?)
-34. Add property-based test for wire-format parity (generate patches, check format)
+34. ~~Add property-based test for wire-format parity (generate patches, check format)~~ done (done — TestPatchWireGoldens pins exact wire bytes (a0c0aea); FuzzMarshalSignalsRoundtrip property-tests the roundtrip)
 
 ### Dependencies & security
 
-35. Run `govulncheck` locally and verify clean
+35. ~~Run `govulncheck` locally and verify clean~~ done (done — CI govulncheck job + flake nix run .#govulncheck app)
 36. ~~Check if `go-error-family` v0.10.0 has any advisories~~ done — govulncheck CI job green
 37. ~~Check if `go-sse` v0.4.0 has any advisories~~ done — govulncheck CI job green
-38. Review transitive dependencies for minimum version selection issues
-39. Consider adding `renovate.json` as alternative to Dependabot
-40. Pin `go.sum` and verify reproducibility with `go mod verify`
+38. ~~Review transitive dependencies for minimum version selection issues~~ **Won't implement — dependency tree is minimal (go-sse + go-error-family + transitive branded-id) and bot-monitored.**
+39. ~~Consider adding `renovate.json` as alternative to Dependabot~~ done (done — renovate.json at root (custom manager for the embedded JS); coexists with dependabot (one-bot decision pending))
+40. ~~Pin `go.sum` and verify reproducibility with `go mod verify`~~ done (done — per-module go.sum committed; go mod verify green (2026-08-16 audit); ROADMAP reproducibility policy)
 
 ### CI/CD
 
 41. Add `go test -short` and `go test -long` separation for faster CI feedback
 42. Consider adding a `release` job that tags on merge to main
 43. Add status badges for erraudit and govulncheck (not just test/lint)
-44. Consider matrix testing across Go 1.26.x patch versions
-45. Add caching for `go mod` in CI for faster builds
+44. ~~Consider matrix testing across Go 1.26.x patch versions~~ **Won't implement — moot — the repo pins the exact patch (go 1.26.7) and requires >= 1.26.7; an older-patch matrix contradicts the policy.**
+45. ~~Add caching for `go mod` in CI for faster builds~~ done (done — golangci-lint analysis cache + setup-go build/module caches (88c1eed))
 
 ### Project maturity
 

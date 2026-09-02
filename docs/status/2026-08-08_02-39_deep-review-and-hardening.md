@@ -231,8 +231,8 @@ The HEAD body-writing fix is a real spec violation that affects any client doing
 
 The embedded `static/datastar.js` is pinned at v1.0.2 (`DatastarJSVersion = "1.0.2"`). The upstream `starfederation/datastar` repo may have released newer versions. I don't know whether you want to track upstream releases closely (and regenerate the embedded JS), or pin and update manually. This affects whether I should check for upstream updates as part of routine maintenance.
 
-> **Resolution:** Still open. Routed to ROADMAP.md (Upstream Protocol Tracking theme).
+> **Resolution:** ~~Still open. Routed to ROADMAP.md (Upstream Protocol Tracking theme).~~ Resolved — `docs/static-js.md` documents the pin strategy and upgrade process, and `renovate.json` proposes upstream-JS bumps automatically (`1a72616`).
 
 ---
 
-> **Annotation note (2026-08-08, updated 2026-08-16):** Items 4–6 and every other resolved item are marked inline with commit hashes. Still open: pkg.go.dev verification (TODO_LIST), coverage badge (TODO_LIST), branch protection (TODO_LIST), migrating guide / architecture diagram / more examples / Broadcaster+SubscribeFilter examples / release automation / website / scheduled fuzz (ROADMAP), markdown-formatter wiring (TODO_LIST), erraudit in devShell (TODO_LIST), headless-browser E2E (ROADMAP).
+> **Annotation note (2026-08-08, updated 2026-09-02):** Items 4–6 and every other resolved item are marked inline with commit hashes. Still open: starfederation migration guide, architecture diagram, headless-browser E2E, Broadcaster/SubscribeFilter examples, changelog automation, goreleaser, version package, release automation, more examples, playground link (all ROADMAP); branch deletions (owner-blocked, TODO_LIST). Resolved since the last note: pkg.go.dev verified (v0.3.0 renders all modules), coverage badge live, scheduled fuzzing live, dprint disposition (ADR 006), erraudit devShell exclusion (documented in flake), response.go split rejected, upstream-JS tracking strategy documented.
