@@ -54,8 +54,13 @@ func TestSnapshot_Mismatch(t *testing.T) {
 }
 
 // TestSnapshot_MissingGoldenFile runs under a fresh test name whose golden
-// does not exist, exercising the creation-guidance path.
+// does not exist, exercising the creation-guidance path. Skipped under
+// -datastartest-update (which would create the file and defeat the test).
 func TestSnapshot_MissingGoldenFile(t *testing.T) {
+	if flag.Lookup("datastartest-update").Value.String() == "true" {
+		t.Skip("-datastartest-update would create the golden this test needs missing")
+	}
+
 	tb := &recordingTB{}
 	datastartest.Snapshot(tb, snapshotEvents)
 
