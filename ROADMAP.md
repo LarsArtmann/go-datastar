@@ -42,6 +42,17 @@ Raw ideas:
   DataStar JS client — the current E2E stops at wire-format verification
 - Domain-adapter example (EventBridge-style) demonstrating the
   Patch-as-value payoff
+- datastartest helper-API expansion (consolidated): RequireElementsOrdered,
+  RequireNotScript, FindAllElements, FindScript, EventToSelectorMap,
+  ReadAllEvents, Diff, Snapshot, ServeSSE, NewRecorder, RawSSE, Event.LogJSON,
+  GoString, fluent Assert API, Ginkgo/Gomega matchers, JSON-aware
+  SignalsContain, timeout variants of CollectWithRequest/CollectPost
+- `datastartest.NewResponse`-style helper for test ergonomics
+- Response ergonomics: `ErrorResponse`/`NotificationResponse`/
+  `ErrorResponseFromError` as `Response` methods; a `signalsMap` type for the
+  signals-patch pattern; review `signalKeyMessage` naming
+- Compile-checked doc snippets (a tiny docspec test target) so guide examples
+  like `BroadcastMany` cannot drift from the API
 - `example/README.md` and an `example/docker-compose.yml` for easy local
   runs; benchmark for `Collect` helper overhead
 - Community metadata: GitHub Sponsors / funding, contributor list
@@ -60,10 +71,16 @@ Raw ideas:
   `flake.nix` `apps.bench` for running benchmarks
 - vendorHash fragility under the `gitTracked` fileset: pin source by git rev
   or find a non-moving-target strategy when the daemon commits mid-session
+  (investigation routed TODO_LIST — ADR 004 correction pending)
 - Verify the erraudit probe-gate transition once the repo goes public
   (manual trigger or scheduled probe)
 - Scheduled fuzz runs in CI (`go test -fuzz` on a cron, corpus committed);
   CodeQL workflow for Go security analysis
+- CI matrix / parallel jobs per module for faster feedback
+- `go work vendor` support or a flake app for offline module graphs
+- `example/` as its own Go module (structural decision — keeps demo deps out
+  of the root module graph)
+- Coverage-floor policy decision (optional CI gate at a threshold)
 - Release automation (goreleaser, changelog-from-release, tag-triggered
   GitHub releases)
 - Build-time version variable or `version` package
@@ -86,6 +103,8 @@ Raw ideas:
 - Website launch (Astro + Starlight pattern)
 - Document the DataStar JS version pinning strategy and upgrade process
 - SSE heartbeat documentation
+- Constraint check tying `static.Version` mentions to the CHANGELOG (pinning
+  hygiene)
 
 ### 5. Upstream Protocol Tracking
 
@@ -100,8 +119,6 @@ Raw ideas:
   transport regressions before consumers do)
 - Watch go-sse for a Stream-level OnDrop (would reopen the Response
   drop-observability question; through v0.6.0 OnDrop stays Broadcaster-only)
-- One dependency bot: decide Renovate vs Dependabot (both currently active —
-  duplicate PR churn until one is switched off; owner decision)
 
 ## Non-goals
 
