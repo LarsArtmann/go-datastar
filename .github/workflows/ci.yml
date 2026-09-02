@@ -68,6 +68,35 @@ jobs:
             (cd "$mod" && GOWORK=off go test ./... -count=1)
           done
 
+      - name: Module checksum verification (go mod verify)
+        run: |
+          for mod in . ./datastartest ./static; do
+            echo "::group::go mod verify $mod"
+            (cd "$mod" && GOWORK=off go mod verify)
+          done
+
+      - name: go.work use-vs-disk check
+        run: |
+          cp go.work go.work.use-check.bak
+          go work use . ./datastartest ./static
+          if ! diff go.work.use-check.bak go.work; then
+            echo "::error::committed go.work diverges from 'go work use . ./datastartest ./static' — run 'go work use' locally and commit"
+            exit 1
+          fi
+          echo "go.work matches 'go work use' output"
+
+      - name: Tidy check (go mod tidy -diff)
+        run: |
+          rc=0
+          for mod in . ./datastartest ./static; do
+            echo "::group::go mod tidy -diff $mod"
+            (cd "$mod" && GOWORK=off go mod tidy -diff) || rc=1
+          done
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::go.mod/go.sum diverge from 'go mod tidy' — run 'go mod tidy' locally and commit"
+            exit 1
+          fi
+
       - name: Workspace sync idempotency
         run: |
           cp go.work go.work.bak
