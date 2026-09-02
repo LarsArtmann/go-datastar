@@ -19,6 +19,7 @@ func TestBytes_Checksum(t *testing.T) {
 	sum := sha256.Sum256(static.Bytes())
 
 	if got := hex.EncodeToString(sum[:]); got != bundleSHA256 {
-		t.Errorf("bundle checksum drifted: got sha256 %s, want %s — replace the checksum constant in the same commit as the bundle", got, bundleSHA256)
+		t.Errorf("bundle checksum drifted: got sha256 %s, want %s — "+
+			"replace the checksum constant in the same commit as the bundle", got, bundleSHA256)
 	}
 }

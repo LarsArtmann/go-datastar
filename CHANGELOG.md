@@ -18,6 +18,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `testdata/<TestName>.golden`, regenerate with `-datastartest-update`).
   datastartest coverage rose from 92.7% to 93.4%.
 
+### Changed — static
+
+- `ScriptHandler`/`ScriptHandlerWith` now set `X-Content-Type-Options: nosniff`;
+  the embedded bundle is pinned by a SHA-256 checksum test
+  (`static/checksum_test.go`) and a provenance comment documents the upstream
+  source. `Last-Modified` was evaluated and deliberately not set (ETag +
+  Cache-Control fully own freshness; see docs/static-js.md).
+
+### Deprecated
+
+- `datastar.DatastarJSVersion` — use `datastar.Version()` or
+  `github.com/larsartmann/go-datastar/static.Version` instead. The constant
+  remains for compilation compatibility and will be removed in a future
+  minor release.
+
 ## [0.4.0] - 2026-09-03
 
 ### Added

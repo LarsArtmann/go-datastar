@@ -43,3 +43,19 @@ CDN a browser page points at reintroduces drift.
 Automated bump proposals for the bundle are on the roadmap (a Renovate rule
 watching the upstream client); until then upgrades are manual per the steps
 above.
+
+## Hardening decisions
+
+- **`X-Content-Type-Options: nosniff`** is set by `ScriptHandler`/`ScriptHandlerWith`
+  (correct-by-default for a fixed Content-Type asset).
+- **`Last-Modified` is deliberately NOT set.** Freshness is fully owned by the
+  ETag + `Cache-Control: public, max-age=86400`, and the bundle is immutable
+  per release; a `Last-Modified` header would add a second freshness axis
+  (a fixed epoch per bundle) that must be maintained on every bump for no
+  revalidation benefit over If-None-Match.
+- **The bundle checksum is pinned by `static/checksum_test.go`** — a bundle
+  replacement must update the constant in the same commit, so asset drift can
+  never land silently.
+- **No fuzz target for the bundle:** `Bytes()` is an embedded, trusted asset,
+  not parsed input; fuzzing belongs at the protocol boundaries
+  (`FuzzReadSignals`, `FuzzReadEvents`).

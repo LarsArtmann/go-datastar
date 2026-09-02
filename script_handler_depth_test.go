@@ -24,7 +24,10 @@ func TestScriptTag_EdgeCases(t *testing.T) {
 		{"empty path", "", `<script type="module" src=""></script>`},
 		{"path with query", "/js?x=1", `<script type="module" src="/js?x=1"></script>`},
 		{"path with fragment", "/js#main", `<script type="module" src="/js#main"></script>`},
-		{"absolute URL", "https://cdn.example.com/datastar.js", `<script type="module" src="https://cdn.example.com/datastar.js"></script>`},
+		{
+			"absolute URL", "https://cdn.example.com/datastar.js",
+			`<script type="module" src="https://cdn.example.com/datastar.js"></script>`,
+		},
 	}
 
 	for _, tt := range tests {
