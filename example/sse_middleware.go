@@ -62,8 +62,8 @@ func (writer *gzipSSEWriter) Flush() {
 		return
 	}
 
-	if flusher, ok := writer.ResponseWriter.(http.Flusher); ok {
-		flusher.Flush()
+	if err := http.NewResponseController(writer.ResponseWriter).Flush(); err != nil {
+		return
 	}
 }
 

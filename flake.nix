@@ -276,6 +276,7 @@
             '';
 
             bench = mkApp "bench" [ goPkg ] ''
+              echo "== bench: $(go version) / $(uname -s) $(uname -m) / $(nproc) cores"
               export GOEXPERIMENT=jsonv2
               go test -run '^$' -bench . -benchmem "$@"
               (cd datastartest && go test -run '^$' -bench . -benchmem "$@")

@@ -23,12 +23,13 @@ import (
 	"github.com/larsartmann/go-sse"
 )
 
-const addr = ":8765"
-
 const (
+	addr = ":8765"
+
 	readHeaderTimeout = 5 * time.Second
 	shutdownTimeout   = 5 * time.Second
 	heartbeatInterval = 15 * time.Second
+	feedInterval      = 2 * time.Second
 )
 
 func main() {
@@ -78,7 +79,7 @@ func main() {
 }
 
 func startProducer(b *sse.Broadcaster[sse.Event]) {
-	ticker := time.NewTicker(2 * time.Second)
+	ticker := time.NewTicker(feedInterval)
 	defer ticker.Stop()
 
 	for i := 1; ; i++ {
