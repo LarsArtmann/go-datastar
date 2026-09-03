@@ -46,6 +46,7 @@ Policy:
 | 2026-09-02 | [docs-health audit: 31 files annotated, harvest, living-doc sync](2026-09-02_23-55_docs-health-audit-31-files-annotated-harvest-and-living-doc-sync.md) | Full AUDIT over all 2026-0* files; ~370 inline verdicts; zero archives (residue routed); TODO_LIST/ROADMAP rebuilt; 3 owner questions |
 | 2026-09-03 | [pareto execution T01–T27: v0.4.0 shipped, gates green](2026-09-03_02-00_pareto-execution-t01-t27-v0.4.0-shipped-and-gates-green.md) | All 27 plan tasks executed; v0.4.0 released + proxy/pkg.go.dev verified; vendorHash self-reference discovered and fixed (minimal datastartest fileset); docspec caught 3 doc drifts; all gates green |
 | 2026-09-03 | [T01–T27 full debrief + next 50](2026-09-03_12-26_pareto-execution-t01-t27-full-debrief-and-next-50.md) | Honest accounting: a) 27 fully done, b) 10 partials, d) 6 fuckups (incl. one red-master push), e) 10 improvements, f) 50 next steps, g) 3 owner questions |
+| 2026-09-03 | [release-superb audit, 11 release pages, JS 1.0.3 bump](2026-09-03_15-44_release-superb-audit-11-release-pages-js-1.0.3-bump.md) | 15/15 tags now have release pages; embedded JS client 1.0.2→1.0.3 (stale-at-release found); a) 10 done, d) 4 fuckups, f) 50 next steps, g) 3 owner questions |
 
 ## Archived (fully resolved)
 
