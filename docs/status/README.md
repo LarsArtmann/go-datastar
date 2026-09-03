@@ -47,6 +47,7 @@ Policy:
 | 2026-09-03 | [pareto execution T01–T27: v0.4.0 shipped, gates green](2026-09-03_02-00_pareto-execution-t01-t27-v0.4.0-shipped-and-gates-green.md)                    | All 27 plan tasks executed; v0.4.0 released + proxy/pkg.go.dev verified; vendorHash self-reference discovered and fixed (minimal datastartest fileset); docspec caught 3 doc drifts; all gates green |
 | 2026-09-03 | [T01–T27 full debrief + next 50](2026-09-03_12-26_pareto-execution-t01-t27-full-debrief-and-next-50.md)                                                 | Honest accounting: a) 27 fully done, b) 10 partials, d) 6 fuckups (incl. one red-master push), e) 10 improvements, f) 50 next steps, g) 3 owner questions                                            |
 | 2026-09-03 | [release-superb audit, 11 release pages, JS 1.0.3 bump](2026-09-03_15-44_release-superb-audit-11-release-pages-js-1.0.3-bump.md)                        | 15/15 tags now have release pages; embedded JS client 1.0.2→1.0.3 (stale-at-release found); a) 10 done, d) 4 fuckups, f) 50 next steps, g) 3 owner questions                                         |
+| 2026-09-03 | [buildflow-green tooling audit, mangled-bundle restore, stale vendorHash, self-review](2026-09-03_23-41_buildflow-green-tooling-audit-bundle-restore-self-review.md) | Full buildflow triage to exit-0; prettier-mangled vendored bundle restored byte-identical + shielded; stale datastartestVendorHash fixed (hash-fix false success found); a) 12 done, d) 5 fuckups, f) 50 next steps, g) 3 owner questions |
 
 ## Archived (fully resolved)
 
