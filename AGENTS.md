@@ -50,7 +50,7 @@ done
 GOEXPERIMENT=jsonv2 go test -run '^$' -fuzz '^FuzzReadSignals$' -fuzztime 30s .
 (cd datastartest && GOEXPERIMENT=jsonv2 go test -run '^$' -fuzz '^FuzzReadEvents$' -fuzztime 30s .)
 
-# CI also enforces (run locally to pre-empt CI failures):
+# CI also enforces (run locally to preempt CI failures):
 GOEXPERIMENT=jsonv2 go work sync        # go.work must not change after sync (idempotency)
 go work use . ./datastartest ./static   # go.work must match this exactly
 GOWORK=off go mod tidy -diff            # per module; must print nothing

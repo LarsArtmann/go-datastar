@@ -1,0 +1,7 @@
+[codespell]
+# "crasher" is standard Go fuzzing terminology (a failing input stored under
+# testdata/fuzz/) — see go.dev/security/fuzz; not a misspelling of "crash".
+ignore-words-list = crasher
+# Vendored upstream DataStar client bundle: minified JS trips the dictionary
+# constantly ("ue", "te", "ot") and must never be edited anyway.
+skip = static/datastar.js,.git,vendor

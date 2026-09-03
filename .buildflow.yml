@@ -1,0 +1,30 @@
+# BuildFlow configuration — go-datastar
+#
+# The repo's canonical gates are the flake apps (nix run .#test / .#lint-ci /
+# .#erraudit) plus the CI workflow; this file only tunes BuildFlow's
+# broader-than-repo toolset so it stays green without masking real findings.
+
+build_mode: full
+
+# Skipped steps — each is a deliberate, documented decision, not an oversight:
+#
+# go-structure-linter: wants a cmd/internal/pkg layout. This repo is
+#   DELIBERATELY a flat single package (AGENTS.md "Module Structure"; ADR 002
+#   multi-module split; module_boundary_test.go enforces the boundaries).
+#   All 18 findings are the same flat-layout false positive.
+#
+# eslint-check / eslint-fix: the only JavaScript in the repo is
+#   static/datastar.js — the vendored upstream DataStar client bundle that
+#   must never be linted or rewritten. There is no first-party JS/TS to
+#   configure ESLint for.
+#
+# go-auto-upgrade: its remaining suggestions replace trivial for-range
+#   filters/maps with samber/lo. That would add a new dependency to a
+#   minimal-dependency protocol library (deps: go-sse, go-error-family, x/mod)
+#   for zero behavioral gain; encoding/json v2 is already adopted repo-wide
+#   (GOEXPERIMENT=jsonv2), which was the step's substantive check.
+skip_steps:
+  - go-structure-linter
+  - eslint-check
+  - eslint-fix
+  - go-auto-upgrade
