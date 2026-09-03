@@ -11,6 +11,7 @@
 ## Self-review (asked directly)
 
 **What did I forget?**
+
 1. The pasted test output had **no `static` module line** — I trusted the "PASS" impression instead of cross-checking module coverage. Found the checksum failure only when running the suite myself (minutes later than necessary).
 2. **nix-checker told me** ("vendorHash may be stale — go.mod modified after hash was set") and I initially filed it under "heuristic noise". It was right. `nix flake check` at minute one would have surfaced the real hash mismatch immediately.
 3. oxfmt/oxlint have **no ignore for `static/datastar.js`** — I shielded prettier and codespell only. Nothing stopped (or stops) oxfmt from sweeping the bundle next run.
@@ -18,12 +19,14 @@
 5. Did not run `erraudit nolint-audit .` to confirm directive freshness; did not do the git-town session ritual; did not HARVEST the (f) list into `TODO_LIST.md` yet.
 
 **What is stupid that we do anyway?**
+
 - The **auto-commit daemon commits formatter damage to master ungated** (this is exactly how a prettier-reformatted vendored bundle landed in `ef10422`).
 - **No branch protection + informational CI** → a red master sat on origin for ~6h (unbuildable hermetic flake via hash mismatch).
 - **Four formatters with opinions on non-Go files** (dprint, prettier, oxfmt, treefmt) with no single owner — split brain, see below.
 - **buildflow's nix self-healing is trusted but does not actually persist fixes** — `nix-hash-fix` reported ✔ while the hash stayed stale.
 
 **Could I have done better?**
+
 - Sequencing: baseline verification first, lint after every edit batch (my first `defer x.Close()` edit traded erraudit-compliance for a golangci errcheck failure — cost one cycle).
 - Spent ~6 tool calls reverse-engineering buildflow's erraudit argv (shim, binary greps, run records) before accepting the residual. Right call to stop; late call to stop.
 - I introduced two typos while writing lint/docs edits (`trip the dictionary`, `reformat ted`) — both caught and fixed, but ironic in a spell-check session.
@@ -42,20 +45,20 @@
 
 ## a) FULLY DONE (evidence attached)
 
-| # | Work | Evidence |
-| - | ---- | -------- |
-| 1 | Restored `static/datastar.js` byte-identical to upstream v1.0.3 after a prettier sweep mangled it (daemon committed the mangle in `ef10422`) | `git diff ad5ebc2 -- static/datastar.js` empty; `go test ./static/...` PASS; `.prettierignore` added |
-| 2 | Fixed 4/5 erraudit findings: examples stop streaming on first failed `Send` (backlog + live loop); teardown via plain `defer x.Close()` | `example/domain-adapter/main.go:141-177`, `example/sse_middleware.go:32`; erraudit gate 0 violations ×3 modules; buildflow erraudit 5 findings → non-failing |
-| 3 | Aligned golangci errcheck excludes with their evident `(io.Closer).Close` intent (concrete Close types) | `.golangci.yml:124-131`; golangci 0 issues (devShell + pinned v2.12.2) |
-| 4 | Canonicalized root `go.mod` require blocks (direct vs indirect) | `tidy -diff` clean ×3, `go mod verify` OK, `GOWORK=off` build OK; gomod-check + go-mod-ignore-check findings cleared |
-| 5 | Completed flake `meta` ×3 derivations (homepage, mainProgram, platforms); consolidated `checks.*` into one attrset | flake-meta-checker 9 findings → 0; statix W20 → 0; `nix flake check` all passed |
-| 6 | Fixed stale `datastartestVendorHash` (broken by the static v0.4.0 require bump; buildflow's nix-hash-fix had NOT healed it) | nix hash mismatch observed → updated to `sha256-MdpYsxslWjeCf/6xQsz64AkDcy7far8OJ/AvhNeH8cY=` → `nix flake check` all passed; committed as `caa0986` |
-| 7 | dprint: excluded `.github/DISCUSSION_TEMPLATE/**` (markdown-in-yml GitHub templates its YAML parser rejects) | `dprint.json`; dprint-format step green in final run |
-| 8 | prettier: fixed missing `</p>` in `docs/modularization/2026-08-10_PROPOSAL.html` | prettier-format step green in final run |
-| 9 | codespell: `.codespellrc` (`crasher` ignore-list — legit Go fuzzing term; vendored JS skipped); fixed real `pre-empt`→`preempt` (AGENTS.md) and `cancelability`→`cancellability` (comment only, no API change) | codespell findings (non-JS) → 0 |
-| 10 | `.buildflow.yml` with every skip documented (go-structure-linter: flat layout is ADR-002 design; eslint: no first-party JS; go-auto-upgrade: samber/lo conflicts with minimal-deps policy) | buildflow exit 0, "0 failed, 5 skipped via config" |
-| 11 | Docs: CHANGELOG `[Unreleased]`/Changed entries (example hardening, housekeeping, bundle incident); AGENTS.md gotchas (bundle-formatter hazard, buildflow config) | committed `a518dc0` |
-| 12 | Full verification battery | see "End state" above |
+| #  | Work                                                                                                                                                                                                           | Evidence                                                                                                                                                     |
+| -- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1  | Restored `static/datastar.js` byte-identical to upstream v1.0.3 after a prettier sweep mangled it (daemon committed the mangle in `ef10422`)                                                                   | `git diff ad5ebc2 -- static/datastar.js` empty; `go test ./static/...` PASS; `.prettierignore` added                                                         |
+| 2  | Fixed 4/5 erraudit findings: examples stop streaming on first failed `Send` (backlog + live loop); teardown via plain `defer x.Close()`                                                                        | `example/domain-adapter/main.go:141-177`, `example/sse_middleware.go:32`; erraudit gate 0 violations ×3 modules; buildflow erraudit 5 findings → non-failing |
+| 3  | Aligned golangci errcheck excludes with their evident `(io.Closer).Close` intent (concrete Close types)                                                                                                        | `.golangci.yml:124-131`; golangci 0 issues (devShell + pinned v2.12.2)                                                                                       |
+| 4  | Canonicalized root `go.mod` require blocks (direct vs indirect)                                                                                                                                                | `tidy -diff` clean ×3, `go mod verify` OK, `GOWORK=off` build OK; gomod-check + go-mod-ignore-check findings cleared                                         |
+| 5  | Completed flake `meta` ×3 derivations (homepage, mainProgram, platforms); consolidated `checks.*` into one attrset                                                                                             | flake-meta-checker 9 findings → 0; statix W20 → 0; `nix flake check` all passed                                                                              |
+| 6  | Fixed stale `datastartestVendorHash` (broken by the static v0.4.0 require bump; buildflow's nix-hash-fix had NOT healed it)                                                                                    | nix hash mismatch observed → updated to `sha256-MdpYsxslWjeCf/6xQsz64AkDcy7far8OJ/AvhNeH8cY=` → `nix flake check` all passed; committed as `caa0986`         |
+| 7  | dprint: excluded `.github/DISCUSSION_TEMPLATE/**` (markdown-in-yml GitHub templates its YAML parser rejects)                                                                                                   | `dprint.json`; dprint-format step green in final run                                                                                                         |
+| 8  | prettier: fixed missing `</p>` in `docs/modularization/2026-08-10_PROPOSAL.html`                                                                                                                               | prettier-format step green in final run                                                                                                                      |
+| 9  | codespell: `.codespellrc` (`crasher` ignore-list — legit Go fuzzing term; vendored JS skipped); fixed real `pre-empt`→`preempt` (AGENTS.md) and `cancelability`→`cancellability` (comment only, no API change) | codespell findings (non-JS) → 0                                                                                                                              |
+| 10 | `.buildflow.yml` with every skip documented (go-structure-linter: flat layout is ADR-002 design; eslint: no first-party JS; go-auto-upgrade: samber/lo conflicts with minimal-deps policy)                     | buildflow exit 0, "0 failed, 5 skipped via config"                                                                                                           |
+| 11 | Docs: CHANGELOG `[Unreleased]`/Changed entries (example hardening, housekeeping, bundle incident); AGENTS.md gotchas (bundle-formatter hazard, buildflow config)                                               | committed `a518dc0`                                                                                                                                          |
+| 12 | Full verification battery                                                                                                                                                                                      | see "End state" above                                                                                                                                        |
 
 ## b) PARTIALLY DONE
 
@@ -97,58 +100,58 @@
 
 ## f) NEXT 50 (brainstorm for HARVEST — not commitments)
 
-| # | Task | Impact | Effort | Category |
-|---|------|--------|--------|----------|
-| 1 | Push master (8 commits: bundle restore, vendorHash fix, docs) after owner approval | Critical | S | Process |
-| 2 | Add oxfmt/oxlint ignore for `static/datastar.js` (config file) | High | S | Quality |
-| 3 | Fix buildflow nix-hash-fix false-success (upstream in buildflow repo) | High | M | Tooling |
-| 4 | Make buildflow's erraudit honor `//nolint:erraudit` or pin its flags | High | M | Tooling |
-| 5 | Guard the daemon against committing `static/datastar.js` changes (checksum test pre-commit) | High | S | Tooling |
-| 6 | Verify the renovate JS-bump manager updates `bundleSHA256` in the same PR | High | M | Tooling |
-| 7 | Cut v0.5.0 per docs/release-checklist.md (Unreleased is substantial) | High | M | Release |
-| 8 | Unify the two documented erraudit invocations into one contract | Medium | S | Quality |
-| 9 | Update docs/static-js.md with checksum-pin + shields upgrade runbook | Medium | S | Documentation |
-| 10 | Add `.gitattributes`: `static/datastar.js linguist-vendored -diff` | Medium | S | Cleanup |
-| 11 | Wire `erraudit nolint-audit` into a gate (lint-ci or CI) | Medium | S | Quality |
-| 12 | HARVEST this list into TODO_LIST/ROADMAP (docs-health) | Medium | S | Documentation |
-| 13 | Run fuzz smoke tests (FuzzReadSignals, FuzzReadEvents, 30s each) | Medium | S | Quality |
-| 14 | Add `version/` package unit test | Medium | S | Quality |
-| 15 | Audit for other ef10422 collateral: check `example/Dockerfile` hadolint edits changed semantics only | Medium | S | Cleanup |
-| 16 | Add `nix flake check` to AGENTS.md commands + pre-push ritual | Medium | S | CI |
-| 17 | Promote nix.yml off `continue-on-error` after 7 green days (ci-watch runbook) | Medium | S | CI |
-| 18 | Decide one-bot: renovate vs dependabot (pending per AGENTS.md) | Medium | S | Process |
-| 19 | Consolidate non-Go formatters (pick dprint or prettier; wire into treefmt) | Medium | L | Quality |
-| 20 | Run `erraudit nolint-audit .` and record result (directive freshness) | Medium | S | Quality |
-| 21 | Manually audit for encoding/json v1 remnants (go-auto-upgrade step is now skipped) | Medium | S | Quality |
-| 22 | Confirm datastartest README documents Diff/Snapshot/RequireElementsOrdered (Unreleased helpers) | Medium | S | Documentation |
-| 23 | Document CONTRIBUTING.md bundle-upgrade procedure (checksum pin, shields) | Medium | S | Documentation |
-| 24 | Add belt-and-braces test: bundle must stay minified (line-count heuristic) alongside checksum | Low | S | Quality |
-| 25 | datastartest/diff.go: add explicit bounds guards to silence branching-flow index warnings legitimately | Low | S | Quality |
-| 26 | Fix buildflow vulnix step (runs without PATH argument → usage error) | Low | S | Tooling |
-| 27 | Run `buildflow doctor` for the "9 tools unavailable" + go-licenses preflight warning | Low | S | Tooling |
-| 28 | Wire codespell into treefmt so the canonical nix gate owns it | Low | S | Quality |
-| 29 | Add erraudit-based test for `Response.Send` error → `stream_send_failed` contract (check existing coverage first) | Medium | M | Quality |
-| 30 | Reproduce buildflow's silent_swallow via erraudit `--pipeline` flags; file detector bug upstream if real | Medium | M | Tooling |
-| 31 | Decide coverage-badge scope: include/exclude `example/` (23.6% / 14.3%) | Low | S | Quality |
-| 32 | Make example handler error paths testable (extract handler, raise coverage honestly) | Low | M | Quality |
-| 33 | aarch64: run `nix flake check --all-systems` (CI job or local one-off) | Low | M | CI |
-| 34 | Verify clean-checkout `nix flake check` on HEAD `caa0986` (kill the red-window class) | Medium | S | Process |
-| 35 | Document in AGENTS.md: buildflow result cache can mask fresh findings (`BUILDFLOW_NO_RESULT_CACHE=1`) | Low | S | Documentation |
-| 36 | Cross-link `.buildflow.yml` skip rationale from AGENTS.md Commands section | Low | S | Documentation |
-| 37 | Review whether the daemon should run at all on `static/**` (config outside repo — propose to owner) | High | S | Process |
-| 38 | Pin buildflow + erraudit versions used by gates in one place (flake/devShell) | Low | M | Tooling |
-| 39 | Check ci.yml actually ran green on the post-`ef10422` pushes (informational ≠ watched) | Medium | S | CI |
-| 40 | Add release-audit report for v0.5.0 when cutting it (status-report convention) | Low | M | Release |
-| 41 | Verify v0.4.0 module proxy/pkg.go.dev propagation as release-checklist dry run | Low | S | Release |
-| 42 | Document that `example/` is intentionally not scanned by the local erraudit gates (or start scanning it) | Low | S | Documentation |
-| 43 | Consider `.codespellrc` skip list for `docs/modularization/*.html` (vendored-style audit HTML) if it ever false-positives | Low | S | Quality |
-| 44 | Add session-start ritual line: `git town status` + baseline gate suite (AGENTS.md) | Low | S | Process |
-| 45 | Evaluate extracting flake hashes to `hash.nix` only WITH an ADR-004 addendum proving no FOD self-reference | Low | M | Cleanup |
-| 46 | Sweep `docs/` for pre-2026-08 formatter reformats that changed meaning (spot-check 5 oldest) | Low | M | Cleanup |
-| 47 | Add TODO_LIST entry for buildflow/erraudit upstream fixes (items 3, 4, 30) so they survive sessions | Medium | S | Documentation |
-| 48 | Decide whether `example/` should move to its own module (likely reject; document why) | Low | S | Documentation |
-| 49 | Add CI leg comment: which leg would have caught the mangled bundle, and why it did not (post-mortem note in ci-watch doc) | Medium | S | Documentation |
-| 50 | Close this session properly: re-run one fast buildflow pass post-daemon-sweep to confirm green on committed HEAD | Medium | S | Process |
+| #  | Task                                                                                                                      | Impact   | Effort | Category      |
+| -- | ------------------------------------------------------------------------------------------------------------------------- | -------- | ------ | ------------- |
+| 1  | Push master (8 commits: bundle restore, vendorHash fix, docs) after owner approval                                        | Critical | S      | Process       |
+| 2  | Add oxfmt/oxlint ignore for `static/datastar.js` (config file)                                                            | High     | S      | Quality       |
+| 3  | Fix buildflow nix-hash-fix false-success (upstream in buildflow repo)                                                     | High     | M      | Tooling       |
+| 4  | Make buildflow's erraudit honor `//nolint:erraudit` or pin its flags                                                      | High     | M      | Tooling       |
+| 5  | Guard the daemon against committing `static/datastar.js` changes (checksum test pre-commit)                               | High     | S      | Tooling       |
+| 6  | Verify the renovate JS-bump manager updates `bundleSHA256` in the same PR                                                 | High     | M      | Tooling       |
+| 7  | Cut v0.5.0 per docs/release-checklist.md (Unreleased is substantial)                                                      | High     | M      | Release       |
+| 8  | Unify the two documented erraudit invocations into one contract                                                           | Medium   | S      | Quality       |
+| 9  | Update docs/static-js.md with checksum-pin + shields upgrade runbook                                                      | Medium   | S      | Documentation |
+| 10 | Add `.gitattributes`: `static/datastar.js linguist-vendored -diff`                                                        | Medium   | S      | Cleanup       |
+| 11 | Wire `erraudit nolint-audit` into a gate (lint-ci or CI)                                                                  | Medium   | S      | Quality       |
+| 12 | HARVEST this list into TODO_LIST/ROADMAP (docs-health)                                                                    | Medium   | S      | Documentation |
+| 13 | Run fuzz smoke tests (FuzzReadSignals, FuzzReadEvents, 30s each)                                                          | Medium   | S      | Quality       |
+| 14 | Add `version/` package unit test                                                                                          | Medium   | S      | Quality       |
+| 15 | Audit for other ef10422 collateral: check `example/Dockerfile` hadolint edits changed semantics only                      | Medium   | S      | Cleanup       |
+| 16 | Add `nix flake check` to AGENTS.md commands + pre-push ritual                                                             | Medium   | S      | CI            |
+| 17 | Promote nix.yml off `continue-on-error` after 7 green days (ci-watch runbook)                                             | Medium   | S      | CI            |
+| 18 | Decide one-bot: renovate vs dependabot (pending per AGENTS.md)                                                            | Medium   | S      | Process       |
+| 19 | Consolidate non-Go formatters (pick dprint or prettier; wire into treefmt)                                                | Medium   | L      | Quality       |
+| 20 | Run `erraudit nolint-audit .` and record result (directive freshness)                                                     | Medium   | S      | Quality       |
+| 21 | Manually audit for encoding/json v1 remnants (go-auto-upgrade step is now skipped)                                        | Medium   | S      | Quality       |
+| 22 | Confirm datastartest README documents Diff/Snapshot/RequireElementsOrdered (Unreleased helpers)                           | Medium   | S      | Documentation |
+| 23 | Document CONTRIBUTING.md bundle-upgrade procedure (checksum pin, shields)                                                 | Medium   | S      | Documentation |
+| 24 | Add belt-and-braces test: bundle must stay minified (line-count heuristic) alongside checksum                             | Low      | S      | Quality       |
+| 25 | datastartest/diff.go: add explicit bounds guards to silence branching-flow index warnings legitimately                    | Low      | S      | Quality       |
+| 26 | Fix buildflow vulnix step (runs without PATH argument → usage error)                                                      | Low      | S      | Tooling       |
+| 27 | Run `buildflow doctor` for the "9 tools unavailable" + go-licenses preflight warning                                      | Low      | S      | Tooling       |
+| 28 | Wire codespell into treefmt so the canonical nix gate owns it                                                             | Low      | S      | Quality       |
+| 29 | Add erraudit-based test for `Response.Send` error → `stream_send_failed` contract (check existing coverage first)         | Medium   | M      | Quality       |
+| 30 | Reproduce buildflow's silent_swallow via erraudit `--pipeline` flags; file detector bug upstream if real                  | Medium   | M      | Tooling       |
+| 31 | Decide coverage-badge scope: include/exclude `example/` (23.6% / 14.3%)                                                   | Low      | S      | Quality       |
+| 32 | Make example handler error paths testable (extract handler, raise coverage honestly)                                      | Low      | M      | Quality       |
+| 33 | aarch64: run `nix flake check --all-systems` (CI job or local one-off)                                                    | Low      | M      | CI            |
+| 34 | Verify clean-checkout `nix flake check` on HEAD `caa0986` (kill the red-window class)                                     | Medium   | S      | Process       |
+| 35 | Document in AGENTS.md: buildflow result cache can mask fresh findings (`BUILDFLOW_NO_RESULT_CACHE=1`)                     | Low      | S      | Documentation |
+| 36 | Cross-link `.buildflow.yml` skip rationale from AGENTS.md Commands section                                                | Low      | S      | Documentation |
+| 37 | Review whether the daemon should run at all on `static/**` (config outside repo — propose to owner)                       | High     | S      | Process       |
+| 38 | Pin buildflow + erraudit versions used by gates in one place (flake/devShell)                                             | Low      | M      | Tooling       |
+| 39 | Check ci.yml actually ran green on the post-`ef10422` pushes (informational ≠ watched)                                    | Medium   | S      | CI            |
+| 40 | Add release-audit report for v0.5.0 when cutting it (status-report convention)                                            | Low      | M      | Release       |
+| 41 | Verify v0.4.0 module proxy/pkg.go.dev propagation as release-checklist dry run                                            | Low      | S      | Release       |
+| 42 | Document that `example/` is intentionally not scanned by the local erraudit gates (or start scanning it)                  | Low      | S      | Documentation |
+| 43 | Consider `.codespellrc` skip list for `docs/modularization/*.html` (vendored-style audit HTML) if it ever false-positives | Low      | S      | Quality       |
+| 44 | Add session-start ritual line: `git town status` + baseline gate suite (AGENTS.md)                                        | Low      | S      | Process       |
+| 45 | Evaluate extracting flake hashes to `hash.nix` only WITH an ADR-004 addendum proving no FOD self-reference                | Low      | M      | Cleanup       |
+| 46 | Sweep `docs/` for pre-2026-08 formatter reformats that changed meaning (spot-check 5 oldest)                              | Low      | M      | Cleanup       |
+| 47 | Add TODO_LIST entry for buildflow/erraudit upstream fixes (items 3, 4, 30) so they survive sessions                       | Medium   | S      | Documentation |
+| 48 | Decide whether `example/` should move to its own module (likely reject; document why)                                     | Low      | S      | Documentation |
+| 49 | Add CI leg comment: which leg would have caught the mangled bundle, and why it did not (post-mortem note in ci-watch doc) | Medium   | S      | Documentation |
+| 50 | Close this session properly: re-run one fast buildflow pass post-daemon-sweep to confirm green on committed HEAD          | Medium   | S      | Process       |
 
 ## g) THREE QUESTIONS I CANNOT ANSWER MYSELF
 
@@ -158,4 +161,4 @@
 
 ---
 
-*Point-in-time snapshot — goes stale by design. Section (f) is HARVEST input for TODO_LIST/ROADMAP. Report written to disk per convention; not committed by the assistant (no explicit commit instruction) — the auto-commit daemon will sweep it, or say the word.*
+_Point-in-time snapshot — goes stale by design. Section (f) is HARVEST input for TODO_LIST/ROADMAP. Report written to disk per convention; not committed by the assistant (no explicit commit instruction) — the auto-commit daemon will sweep it, or say the word._
