@@ -145,13 +145,15 @@ func handleEvents(
 	store *datastar.MemoryStore,
 ) {
 	stream := sse.NewStream(writer, r)
-	defer func() { _ = stream.Close() }()
+	defer stream.Close()
 
 	resp := datastar.NewResponse(stream)
 
 	if backlog, err := store.EventsAfter(stream.LastEventID()); err == nil {
 		for _, evt := range backlog {
-			_ = resp.Send(evt)
+			if err := resp.Send(evt); err != nil {
+				return
+			}
 		}
 	}
 
@@ -167,7 +169,9 @@ func handleEvents(
 				return
 			}
 
-			_ = resp.Send(evt)
+			if err := resp.Send(evt); err != nil {
+				return
+			}
 		}
 	}
 }

@@ -95,7 +95,7 @@ func startProducer(b *sse.Broadcaster[sse.Event]) {
 		b.Broadcast(elementsPatch.Event())
 
 		countPatch, err := datastar.NewSignalsPatch(map[string]any{"total": i})
-		if err != nil {
+		if err != nil { //nolint:erraudit // background producer: log and skip is the only correct handling
 			log.Printf("producer: marshal count signals: %v", err)
 
 			continue

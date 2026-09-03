@@ -29,7 +29,7 @@ func gzipSSEMiddleware(next http.Handler) http.Handler {
 		}
 
 		compressor := gzip.NewWriter(writer)
-		defer func() { _ = compressor.Close() }()
+		defer compressor.Close()
 
 		header := writer.Header()
 		header.Del("Content-Length")
