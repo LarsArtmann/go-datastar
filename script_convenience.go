@@ -72,7 +72,7 @@ func WithCustomEventBubbles(b bool) DispatchCustomEventOption {
 	return func(p *DispatchCustomEventPatch) { p.Bubbles = b }
 }
 
-// WithCustomEventCancelable overrides the default cancelability (true).
+// WithCustomEventCancelable overrides the default cancellability (true).
 func WithCustomEventCancelable(b bool) DispatchCustomEventOption {
 	return func(p *DispatchCustomEventPatch) { p.Cancelable = b }
 }

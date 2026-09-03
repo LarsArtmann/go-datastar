@@ -88,8 +88,11 @@
 
             meta = {
               description = "DataStar protocol library for Go";
+              homepage = "https://github.com/larsartmann/go-datastar";
               license = lib.licenses.mit;
               maintainers = [ maintainer ];
+              mainProgram = "go-datastar";
+              platforms = lib.platforms.all;
             };
           };
 
@@ -108,8 +111,11 @@
 
             meta = {
               description = "Embedded DataStar JS client bundle";
+              homepage = "https://github.com/larsartmann/go-datastar";
               license = lib.licenses.mit;
               maintainers = [ maintainer ];
+              mainProgram = "go-datastar-static";
+              platforms = lib.platforms.all;
             };
           };
 
@@ -146,8 +152,11 @@
 
             meta = {
               description = "Consumer E2E test helpers for go-datastar";
+              homepage = "https://github.com/larsartmann/go-datastar";
               license = lib.licenses.mit;
               maintainers = [ maintainer ];
+              mainProgram = "go-datastar-datastartest";
+              platforms = lib.platforms.all;
             };
           };
 
@@ -186,16 +195,18 @@
             };
           };
 
-          # goimports shells out to `go env` per file; the `go` on its PATH
-          # must satisfy the go.mod directive or the sandbox tries a
-          # toolchain download (no network). The gotools wrapper only
-          # APPENDS its build-time go, so a goPkg first on PATH wins.
-          checks.format = (config.treefmt.build.check self).overrideAttrs (old: {
-            buildInputs = old.buildInputs ++ [ goPkg ];
-          });
-          checks.build = hermeticCheck;
-          checks.buildStatic = hermeticCheckStatic;
-          checks.buildDatastartest = hermeticCheckDatastartest;
+          checks = {
+            # goimports shells out to `go env` per file; the `go` on its PATH
+            # must satisfy the go.mod directive or the sandbox tries a
+            # toolchain download (no network). The gotools wrapper only
+            # APPENDS its build-time go, so a goPkg first on PATH wins.
+            format = (config.treefmt.build.check self).overrideAttrs (old: {
+              buildInputs = old.buildInputs ++ [ goPkg ];
+            });
+            build = hermeticCheck;
+            buildStatic = hermeticCheckStatic;
+            buildDatastartest = hermeticCheckDatastartest;
+          };
 
           devShells.default = pkgs.mkShellNoCC {
             packages = [
