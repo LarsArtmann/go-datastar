@@ -159,6 +159,21 @@ CHANGELOG.
   `git status` alone lies when a global ignore is in play.
 - `dprint.json` documents formatting intent for non-Go files but is NOT wired
   into treefmt/flake (canonical formatting = treefmt via `nix flake check`).
+- **`static/datastar.js` is a vendored artifact — never reformat it.** A
+  prettier sweep once reformatted the minified bundle and the auto-commit
+  daemon committed it, breaking the checksum pin
+  (`static/checksum_test.go` — that test failing means the bundle drifted,
+  NOT that you should update the constant). Shields: `.prettierignore`,
+  `.codespellrc` (skip + `crasher` ignore-list — legit Go fuzzing term), and
+  dprint excludes for `.github/DISCUSSION_TEMPLATE/**` (markdown-in-yml
+  GitHub templates that dprint's YAML parser rejects).
+- **buildflow** (repo-external quality pipeline) reads `.buildflow.yml`:
+  `skip_steps` documents every tool intentionally skipped (go-structure-linter
+  flat-layout false positives, eslint — no first-party JS, go-auto-upgrade's
+  samber/lo suggestions conflict with the minimal-dependency policy). Its
+  erraudit variant flags `defer x.Close()` blank-ignores that the canonical
+  gate tolerates; errcheck excludes in `.golangci.yml` cover the concrete
+  Close types (`*sse.Stream`, `*gzip.Writer`).
 - `origin/master` has NO branch protection (owner decision): CI is
   informational, nothing blocks a bad push — run the gates locally first.
 - Status reports live in `docs/status/*.md` (indexed by its README) and are

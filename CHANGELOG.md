@@ -46,6 +46,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   source. `Last-Modified` was evaluated and deliberately not set (ETag +
   Cache-Control fully own freshness; see docs/static-js.md).
 
+### Changed
+
+- **Examples stop streaming on the first failed `Send`.** A `Send` error means
+  the client is gone; `example/` and `example/domain-adapter` now return from
+  the handler instead of keep looping on a dead stream, and teardown uses the
+  plain `defer x.Close()` idiom. No library API changes.
+- **Housekeeping** — root `go.mod` require blocks canonicalized (direct deps
+  separated from indirect; `go mod tidy -diff` stays clean), flake check
+  derivations carry complete `meta` (homepage, mainProgram, platforms), and
+  the vendored `static/datastar.js` bundle is shielded from formatters
+  (`.prettierignore`, `.codespellrc`) after a formatter sweep reformatted it
+  and broke the checksum pin (bundle restored byte-identical to upstream
+  v1.0.3; `static` tests catch exactly this).
+
 ### Deprecated
 
 - `datastar.DatastarJSVersion` — use `datastar.Version()` or
