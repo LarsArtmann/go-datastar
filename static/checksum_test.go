@@ -11,7 +11,7 @@ import (
 // bundleSHA256 pins the exact committed bundle. Update it ONLY together with
 // static/datastar.js and static.Version — a mismatch means the embedded asset
 // drifted from the reviewed, committed artifact.
-const bundleSHA256 = "4df1f98ac52c6ec8986375b8394c90ddd739a381cda05011edd1c18bf33a1625"
+const bundleSHA256 = "5d6b7794a50a83d82da962aec5e382f5ae83ac7afbc751f903f7a9c6bd433c65"
 
 func TestBytes_Checksum(t *testing.T) {
 	t.Parallel()

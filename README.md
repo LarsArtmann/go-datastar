@@ -57,7 +57,7 @@ Both libraries emit the exact same DataStar wire format. The difference is what 
 | Per-subscriber event filtering          | Not built in                            | Yes, via go-sse `SubscribeFilter`                                                                                                       |
 | Error handling                          | Standard `error` values                 | Every error classified with a stable code, family, and retryability ([go-error-family](https://github.com/LarsArtmann/go-error-family)) |
 | E2E test helpers for your handlers      | None                                    | `datastartest` module: SSE parsing, typed decoding, assertions                                                                          |
-| Serve the DataStar JS client            | Bring your own                          | `ScriptHandler()` with ETag + Cache-Control, embedded zero-dep `static` module (JS client v1.0.2)                                       |
+| Serve the DataStar JS client            | Bring your own                          | `ScriptHandler()` with ETag + Cache-Control, embedded zero-dep `static` module (JS client v1.0.3)                                       |
 | SSE compression (gzip, Brotli, Zstd)    | Yes, built in                           | Bring your own middleware (example included)                                                                                            |
 | Templ / GoStar rendering                | Yes                                     | Yes                                                                                                                                     |
 | Printf-style variants (`…f`)            | Yes                                     | Yes                                                                                                                                     |
@@ -308,7 +308,7 @@ datastar.DeleteSSE("/api/items/%d", id)
 
 | Function                     | Description                                                       |
 | ---------------------------- | ----------------------------------------------------------------- |
-| `ScriptHandler()`            | Serve the embedded DataStar JS (v1.0.2) with ETag + Cache-Control |
+| `ScriptHandler()`            | Serve the embedded DataStar JS (v1.0.3) with ETag + Cache-Control |
 | `ScriptHandlerWith(js, ver)` | Serve a custom JS bundle                                          |
 | `ScriptTag(path)`            | HTML `<script type="module">` tag string                          |
 | `static.Bytes()` / `static.Version` | The embedded JS bundle and its version (`go-datastar/static` zero-dep module) |

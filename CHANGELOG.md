@@ -32,6 +32,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed — static
 
+- **Embedded JS client bumped to v1.0.3** (upstream 2026-08-27): opt-in CSP
+  mode (`data-nonce`, no `unsafe-eval` required), signals are resent when a
+  backend request retries after a network error, view-transition support is
+  also checked on the document, and a dynamic `multiple` on `<select>` now
+  updates the bound signal. Also switches the embedded artifact to the
+  canonical minified upstream bundle — the served asset shrinks from a
+  beautified ~56 KB to 33.5 KB. Checksum pin updated in the same change;
+  wire-format goldens unchanged.
 - `ScriptHandler`/`ScriptHandlerWith` now set `X-Content-Type-Options: nosniff`;
   the embedded bundle is pinned by a SHA-256 checksum test
   (`static/checksum_test.go`) and a provenance comment documents the upstream

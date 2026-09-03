@@ -32,7 +32,7 @@ func TestBytes_HeaderMatchesVersion(t *testing.T) {
 	t.Parallel()
 
 	// The DataStar client bundle begins with a version banner such as
-	// "// Datastar v1.0.2". This guards against the embedded asset drifting
+	// "// Datastar v1.0.3". This guards against the embedded asset drifting
 	// from the declared [static.Version].
 	header := string(static.Bytes()[:min(len(static.Bytes()), 64)])
 

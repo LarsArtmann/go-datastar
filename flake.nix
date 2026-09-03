@@ -61,7 +61,7 @@
           # included), so this hash moves on ANY edit to any tracked file
           # under the repo root or static/ (plus requires/toolchain changes)
           # — verified 2026-09-02 (ADR 004 correction, evidence matrix).
-          datastartestVendorHash = "sha256-O1o+dHDZvtPmUXHCctJsmX8TmXh54NIOYHad9ugxxxU=";
+          datastartestVendorHash = "sha256-YJkABiCoSVKqMC64+++5DOtGwUmQ3jwxyQ5d/z7aRZQ=";
 
           maintainer = {
             name = "Lars Artmann";

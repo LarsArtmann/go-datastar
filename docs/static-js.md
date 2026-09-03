@@ -7,7 +7,7 @@ tooling**.
 ```go
 import "github.com/larsartmann/go-datastar/static"
 
-static.Version // e.g. "1.0.2"
+static.Version // e.g. "1.0.3"
 static.Bytes() // the raw datastar.js contents (//go:embed)
 ```
 

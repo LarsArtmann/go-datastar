@@ -256,8 +256,8 @@ func TestVersion(t *testing.T) {
 	t.Parallel()
 
 	v := datastar.Version()
-	if v != "1.0.2" {
-		t.Errorf("got %q, want %q", v, "1.0.2")
+	if v != "1.0.3" {
+		t.Errorf("got %q, want %q", v, "1.0.3")
 	}
 }
 

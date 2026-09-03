@@ -8,7 +8,8 @@
 //
 // datastar.js is the upstream minified client bundle from
 // github.com/starfederation/datastar at the release matching [Version],
-// fetched from the project's release assets and committed verbatim.
+// fetched verbatim from the upstream repo's bundles/ directory at the
+// release tag (upstream releases publish no assets).
 // Renovate's custom manager proposes Version bumps from upstream releases;
 // the upgrade process (replace the file, bump Version, run the wire-format
 // goldens) is documented in docs/static-js.md.
@@ -17,7 +18,7 @@ package static
 import _ "embed"
 
 // Version is the release version of the embedded DataStar JavaScript client.
-const Version = "1.0.2"
+const Version = "1.0.3"
 
 //go:embed datastar.js
 var datastarJS []byte
