@@ -22,10 +22,10 @@ milliseconds to ship.
 
 ## datastartest (test-time, not production)
 
-| Benchmark                            | ns/op     | allocs/op | What it covers                                      |
-| ------------------------------------ | --------- | --------- | --------------------------------------------------- |
-| Collect (16 events, full round trip) | ~186,000  | 326       | httptest server + GET + SSE parse + dataline decode |
-| ReadEvents (parser floor, 16 frames) | ~17,000   | ~112–123  | wire parsing + decoding only, no HTTP               |
+| Benchmark                            | ns/op    | allocs/op | What it covers                                      |
+| ------------------------------------ | -------- | --------- | --------------------------------------------------- |
+| Collect (16 events, full round trip) | ~186,000 | 326       | httptest server + GET + SSE parse + dataline decode |
+| ReadEvents (parser floor, 16 frames) | ~17,000  | ~112–123  | wire parsing + decoding only, no HTTP               |
 
 The test helper's overhead is dominated by the HTTP round trip, not the
 parser — parser cost is ~9% of the Collect round trip.

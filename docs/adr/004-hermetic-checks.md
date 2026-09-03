@@ -45,13 +45,13 @@ changes.
 
 Evidence matrix (vendor-tree content hash unless noted):
 
-| State | go.mod/go.sum | Source toggle | datastartest hash | Moved? |
-| ----- | ------------- | ------------- | ----------------- | ------ |
-| replaces active | unchanged | — (baseline) | `d4dd09ac…` | — |
-| replaces active | unchanged | comment in root `response.go` | `fde17bae…` | **YES** |
-| replaces active | unchanged | comment in `static/static.go` | FOD `ZEoxiszp…` (nix) | **YES** |
-| replaces removed | + published v0.3.0 entries | — | `16aafda9…` | — |
-| replaces removed | unchanged | comment in root `response.go` | `16aafda9…` | **NO** |
+| State            | go.mod/go.sum              | Source toggle                 | datastartest hash     | Moved?  |
+| ---------------- | -------------------------- | ----------------------------- | --------------------- | ------- |
+| replaces active  | unchanged                  | — (baseline)                  | `d4dd09ac…`           | —       |
+| replaces active  | unchanged                  | comment in root `response.go` | `fde17bae…`           | **YES** |
+| replaces active  | unchanged                  | comment in `static/static.go` | FOD `ZEoxiszp…` (nix) | **YES** |
+| replaces removed | + published v0.3.0 entries | —                             | `16aafda9…`           | —       |
+| replaces removed | unchanged                  | comment in root `response.go` | `16aafda9…`           | **NO**  |
 
 Nix-level cross-check: with replaces active, a root-source comment alone moved
 the datastartest FOD from `xc54T9…` to `Hsut8cL…`, while the root FOD stayed

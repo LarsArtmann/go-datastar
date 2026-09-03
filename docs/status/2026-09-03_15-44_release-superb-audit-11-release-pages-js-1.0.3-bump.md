@@ -4,60 +4,60 @@
 
 **Session scope:** Answer the owner's "static also has proper releases?" question with evidence, then make ALL releases superb: full release-artifact audit (tags, GitHub Release pages, module proxy, pkg.go.dev) plus fixes. Two gaps found and closed: 11 missing GitHub Release pages, and a stale embedded JS client.
 
-**What I forgot (found by this audit):** (1) the v0.4.0 release run skipped checklist §5 — upstream DataStar JS v1.0.3 was published 2026-08-27, seven days *before* we tagged v0.4.0 on 2026-09-03, and we shipped with 1.0.2; (2) submodule tags never had GitHub Release pages for *any* release; (3) pkg.go.dev was only re-checked for the root module after v0.4.0, not the submodules.
+**What I forgot (found by this audit):** (1) the v0.4.0 release run skipped checklist §5 — upstream DataStar JS v1.0.3 was published 2026-08-27, seven days _before_ we tagged v0.4.0 on 2026-09-03, and we shipped with 1.0.2; (2) submodule tags never had GitHub Release pages for _any_ release; (3) pkg.go.dev was only re-checked for the root module after v0.4.0, not the submodules.
 
 ---
 
 ## a) FULLY DONE
 
-| # | Item | Evidence |
-| - | ---- | -------- |
-| a1 | Answered the static-releases question with 4 independent signals: lockstep tags (local+remote), proxy serving all versions, `go get static@v0.4.0` from a scratch module, pkg.go.dev rendering | this session, pre-audit |
-| a2 | Release-page completeness: **15/15 tags now have GitHub Release pages** — created the 11 missing ones (root `v0.1.0`; `static/v0.1.0`–`v0.4.0`; `datastartest/v0.1.0`–`v0.4.0`) with CHANGELOG excerpts, `--latest=false` so root `v0.4.0` keeps the "Latest" flag | `gh release list` shows 15; Latest = root v0.4.0; spot-checked bodies render |
-| a3 | **Embedded JS client upgraded 1.0.2 → 1.0.3** per docs/static-js.md process: canonical minified upstream bundle (33,538 B, replaces a beautified 56,330 B variant), `static.Version` bump, checksum pin `5d6b7794…` updated same-commit, 9 version touchpoints (README ×2, FEATURES, docs/static-js.md, response_test.go, static_test.go comment, CHANGELOG) | commit `ad5ebc2`, pushed `8d0122f..ad5ebc2` |
-| a4 | Provenance correction in `static/static.go`: comment claimed the bundle came "from the project's release assets" — upstream publishes NO assets (verified via `gh api`); corrected to the upstream repo's `bundles/` directory at the release tag | commit `ad5ebc2` |
-| a5 | Wire-format safety confirmed: full race suite green with the v1.0.3 bundle — goldens unchanged (v1.0.3's changes are client-runtime behaviors: opt-in CSP mode, signal resend on network-error retry, document-level view-transition check, dynamic `select multiple` binding; none touch the SSE dataline grammar the Go side emits) | `go test ./... ./datastartest/... ./static/... -race -count=1` all ok |
-| a6 | Full gate green: race suite, `go vet` clean, `nix flake check` ALL PASSED (after one-paste vendorHash refresh), `GOWORK=off` static isolation, `nix run .#lint-ci` 0 issues | this session, pre-commit |
-| a7 | Module proxy verified for all three modules: root `v0.0.1`–`v0.4.0`, static + datastartest `v0.1.0`–`v0.4.0`, `@latest` = v0.4.0 ×3, `go get` resolves from clean scratch modules | `go list -m -versions` + `go get` in /tmp scratch modules |
-| a8 | Tag integrity: 15/15 tags annotated (`%(objecttype)==tag`), local = remote parity, lockstep complete (5 root + 5 static + 5 datastartest) | `git for-each-ref` + `git ls-remote` |
-| a9 | flake.nix `datastartestVendorHash` refreshed after the root `response_test.go` edit staled it (minimal fileset consequence, per ADR 004) — converged in one paste | `sha256-YJkABiCo…` in flake.nix; flake check green |
-| a10 | Stale-version sweep: no `1.0.2` mentions left in living docs (README, FEATURES, AGENTS, TODO_LIST, CONTRIBUTING, docs/, static/) outside point-in-time status/planning archives | `rg '1\.0\.2'` clean |
+| #   | Item                                                                                                                                                                                                                                                                                                                                                         | Evidence                                                                     |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| a1  | Answered the static-releases question with 4 independent signals: lockstep tags (local+remote), proxy serving all versions, `go get static@v0.4.0` from a scratch module, pkg.go.dev rendering                                                                                                                                                               | this session, pre-audit                                                      |
+| a2  | Release-page completeness: **15/15 tags now have GitHub Release pages** — created the 11 missing ones (root `v0.1.0`; `static/v0.1.0`–`v0.4.0`; `datastartest/v0.1.0`–`v0.4.0`) with CHANGELOG excerpts, `--latest=false` so root `v0.4.0` keeps the "Latest" flag                                                                                           | `gh release list` shows 15; Latest = root v0.4.0; spot-checked bodies render |
+| a3  | **Embedded JS client upgraded 1.0.2 → 1.0.3** per docs/static-js.md process: canonical minified upstream bundle (33,538 B, replaces a beautified 56,330 B variant), `static.Version` bump, checksum pin `5d6b7794…` updated same-commit, 9 version touchpoints (README ×2, FEATURES, docs/static-js.md, response_test.go, static_test.go comment, CHANGELOG) | commit `ad5ebc2`, pushed `8d0122f..ad5ebc2`                                  |
+| a4  | Provenance correction in `static/static.go`: comment claimed the bundle came "from the project's release assets" — upstream publishes NO assets (verified via `gh api`); corrected to the upstream repo's `bundles/` directory at the release tag                                                                                                            | commit `ad5ebc2`                                                             |
+| a5  | Wire-format safety confirmed: full race suite green with the v1.0.3 bundle — goldens unchanged (v1.0.3's changes are client-runtime behaviors: opt-in CSP mode, signal resend on network-error retry, document-level view-transition check, dynamic `select multiple` binding; none touch the SSE dataline grammar the Go side emits)                        | `go test ./... ./datastartest/... ./static/... -race -count=1` all ok        |
+| a6  | Full gate green: race suite, `go vet` clean, `nix flake check` ALL PASSED (after one-paste vendorHash refresh), `GOWORK=off` static isolation, `nix run .#lint-ci` 0 issues                                                                                                                                                                                  | this session, pre-commit                                                     |
+| a7  | Module proxy verified for all three modules: root `v0.0.1`–`v0.4.0`, static + datastartest `v0.1.0`–`v0.4.0`, `@latest` = v0.4.0 ×3, `go get` resolves from clean scratch modules                                                                                                                                                                            | `go list -m -versions` + `go get` in /tmp scratch modules                    |
+| a8  | Tag integrity: 15/15 tags annotated (`%(objecttype)==tag`), local = remote parity, lockstep complete (5 root + 5 static + 5 datastartest)                                                                                                                                                                                                                    | `git for-each-ref` + `git ls-remote`                                         |
+| a9  | flake.nix `datastartestVendorHash` refreshed after the root `response_test.go` edit staled it (minimal fileset consequence, per ADR 004) — converged in one paste                                                                                                                                                                                            | `sha256-YJkABiCo…` in flake.nix; flake check green                           |
+| a10 | Stale-version sweep: no `1.0.2` mentions left in living docs (README, FEATURES, AGENTS, TODO_LIST, CONTRIBUTING, docs/, static/) outside point-in-time status/planning archives                                                                                                                                                                              | `rg '1\.0\.2'` clean                                                         |
 
 ## b) PARTIALLY DONE
 
-| # | Item | Works now | Remaining | Blocker | Effort |
-| - | ---- | --------- | --------- | ------- | ------ |
-| b1 | pkg.go.dev datastartest@v0.4.0 indexing | Proxy side 100% correct (`@latest`=v0.4.0, `go get` works); root + static pages render v0.4.0 | The datastartest page still renders v0.3.0; the `@v0.4.0` URL 404s after 3 fetch attempts + 45 s wait | Server-side crawl lag only — nothing repo-side left to do; trigger via the page's "Request" button or wait | S (external) |
-| b2 | Release-page house style | New pages (11) follow a uniform template: module header + lockstep link + full CHANGELOG excerpt | Legacy root pages (v0.0.1–v0.3.0) have heterogeneous titles/styles ("v0.0.3 — Quality, Correctness & Hardening" vs plain "v0.3.0"); v0.3.0 body lacks a version heading | Style decision not made | S–M |
-| b3 | TODO_LIST/ROADMAP harvest of this report's section f | Section f written (50 items, ranked) | Not yet folded into TODO_LIST.md / ROADMAP.md | You said write the report then wait — HARVEST is the immediate next step | S |
+| #  | Item                                                 | Works now                                                                                        | Remaining                                                                                                                                                               | Blocker                                                                                                    | Effort       |
+| -- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------ |
+| b1 | pkg.go.dev datastartest@v0.4.0 indexing              | Proxy side 100% correct (`@latest`=v0.4.0, `go get` works); root + static pages render v0.4.0    | The datastartest page still renders v0.3.0; the `@v0.4.0` URL 404s after 3 fetch attempts + 45 s wait                                                                   | Server-side crawl lag only — nothing repo-side left to do; trigger via the page's "Request" button or wait | S (external) |
+| b2 | Release-page house style                             | New pages (11) follow a uniform template: module header + lockstep link + full CHANGELOG excerpt | Legacy root pages (v0.0.1–v0.3.0) have heterogeneous titles/styles ("v0.0.3 — Quality, Correctness & Hardening" vs plain "v0.3.0"); v0.3.0 body lacks a version heading | Style decision not made                                                                                    | S–M          |
+| b3 | TODO_LIST/ROADMAP harvest of this report's section f | Section f written (50 items, ranked)                                                             | Not yet folded into TODO_LIST.md / ROADMAP.md                                                                                                                           | You said write the report then wait — HARVEST is the immediate next step                                   | S            |
 
 ## c) NOT STARTED
 
-| # | Item | Why not started | Priority |
-| - | ---- | --------------- | -------- |
-| c1 | v0.5.0 cut (now carries JS 1.0.3, nosniff hardening, datastartest helpers, version pkg, goreleaser skeleton) | Owner question pending since yesterday's debrief (Q2) | High |
-| c2 | Renovate vs Dependabot decision | Owner question pending (Q3) | Medium |
-| c3 | nix.yml promotion (promote now vs green-fortnight) | Owner question pending (Q1) | Medium |
-| c4 | Upstream JS-release drift watcher (scheduled CI check or Renovate custom manager) | Roadmap idea, docs/static-js.md says "manual until then"; today's staleness finding is the case for it | Medium |
-| c5 | `static/fetch-bundle.sh` provenance script (download, sha256, source-record in one step) | New idea from today's provenance mystery | Medium |
-| c6 | docspec mirroring of wire-format.md and migration-guide.md snippets | Carried from yesterday's debrief partials | Medium |
-| c7 | ErrorResponseFromError fuzz/bench Not-Do record or ~15-line fuzz target | Carried from yesterday | Medium |
-| c8 | fuzz.yml 2026-09-02 artifact triage | Carried; scheduled runs exist, artifacts unexamined | Medium |
-| c9 | CodeQL alert review | Carried; alerts never opened | Medium |
-| c10 | erraudit ×3 + govulncheck at HEAD | Also skipped this session (gate ran without them) | Medium |
-| c11 | AGENTS.md back ≤15,360 B (15,415 B) | Carried; cosmetic | Low |
-| c12 | aarch64/darwin flake validation (`nix flake check --all-systems` on those systems) | Carried; x86_64-linux only, ever | Medium |
-| c13 | CSP-mode (`data-nonce`) documentation for ScriptHandler consumers — new upstream v1.0.3 capability | Discovered today during the bump | Medium |
-| c14 | Consumer-facing bundle-integrity API (expose the pinned checksum for consumer-side verification) | New idea from today | Low–Medium |
+| #   | Item                                                                                                         | Why not started                                                                                        | Priority   |
+| --- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ---------- |
+| c1  | v0.5.0 cut (now carries JS 1.0.3, nosniff hardening, datastartest helpers, version pkg, goreleaser skeleton) | Owner question pending since yesterday's debrief (Q2)                                                  | High       |
+| c2  | Renovate vs Dependabot decision                                                                              | Owner question pending (Q3)                                                                            | Medium     |
+| c3  | nix.yml promotion (promote now vs green-fortnight)                                                           | Owner question pending (Q1)                                                                            | Medium     |
+| c4  | Upstream JS-release drift watcher (scheduled CI check or Renovate custom manager)                            | Roadmap idea, docs/static-js.md says "manual until then"; today's staleness finding is the case for it | Medium     |
+| c5  | `static/fetch-bundle.sh` provenance script (download, sha256, source-record in one step)                     | New idea from today's provenance mystery                                                               | Medium     |
+| c6  | docspec mirroring of wire-format.md and migration-guide.md snippets                                          | Carried from yesterday's debrief partials                                                              | Medium     |
+| c7  | ErrorResponseFromError fuzz/bench Not-Do record or ~15-line fuzz target                                      | Carried from yesterday                                                                                 | Medium     |
+| c8  | fuzz.yml 2026-09-02 artifact triage                                                                          | Carried; scheduled runs exist, artifacts unexamined                                                    | Medium     |
+| c9  | CodeQL alert review                                                                                          | Carried; alerts never opened                                                                           | Medium     |
+| c10 | erraudit ×3 + govulncheck at HEAD                                                                            | Also skipped this session (gate ran without them)                                                      | Medium     |
+| c11 | AGENTS.md back ≤15,360 B (15,415 B)                                                                          | Carried; cosmetic                                                                                      | Low        |
+| c12 | aarch64/darwin flake validation (`nix flake check --all-systems` on those systems)                           | Carried; x86_64-linux only, ever                                                                       | Medium     |
+| c13 | CSP-mode (`data-nonce`) documentation for ScriptHandler consumers — new upstream v1.0.3 capability           | Discovered today during the bump                                                                       | Medium     |
+| c14 | Consumer-facing bundle-integrity API (expose the pinned checksum for consumer-side verification)             | New idea from today                                                                                    | Low–Medium |
 
 ## d) TOTALLY FUCKED UP
 
-| # | What is broken/wrong | Severity | Root cause | Mitigation |
-| - | -------------------- | -------- | ---------- | ---------- |
-| d1 | **v0.4.0 shipped with a stale JS client.** Upstream v1.0.3 (2026-08-27) predates our release (2026-09-02/03); checklist §5 ("verify embedded JS matches latest upstream") was skipped in the release run | Low–Medium: no wire-format drift (goldens green), but consumers got 7-day-old client behavior and a 68%-oversized asset | §5 is written as "quarterly or after upstream release" with no hard step in the release lane; nothing in the release-day ritual forced the check | Fixed on master (`ad5ebc2`); ships in v0.5.0. Harden §5 (item f4) |
-| d2 | **The committed bundle was a beautified 56 KB variant of undocumented provenance** (1,960 lines, commit `9911ae3` from 2026-08-07 documented no source), and static.go's "provenance" comment asserted a false source (release assets that don't exist) | Medium: served asset 68% larger than canonical; provenance un-auditable for 4 weeks | Pre-checklist-era commit; the comment was written from assumption, not verification | Replaced with canonical minified bundle + corrected comment (`ad5ebc2`); add fetch-script (f8) and policy note (f9) |
-| d3 | **Auto-commit daemon raced the commit message.** It committed the 9 JS-bump files as `00c0149 "chore: auto-commit 9 changed file(s) (heuristic)"` before I could write the real message, leaving flake.nix dirty | Process risk: amending was only possible because the daemon hadn't pushed yet; had it pushed, the garbage message would be permanent history (rewrite = forbidden force-push) | Daemon sweeps dirty files on its own schedule | Check `git log -1` before staging during edit bursts; amend window exists but is luck-dependent (item f6) |
-| d4 | **pkg.go.dev shows datastartest v0.3.0 while root/static show v0.4.0** — a visible-in-public inconsistency | Cosmetic/confidence: proxy is correct; docs lag is server-side | Submodule page was never re-checked after the v0.4.0 release (only root was, in T03.8) | Self-resolves or one click on the page's Request button (f1) |
+| #  | What is broken/wrong                                                                                                                                                                                                                                    | Severity                                                                                                                                                                      | Root cause                                                                                                                                       | Mitigation                                                                                                          |
+| -- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| d1 | **v0.4.0 shipped with a stale JS client.** Upstream v1.0.3 (2026-08-27) predates our release (2026-09-02/03); checklist §5 ("verify embedded JS matches latest upstream") was skipped in the release run                                                | Low–Medium: no wire-format drift (goldens green), but consumers got 7-day-old client behavior and a 68%-oversized asset                                                       | §5 is written as "quarterly or after upstream release" with no hard step in the release lane; nothing in the release-day ritual forced the check | Fixed on master (`ad5ebc2`); ships in v0.5.0. Harden §5 (item f4)                                                   |
+| d2 | **The committed bundle was a beautified 56 KB variant of undocumented provenance** (1,960 lines, commit `9911ae3` from 2026-08-07 documented no source), and static.go's "provenance" comment asserted a false source (release assets that don't exist) | Medium: served asset 68% larger than canonical; provenance un-auditable for 4 weeks                                                                                           | Pre-checklist-era commit; the comment was written from assumption, not verification                                                              | Replaced with canonical minified bundle + corrected comment (`ad5ebc2`); add fetch-script (f8) and policy note (f9) |
+| d3 | **Auto-commit daemon raced the commit message.** It committed the 9 JS-bump files as `00c0149 "chore: auto-commit 9 changed file(s) (heuristic)"` before I could write the real message, leaving flake.nix dirty                                        | Process risk: amending was only possible because the daemon hadn't pushed yet; had it pushed, the garbage message would be permanent history (rewrite = forbidden force-push) | Daemon sweeps dirty files on its own schedule                                                                                                    | Check `git log -1` before staging during edit bursts; amend window exists but is luck-dependent (item f6)           |
+| d4 | **pkg.go.dev shows datastartest v0.3.0 while root/static show v0.4.0** — a visible-in-public inconsistency                                                                                                                                              | Cosmetic/confidence: proxy is correct; docs lag is server-side                                                                                                                | Submodule page was never re-checked after the v0.4.0 release (only root was, in T03.8)                                                           | Self-resolves or one click on the page's Request button (f1)                                                        |
 
 ## e) WHAT WE SHOULD IMPROVE
 
@@ -71,60 +71,60 @@
 
 ## f) 50 THINGS TO GET DONE NEXT
 
-*Ranked by impact; feeds docs-health HARVEST into TODO_LIST.md / ROADMAP.md.*
+_Ranked by impact; feeds docs-health HARVEST into TODO_LIST.md / ROADMAP.md._
 
-| # | Task | Impact | Effort | Category |
-| - | ---- | ------ | ------ | -------- |
-| 1 | HARVEST this report: fold section f items into TODO_LIST.md / ROADMAP.md | High | S | Process |
-| 2 | Trigger pkg.go.dev re-crawl for datastartest@v0.4.0 (Request button) and verify all three pages show v0.4.0 | High | S | Quality |
-| 3 | Decide + cut v0.5.0 per release-checklist (carries JS 1.0.3, nosniff, helpers, version pkg) | High | M | Release |
-| 4 | Add checklist §5 hard step: `gh api …/releases/latest` vs `static.Version` before every release | High | S | Process |
-| 5 | Add checklist §4 explicit step: `gh release create` for all THREE lockstep tags with `--latest=false` | High | S | Documentation |
-| 6 | Add checklist §4 step: verify all three pkg.go.dev pages render the new version post-release | Medium | S | Process |
-| 7 | Write docs/release-day.md runbook consolidating checklist + ci-watch + daemon-race warnings | Medium | S | Documentation |
-| 8 | Add `static/fetch-bundle.sh`: download canonical bundle, print sha256, emit provenance comment | Medium | S | Quality |
-| 9 | docs/static-js.md: policy note — canonical minified only, no beautified variants in-repo | Medium | S | Documentation |
-| 10 | Add scheduled CI upstream-drift check (gh api releases/latest → open issue on drift) | Medium | M | CI |
-| 11 | Record ErrorResponseFromError fuzz/bench Not-Do in writing, or add the ~15-line fuzz target | Medium | S | Quality |
-| 12 | Run erraudit ×3 at HEAD (last full run predates today's changes) | Medium | S | Quality |
-| 13 | Run govulncheck at HEAD | Medium | S | Security |
-| 14 | Triage fuzz.yml 2026-09-02 scheduled-run artifacts | Medium | S | Quality |
-| 15 | Open + review CodeQL alerts | Medium | S | Security |
-| 16 | Add `gh release list` completeness assertion (page count == tag count) to the end-of-release ritual | Medium | S | Process |
-| 17 | Re-verify the upstream SDK comparison table against latest starfederation/datastar-go (checklist §5 quarterly) | Medium | M | Quality |
-| 18 | Document in docs/static-js.md why v1.0.3's client changes don't affect the Go wire format (scope note) | Medium | S | Documentation |
-| 19 | Document CSP mode (`data-nonce`, no `unsafe-eval`) for ScriptHandler consumers in docs/static-js.md | Medium | S | Documentation |
-| 20 | ROADMAP: document the upstream-release-watching automation (Renovate custom manager or CI fallback) | Medium | S | Documentation |
-| 21 | Expose the pinned bundle checksum as API (e.g. `static.BundleSHA256()`) for consumer integrity checks | Medium | S | Feature |
-| 22 | Script to generate GitHub release notes from CHANGELOG sections (the awk extraction I hand-rolled today) | Medium | M | Quality |
-| 23 | Add scheduled CI proxy-drift alarm: proxy `@latest` == newest pushed tag | Medium | M | CI |
-| 24 | Promote nix.yml after green-fortnight decision | Medium | S | CI |
-| 25 | Choose Renovate vs Dependabot | Medium | S | CI |
-| 26 | Validate flake on aarch64/darwin (`--all-systems`) | Medium | M | CI |
-| 27 | docspec-mirror wire-format.md snippets | Medium | M | Documentation |
-| 28 | docspec-mirror migration-guide.md snippets | Medium | M | Documentation |
-| 29 | Fix docs/testing.md quick-start snippet drift vs its docspec mirror | Medium | S | Documentation |
-| 30 | Verify GOWORK=off isolation for root + datastartest after today's JS bump (only static was isolated) | Low | S | Quality |
-| 31 | Add no-BOM defensive test for `static.Bytes()` | Low | S | Quality |
-| 32 | Add integration test: ScriptHandler response body == `static.Bytes()` and ETag stable across requests | Low | S | Quality |
-| 33 | datastartest helper asserting served-bundle ETag == sha256 of `static.Bytes()` | Low | S | Quality |
-| 34 | Remove hardcoded `"1.0.3"` in response_test.go; derive from `static.Version` | Low | S | Quality |
-| 35 | rg-sweep docs for stale references to the old bundle (hash `4df1f98a`, beautified sizes) | Low | S | Cleanup |
-| 36 | Normalize legacy release-page titles (v0.0.1–v0.3.0) to the new house style | Low | S | Cleanup |
-| 37 | Web spot-check that new submodule release pages render markdown links correctly | Low | S | Quality |
-| 38 | Verify example Dockerfile still builds with the new static/ contents | Low | S | Quality |
-| 39 | Manual smoke: ScriptHandler ETag flow in example against the new bundle | Low | S | Quality |
-| 40 | Confirm pkg.go.dev datastartest shows "added in v0.4.0" annotations for RequireElementsOrdered/Diff/Snapshot after re-crawl | Low | S | Quality |
-| 41 | Add tag-annotation convention check (assert all tags are annotated objects) | Low | S | Quality |
-| 42 | AGENTS.md back ≤15,360 B | Low | S | Documentation |
-| 43 | Consolidate all pending owner questions (yesterday's 3 + today's 3) into one decision doc | Low | S | Documentation |
-| 44 | docs/release-checklist.md: note that all 15 tags now have release pages + backfill context | Low | S | Documentation |
-| 45 | Add CHANGELOG heading → GitHub release page links | Low | S | Documentation |
-| 46 | Unify release-note title convention going forward (plain `vX.Y.Z` root; `module vX.Y.Z` submodule) | Low | S | Documentation |
-| 47 | Silence the gopls stdversion false-positive noise via .gopls config if supported | Low | S | DX |
-| 48 | Re-run benchmarks + refresh docs/performance.md after the JS bump | Low | M | Quality |
-| 49 | Decide `datastar.Version()` API surface (root convenience fn vs pure re-export) | Low | S | Feature |
-| 50 | Mention in README that every tag has a per-module GitHub Release page with lockstep notes | Low | S | Documentation |
+| #  | Task                                                                                                                        | Impact | Effort | Category      |
+| -- | --------------------------------------------------------------------------------------------------------------------------- | ------ | ------ | ------------- |
+| 1  | HARVEST this report: fold section f items into TODO_LIST.md / ROADMAP.md                                                    | High   | S      | Process       |
+| 2  | Trigger pkg.go.dev re-crawl for datastartest@v0.4.0 (Request button) and verify all three pages show v0.4.0                 | High   | S      | Quality       |
+| 3  | Decide + cut v0.5.0 per release-checklist (carries JS 1.0.3, nosniff, helpers, version pkg)                                 | High   | M      | Release       |
+| 4  | Add checklist §5 hard step: `gh api …/releases/latest` vs `static.Version` before every release                             | High   | S      | Process       |
+| 5  | Add checklist §4 explicit step: `gh release create` for all THREE lockstep tags with `--latest=false`                       | High   | S      | Documentation |
+| 6  | Add checklist §4 step: verify all three pkg.go.dev pages render the new version post-release                                | Medium | S      | Process       |
+| 7  | Write docs/release-day.md runbook consolidating checklist + ci-watch + daemon-race warnings                                 | Medium | S      | Documentation |
+| 8  | Add `static/fetch-bundle.sh`: download canonical bundle, print sha256, emit provenance comment                              | Medium | S      | Quality       |
+| 9  | docs/static-js.md: policy note — canonical minified only, no beautified variants in-repo                                    | Medium | S      | Documentation |
+| 10 | Add scheduled CI upstream-drift check (gh api releases/latest → open issue on drift)                                        | Medium | M      | CI            |
+| 11 | Record ErrorResponseFromError fuzz/bench Not-Do in writing, or add the ~15-line fuzz target                                 | Medium | S      | Quality       |
+| 12 | Run erraudit ×3 at HEAD (last full run predates today's changes)                                                            | Medium | S      | Quality       |
+| 13 | Run govulncheck at HEAD                                                                                                     | Medium | S      | Security      |
+| 14 | Triage fuzz.yml 2026-09-02 scheduled-run artifacts                                                                          | Medium | S      | Quality       |
+| 15 | Open + review CodeQL alerts                                                                                                 | Medium | S      | Security      |
+| 16 | Add `gh release list` completeness assertion (page count == tag count) to the end-of-release ritual                         | Medium | S      | Process       |
+| 17 | Re-verify the upstream SDK comparison table against latest starfederation/datastar-go (checklist §5 quarterly)              | Medium | M      | Quality       |
+| 18 | Document in docs/static-js.md why v1.0.3's client changes don't affect the Go wire format (scope note)                      | Medium | S      | Documentation |
+| 19 | Document CSP mode (`data-nonce`, no `unsafe-eval`) for ScriptHandler consumers in docs/static-js.md                         | Medium | S      | Documentation |
+| 20 | ROADMAP: document the upstream-release-watching automation (Renovate custom manager or CI fallback)                         | Medium | S      | Documentation |
+| 21 | Expose the pinned bundle checksum as API (e.g. `static.BundleSHA256()`) for consumer integrity checks                       | Medium | S      | Feature       |
+| 22 | Script to generate GitHub release notes from CHANGELOG sections (the awk extraction I hand-rolled today)                    | Medium | M      | Quality       |
+| 23 | Add scheduled CI proxy-drift alarm: proxy `@latest` == newest pushed tag                                                    | Medium | M      | CI            |
+| 24 | Promote nix.yml after green-fortnight decision                                                                              | Medium | S      | CI            |
+| 25 | Choose Renovate vs Dependabot                                                                                               | Medium | S      | CI            |
+| 26 | Validate flake on aarch64/darwin (`--all-systems`)                                                                          | Medium | M      | CI            |
+| 27 | docspec-mirror wire-format.md snippets                                                                                      | Medium | M      | Documentation |
+| 28 | docspec-mirror migration-guide.md snippets                                                                                  | Medium | M      | Documentation |
+| 29 | Fix docs/testing.md quick-start snippet drift vs its docspec mirror                                                         | Medium | S      | Documentation |
+| 30 | Verify GOWORK=off isolation for root + datastartest after today's JS bump (only static was isolated)                        | Low    | S      | Quality       |
+| 31 | Add no-BOM defensive test for `static.Bytes()`                                                                              | Low    | S      | Quality       |
+| 32 | Add integration test: ScriptHandler response body == `static.Bytes()` and ETag stable across requests                       | Low    | S      | Quality       |
+| 33 | datastartest helper asserting served-bundle ETag == sha256 of `static.Bytes()`                                              | Low    | S      | Quality       |
+| 34 | Remove hardcoded `"1.0.3"` in response_test.go; derive from `static.Version`                                                | Low    | S      | Quality       |
+| 35 | rg-sweep docs for stale references to the old bundle (hash `4df1f98a`, beautified sizes)                                    | Low    | S      | Cleanup       |
+| 36 | Normalize legacy release-page titles (v0.0.1–v0.3.0) to the new house style                                                 | Low    | S      | Cleanup       |
+| 37 | Web spot-check that new submodule release pages render markdown links correctly                                             | Low    | S      | Quality       |
+| 38 | Verify example Dockerfile still builds with the new static/ contents                                                        | Low    | S      | Quality       |
+| 39 | Manual smoke: ScriptHandler ETag flow in example against the new bundle                                                     | Low    | S      | Quality       |
+| 40 | Confirm pkg.go.dev datastartest shows "added in v0.4.0" annotations for RequireElementsOrdered/Diff/Snapshot after re-crawl | Low    | S      | Quality       |
+| 41 | Add tag-annotation convention check (assert all tags are annotated objects)                                                 | Low    | S      | Quality       |
+| 42 | AGENTS.md back ≤15,360 B                                                                                                    | Low    | S      | Documentation |
+| 43 | Consolidate all pending owner questions (yesterday's 3 + today's 3) into one decision doc                                   | Low    | S      | Documentation |
+| 44 | docs/release-checklist.md: note that all 15 tags now have release pages + backfill context                                  | Low    | S      | Documentation |
+| 45 | Add CHANGELOG heading → GitHub release page links                                                                           | Low    | S      | Documentation |
+| 46 | Unify release-note title convention going forward (plain `vX.Y.Z` root; `module vX.Y.Z` submodule)                          | Low    | S      | Documentation |
+| 47 | Silence the gopls stdversion false-positive noise via .gopls config if supported                                            | Low    | S      | DX            |
+| 48 | Re-run benchmarks + refresh docs/performance.md after the JS bump                                                           | Low    | M      | Quality       |
+| 49 | Decide `datastar.Version()` API surface (root convenience fn vs pure re-export)                                             | Low    | S      | Feature       |
+| 50 | Mention in README that every tag has a per-module GitHub Release page with lockstep notes                                   | Low    | S      | Documentation |
 
 ## g) 3 QUESTIONS ONLY YOU CAN ANSWER
 
@@ -134,4 +134,4 @@
 
 ---
 
-*Point-in-time snapshot; excluded from CHANGELOG per policy. Section f is HARVEST input — do not let it die in this file.*
+_Point-in-time snapshot; excluded from CHANGELOG per policy. Section f is HARVEST input — do not let it die in this file._

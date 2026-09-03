@@ -236,22 +236,22 @@ when adding helpers.
 
 ## Docs Map
 
-| Path                          | Content                                                     |
-| ----------------------------- | ----------------------------------------------------------- |
-| `doc.go`                      | Package docs: design rationale, quick start, error contract |
-| `docs/adr/`                   | Architecture decision records (multi-module, …)             |
-| `docs/release-checklist.md`   | Pre-release gate, versioning, lockstep tags, verification   |
-| `docs/replay.md`              | MemoryStore + Last-Event-ID reconnection guide               |
-| `docs/error-system.md`        | The three error-matching dimensions, codes + families        |
-| `docs/wire-format.md`         | Annotated datalines per patch family (+ golden tests)        |
-| `docs/architecture.md`        | Three-layer architecture diagram + file map                  |
-| `docs/migration-starfederation.md` | Upstream SDK → go-datastar migration mapping             |
-| `docs/testing.md`             | datastartest quick start, fuzzing, coverage story            |
-| `docs/ci-watch.md`            | Promote/drop/verify runbook for the non-required workflows   |
-| `docs/performance.md`         | Measured benchmark table                                     |
-| `docs/migration-guide.md`     | v0.2.0 → v0.3.0 upgrade guide                                |
-| `docs/static-js.md`           | Embedded JS pinning + upgrade process                        |
-| `docs/status/` (+ its README) | Point-in-time status reports and audits (index + policy)    |
-| `docs/planning/`              | Pareto plans; `archived/` holds executed plans              |
-| `CONTRIBUTING.md`             | Dev setup, workspace rules, fuzzing                         |
-| `CHANGELOG.md`                | Released history (append-only) + `[Unreleased]` draft       |
+| Path                               | Content                                                     |
+| ---------------------------------- | ----------------------------------------------------------- |
+| `doc.go`                           | Package docs: design rationale, quick start, error contract |
+| `docs/adr/`                        | Architecture decision records (multi-module, …)             |
+| `docs/release-checklist.md`        | Pre-release gate, versioning, lockstep tags, verification   |
+| `docs/replay.md`                   | MemoryStore + Last-Event-ID reconnection guide              |
+| `docs/error-system.md`             | The three error-matching dimensions, codes + families       |
+| `docs/wire-format.md`              | Annotated datalines per patch family (+ golden tests)       |
+| `docs/architecture.md`             | Three-layer architecture diagram + file map                 |
+| `docs/migration-starfederation.md` | Upstream SDK → go-datastar migration mapping                |
+| `docs/testing.md`                  | datastartest quick start, fuzzing, coverage story           |
+| `docs/ci-watch.md`                 | Promote/drop/verify runbook for the non-required workflows  |
+| `docs/performance.md`              | Measured benchmark table                                    |
+| `docs/migration-guide.md`          | v0.2.0 → v0.3.0 upgrade guide                               |
+| `docs/static-js.md`                | Embedded JS pinning + upgrade process                       |
+| `docs/status/` (+ its README)      | Point-in-time status reports and audits (index + policy)    |
+| `docs/planning/`                   | Pareto plans; `archived/` holds executed plans              |
+| `CONTRIBUTING.md`                  | Dev setup, workspace rules, fuzzing                         |
+| `CHANGELOG.md`                     | Released history (append-only) + `[Unreleased]` draft       |

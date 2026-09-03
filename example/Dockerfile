@@ -1,8 +1,8 @@
 # Build from the REPOSITORY ROOT (the example is part of the root Go module,
 # so go.mod must be in the build context):
 #
-#   docker build -f example/Dockerfile -t go-datastar-example .
-#   docker compose -f example/docker-compose.yml up
+# docker build -f example/Dockerfile -t go-datastar-example .
+# docker compose -f example/docker-compose.yml up
 FROM golang:1.26.7-alpine AS build
 ENV GOEXPERIMENT=jsonv2 GOWORK=off
 WORKDIR /src

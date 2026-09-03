@@ -253,58 +253,58 @@ not exhaustively), Fitness **10.0/10** — against the 2026-08-29 baseline of
 Items 1–15 are the verified TODO_LIST (harvested this session); 16–50 are
 session-specific follow-ups and smaller residue, ranked roughly by value.
 
-| #  | Thing                                                                                                                     | Source            |
-| -- | ------------------------------------------------------------------------------------------------------------------------- | ----------------- |
-| 1  | Investigate datastartest FOD source-sensitivity; correct ADR 004                                                          | 20-12 f.3/e.2     |
-| 2  | Add exact-CI golangci-lint app (`go run …@v2.12.2`) to flake; make it the pre-push habit                                   | 20-12 f.1/e.1     |
-| 3  | Verify tag `v0.3.0` flake state via worktree; record verdict                                                               | 20-12 f.2         |
-| 4  | Migrate 4 json call sites to encoding/json/v2; `b.N`→`b.Loop()` ×4 (clears gopls stdversion/bloop)                         | 07-38/07-55 f-items |
-| 5  | CI hygiene batch: go mod verify + version-drift + go.work use-match + tidy-check test                                      | 07-38 f.9-f.11 et al. |
-| 6  | `docker build example/` + compose up                                                                                       | 20-12 f.11        |
-| 7  | Performance.md benchtime re-run; correct prose numbers                                                                     | 20-12 f.21        |
-| 8  | Response test-depth batch (JSON-parse asserts, integration/fuzz/bench, edge cases, concurrency, large patches, query+body) | 07-04 f.11-f.33   |
-| 9  | Plan v0.4.0 scope from `[Unreleased]` (go-sse v0.6.0, goldens, accessors, ReplaceURLQuerystring, guides)                   | 20-12 f.41        |
-| 10 | Watch first runs: fuzz.yml nightly, CodeQL results, nix.yml promotion, Renovate regex vs real upstream tags                 | 20-12 f.12-f.16   |
-| 11 | Micro-hygiene: heartbeat ticker constant, http.NewResponseController in gzipSSEWriter, stable bench headers, PR-template module row | 20-12 f.34/f.35/f.47 |
-| 12 | module_boundary_test → golang.org/x/mod/modfile parsing                                                                    | 07-55 f.14        |
-| 13 | Community files: CODEOWNERS / SUPPORT.md / DISCUSSION_TEMPLATE (owner)                                                     | 07-04 f.23/f.46   |
-| 14 | Reply to 5 CodeRabbit threads on PR #3; human-review the 5 parallel commits                                                | 12-24 b.1/c.6     |
-| 15 | Coverage/lint-cache measurement ritual after code changes (close 12.3 debt)                                                | 20-12 f.32        |
-| 16 | Configure `git-town.observed-branches` for `preserve/…` while deletion is blocked                                           | 20-12 f.20        |
-| 17 | Owner: Renovate vs Dependabot — disable the loser; set dashboard/label prefs                                                | 20-12 f.4/f.29/f.37 |
-| 18 | Owner: branch deletions + lineage prune                                                                                    | 20-12 f.18/f.19   |
-| 19 | Owner: erraudit hard-gate flip verification once the repo goes public                                                       | 11-07 §5          |
-| 20 | AGENTS.md pruning pass → ≤15KB (drop resolved-incident gotchas)                                                             | 17-05 e.5/f.50    |
-| 21 | Re-align the hand-edited markdown tables (README/FEATURES/TODO_LIST)                                                       | this session b.8  |
-| 22 | Add this report's row to docs/status/README.md (done at write time)                                                        | policy            |
-| 23 | Verify actionlint locally with captured exit code (this session's gate gap)                                                | this session b.7  |
-| 24 | Cross-reference consolidated ROADMAP ideas back to source report item IDs                                                   | this session e.8  |
-| 25 | Spot-check a sample of agent-classified verdicts (record the ratio)                                                        | this session b.2  |
-| 26 | Decide "monitoring" tier for the status index (owner; see g.1)                                                              | this session e.9  |
-| 27 | Re-verify README comparison table vs upstream datastar-go (quarterly)                                                       | release checklist |
-| 28 | Evaluate `checks.govulncheck` hermetic derivation if the ADR-004 investigation shows it's cheap                              | 20-12 f.31        |
-| 29 | Compile-checked doc snippets (docspec test target)                                                                          | 20-12 f.22/e.6    |
-| 30 | datastartest helper-API expansion (consolidated ROADMAP idea — pick the top 3 helpers first: RequireElementsOrdered, Diff, Snapshot) | 08-10 residue |
-| 31 | Response ergonomics idea: ErrorResponse-family as Response methods; signalsMap type                                          | 07-04 f.11/f.17   |
-| 32 | `example/` own-go.mod structural decision                                                                                   | 07-38 f.28        |
-| 33 | Coverage-floor policy decision (optional CI gate)                                                                           | 12-24 c.3         |
-| 34 | static fuzz targets in fuzz.yml (bundle bytes are parser-adjacent)                                                          | 02-57 f.30        |
-| 35 | TestScriptHandlerWith with an empty custom bundle                                                                           | 02-57 f.31        |
-| 36 | static provenance comment (upstream SHA) + bundle checksum test                                                             | 02-57 f.18/f.19   |
-| 37 | Evaluate Last-Modified + nosniff headers for ScriptHandler                                                                  | 02-57 f.25/f.48   |
-| 38 | computeETag benchmark + cache-per-call evaluation                                                                            | 02-57 f.26/f.27   |
-| 39 | `DatastarJSVersion` alias deprecation comment                                                                               | 02-57 f.22        |
-| 40 | ScriptTag edge-case tests (empty, query, fragment)                                                                          | 02-57 f.49        |
-| 41 | datastartest doc.go/examples gap: CollectPost/CollectN/DataValue/String examples                                             | 03-49 c.9         |
-| 42 | datastartest CHANGELOG decision (root CHANGELOG sections vs module file)                                                    | 04-48 f.49        |
-| 43 | `go work vendor` support / flake app for offline graphs                                                                      | 04-48 f.47        |
-| 44 | CI per-module matrix / parallel jobs for faster feedback                                                                    | 05-07 f.43        |
-| 45 | Constraint check tying static.Version mentions to the CHANGELOG                                                             | 20-12 f.43        |
-| 46 | CI job summary table in AGENTS after promotion decisions settle                                                             | 20-12 f.45        |
-| 47 | Re-run docs-health VERIFY on the seven guides after the next code change                                                    | 20-12 f.39        |
-| 48 | Bench-marking: stable `nix run .#bench` output headers for comparisons                                                      | 20-12 f.47        |
-| 49 | Favicon/branding assets if the website deferral flips to go                                                                  | 20-12 f.49        |
-| 50 | Sweep the TODO_LIST watch rows after the first CI week; close or convert                                                    | 20-12 f.48        |
+| #  | Thing                                                                                                                                | Source                |
+| -- | ------------------------------------------------------------------------------------------------------------------------------------ | --------------------- |
+| 1  | Investigate datastartest FOD source-sensitivity; correct ADR 004                                                                     | 20-12 f.3/e.2         |
+| 2  | Add exact-CI golangci-lint app (`go run …@v2.12.2`) to flake; make it the pre-push habit                                             | 20-12 f.1/e.1         |
+| 3  | Verify tag `v0.3.0` flake state via worktree; record verdict                                                                         | 20-12 f.2             |
+| 4  | Migrate 4 json call sites to encoding/json/v2; `b.N`→`b.Loop()` ×4 (clears gopls stdversion/bloop)                                   | 07-38/07-55 f-items   |
+| 5  | CI hygiene batch: go mod verify + version-drift + go.work use-match + tidy-check test                                                | 07-38 f.9-f.11 et al. |
+| 6  | `docker build example/` + compose up                                                                                                 | 20-12 f.11            |
+| 7  | Performance.md benchtime re-run; correct prose numbers                                                                               | 20-12 f.21            |
+| 8  | Response test-depth batch (JSON-parse asserts, integration/fuzz/bench, edge cases, concurrency, large patches, query+body)           | 07-04 f.11-f.33       |
+| 9  | Plan v0.4.0 scope from `[Unreleased]` (go-sse v0.6.0, goldens, accessors, ReplaceURLQuerystring, guides)                             | 20-12 f.41            |
+| 10 | Watch first runs: fuzz.yml nightly, CodeQL results, nix.yml promotion, Renovate regex vs real upstream tags                          | 20-12 f.12-f.16       |
+| 11 | Micro-hygiene: heartbeat ticker constant, http.NewResponseController in gzipSSEWriter, stable bench headers, PR-template module row  | 20-12 f.34/f.35/f.47  |
+| 12 | module_boundary_test → golang.org/x/mod/modfile parsing                                                                              | 07-55 f.14            |
+| 13 | Community files: CODEOWNERS / SUPPORT.md / DISCUSSION_TEMPLATE (owner)                                                               | 07-04 f.23/f.46       |
+| 14 | Reply to 5 CodeRabbit threads on PR #3; human-review the 5 parallel commits                                                          | 12-24 b.1/c.6         |
+| 15 | Coverage/lint-cache measurement ritual after code changes (close 12.3 debt)                                                          | 20-12 f.32            |
+| 16 | Configure `git-town.observed-branches` for `preserve/…` while deletion is blocked                                                    | 20-12 f.20            |
+| 17 | Owner: Renovate vs Dependabot — disable the loser; set dashboard/label prefs                                                         | 20-12 f.4/f.29/f.37   |
+| 18 | Owner: branch deletions + lineage prune                                                                                              | 20-12 f.18/f.19       |
+| 19 | Owner: erraudit hard-gate flip verification once the repo goes public                                                                | 11-07 §5              |
+| 20 | AGENTS.md pruning pass → ≤15KB (drop resolved-incident gotchas)                                                                      | 17-05 e.5/f.50        |
+| 21 | Re-align the hand-edited markdown tables (README/FEATURES/TODO_LIST)                                                                 | this session b.8      |
+| 22 | Add this report's row to docs/status/README.md (done at write time)                                                                  | policy                |
+| 23 | Verify actionlint locally with captured exit code (this session's gate gap)                                                          | this session b.7      |
+| 24 | Cross-reference consolidated ROADMAP ideas back to source report item IDs                                                            | this session e.8      |
+| 25 | Spot-check a sample of agent-classified verdicts (record the ratio)                                                                  | this session b.2      |
+| 26 | Decide "monitoring" tier for the status index (owner; see g.1)                                                                       | this session e.9      |
+| 27 | Re-verify README comparison table vs upstream datastar-go (quarterly)                                                                | release checklist     |
+| 28 | Evaluate `checks.govulncheck` hermetic derivation if the ADR-004 investigation shows it's cheap                                      | 20-12 f.31            |
+| 29 | Compile-checked doc snippets (docspec test target)                                                                                   | 20-12 f.22/e.6        |
+| 30 | datastartest helper-API expansion (consolidated ROADMAP idea — pick the top 3 helpers first: RequireElementsOrdered, Diff, Snapshot) | 08-10 residue         |
+| 31 | Response ergonomics idea: ErrorResponse-family as Response methods; signalsMap type                                                  | 07-04 f.11/f.17       |
+| 32 | `example/` own-go.mod structural decision                                                                                            | 07-38 f.28            |
+| 33 | Coverage-floor policy decision (optional CI gate)                                                                                    | 12-24 c.3             |
+| 34 | static fuzz targets in fuzz.yml (bundle bytes are parser-adjacent)                                                                   | 02-57 f.30            |
+| 35 | TestScriptHandlerWith with an empty custom bundle                                                                                    | 02-57 f.31            |
+| 36 | static provenance comment (upstream SHA) + bundle checksum test                                                                      | 02-57 f.18/f.19       |
+| 37 | Evaluate Last-Modified + nosniff headers for ScriptHandler                                                                           | 02-57 f.25/f.48       |
+| 38 | computeETag benchmark + cache-per-call evaluation                                                                                    | 02-57 f.26/f.27       |
+| 39 | `DatastarJSVersion` alias deprecation comment                                                                                        | 02-57 f.22            |
+| 40 | ScriptTag edge-case tests (empty, query, fragment)                                                                                   | 02-57 f.49            |
+| 41 | datastartest doc.go/examples gap: CollectPost/CollectN/DataValue/String examples                                                     | 03-49 c.9             |
+| 42 | datastartest CHANGELOG decision (root CHANGELOG sections vs module file)                                                             | 04-48 f.49            |
+| 43 | `go work vendor` support / flake app for offline graphs                                                                              | 04-48 f.47            |
+| 44 | CI per-module matrix / parallel jobs for faster feedback                                                                             | 05-07 f.43            |
+| 45 | Constraint check tying static.Version mentions to the CHANGELOG                                                                      | 20-12 f.43            |
+| 46 | CI job summary table in AGENTS after promotion decisions settle                                                                      | 20-12 f.45            |
+| 47 | Re-run docs-health VERIFY on the seven guides after the next code change                                                             | 20-12 f.39            |
+| 48 | Bench-marking: stable `nix run .#bench` output headers for comparisons                                                               | 20-12 f.47            |
+| 49 | Favicon/branding assets if the website deferral flips to go                                                                          | 20-12 f.49            |
+| 50 | Sweep the TODO_LIST watch rows after the first CI week; close or convert                                                             | 20-12 f.48            |
 
 ## g) Questions I cannot answer myself
 
@@ -339,17 +339,17 @@ Section b caveats closed by the 2026-09-03 execution session:
    govulncheck jobs), `dc0d6f2` (ci.yml, go.work sync hardening), `3cd669e`
    (AGENTS.md ×2, circular-dep fix), `06bb019` (datastartest request options +
    README). **5/5 pass** — every hash reachable and its diff matches the claim.
-5. **performance.md numbers re-verified** with `-benchtime=1s`
+3. **performance.md numbers re-verified** with `-benchtime=1s`
    (2026-09-03, multi-million samples): tables + methodology updated.
-6. **README comparison table re-verified against upstream v1.2.2** via
+4. **README comparison table re-verified against upstream v1.2.2** via
    pkg.go.dev (compression built-in ✅, no broadcast/replay ✅,
    ReplaceURLQuerystring upstream-only ✅ — README's wins-list already updated
    when go-datastar added it).
-7. **actionlint captured and green** (nix shell run, 2026-09-03) and on every
+5. **actionlint captured and green** (nix shell run, 2026-09-03) and on every
    push via the actionlint workflow (green on the v0.4.0 release commit).
-3. **AGENTS.md now 14.8KB** (≤15KB target met by the pruning pass).
-1./8./9. remain as stated (consolidation depth is owner-questioned; table
-padding is cosmetic; HTML files remain inventory-only).
+6. **AGENTS.md now 14.8KB** (≤15KB target met by the pruning pass).
+   1./8./9. remain as stated (consolidation depth is owner-questioned; table
+   padding is cosmetic; HTML files remain inventory-only).
 
 Section c items 1–4 (tag verdict, docker, exact-CI lint app, FOD
 investigation) were ALL executed 2026-09-03: the tag verdict and the FOD

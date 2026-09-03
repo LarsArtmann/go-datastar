@@ -56,13 +56,13 @@ Nothing partially done. All 4 fixes were binary: either fixed or not.
 
 ## c) NOT STARTED (from prior session's open items)
 
-| Item                               | Why not started                                              | Blocked? |
-| ---------------------------------- | ------------------------------------------------------------ | -------- |
-| Tag v0.0.3                         | ~~User release cadence decision~~ done — tagged 2026-08-08   |          |
-| GitHub repo polish (topics, wiki)  | ~~No `gh` CLI access~~ done in the 09-36 session (`cfe328d`) |          |
-| `nestif` refactor of `ReadSignals` | done at `5bab343`                                            |          |
-| ~~Coverage badge in README~~ done — live badge via coverage.yml (ed815c7) | Cosmetic                                                     |          |
-| ~~pkg.go.dev rendering verification~~ done — verified 2026-09-02, v0.3.0 renders all 3 modules | Done                       |          |
+| Item                                                                                           | Why not started                                              | Blocked? |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | -------- |
+| Tag v0.0.3                                                                                     | ~~User release cadence decision~~ done — tagged 2026-08-08   |          |
+| GitHub repo polish (topics, wiki)                                                              | ~~No `gh` CLI access~~ done in the 09-36 session (`cfe328d`) |          |
+| `nestif` refactor of `ReadSignals`                                                             | done at `5bab343`                                            |          |
+| ~~Coverage badge in README~~ done — live badge via coverage.yml (ed815c7)                      | Cosmetic                                                     |          |
+| ~~pkg.go.dev rendering verification~~ done — verified 2026-09-02, v0.3.0 renders all 3 modules | Done                                                         |          |
 
 ---
 

@@ -50,20 +50,20 @@ I added an Error System section to `AGENTS.md` but did **not** check whether `RE
 
 ## c) NOT STARTED
 
-| #  | Item                                                                                                            |
-| -- | --------------------------------------------------------------------------------------------------------------- |
-| 1  | ~~`CHANGELOG.md` entry for the error system~~ done — included in v0.0.1 CHANGELOG (`6af9dc4`)                   |
-| 2  | ~~`FEATURES.md` update~~ done at `b1e2063` — FEATURES.md built with full error system inventory                 |
-| 3  | ~~`README.md` error-handling section~~ done at `391db38` (three typed handles documented)                       |
-| ~~4~~  | ~~`doc.go` package doc update (never read this session)~~ done — doc.go 'Classified errors' section documents the three matching patterns |
-| ~~5~~  | ~~CI integration — `.github/workflows/ci.yml` was never checked; erraudit not added to CI~~ done — ci.yml erraudit job runs per module with --enforce-go-error-family |
-| ~~6~~  | ~~`flake.nix` integration — erraudit command not added to the flake devShell/checks~~ done — flake.nix apps.erraudit (nix run .#erraudit); devShell exclusion documented in the flake |
-| 7  | Evaluating domain-specific error return types (see Partially Done #2)                                           |
-| 8  | ~~Running the example end-to-end~~ done at `a8ba8be` — example updated and verified; `go vet ./example/` passes |
-| 9  | ~~Reading `elements.go` and `http.go`~~ done — reviewed during deep-review session (`0d30c94`)                  |
-| 10 | ~~Reading `go-error-family/interfaces.go`~~ done — reviewed during deep-review session (`0d30c94`)              |
-| 11 | NOT-DO — skill/lint config scope is outside this library                                                        |
-| 12 | Routed to ROADMAP.md (Error System Maturity theme)                                                              |
+| #     | Item                                                                                                                                                                                  |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | ~~`CHANGELOG.md` entry for the error system~~ done — included in v0.0.1 CHANGELOG (`6af9dc4`)                                                                                         |
+| 2     | ~~`FEATURES.md` update~~ done at `b1e2063` — FEATURES.md built with full error system inventory                                                                                       |
+| 3     | ~~`README.md` error-handling section~~ done at `391db38` (three typed handles documented)                                                                                             |
+| ~~4~~ | ~~`doc.go` package doc update (never read this session)~~ done — doc.go 'Classified errors' section documents the three matching patterns                                             |
+| ~~5~~ | ~~CI integration — `.github/workflows/ci.yml` was never checked; erraudit not added to CI~~ done — ci.yml erraudit job runs per module with --enforce-go-error-family                 |
+| ~~6~~ | ~~`flake.nix` integration — erraudit command not added to the flake devShell/checks~~ done — flake.nix apps.erraudit (nix run .#erraudit); devShell exclusion documented in the flake |
+| 7     | Evaluating domain-specific error return types (see Partially Done #2)                                                                                                                 |
+| 8     | ~~Running the example end-to-end~~ done at `a8ba8be` — example updated and verified; `go vet ./example/` passes                                                                       |
+| 9     | ~~Reading `elements.go` and `http.go`~~ done — reviewed during deep-review session (`0d30c94`)                                                                                        |
+| 10    | ~~Reading `go-error-family/interfaces.go`~~ done — reviewed during deep-review session (`0d30c94`)                                                                                    |
+| 11    | NOT-DO — skill/lint config scope is outside this library                                                                                                                              |
+| 12    | Routed to ROADMAP.md (Error System Maturity theme)                                                                                                                                    |
 
 ---
 

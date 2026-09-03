@@ -37,18 +37,18 @@ connection.
 
 ## Method mapping
 
-| upstream `ServerSentEventGenerator` | go-datastar equivalent |
-| ----------------------------------- | ---------------------- |
-| `NewSSE(w, r)` | `sse.NewStream(w, r)` + `datastar.NewResponse(stream)` |
-| `PatchElements(html, opts...)` | `resp.PatchElements(html, opts...)` or `NewElementsPatch` + `Send(evt)` |
-| `PatchSignals(signalData, opts...)` | `resp.MarshalAndPatchSignals(v, opts...)` or `NewSignalsPatch` |
-| `ExecuteScript(script, opts...)` | `resp.ExecuteScript(script, opts...)` or `NewScriptPatch` |
-| `Redirect(url, opts...)` | `resp.Redirect(url, opts...)` or `NewRedirectPatch(url)` |
-| `ConsoleLog(msg)` / `ConsoleError(err)` | `resp.ConsoleLog(msg)` / `resp.ConsoleError(err)` |
-| `DispatchCustomEvent(name, detail)` | `resp.DispatchCustomEvent(name, detail)` |
-| `ReplaceURL(url)` / `ReplaceURLQuerystring(r, vals)` | `resp.ReplaceURL(url)` / `resp.ReplaceURLQuerystring(r, vals)` |
-| `RemoveElement(sel)` / `RemoveElementByID(id)` | `resp.RemoveElement(sel)` / `resp.RemoveElementByID(id)` |
-| `MergeFragments` / fragment options | elements patches with `WithMode*`, `WithSelector*`, `WithViewTransitions*` |
+| upstream `ServerSentEventGenerator`                  | go-datastar equivalent                                                     |
+| ---------------------------------------------------- | -------------------------------------------------------------------------- |
+| `NewSSE(w, r)`                                       | `sse.NewStream(w, r)` + `datastar.NewResponse(stream)`                     |
+| `PatchElements(html, opts...)`                       | `resp.PatchElements(html, opts...)` or `NewElementsPatch` + `Send(evt)`    |
+| `PatchSignals(signalData, opts...)`                  | `resp.MarshalAndPatchSignals(v, opts...)` or `NewSignalsPatch`             |
+| `ExecuteScript(script, opts...)`                     | `resp.ExecuteScript(script, opts...)` or `NewScriptPatch`                  |
+| `Redirect(url, opts...)`                             | `resp.Redirect(url, opts...)` or `NewRedirectPatch(url)`                   |
+| `ConsoleLog(msg)` / `ConsoleError(err)`              | `resp.ConsoleLog(msg)` / `resp.ConsoleError(err)`                          |
+| `DispatchCustomEvent(name, detail)`                  | `resp.DispatchCustomEvent(name, detail)`                                   |
+| `ReplaceURL(url)` / `ReplaceURLQuerystring(r, vals)` | `resp.ReplaceURL(url)` / `resp.ReplaceURLQuerystring(r, vals)`             |
+| `RemoveElement(sel)` / `RemoveElementByID(id)`       | `resp.RemoveElement(sel)` / `resp.RemoveElementByID(id)`                   |
+| `MergeFragments` / fragment options                  | elements patches with `WithMode*`, `WithSelector*`, `WithViewTransitions*` |
 
 Option mapping is mostly name-preserving upstream→here: `WithSelectorID`,
 `WithMode*`, `WithViewTransitions*`, retry-duration options, and custom-event
@@ -58,14 +58,14 @@ Printf-style variants (`WithSelectorf`, `NewRedirectfPatch`,
 
 ## What you gain
 
-| Capability | How |
-| ---------- | --- |
-| Broadcast one patch to N connections | `sse.NewBroadcaster[sse.Event]()` + `broadcaster.Broadcast(patch.Event())` |
-| Reconnection replay | `datastar.NewMemoryStore(capacity)` (any `sse.EventStore`) + `datastar.LastEventID(r)` |
-| Per-subscriber filtering | `broadcaster.SubscribeFilter(func(evt sse.Event) bool { ... })` |
-| Classified errors | every returned error carries a stable code, family, retryability (see [error-system.md](error-system.md)) |
-| E2E test helpers | the `datastartest` module: `Collect`, typed assertions, fuzz corpora (see [testing.md](testing.md)) |
-| Serving the JS client | `datastar.ScriptHandler()` (embedded, ETag + cache headers) |
+| Capability                           | How                                                                                                       |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| Broadcast one patch to N connections | `sse.NewBroadcaster[sse.Event]()` + `broadcaster.Broadcast(patch.Event())`                                |
+| Reconnection replay                  | `datastar.NewMemoryStore(capacity)` (any `sse.EventStore`) + `datastar.LastEventID(r)`                    |
+| Per-subscriber filtering             | `broadcaster.SubscribeFilter(func(evt sse.Event) bool { ... })`                                           |
+| Classified errors                    | every returned error carries a stable code, family, retryability (see [error-system.md](error-system.md)) |
+| E2E test helpers                     | the `datastartest` module: `Collect`, typed assertions, fuzz corpora (see [testing.md](testing.md))       |
+| Serving the JS client                | `datastar.ScriptHandler()` (embedded, ETag + cache headers)                                               |
 
 ## What you give up
 

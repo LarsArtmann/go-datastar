@@ -29,24 +29,24 @@
 
 ## Convenience Patches
 
-| Feature             | Status                | Notes                                                                            |
-| ------------------- | --------------------- | -------------------------------------------------------------------------------- |
-| Remove / RemoveByID | 🟢 `FULLY_FUNCTIONAL` | `NewRemovePatch`, `NewRemoveByIDPatch` (`sugar.go`)                              |
-| Redirect            | 🟢 `FULLY_FUNCTIONAL` | `NewRedirectPatch`, printf variant `NewRedirectfPatch` (`script_convenience.go`) |
-| Console log / error | 🟢 `FULLY_FUNCTIONAL` | `NewConsoleLogPatch`, `NewConsoleErrorPatch` with `%q` JS quoting                |
-| ReplaceURL          | 🟢 `FULLY_FUNCTIONAL` | `NewReplaceURLPatch` (`script_convenience.go`)                                   |
+| Feature               | Status                | Notes                                                                                                                                                                                              |
+| --------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Remove / RemoveByID   | 🟢 `FULLY_FUNCTIONAL` | `NewRemovePatch`, `NewRemoveByIDPatch` (`sugar.go`)                                                                                                                                                |
+| Redirect              | 🟢 `FULLY_FUNCTIONAL` | `NewRedirectPatch`, printf variant `NewRedirectfPatch` (`script_convenience.go`)                                                                                                                   |
+| Console log / error   | 🟢 `FULLY_FUNCTIONAL` | `NewConsoleLogPatch`, `NewConsoleErrorPatch` with `%q` JS quoting                                                                                                                                  |
+| ReplaceURL            | 🟢 `FULLY_FUNCTIONAL` | `NewReplaceURLPatch` (`script_convenience.go`)                                                                                                                                                     |
 | ReplaceURLQuerystring | 🟢 `FULLY_FUNCTIONAL` | `NewReplaceURLQuerystringPatch` + `Response.ReplaceURLQuerystring` — upstream-parity query-string replacement, path preserved (`script_convenience.go:185`, `response.go:143`); wire/parity-tested |
-| Prefetch            | 🟢 `FULLY_FUNCTIONAL` | `NewPrefetchPatch` (`script_convenience.go`)                                     |
-| SignalsIfMissing    | 🟢 `FULLY_FUNCTIONAL` | `NewSignalsIfMissingPatch` (`script_convenience.go`)                             |
+| Prefetch              | 🟢 `FULLY_FUNCTIONAL` | `NewPrefetchPatch` (`script_convenience.go`)                                                                                                                                                       |
+| SignalsIfMissing      | 🟢 `FULLY_FUNCTIONAL` | `NewSignalsIfMissingPatch` (`script_convenience.go`)                                                                                                                                               |
 
 ## Response Builder
 
-| Feature                            | Status                | Notes                                                          |
-| ---------------------------------- | --------------------- | -------------------------------------------------------------- |
-| `Response` fluent builder          | 🟢 `FULLY_FUNCTIONAL` | 16+ methods wrapping `sse.Stream` (`response.go`). E2E tested. |
-| `ErrorResponse`                    | 🟢 `FULLY_FUNCTIONAL` | Signals patch with error info (`response.go`)                  |
-| `NotificationResponse`             | 🟢 `FULLY_FUNCTIONAL` | Signals patch with notification info (`response.go`)           |
-| `Response` method forms            | 🟢 `FULLY_FUNCTIONAL` | `resp.ErrorResponse` / `.ErrorResponseFromError` / `.NotificationResponse` — fluent forms of the helpers (additive, 2026-09-03). Tested. |
+| Feature                   | Status                | Notes                                                                                                                                    |
+| ------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `Response` fluent builder | 🟢 `FULLY_FUNCTIONAL` | 16+ methods wrapping `sse.Stream` (`response.go`). E2E tested.                                                                           |
+| `ErrorResponse`           | 🟢 `FULLY_FUNCTIONAL` | Signals patch with error info (`response.go`)                                                                                            |
+| `NotificationResponse`    | 🟢 `FULLY_FUNCTIONAL` | Signals patch with notification info (`response.go`)                                                                                     |
+| `Response` method forms   | 🟢 `FULLY_FUNCTIONAL` | `resp.ErrorResponse` / `.ErrorResponseFromError` / `.NotificationResponse` — fluent forms of the helpers (additive, 2026-09-03). Tested. |
 
 ## Template Adapters
 
@@ -101,69 +101,69 @@
 
 ## Testing
 
-| Feature           | Status                | Notes                                                                                                                                                          |
-| ----------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| E2E HTTP test     | 🟢 `FULLY_FUNCTIONAL` | Transport header verification in root (`e2e_test.go`); full wire-format round-trip dogfooded via datastartest (`datastartest/e2e_test.go`)                     |
-| Fuzz testing      | 🟢 `FULLY_FUNCTIONAL` | `ReadSignals` panic-proof, 10-seed corpus (`inbound_fuzz_test.go`); SSE parser fuzzed in datastartest (51-seed conformance corpus, ported from go-sse/ssetest) |
-| Testable examples | 🟢 `FULLY_FUNCTIONAL` | Wire-format `// Output:` assertions (`example_test.go`)                                                                                                        |
-| Test coverage     | 🟢 `FULLY_FUNCTIONAL` | ~98% of statements (root, 98.4% measured 2026-09-03); datastartest 93.4% (2026-09-03); static 100%                                          |
-| Benchmark tests   | 🟢 `FULLY_FUNCTIONAL` | 4 benchmarks on `b.Loop()` + `FuzzMarshalSignalsRoundtrip` (`benchmark_test.go`); SSE parser benchmark in datastartest (~100 MB/s measured 2026-09-03) |
+| Feature                   | Status                | Notes                                                                                                                                                                |
+| ------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| E2E HTTP test             | 🟢 `FULLY_FUNCTIONAL` | Transport header verification in root (`e2e_test.go`); full wire-format round-trip dogfooded via datastartest (`datastartest/e2e_test.go`)                           |
+| Fuzz testing              | 🟢 `FULLY_FUNCTIONAL` | `ReadSignals` panic-proof, 10-seed corpus (`inbound_fuzz_test.go`); SSE parser fuzzed in datastartest (51-seed conformance corpus, ported from go-sse/ssetest)       |
+| Testable examples         | 🟢 `FULLY_FUNCTIONAL` | Wire-format `// Output:` assertions (`example_test.go`)                                                                                                              |
+| Test coverage             | 🟢 `FULLY_FUNCTIONAL` | ~98% of statements (root, 98.4% measured 2026-09-03); datastartest 93.4% (2026-09-03); static 100%                                                                   |
+| Benchmark tests           | 🟢 `FULLY_FUNCTIONAL` | 4 benchmarks on `b.Loop()` + `FuzzMarshalSignalsRoundtrip` (`benchmark_test.go`); SSE parser benchmark in datastartest (~100 MB/s measured 2026-09-03)               |
 | Doc-snippet compile check | 🟢 `FULLY_FUNCTIONAL` | Guide snippets mirrored behind `//go:build docspec` (root + datastartest), run via `nix run .#docspec` (`docspec_test.go`); caught 3 real doc drifts on introduction |
-| Golden snapshots  | 🟢 `FULLY_FUNCTIONAL` | Wire-format goldens (`wire_golden_test.go`) + datastartest `Snapshot` helper with `-datastartest-update` |
+| Golden snapshots          | 🟢 `FULLY_FUNCTIONAL` | Wire-format goldens (`wire_golden_test.go`) + datastartest `Snapshot` helper with `-datastartest-update`                                                             |
 
 ## Consumer Test Helpers (`datastartest/` — separate module)
 
-| Feature              | Status                | Notes                                                                                                                                      |
-| -------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `Collect`            | 🟢 `FULLY_FUNCTIONAL` | One-liner: test server + GET + decode (`datastartest/collect.go`)                                                                          |
-| `CollectWithRequest` | 🟢 `FULLY_FUNCTIONAL` | Non-GET requests with custom method, body, content-type (`datastartest/collect.go`)                                                        |
-| `CollectPost`        | 🟢 `FULLY_FUNCTIONAL` | POST with JSON body — thin wrapper over CollectWithRequest (`datastartest/collect.go`)                                                     |
-| `CollectN`           | 🟢 `FULLY_FUNCTIONAL` | Streaming handlers — read N events then close (`datastartest/collect.go`)                                                                  |
-| `CollectWithTimeout` | 🟢 `FULLY_FUNCTIONAL` | GET with deadline; returns partial events on timeout (`datastartest/collect.go`)                                                           |
-| Request options      | 🟢 `FULLY_FUNCTIONAL` | WithPath, WithHeader, WithLastEventID, WithDatastarSignals on every Collect helper (`datastartest/options.go`)                             |
-| Replay testing       | 🟢 `FULLY_FUNCTIONAL` | WithLastEventID + RequireEventID dogfood EventStore reconnection (`datastartest/e2e_test.go`)                                              |
-| `testing.TB` support | 🟢 `FULLY_FUNCTIONAL` | All helpers accept testing.TB: *testing.T, *testing.B, GinkgoT()                                                                           |
-| `ReadEvents`         | 🟢 `FULLY_FUNCTIONAL` | SSE wire-format parser for any `io.Reader` (`datastartest/reader.go`); delegates to the shared `go-sse/ssetest` parser                     |
-| `ReadNEvents`        | 🟢 `FULLY_FUNCTIONAL` | Streaming SSE reader; returns at N events or clean close (`datastartest/collect.go`)                                                       |
-| `Event` accessors    | 🟢 `FULLY_FUNCTIONAL` | 20+ typed accessors: Selector, Mode, Elements, ScriptContent, IsScript, SignalsJSON, etc.                                                  |
+| Feature                | Status                | Notes                                                                                                                                                                                                                                  |
+| ---------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Collect`              | 🟢 `FULLY_FUNCTIONAL` | One-liner: test server + GET + decode (`datastartest/collect.go`)                                                                                                                                                                      |
+| `CollectWithRequest`   | 🟢 `FULLY_FUNCTIONAL` | Non-GET requests with custom method, body, content-type (`datastartest/collect.go`)                                                                                                                                                    |
+| `CollectPost`          | 🟢 `FULLY_FUNCTIONAL` | POST with JSON body — thin wrapper over CollectWithRequest (`datastartest/collect.go`)                                                                                                                                                 |
+| `CollectN`             | 🟢 `FULLY_FUNCTIONAL` | Streaming handlers — read N events then close (`datastartest/collect.go`)                                                                                                                                                              |
+| `CollectWithTimeout`   | 🟢 `FULLY_FUNCTIONAL` | GET with deadline; returns partial events on timeout (`datastartest/collect.go`)                                                                                                                                                       |
+| Request options        | 🟢 `FULLY_FUNCTIONAL` | WithPath, WithHeader, WithLastEventID, WithDatastarSignals on every Collect helper (`datastartest/options.go`)                                                                                                                         |
+| Replay testing         | 🟢 `FULLY_FUNCTIONAL` | WithLastEventID + RequireEventID dogfood EventStore reconnection (`datastartest/e2e_test.go`)                                                                                                                                          |
+| `testing.TB` support   | 🟢 `FULLY_FUNCTIONAL` | All helpers accept testing.TB: *testing.T, *testing.B, GinkgoT()                                                                                                                                                                       |
+| `ReadEvents`           | 🟢 `FULLY_FUNCTIONAL` | SSE wire-format parser for any `io.Reader` (`datastartest/reader.go`); delegates to the shared `go-sse/ssetest` parser                                                                                                                 |
+| `ReadNEvents`          | 🟢 `FULLY_FUNCTIONAL` | Streaming SSE reader; returns at N events or clean close (`datastartest/collect.go`)                                                                                                                                                   |
+| `Event` accessors      | 🟢 `FULLY_FUNCTIONAL` | 20+ typed accessors: Selector, Mode, Elements, ScriptContent, IsScript, SignalsJSON, etc.                                                                                                                                              |
 | Typed script accessors | 🟢 `FULLY_FUNCTIONAL` | `RedirectURL`, `CustomEventName`, `CustomEventDetail`, `UnmarshalCustomEventDetail`, `ScriptAttributes` for intent-level assertions (`datastartest/script_accessors.go`); new `datastartest.custom_event_detail_unmarshal_failed` code |
-| Search helpers       | 🟢 `FULLY_FUNCTIONAL` | FindElement, FindSignals (`datastartest/search.go`)                                                                                        |
-| Assertion helpers    | 🟢 `FULLY_FUNCTIONAL` | RequireElements, RequireElementsContains, RequireElementsOrdered, RequireSignals, RequireSignalsContain, RequireScript, RequireEventID, Count              |
-| Diff helper          | 🟢 `FULLY_FUNCTIONAL` | LCS line diff between event streams with decoded datalines (`datastartest/diff.go`)                                                       |
-| Snapshot helper      | 🟢 `FULLY_FUNCTIONAL` | Golden-file testing against `testdata/<TestName>.golden`, `-datastartest-update` flag (`datastartest/snapshot.go`); goldens committed     |
-| Filter helpers       | 🟢 `FULLY_FUNCTIONAL` | FilterElements, FilterSignals (`datastartest/filter.go`)                                                                                   |
-| Debug helpers        | 🟢 `FULLY_FUNCTIONAL` | Event.String(), EventsString, DataValue (`datastartest/event.go`)                                                                          |
-| README               | 🟢 `FULLY_FUNCTIONAL` | Consumer-facing quick start + API tour (`datastartest/README.md`)                                                                          |
-| Fuzz test            | 🟢 `FULLY_FUNCTIONAL` | FuzzReadEvents with 51-seed committed conformance corpus incl. go-sse crasher ports (`datastartest/reader_fuzz_test.go`, `testdata/fuzz/`) |
-| Benchmark            | 🟢 `FULLY_FUNCTIONAL` | BenchmarkReadEvents: ~131 MB/s, 108 allocs/op (`datastartest/reader_fuzz_test.go`)                                                         |
+| Search helpers         | 🟢 `FULLY_FUNCTIONAL` | FindElement, FindSignals (`datastartest/search.go`)                                                                                                                                                                                    |
+| Assertion helpers      | 🟢 `FULLY_FUNCTIONAL` | RequireElements, RequireElementsContains, RequireElementsOrdered, RequireSignals, RequireSignalsContain, RequireScript, RequireEventID, Count                                                                                          |
+| Diff helper            | 🟢 `FULLY_FUNCTIONAL` | LCS line diff between event streams with decoded datalines (`datastartest/diff.go`)                                                                                                                                                    |
+| Snapshot helper        | 🟢 `FULLY_FUNCTIONAL` | Golden-file testing against `testdata/<TestName>.golden`, `-datastartest-update` flag (`datastartest/snapshot.go`); goldens committed                                                                                                  |
+| Filter helpers         | 🟢 `FULLY_FUNCTIONAL` | FilterElements, FilterSignals (`datastartest/filter.go`)                                                                                                                                                                               |
+| Debug helpers          | 🟢 `FULLY_FUNCTIONAL` | Event.String(), EventsString, DataValue (`datastartest/event.go`)                                                                                                                                                                      |
+| README                 | 🟢 `FULLY_FUNCTIONAL` | Consumer-facing quick start + API tour (`datastartest/README.md`)                                                                                                                                                                      |
+| Fuzz test              | 🟢 `FULLY_FUNCTIONAL` | FuzzReadEvents with 51-seed committed conformance corpus incl. go-sse crasher ports (`datastartest/reader_fuzz_test.go`, `testdata/fuzz/`)                                                                                             |
+| Benchmark              | 🟢 `FULLY_FUNCTIONAL` | BenchmarkReadEvents: ~131 MB/s, 108 allocs/op (`datastartest/reader_fuzz_test.go`)                                                                                                                                                     |
 
 ## Examples
 
-| Feature                       | Status                | Notes                                                                                                        |
-| ----------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Live-feed demo                | 🟢 `FULLY_FUNCTIONAL` | Broadcaster + MemoryStore replay + heartbeat + ScriptHandler (`example/`); heartbeat and gzip docs in `example/README.md` |
-| Domain-adapter mini-app       | 🟢 `FULLY_FUNCTIONAL` | Domain events → `Bridge() → []Patch` → broadcaster + MemoryStore, E2E-tested with raw SSE (`example/domain-adapter/`) |
-| gzip SSE middleware           | 🟢 `FULLY_FUNCTIONAL` | `gzipSSEMiddleware` with per-event flushing, Vary, Content-Length strip (`example/sse_middleware.go`); 2 tests |
-| Docker packaging              | 🟢 `FULLY_FUNCTIONAL` | Multi-stage `Dockerfile` (root-context build with cached download layer) + `docker-compose.yml`; built and live-SSE-verified 2026-09-03          |
-| Consumer migration guide      | 🟢 `FULLY_FUNCTIONAL` | `docs/migration-starfederation.md` — upstream SDK mapping, gains/tradeoffs, checklist                                       |
-| Architecture doc              | 🟢 `FULLY_FUNCTIONAL` | `docs/architecture.md` — three-layer mermaid diagram + per-layer type/file map                                              |
+| Feature                  | Status                | Notes                                                                                                                                   |
+| ------------------------ | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Live-feed demo           | 🟢 `FULLY_FUNCTIONAL` | Broadcaster + MemoryStore replay + heartbeat + ScriptHandler (`example/`); heartbeat and gzip docs in `example/README.md`               |
+| Domain-adapter mini-app  | 🟢 `FULLY_FUNCTIONAL` | Domain events → `Bridge() → []Patch` → broadcaster + MemoryStore, E2E-tested with raw SSE (`example/domain-adapter/`)                   |
+| gzip SSE middleware      | 🟢 `FULLY_FUNCTIONAL` | `gzipSSEMiddleware` with per-event flushing, Vary, Content-Length strip (`example/sse_middleware.go`); 2 tests                          |
+| Docker packaging         | 🟢 `FULLY_FUNCTIONAL` | Multi-stage `Dockerfile` (root-context build with cached download layer) + `docker-compose.yml`; built and live-SSE-verified 2026-09-03 |
+| Consumer migration guide | 🟢 `FULLY_FUNCTIONAL` | `docs/migration-starfederation.md` — upstream SDK mapping, gains/tradeoffs, checklist                                                   |
+| Architecture doc         | 🟢 `FULLY_FUNCTIONAL` | `docs/architecture.md` — three-layer mermaid diagram + per-layer type/file map                                                          |
 
 ## Build & CI
 
-| Feature           | Status                | Notes                                                                                                                                                           |
-| ----------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Nix flake build   | 🟢 `FULLY_FUNCTIONAL` | `buildGoModule` (root module), treefmt, devShell with golangci-lint + govulncheck; test/build/lint/erraudit/govulncheck/coverage apps                           |
+| Feature           | Status                | Notes                                                                                                                                                                                                                           |
+| ----------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Nix flake build   | 🟢 `FULLY_FUNCTIONAL` | `buildGoModule` (root module), treefmt, devShell with golangci-lint + govulncheck; test/build/lint/erraudit/govulncheck/coverage apps                                                                                           |
 | GitHub Actions CI | 🟢 `FULLY_FUNCTIONAL` | ci.yml: per-module matrix (GOWORK=off build/vet/race/verify/tidy ×3) + workspace job (race suite, use-vs-disk, sync idempotency, replace audit); lint, actionlint, erraudit, govulncheck; docs-only changes skip the code gates |
-| Hermetic Nix CI   | 🟢 `FULLY_FUNCTIONAL` | nix.yml runs `nix flake check` (first green 2026-09-03; `continue-on-error` until proven stable — promotion per `docs/ci-watch.md`)                           |
-| Scheduled fuzz CI | 🟢 `FULLY_FUNCTIONAL` | fuzz.yml daily 60s runs over all four targets, crash artifacts uploaded                                                                                     |
-| CodeQL            | 🟢 `FULLY_FUNCTIONAL` | codeql.yml Go security analysis (SHA-pinned)                                                                                                                |
-| Renovate          | 🟢 `FULLY_FUNCTIONAL` | renovate.json custom manager proposing embedded-JS bumps (coexists with dependabot — one-bot decision owner-blocked)                                         |
-| Community files   | 🟢 `FULLY_FUNCTIONAL` | SUPPORT.md + Q&A/show-and-tell discussion templates (CODEOWNERS owner-blocked)                                                                              |
-| erraudit in CI    | 🟢 `FULLY_FUNCTIONAL` | Pinned v0.3.0, probe-gated: skips with a notice while the erraudit repo is private, hard gate once public (`ci.yml`)                                            |
-| govulncheck in CI | 🟢 `FULLY_FUNCTIONAL` | Pinned v1.6.0, scans all three modules (`ci.yml:96-109`)                                                                                                        |
-| Nix CI job        | 🟢 `FULLY_FUNCTIONAL` | `nix flake check` hermetic gate on code paths, `continue-on-error` until proven stable (`nix.yml`)                                                              |
-| Scheduled fuzzing | 🟢 `FULLY_FUNCTIONAL` | Daily 60s fuzz runs over all four targets with crash-artifact upload (`fuzz.yml`)                                                                               |
-| CodeQL scanning   | 🟢 `FULLY_FUNCTIONAL` | Go security analysis, SHA-pinned action (`codeql.yml`)                                                                                                          |
-| Renovate JS bumps | 🟢 `FULLY_FUNCTIONAL` | Custom manager proposes embedded-DataStar-JS version bumps from upstream releases (`renovate.json`); coexists with dependabot (one-bot decision pending)         |
-| Wire golden tests | 🟢 `FULLY_FUNCTIONAL` | `TestPatchWireGoldens` pins exact SSE bytes per patch family (`wire_golden_test.go`)                                                                            |
-| Docs guides       | 🟢 `FULLY_FUNCTIONAL` | `docs/replay.md`, `error-system.md`, `wire-format.md`, `testing.md`, `performance.md`, `migration-guide.md`, `static-js.md`                                     |
+| Hermetic Nix CI   | 🟢 `FULLY_FUNCTIONAL` | nix.yml runs `nix flake check` (first green 2026-09-03; `continue-on-error` until proven stable — promotion per `docs/ci-watch.md`)                                                                                             |
+| Scheduled fuzz CI | 🟢 `FULLY_FUNCTIONAL` | fuzz.yml daily 60s runs over all four targets, crash artifacts uploaded                                                                                                                                                         |
+| CodeQL            | 🟢 `FULLY_FUNCTIONAL` | codeql.yml Go security analysis (SHA-pinned)                                                                                                                                                                                    |
+| Renovate          | 🟢 `FULLY_FUNCTIONAL` | renovate.json custom manager proposing embedded-JS bumps (coexists with dependabot — one-bot decision owner-blocked)                                                                                                            |
+| Community files   | 🟢 `FULLY_FUNCTIONAL` | SUPPORT.md + Q&A/show-and-tell discussion templates (CODEOWNERS owner-blocked)                                                                                                                                                  |
+| erraudit in CI    | 🟢 `FULLY_FUNCTIONAL` | Pinned v0.3.0, probe-gated: skips with a notice while the erraudit repo is private, hard gate once public (`ci.yml`)                                                                                                            |
+| govulncheck in CI | 🟢 `FULLY_FUNCTIONAL` | Pinned v1.6.0, scans all three modules (`ci.yml:96-109`)                                                                                                                                                                        |
+| Nix CI job        | 🟢 `FULLY_FUNCTIONAL` | `nix flake check` hermetic gate on code paths, `continue-on-error` until proven stable (`nix.yml`)                                                                                                                              |
+| Scheduled fuzzing | 🟢 `FULLY_FUNCTIONAL` | Daily 60s fuzz runs over all four targets with crash-artifact upload (`fuzz.yml`)                                                                                                                                               |
+| CodeQL scanning   | 🟢 `FULLY_FUNCTIONAL` | Go security analysis, SHA-pinned action (`codeql.yml`)                                                                                                                                                                          |
+| Renovate JS bumps | 🟢 `FULLY_FUNCTIONAL` | Custom manager proposes embedded-DataStar-JS version bumps from upstream releases (`renovate.json`); coexists with dependabot (one-bot decision pending)                                                                        |
+| Wire golden tests | 🟢 `FULLY_FUNCTIONAL` | `TestPatchWireGoldens` pins exact SSE bytes per patch family (`wire_golden_test.go`)                                                                                                                                            |
+| Docs guides       | 🟢 `FULLY_FUNCTIONAL` | `docs/replay.md`, `error-system.md`, `wire-format.md`, `testing.md`, `performance.md`, `migration-guide.md`, `static-js.md`                                                                                                     |

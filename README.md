@@ -209,16 +209,16 @@ Pre-encoded JSON? Construct directly: `datastar.SignalsPatch{Signals: []byte("{\
 
 ### Script execution
 
-| Constructor                                 | Returns                             | Notes                         |
-| ------------------------------------------- | ----------------------------------- | ----------------------------- |
-| `NewScriptPatch(js, opts...)`               | `ScriptPatch`                       | Core script patch             |
-| `NewRedirectPatch(url)`                     | `ScriptPatch`                       | Redirect the browser          |
-| `NewConsoleLogPatch(msg)`                   | `ScriptPatch`                       | `console.log` on the client   |
-| `NewConsoleErrorPatch(err)`                 | `ScriptPatch`                       | `console.error` on the client |
-| `NewReplaceURLPatch(url)`                   | `ScriptPatch`                       | `history.replaceState`        |
+| Constructor                                 | Returns                             | Notes                                                                   |
+| ------------------------------------------- | ----------------------------------- | ----------------------------------------------------------------------- |
+| `NewScriptPatch(js, opts...)`               | `ScriptPatch`                       | Core script patch                                                       |
+| `NewRedirectPatch(url)`                     | `ScriptPatch`                       | Redirect the browser                                                    |
+| `NewConsoleLogPatch(msg)`                   | `ScriptPatch`                       | `console.log` on the client                                             |
+| `NewConsoleErrorPatch(err)`                 | `ScriptPatch`                       | `console.error` on the client                                           |
+| `NewReplaceURLPatch(url)`                   | `ScriptPatch`                       | `history.replaceState`                                                  |
 | `NewReplaceURLQuerystringPatch(req, vals)`  | `ScriptPatch`                       | Replace only the query string (upstream-parity; keeps the request path) |
-| `NewPrefetchPatch(urls...)`                 | `ScriptPatch`                       | Speculation-rules prefetch    |
-| `NewDispatchCustomEventPatch(name, detail)` | `(DispatchCustomEventPatch, error)` | Dispatch a custom DOM event   |
+| `NewPrefetchPatch(urls...)`                 | `ScriptPatch`                       | Speculation-rules prefetch                                              |
+| `NewDispatchCustomEventPatch(name, detail)` | `(DispatchCustomEventPatch, error)` | Dispatch a custom DOM event                                             |
 
 ### Printf-style variants
 
@@ -250,25 +250,25 @@ Namespace sugar: `WithNamespaceHTML`, `WithNamespaceSVG`, `WithNamespaceMathML`
 
 `Response` wraps an `sse.Stream` for single-connection patching. Every method returns `error`:
 
-| Method                                    | Description                        |
-| ----------------------------------------- | ---------------------------------- |
-| `PatchElements(html, opts)`               | Send an `ElementsPatch`            |
-| `PatchElementsTempl(c, opts)`             | Render + send a Templ component    |
-| `PatchSignals(json, opts)`                | Send pre-encoded JSON signals      |
-| `MarshalAndPatchSignals(v, opts)`         | Marshal + send a Go value          |
-| `RemoveElement(selector)`                 | Remove element by selector         |
-| `RemoveElementByID(id)`                   | Remove element by ID               |
-| `ExecuteScript(js, opts)`                 | Send a `ScriptPatch`               |
-| `Redirect(url, opts)`                     | Redirect the browser               |
-| `ConsoleLog(msg, opts)`                   | `console.log` on the client        |
-| `ConsoleError(err, opts)`                 | `console.error` on the client      |
-| `DispatchCustomEvent(name, detail, opts)` | Dispatch a custom DOM event        |
-| `ReplaceURL(url, opts)`                   | `history.replaceState`             |
+| Method                                    | Description                         |
+| ----------------------------------------- | ----------------------------------- |
+| `PatchElements(html, opts)`               | Send an `ElementsPatch`             |
+| `PatchElementsTempl(c, opts)`             | Render + send a Templ component     |
+| `PatchSignals(json, opts)`                | Send pre-encoded JSON signals       |
+| `MarshalAndPatchSignals(v, opts)`         | Marshal + send a Go value           |
+| `RemoveElement(selector)`                 | Remove element by selector          |
+| `RemoveElementByID(id)`                   | Remove element by ID                |
+| `ExecuteScript(js, opts)`                 | Send a `ScriptPatch`                |
+| `Redirect(url, opts)`                     | Redirect the browser                |
+| `ConsoleLog(msg, opts)`                   | `console.log` on the client         |
+| `ConsoleError(err, opts)`                 | `console.error` on the client       |
+| `DispatchCustomEvent(name, detail, opts)` | Dispatch a custom DOM event         |
+| `ReplaceURL(url, opts)`                   | `history.replaceState`              |
 | `ReplaceURLQuerystring(req, vals, opts)`  | Replace only the URL's query string |
-| `Prefetch(urls...)`                       | Speculation-rules prefetch         |
-| `ApplyPatches(patches...)`                | Send multiple patches in sequence  |
-| `Send(evt)`                               | Send a raw `sse.Event`             |
-| `Stream()`                                | Access the underlying `sse.Stream` |
+| `Prefetch(urls...)`                       | Speculation-rules prefetch          |
+| `ApplyPatches(patches...)`                | Send multiple patches in sequence   |
+| `Send(evt)`                               | Send a raw `sse.Event`              |
+| `Stream()`                                | Access the underlying `sse.Stream`  |
 
 Convenience constructors:
 
@@ -306,13 +306,13 @@ datastar.DeleteSSE("/api/items/%d", id)
 
 ## Serving the JS client
 
-| Function                     | Description                                                       |
-| ---------------------------- | ----------------------------------------------------------------- |
-| `ScriptHandler()`            | Serve the embedded DataStar JS (v1.0.3) with ETag + Cache-Control |
-| `ScriptHandlerWith(js, ver)` | Serve a custom JS bundle                                          |
-| `ScriptTag(path)`            | HTML `<script type="module">` tag string                          |
+| Function                            | Description                                                                   |
+| ----------------------------------- | ----------------------------------------------------------------------------- |
+| `ScriptHandler()`                   | Serve the embedded DataStar JS (v1.0.3) with ETag + Cache-Control             |
+| `ScriptHandlerWith(js, ver)`        | Serve a custom JS bundle                                                      |
+| `ScriptTag(path)`                   | HTML `<script type="module">` tag string                                      |
 | `static.Bytes()` / `static.Version` | The embedded JS bundle and its version (`go-datastar/static` zero-dep module) |
-| `Version()`                  | Embedded JS client version string                                 |
+| `Version()`                         | Embedded JS client version string                                             |
 
 ## Event store (reconnection replay)
 
