@@ -125,6 +125,8 @@ linters:
       exclude-functions:
         - (*os.File).Close
         - (io.Closer).Close
+        - (*compress/gzip.Writer).Close
+        - (*github.com/larsartmann/go-sse.Stream).Close
         - (*sql.DB).Close
         - (*sql.Rows).Close
         - (*sql.Stmt).Close

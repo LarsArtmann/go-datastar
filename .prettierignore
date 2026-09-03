@@ -1,0 +1,3 @@
+# Vendored upstream artifact — must stay byte-identical to the DataStar
+# release; static/checksum_test.go pins it. Never format, lint, or rewrite.
+static/datastar.js
