@@ -52,8 +52,8 @@ Both libraries emit the exact same DataStar wire format. The difference is what 
 | --------------------------------------- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | Patch model                             | Methods on a connection-bound generator | First-class values (`Patch` → `sse.Event`)                                                                                              |
 | Build a patch without a live connection | No                                      | Yes                                                                                                                                     |
-| Broadcast one patch to N connections    | Not built in                            | Yes, via go-sse `Broadcaster`                                                                                                           |
-| Reconnection replay                     | Not built in                            | Yes, via `sse.EventStore`, `MemoryStore`, `LastEventID(r)`                                                                              |
+| Broadcast one patch to N connections    | Not built in                            | Yes — [`broadcast`](broadcast/) submodule (`NewBroadcaster`, `Hub`) or raw go-sse `Broadcaster`                                                          |
+| Reconnection replay                     | Not built in                            | Yes — `broadcast.NewBroadcasterWithReplay`, or `sse.EventStore`, `MemoryStore`, `LastEventID(r)`                                                       |
 | Per-subscriber event filtering          | Not built in                            | Yes, via go-sse `SubscribeFilter`                                                                                                       |
 | Error handling                          | Standard `error` values                 | Every error classified with a stable code, family, and retryability ([go-error-family](https://github.com/LarsArtmann/go-error-family)) |
 | E2E test helpers for your handlers      | None                                    | `datastartest` module: SSE parsing, typed decoding, assertions                                                                          |
@@ -104,6 +104,7 @@ Optional sub-modules (separately versioned):
 ```bash
 go get github.com/larsartmann/go-datastar/static        # embedded JS client bundle (zero deps)
 go get github.com/larsartmann/go-datastar/datastartest  # E2E test helpers for consumer handlers
+go get github.com/larsartmann/go-datastar/broadcast     # SSE fan-out + replay + hub sharing
 ```
 
 ## Quick start
@@ -150,6 +151,20 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 ```go
 mux.Handle("GET /datastar.js", datastar.ScriptHandler())
+```
+
+### Fan out patches to many connections
+
+The optional [`broadcast`](broadcast/) submodule turns patch values into a
+live SSE endpoint (fan-out, reconnection replay, hub sharing):
+
+```go
+broadcaster := broadcast.NewBroadcasterWithReplay(128)
+mux.Handle("GET /events", broadcaster)
+
+broadcaster.Broadcast(datastar.NewElementsPatch("<div>Update</div>",
+    datastar.WithSelectorID("feed"),
+))
 ```
 
 ### Full working example

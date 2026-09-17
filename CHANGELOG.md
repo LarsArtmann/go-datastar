@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — broadcast module
+
+- **New optional `broadcast/` submodule** (`github.com/larsartmann/go-datastar/broadcast`):
+  the connection-lifecycle layer the root module deliberately omits —
+  `Broadcaster` (an `http.Handler` embedding `*sse.Broadcaster[sse.Event]`),
+  patch-level fan-out (`Broadcast`/`BroadcastMany`/`BroadcastEvent`),
+  reconnection replay via `NewBroadcasterWithReplay` (ring-buffer
+  `MemoryStore` + `Last-Event-ID`, subscribe-before-replay ordering), a 15s
+  per-connection heartbeat, and cross-transport hub sharing
+  (`Hub()`/`NewBroadcasterFromHub`). Moved up from
+  `cqrs-htmx/datastar/v4`, which now re-exports it as a deprecated facade.
+  Domain-event → patch mapping (EventBridge) stays a consumer concern per the
+  root non-goals. Wired into go.work, the CI matrix, and the flake hermetic
+  checks. Joins the lockstep release train (ADR 002) on the next tag.
+
 ## [0.5.0] - 2026-09-03
 
 ### Added

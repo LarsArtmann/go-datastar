@@ -62,6 +62,9 @@
           # under the repo root or static/ (plus requires/toolchain changes)
           # — verified 2026-09-02 (ADR 004 correction, evidence matrix).
           datastartestVendorHash = "sha256-aV36J33IvthMOA62P2GwB6r6nCU58M5I+7bM0A3W3/E=";
+          # broadcast vendors root + static through its directory replaces —
+          # same movement rules as datastartestVendorHash above.
+          broadcastVendorHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 
           maintainer = {
             name = "Lars Artmann";
@@ -160,6 +163,41 @@
             };
           };
 
+          # broadcast module: same minimal-fileset pattern as datastartest
+          # (see the ADR 004 note above — root-level metadata stays out so
+          # the vendorHash constant never lands inside its own FOD input).
+          broadcastSrc = lib.fileset.toSource {
+            root = ./.;
+            fileset = lib.fileset.unions [
+              (lib.fileset.gitTracked ./broadcast)
+              (lib.fileset.gitTracked ./static)
+              ./go.mod
+              (lib.fileset.fileFilter (file: lib.hasSuffix ".go" file.name) ./.)
+            ];
+          };
+          hermeticCheckBroadcast = buildGoModule {
+            pname = "go-datastar-broadcast";
+            inherit version;
+            vendorHash = broadcastVendorHash;
+            src = broadcastSrc;
+            modRoot = "broadcast";
+            subPackages = [ "." ];
+            doCheck = true;
+            env = {
+              GOWORK = "off";
+              GOEXPERIMENT = "jsonv2";
+            };
+
+            meta = {
+              description = "Connection lifecycle for DataStar patches: fan-out, replay, hub sharing";
+              homepage = "https://github.com/LarsArtmann/go-datastar";
+              license = lib.licenses.mit;
+              maintainers = [ maintainer ];
+              mainProgram = "go-datastar-broadcast";
+              platforms = lib.platforms.all;
+            };
+          };
+
           mkApp =
             name: runtimeInputs: text:
             let
@@ -206,6 +244,7 @@
             build = hermeticCheck;
             buildStatic = hermeticCheckStatic;
             buildDatastartest = hermeticCheckDatastartest;
+            buildBroadcast = hermeticCheckBroadcast;
           };
 
           devShells.default = pkgs.mkShellNoCC {
@@ -230,27 +269,27 @@
           apps = {
             test = mkApp "test" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              go test ./... ./datastartest/... ./static/... -count=1 "$@"
+              go test ./... ./broadcast/... ./datastartest/... ./static/... -count=1 "$@"
             '';
 
             test-race = mkApp "test-race" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              go test ./... ./datastartest/... ./static/... -race -count=1 "$@"
+              go test ./... ./broadcast/... ./datastartest/... ./static/... -race -count=1 "$@"
             '';
 
             build = mkApp "build" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              go build ./... ./datastartest/... ./static/...
+              go build ./... ./broadcast/... ./datastartest/... ./static/...
             '';
 
             vet = mkApp "vet" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              go vet ./... ./datastartest/... ./static/...
+              go vet ./... ./broadcast/... ./datastartest/... ./static/...
             '';
 
             lint = mkApp "lint" [ pkgs.golangci-lint ] ''
               export GOEXPERIMENT=jsonv2
-              golangci-lint run ./... ./datastartest/... ./static/...
+              golangci-lint run ./... ./broadcast/... ./datastartest/... ./static/...
             '';
 
             # EXACT CI parity: pins the same golangci-lint version the CI lint
@@ -264,7 +303,7 @@
 
             lint-ci = mkApp "lint-ci" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run ./... ./datastartest/... ./static/... --timeout 5m
+              go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run ./... ./broadcast/... ./datastartest/... ./static/... --timeout 5m
             '';
 
             # erraudit is NOT hermetically buildable (its dependency tree
@@ -274,7 +313,7 @@
             erraudit = mkApp "erraudit" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
               go install github.com/larsartmann/erraudit/cmd/erraudit@v0.3.0
-              for mod in . ./datastartest ./static; do
+              for mod in . ./broadcast ./datastartest ./static; do
                 echo "== erraudit $mod"
                 (cd "$mod" && "$HOME/go/bin/erraudit" . --type-aware --enforce-go-error-family --severity-threshold error)
               done
@@ -282,12 +321,12 @@
 
             govulncheck = mkApp "govulncheck" [ pkgs.govulncheck goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              govulncheck ./... ./datastartest/... ./static/...
+              govulncheck ./... ./broadcast/... ./datastartest/... ./static/...
             '';
 
             coverage = mkApp "coverage" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              go test ./... ./datastartest/... ./static/... -coverprofile=coverage.out -covermode=atomic "$@"
+              go test ./... ./broadcast/... ./datastartest/... ./static/... -coverprofile=coverage.out -covermode=atomic "$@"
               go tool cover -func=coverage.out
             '';
 

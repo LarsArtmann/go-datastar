@@ -9,6 +9,8 @@ on:
       - "**.nix"
       - "go.mod"
       - "go.sum"
+      - "broadcast/go.mod"
+      - "broadcast/go.sum"
       - "datastartest/go.mod"
       - "datastartest/go.sum"
       - "static/go.mod"
@@ -29,6 +31,8 @@ on:
       - "**.nix"
       - "go.mod"
       - "go.sum"
+      - "broadcast/go.mod"
+      - "broadcast/go.sum"
       - "datastartest/go.mod"
       - "datastartest/go.sum"
       - "static/go.mod"
@@ -53,7 +57,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        module: [".", "./datastartest", "./static"]
+        module: [".", "./broadcast", "./datastartest", "./static"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -86,16 +90,16 @@ jobs:
 
       - name: Workspace build + vet + test (race)
         run: |
-          go build ./... ./datastartest/... ./static/...
-          go vet ./... ./datastartest/... ./static/...
-          go test ./... ./datastartest/... ./static/... -race -count=1
+          go build ./... ./broadcast/... ./datastartest/... ./static/...
+          go vet ./... ./broadcast/... ./datastartest/... ./static/...
+          go test ./... ./broadcast/... ./datastartest/... ./static/... -race -count=1
 
       - name: go.work use-vs-disk check
         run: |
           cp go.work go.work.use-check.bak
-          go work use . ./datastartest ./static
+          go work use . ./broadcast ./datastartest ./static
           if ! diff go.work.use-check.bak go.work; then
-            echo "::error::committed go.work diverges from 'go work use . ./datastartest ./static' — run 'go work use' locally and commit"
+            echo "::error::committed go.work diverges from 'go work use . ./broadcast ./datastartest ./static' — run 'go work use' locally and commit"
             exit 1
           fi
           echo "go.work matches 'go work use' output"
@@ -119,7 +123,7 @@ jobs:
       - name: Replace directive audit
         run: |
           # No replace directive should use an absolute path
-          if grep -rn 'replace.*=>/' go.mod datastartest/go.mod static/go.mod; then
+          if grep -rn 'replace.*=>/' go.mod broadcast/go.mod datastartest/go.mod static/go.mod; then
             echo "::error::Found absolute path in replace directive — use relative paths only"
             exit 1
           fi
@@ -149,7 +153,7 @@ jobs:
         run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
 
       - name: Lint
-        run: golangci-lint run ./... ./datastartest/... ./static/... --timeout 5m
+        run: golangci-lint run ./... ./broadcast/... ./datastartest/... ./static/... --timeout 5m
 
   erraudit:
     runs-on: ubuntu-latest
@@ -177,7 +181,7 @@ jobs:
       - name: Error handling audit
         if: steps.probe.outputs.available == 'true'
         run: |
-          for mod in . ./datastartest ./static; do
+          for mod in . ./broadcast ./datastartest ./static; do
             echo "::group::erraudit $mod"
             (cd "$mod" && erraudit . --type-aware --enforce-go-error-family --severity-threshold error)
           done
@@ -195,4 +199,4 @@ jobs:
         run: go install golang.org/x/vuln/cmd/govulncheck@v1.6.0
 
       - name: Vulnerability scan
-        run: govulncheck ./... ./datastartest/... ./static/...
+        run: govulncheck ./... ./broadcast/... ./datastartest/... ./static/...

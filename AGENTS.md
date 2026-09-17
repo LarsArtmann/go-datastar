@@ -1,21 +1,24 @@
 # AGENTS.md — go-datastar
 
-DataStar protocol library for Go. Patches as first-class values producing `sse.Event`. Built on go-sse. Single package (`datastar`), flat layout. The `datastartest/` subpackage is a separate Go module for consumer E2E testing.
+DataStar protocol library for Go. Patches as first-class values producing `sse.Event`. Built on go-sse. Single package (`datastar`), flat layout. The `broadcast/` submodule adds SSE connection lifecycle (fan-out, replay, hub sharing); `datastartest/` is a separate Go module for consumer E2E testing.
 
 ## Module Structure
 
-Three Go modules in a go.work workspace (rationale and rules: [ADR 002](docs/adr/002-multi-module-split.md)):
+Four Go modules in a go.work workspace (rationale and rules: [ADR 002](docs/adr/002-multi-module-split.md)):
 
 | Module       | Path                                              | Purpose                            | Dependencies            |
 | ------------ | ------------------------------------------------- | ---------------------------------- | ----------------------- |
 | Root         | `github.com/larsartmann/go-datastar`              | Protocol library                   | go-sse, go-error-family |
+| broadcast    | `github.com/larsartmann/go-datastar/broadcast`    | SSE fan-out, replay, hub sharing   | go-datastar, go-sse     |
 | static       | `github.com/larsartmann/go-datastar/static`       | Embedded DataStar JS client bundle | zero (stdlib only)      |
 | datastartest | `github.com/larsartmann/go-datastar/datastartest` | Consumer E2E test helpers          | go-datastar, go-sse     |
 
-Replace directives: root go.mod replaces `static => ./static`; datastartest
-go.mod replaces `go-datastar => ..` and `static => ../static`. All resolve locally
+Replace directives: root go.mod replaces `static => ./static`; broadcast and
+datastartest go.mod replace `go-datastar => ..` and `static => ../static`. All
+resolve locally
 for `GOWORK=off` builds (CI, Nix, consumers). Root must NEVER require
 datastartest (circular dependency; `module_boundary_test.go` enforces it).
+Root also never requires broadcast (same boundary, one direction).
 
 Decisions: `go.work.sum` is intentionally gitignored (the toolchain regenerates
 it on demand). Per-module `go.sum` files are the reproducibility source of
@@ -31,18 +34,18 @@ release (currently **1.26.7** across go.mod ×3, go.work, CI, and the flake
 ## Commands
 
 ```bash
-# Workspace mode (default, uses go.work) — covers all three modules:
-GOEXPERIMENT=jsonv2 go test ./... ./datastartest/... ./static/... -race -count=1
-GOEXPERIMENT=jsonv2 go vet ./... ./datastartest/... ./static/...
-GOEXPERIMENT=jsonv2 golangci-lint run ./... ./datastartest/... ./static/...
+# Workspace mode (default, uses go.work) — covers all four modules:
+GOEXPERIMENT=jsonv2 go test ./... ./broadcast/... ./datastartest/... ./static/... -race -count=1
+GOEXPERIMENT=jsonv2 go vet ./... ./broadcast/... ./datastartest/... ./static/...
+GOEXPERIMENT=jsonv2 golangci-lint run ./... ./broadcast/... ./datastartest/... ./static/...
 # Pre-push lint = EXACT CI parity (flake: `nix run .#lint-ci`):
-GOEXPERIMENT=jsonv2 go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run ./... ./datastartest/... ./static/... --timeout 5m
+GOEXPERIMENT=jsonv2 go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run ./... ./broadcast/... ./datastartest/... ./static/... --timeout 5m
 
 # Isolation mode (GOWORK=off, per-module — verifies replace directives; run from each module dir):
 GOWORK=off GOEXPERIMENT=jsonv2 go test ./...
 
 # Error audit (all modules — erraudit v0.3.0 takes ONE directory per run, never package patterns):
-for mod in . ./datastartest ./static; do
+for mod in . ./broadcast ./datastartest ./static; do
   (cd "$mod" && GOEXPERIMENT=jsonv2 erraudit . --type-aware --enforce-go-error-family --no-suppress)
 done
 
@@ -52,7 +55,7 @@ GOEXPERIMENT=jsonv2 go test -run '^$' -fuzz '^FuzzReadSignals$' -fuzztime 30s .
 
 # CI also enforces (run locally to preempt CI failures):
 GOEXPERIMENT=jsonv2 go work sync        # go.work must not change after sync (idempotency)
-go work use . ./datastartest ./static   # go.work must match this exactly
+go work use . ./broadcast ./datastartest ./static   # go.work must match this exactly
 GOWORK=off go mod tidy -diff            # per module; must print nothing
 GOWORK=off go mod verify                # per module; "all modules verified"
 grep -rn 'replace.*=>/' go.mod datastartest/go.mod static/go.mod  # must find nothing (relative paths only)
