@@ -31,6 +31,7 @@ import (
 // in-memory ring buffer before the live event stream resumes.
 type Broadcaster struct {
 	*sse.Broadcaster[sse.Event]
+
 	store *datastar.MemoryStore
 }
 
@@ -88,6 +89,7 @@ func (b *Broadcaster) Hub() *sse.Broadcaster[sse.Event] {
 func (b *Broadcaster) Broadcast(patch datastar.Patch) {
 	evt := patch.Event()
 	b.Broadcaster.Broadcast(evt)
+
 	if b.store != nil {
 		b.store.Append(evt)
 	}
@@ -106,6 +108,7 @@ func (b *Broadcaster) BroadcastMany(patches ...datastar.Patch) {
 // is enabled, the event is also appended to the store.
 func (b *Broadcaster) BroadcastEvent(evt sse.Event) {
 	b.Broadcaster.Broadcast(evt)
+
 	if b.store != nil {
 		b.store.Append(evt)
 	}
@@ -151,6 +154,7 @@ func (b *Broadcaster) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			if !ok {
 				return
 			}
+
 			if err := stream.Send(evt); err != nil {
 				return
 			}

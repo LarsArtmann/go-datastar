@@ -25,8 +25,10 @@ func waitFor(t *testing.T, what string, cond func() bool) {
 		if cond() {
 			return
 		}
+
 		time.Sleep(5 * time.Millisecond)
 	}
+
 	t.Fatalf("timed out waiting for %s", what)
 }
 
@@ -37,6 +39,7 @@ func TestNewBroadcaster(t *testing.T) {
 	if b == nil {
 		t.Fatal("NewBroadcaster returned nil")
 	}
+
 	if got := b.SubscriberCount(); got != 0 {
 		t.Fatalf("initial SubscriberCount: got %d, want 0", got)
 	}
@@ -83,6 +86,7 @@ func TestBroadcasterSubscriberCount(t *testing.T) {
 	b := broadcast.NewBroadcaster()
 
 	disconnect1 := connectSubscriber(t, b)
+
 	disconnect2 := connectSubscriber(t, b)
 	if got := b.SubscriberCount(); got != 2 {
 		t.Fatalf("SubscriberCount after 2 connects: got %d, want 2", got)
@@ -109,17 +113,20 @@ func readFirstResponse(t *testing.T, server *httptest.Server) <-chan string {
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, server.URL, nil)
 		if err != nil {
 			out <- ""
+
 			return
 		}
 
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			out <- ""
+
 			return
 		}
 		defer func() { _ = resp.Body.Close() }()
 
 		buf := make([]byte, 8192)
+
 		n, _ := resp.Body.Read(buf)
 		out <- string(buf[:n])
 	}()
@@ -151,6 +158,7 @@ func TestBroadcasterBroadcastDeliversPatch(t *testing.T) {
 	if want := "datastar-patch-signals"; !strings.Contains(body, want) {
 		t.Errorf("body %q does not contain %q", body, want)
 	}
+
 	if !strings.Contains(body, "hello") {
 		t.Errorf("body %q does not contain %q", body, "hello")
 	}
@@ -173,6 +181,7 @@ func TestBroadcasterBroadcastMany(t *testing.T) {
 	)
 
 	disconnect()
+
 	if got := b.SubscriberCount(); got != 0 {
 		t.Fatalf("SubscriberCount after disconnect: got %d, want 0", got)
 	}
@@ -197,6 +206,7 @@ func TestBroadcasterBroadcastEvent(t *testing.T) {
 	if want := "datastar-patch-elements"; !strings.Contains(body, want) {
 		t.Errorf("body %q does not contain %q", body, want)
 	}
+
 	if want := "elements <div>raw</div>"; !strings.Contains(body, want) {
 		t.Errorf("body %q does not contain %q", body, want)
 	}
@@ -215,6 +225,7 @@ func TestBroadcasterCloseDisconnectsAll(t *testing.T) {
 	}
 
 	b.Close()
+
 	if got := b.SubscriberCount(); got != 0 {
 		t.Fatalf("SubscriberCount after Close: got %d, want 0", got)
 	}
@@ -229,7 +240,9 @@ func TestBroadcasterServeHTTPLifecycle(t *testing.T) {
 	if got := b.SubscriberCount(); got != 1 {
 		t.Fatalf("SubscriberCount: got %d, want 1", got)
 	}
+
 	disconnect()
+
 	if got := b.SubscriberCount(); got != 0 {
 		t.Fatalf("SubscriberCount after disconnect: got %d, want 0", got)
 	}
@@ -262,9 +275,11 @@ func TestBroadcasterHealth(t *testing.T) {
 	if health.SubscriberCount != 0 {
 		t.Errorf("Health().SubscriberCount: got %d, want 0", health.SubscriberCount)
 	}
+
 	if health.Closed {
 		t.Error("Health().Closed: got true, want false")
 	}
+
 	if health.Draining {
 		t.Error("Health().Draining: got true, want false")
 	}
@@ -318,6 +333,7 @@ func TestBroadcasterReplayOnReconnect(t *testing.T) {
 	req = req.WithContext(ctx)
 
 	done := make(chan struct{})
+
 	go func() {
 		b.ServeHTTP(w, req)
 		close(done)
@@ -334,6 +350,7 @@ func TestBroadcasterReplayOnReconnect(t *testing.T) {
 			t.Errorf("replayed body %q does not contain %q", body, want)
 		}
 	}
+
 	if strings.Contains(body, "item-1") {
 		t.Errorf("replayed body %q must not contain already-seen %q", body, "item-1")
 	}
@@ -346,6 +363,7 @@ func TestBroadcasterHub(t *testing.T) {
 	if b.Hub() == nil {
 		t.Fatal("Hub returned nil")
 	}
+
 	if b.Broadcaster != b.Hub() {
 		t.Error("Hub must return the embedded broadcaster")
 	}
@@ -355,6 +373,7 @@ func TestNewBroadcasterFromHub(t *testing.T) {
 	t.Parallel()
 
 	hub := sse.NewBroadcaster[sse.Event]()
+
 	b := broadcast.NewBroadcasterFromHub(hub)
 	if b.Hub() != hub {
 		t.Error("Hub must return the wrapped hub")

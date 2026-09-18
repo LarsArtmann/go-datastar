@@ -36,16 +36,16 @@ broadcaster.Broadcast(datastar.NewElementsPatch("<div>Update</div>",
 
 ## API
 
-| Function                          | Description                                              |
-| --------------------------------- | -------------------------------------------------------- |
-| `NewBroadcaster()`                | Fan-out SSE patches to all clients, no replay            |
-| `NewBroadcasterWithBufferSize(n)` | Fan-out with a custom subscriber buffer size             |
-| `NewBroadcasterWithReplay(n)`     | Fan-out + ring-buffer replay on reconnect (Last-Event-ID)|
-| `NewBroadcasterFromHub(hub)`      | Wrap an existing `*sse.Broadcaster[sse.Event]` hub       |
-| `Broadcaster.Hub()`               | Access/share the embedded go-sse hub                     |
-| `Broadcaster.Broadcast(patch)`    | Send one patch to all clients                            |
-| `Broadcaster.BroadcastMany(...)`  | Send multiple patches                                    |
-| `Broadcaster.BroadcastEvent(evt)` | Send a raw `sse.Event`                                   |
+| Function                          | Description                                               |
+| --------------------------------- | --------------------------------------------------------- |
+| `NewBroadcaster()`                | Fan-out SSE patches to all clients, no replay             |
+| `NewBroadcasterWithBufferSize(n)` | Fan-out with a custom subscriber buffer size              |
+| `NewBroadcasterWithReplay(n)`     | Fan-out + ring-buffer replay on reconnect (Last-Event-ID) |
+| `NewBroadcasterFromHub(hub)`      | Wrap an existing `*sse.Broadcaster[sse.Event]` hub        |
+| `Broadcaster.Hub()`               | Access/share the embedded go-sse hub                      |
+| `Broadcaster.Broadcast(patch)`    | Send one patch to all clients                             |
+| `Broadcaster.BroadcastMany(...)`  | Send multiple patches                                     |
+| `Broadcaster.BroadcastEvent(evt)` | Send a raw `sse.Event`                                    |
 
 `Broadcaster` implements `http.Handler` and embeds `*sse.Broadcaster[sse.Event]`,
 so `Subscribe`, `SubscribeFilter`, `Health`, `Shutdown`, `Close`, `OnSubscribe`,

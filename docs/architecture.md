@@ -75,7 +75,7 @@ can be built without a connection, stored, filtered, replayed, and broadcast.
 | Inbound                  | `ReadSignals`, `LastEventID`                                                     | inbound.go                                                |
 | JS serving               | `ScriptHandler`, `ScriptHandlerWith`, `ScriptTag`, `Version`                     | script_handler.go                                         |
 | Replay store             | `MemoryStore` (implements `sse.EventStore`)                                      | store.go                                                  |
-| Patch fan-out            | `Broadcaster` — embeds `*sse.Broadcaster[sse.Event]` + `MemoryStore` replay       | broadcast/ (separate module, optional)                    |
+| Patch fan-out            | `Broadcaster` — embeds `*sse.Broadcaster[sse.Event]` + `MemoryStore` replay      | broadcast/ (separate module, optional)                    |
 | Wire helpers             | dataline key constants, retry/mode defaults                                      | constants.go                                              |
 | Errors                   | classified codes + sentinels                                                     | errors.go                                                 |
 
