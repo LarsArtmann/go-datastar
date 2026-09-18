@@ -49,6 +49,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   artifact input is a committed regression seed and does not reproduce —
   verified on the exact CI tree with a 10.5M-exec mirror run).
 
+### Fixed — broadcast module
+
+- **Replay-loss race window**: events were appended to the replay store AFTER
+  hub fan-out, so a client reconnecting in the gap between the two could miss
+  the event permanently (not replayed, not in the live channel). Events are
+  now appended BEFORE fan-out, so a reconnecting client replays the event
+  instead of missing it; subscribe-before-replay still yields at most
+  documented, harmless duplicates. `BroadcastMany` additionally fans out in a
+  single atomic hub pass instead of per-patch broadcasts. Also fixed in the
+  same pass: `TestBroadcasterBroadcastEvent` now actually exercises
+  `BroadcastEvent`, delivery assertions for `BroadcastMany`, a deterministic
+  drain-until-EOF test reader, and the nine lint findings that had left the
+  canonical `golangci-lint` gate red on committed master (all in this module).
+
 ## [0.5.0] - 2026-09-03
 
 ### Added
