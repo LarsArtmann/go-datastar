@@ -27,11 +27,7 @@ func Collect(tb testing.TB, handler http.Handler, opts ...RequestOption) []Event
 	tb.Helper()
 
 	resp := doRequest(tb, handler, http.MethodGet, nil, "", context.Background(), opts)
-	defer func() {
-		if err := resp.Body.Close(); err != nil {
-			tb.Errorf("close response body: %v", err)
-		}
-	}()
+	defer closeBody(tb, resp)
 
 	return MustReadEvents(tb, resp.Body)
 }
@@ -53,11 +49,7 @@ func CollectWithRequest(
 	tb.Helper()
 
 	resp := doRequest(tb, handler, method, body, contentType, context.Background(), opts)
-	defer func() {
-		if err := resp.Body.Close(); err != nil {
-			tb.Errorf("close response body: %v", err)
-		}
-	}()
+	defer closeBody(tb, resp)
 
 	return MustReadEvents(tb, resp.Body)
 }
@@ -96,11 +88,7 @@ func CollectN(tb testing.TB, handler http.Handler, count int, opts ...RequestOpt
 	}
 
 	resp := doRequest(tb, handler, http.MethodGet, nil, "", context.Background(), opts)
-	defer func() {
-		if err := resp.Body.Close(); err != nil {
-			tb.Errorf("close response body: %v", err)
-		}
-	}()
+	defer closeBody(tb, resp)
 
 	events, err := ReadNEvents(resp.Body, count)
 	if err != nil {
@@ -115,7 +103,9 @@ func CollectN(tb testing.TB, handler http.Handler, count int, opts ...RequestOpt
 // whatever events were received so far are returned. If no events were received
 // before the timeout, the test fails.
 //
-// Use this for defensive testing against handlers that might hang.
+// Use this for defensive testing against handlers that might hang. For the
+// POST and custom-request counterparts, see [CollectPostWithTimeout] and
+// [CollectWithRequestWithTimeout].
 func CollectWithTimeout(
 	tb testing.TB,
 	handler http.Handler,
@@ -128,11 +118,74 @@ func CollectWithTimeout(
 	defer cancel()
 
 	resp := doRequest(tb, handler, http.MethodGet, nil, "", ctx, opts)
-	defer func() {
-		if err := resp.Body.Close(); err != nil {
-			tb.Errorf("close response body: %v", err)
-		}
-	}()
+	defer closeBody(tb, resp)
+
+	return readEventsWithin(tb, resp, timeout)
+}
+
+// CollectWithRequestWithTimeout is [CollectWithRequest] with a maximum
+// duration, for handlers that stream patches and keep the connection open.
+// If the handler does not close the stream within timeout, whatever events
+// were received so far are returned; if none were received, the test fails.
+func CollectWithRequestWithTimeout(
+	tb testing.TB,
+	handler http.Handler,
+	timeout time.Duration,
+	method string,
+	body io.Reader,
+	contentType string,
+	opts ...RequestOption,
+) []Event {
+	tb.Helper()
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	resp := doRequest(tb, handler, method, body, contentType, ctx, opts)
+	defer closeBody(tb, resp)
+
+	return readEventsWithin(tb, resp, timeout)
+}
+
+// CollectPostWithTimeout is [CollectPost] with a maximum duration — the
+// timeout variant for the most common non-GET pattern: a POST handler that
+// submits signals and then keeps streaming patches (e.g., progress updates).
+// Behavior on timeout matches [CollectWithTimeout]: events received before
+// the deadline are returned; receiving none fails the test.
+func CollectPostWithTimeout(
+	tb testing.TB,
+	handler http.Handler,
+	timeout time.Duration,
+	jsonBody string,
+	opts ...RequestOption,
+) []Event {
+	tb.Helper()
+
+	return CollectWithRequestWithTimeout(
+		tb,
+		handler,
+		timeout,
+		http.MethodPost,
+		strings.NewReader(jsonBody),
+		"application/json",
+		opts...,
+	)
+}
+
+// closeBody closes resp's body, reporting a close error via tb.
+func closeBody(tb testing.TB, resp *http.Response) {
+	tb.Helper()
+
+	if err := resp.Body.Close(); err != nil {
+		tb.Errorf("close response body: %v", err)
+	}
+}
+
+// readEventsWithin drains resp's body with no event-count limit, so the
+// request context's timeout is what ends the read. Used by the
+// Collect*WithTimeout family.
+func readEventsWithin(tb testing.TB, resp *http.Response, timeout time.Duration) []Event {
+	tb.Helper()
 
 	// A large count so ReadNEvents reads everything; the timeout enforces the deadline.
 	const maxEvents = 1 << 30

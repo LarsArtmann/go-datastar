@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -190,6 +191,74 @@ func TestCollectWithTimeout_StreamingReturnsPartial(t *testing.T) {
 	})
 
 	events := datastartest.CollectWithTimeout(t, handler, 200*time.Millisecond)
+
+	if len(events) != 1 {
+		t.Errorf("expected 1 event before timeout; got %d", len(events))
+	}
+}
+
+func TestCollectPostWithTimeout_StreamingReturnsPartial(t *testing.T) {
+	t.Parallel()
+
+	handler := http.HandlerFunc(func(writer http.ResponseWriter, r *http.Request) {
+		stream := sse.NewStream(writer, r)
+		defer func() { _ = stream.Close() }()
+
+		resp := datastar.NewResponse(stream)
+		_ = resp.PatchElements("<div>1</div>", datastar.WithSelector("#a"))
+
+		<-r.Context().Done()
+	})
+
+	events := datastartest.CollectPostWithTimeout(t, handler, 200*time.Millisecond, `{"name":"bob"}`)
+
+	if len(events) != 1 {
+		t.Errorf("expected 1 event before timeout; got %d", len(events))
+	}
+}
+
+func TestCollectPostWithTimeout_CompletesBeforeDeadline(t *testing.T) {
+	t.Parallel()
+
+	handler := helperHandler(func(resp *datastar.Response) {
+		_ = resp.PatchElements("<div>done</div>", datastar.WithSelector("#result"))
+	})
+
+	events := datastartest.CollectPostWithTimeout(t, handler, 5*time.Second, `{"name":"bob"}`)
+	datastartest.RequireEventCount(t, events, 1)
+
+	if got := events[0].Elements(); got != "<div>done</div>" {
+		t.Errorf("elements: got %q, want %q", got, "<div>done</div>")
+	}
+}
+
+func TestCollectWithRequestWithTimeout_PutStreaming(t *testing.T) {
+	t.Parallel()
+
+	handler := http.HandlerFunc(func(writer http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPut {
+			http.Error(writer, "method not allowed", http.StatusMethodNotAllowed)
+
+			return
+		}
+
+		stream := sse.NewStream(writer, r)
+		defer func() { _ = stream.Close() }()
+
+		resp := datastar.NewResponse(stream)
+		_ = resp.PatchElements("<div>put</div>", datastar.WithSelector("#result"))
+
+		<-r.Context().Done()
+	})
+
+	events := datastartest.CollectWithRequestWithTimeout(
+		t,
+		handler,
+		200*time.Millisecond,
+		http.MethodPut,
+		strings.NewReader("payload"),
+		"text/plain",
+	)
 
 	if len(events) != 1 {
 		t.Errorf("expected 1 event before timeout; got %d", len(events))
