@@ -18,6 +18,7 @@ graph TD
         SH["ScriptHandler · ScriptTag<br/>script_handler.go"]
         ST["MemoryStore<br/>store.go — replay ring buffer"]
         E["errors.go<br/>classified *errorfamily.Error"]
+        BR["broadcast.Broadcaster<br/>broadcast/ — patch fan-out + replay + hub sharing"]
     end
 
     subgraph Transport["Transport layer — go-sse"]
@@ -34,6 +35,8 @@ graph TD
     R --> S
     ST --> ES
     B --> ES
+    BR -->|"Broadcast(patch) → Event()"| B
+    BR --> ST
     S --> H
     IN -->|"reads ?datastar= / body"| R
     SH -->|"serves static.Bytes()"| S
@@ -72,6 +75,7 @@ can be built without a connection, stored, filtered, replayed, and broadcast.
 | Inbound                  | `ReadSignals`, `LastEventID`                                                     | inbound.go                                                |
 | JS serving               | `ScriptHandler`, `ScriptHandlerWith`, `ScriptTag`, `Version`                     | script_handler.go                                         |
 | Replay store             | `MemoryStore` (implements `sse.EventStore`)                                      | store.go                                                  |
+| Patch fan-out            | `Broadcaster` — embeds `*sse.Broadcaster[sse.Event]` + `MemoryStore` replay       | broadcast/ (separate module, optional)                    |
 | Wire helpers             | dataline key constants, retry/mode defaults                                      | constants.go                                              |
 | Errors                   | classified codes + sentinels                                                     | errors.go                                                 |
 
@@ -89,7 +93,11 @@ E2E-tested with datastartest.
 
 ## Module boundaries within this repo
 
-Three Go modules (rationale in [ADR 002](adr/002-multi-module-split.md)):
-root (protocol), `static/` (embedded JS bundle, zero deps), `datastartest/`
-(consumer E2E helpers). Root never requires datastartest — enforced by
+Four Go modules (rationale in [ADR 002](adr/002-multi-module-split.md)):
+root (protocol), `broadcast/` (optional patch fan-out: serve loop, replay,
+hub sharing — depends on root + go-sse, usable without any cqrs library;
+moved in from cqrs-htmx/datastar 2026-09-17, whose EventBridge remains the
+domain-coupled consumer-side counterpart per the non-goals), `static/`
+(embedded JS bundle, zero deps), `datastartest/` (consumer E2E helpers).
+Root never requires broadcast or datastartest — enforced by
 `module_boundary_test.go` with semantic modfile parsing.

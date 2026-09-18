@@ -32,12 +32,15 @@ Raw ideas:
 - "Migrating from starfederation/datastar-go" guide — what changes, why patches
   as values matters
 - Architecture diagram (D2 or mermaid) showing the three-layer architecture
-  (go-sse → go-datastar → domain adapter)
+  (go-sse → go-datastar → domain adapter) — started in
+  [docs/architecture.md](docs/architecture.md), which now includes the
+  broadcast module in the protocol layer
 - More example applications (toasts, progress bars, signal merge modes)
 - Playground or example repo link for interactive exploration
 - Comparison table vs upstream SDK in README
-- `Broadcaster[datastar.Patch]` typed-filtering example
-- `SubscribeFilter` usage example
+- `broadcast.Broadcaster` + `SubscribeFilter` usage examples (the fan-out
+  module moved in from cqrs-htmx/datastar 2026-09-17 — surface its
+  hub-sharing and replay recipes from this repo's docs)
 - Headless-browser E2E test (chromedp or Playwright) exercising the real
   DataStar JS client — the current E2E stops at wire-format verification
 - Domain-adapter example (EventBridge-style) demonstrating the
