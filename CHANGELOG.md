@@ -22,6 +22,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   root non-goals. Wired into go.work, the CI matrix, and the flake hermetic
   checks. Joins the lockstep release train (ADR 002) on the next tag.
 
+### Added — datastartest
+
+- **Helper tranche 2** (continuing the consolidated helper-expansion idea;
+  see ROADMAP "Developer Experience & Onboarding"): `RequireNotScript` (pin
+  handlers that must NOT respond with JavaScript — the negative counterpart
+  of `RequireScript`), `FindScript` (first script patch, `(Event, bool)`
+  like `FindSignals`), `FindAllElements` (every elements patch for a
+  selector, in stream order — the plural counterpart of `FindElement`), and
+  `EventToSelectorMap` (O(1) selector lookup; last patch wins, matching
+  final DOM state).
+- **Timeout variants for non-GET collection**:
+  `CollectPostWithTimeout` (streaming form submissions) and
+  `CollectWithRequestWithTimeout` (any method/body/content-type with a
+  deadline). Both share `CollectWithTimeout`'s contract: events received
+  before the deadline are returned; receiving none fails the test.
+
+### Added — CI
+
+- **nix.yml promoted** (2026-09-18): `continue-on-error` dropped after 15
+  consecutive green master runs (2026-09-03 → 2026-09-18) and a release
+  (v0.5.0) tagged from a tree with a green run — per docs/ci-watch.md. A red
+  nix run is now treated as red master.
+- **fuzz.yml fuzztime 60s → 300s** after two stable green weeks; the single
+  2026-09-03 red run was triaged as a one-off worker-shutdown flake (the
+  artifact input is a committed regression seed and does not reproduce —
+  verified on the exact CI tree with a 10.5M-exec mirror run).
+
 ## [0.5.0] - 2026-09-03
 
 ### Added

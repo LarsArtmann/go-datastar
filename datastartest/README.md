@@ -49,6 +49,8 @@ func TestFeedHandler(t *testing.T) {
 | `CollectWithRequest(t, h, method, body, ct, opts...)` | Any method/body/content-type                           |
 | `CollectN(t, handler, count, opts...)`                | Streaming handler; reads exactly N events, then closes |
 | `CollectWithTimeout(t, handler, timeout, opts...)`    | Defensive read with a deadline; returns partial events |
+| `CollectPostWithTimeout(t, h, timeout, json, opts...)`   | POST + deadline (streaming form submissions)           |
+| `CollectWithRequestWithTimeout(t, h, timeout, method, body, ct, opts...)` | Any method/body/content-type + deadline      |
 | `ReadEvents(r)` / `ReadNEvents(r, n)`                 | Parse SSE from any `io.Reader` yourself                |
 
 ## Request options
@@ -80,6 +82,7 @@ datastartest.RequireElementsContains(t, events[0], "body", "append", "console.lo
 datastartest.RequireSignals(t, events[1], `{"count":1}`)
 datastartest.RequireSignalsContain(t, events[1], "count")
 datastartest.RequireScript(t, events[2], "console.log('hi')")
+datastartest.RequireNotScript(t, events[0]) // pin: this handler must not respond with JS
 datastartest.RequireEventID(t, events[0], "42")
 datastartest.RequireElementsOrdered(t, events,
 	datastartest.ElementExpectation{Selector: "#feed", Mode: "append", HTML: "<div>hello</div>"},
@@ -94,6 +97,15 @@ with `*testing.T`, `*testing.B`, and Ginkgo's `GinkgoT()`.
 ```go
 evt, ok := datastartest.FindElement(events, "#header")
 sigEvt, ok := datastartest.FindSignals(events)
+scriptEvt, ok := datastartest.FindScript(events)
+
+// Every elements patch to a selector, in stream order:
+all := datastartest.FindAllElements(events, "#header")
+
+// O(1) lookup when selectors are unique (last patch wins):
+bySelector := datastartest.EventToSelectorMap(events)
+
+// Or filter by type alone:
 elements := datastartest.FilterElements(events)
 ```
 
