@@ -143,3 +143,17 @@ func RequireEventID(tb testing.TB, evt Event, want string) {
 		tb.Fatalf("event ID: got %q, want %q", evt.ID, want)
 	}
 }
+
+// RequireNotScript fails the test if evt is a script-bearing patch-elements
+// event. Use it to pin handlers that must NOT respond with JavaScript (e.g.,
+// a pure-DOM endpoint where a script patch would be a regression). This is
+// the negative counterpart of [RequireScript].
+func RequireNotScript(tb testing.TB, evt Event) {
+	tb.Helper()
+
+	if !evt.IsScript() {
+		return
+	}
+
+	tb.Fatalf("expected non-script event, got script patch with content %q", evt.ScriptContent())
+}
