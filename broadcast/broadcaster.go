@@ -45,7 +45,7 @@ func NewBroadcaster() *Broadcaster {
 // buffer size and no replay support.
 func NewBroadcasterWithBufferSize(size int) *Broadcaster {
 	return &Broadcaster{
-		Broadcaster: sse.NewBroadcaster[sse.Event](sse.WithBufferSize[sse.Event](size)),
+		Broadcaster: sse.NewBroadcaster[sse.Event](sse.WithBufferSize(size)),
 	}
 }
 
@@ -81,37 +81,49 @@ func (b *Broadcaster) Hub() *sse.Broadcaster[sse.Event] {
 
 // Broadcast sends a patch to all connected clients. The patch's Event() is
 // computed once and the resulting [sse.Event] is fan-out to all subscribers.
-// If replay is enabled, the event is also appended to the store. Slow clients
-// whose channel buffer is full silently miss the event.
+// With replay enabled, the event is appended to the store BEFORE the fan-out,
+// so a client reconnecting mid-broadcast replays it instead of missing it.
+// Slow clients whose channel buffer is full silently miss the event.
 //
 // Broadcast shadows the embedded hub's Broadcast(sse.Event) — to send a raw
 // event, use [Broadcaster.BroadcastEvent].
 func (b *Broadcaster) Broadcast(patch datastar.Patch) {
-	evt := patch.Event()
-	b.Broadcaster.Broadcast(evt)
-
-	if b.store != nil {
-		b.store.Append(evt)
-	}
+	b.BroadcastEvent(patch.Event())
 }
 
-// BroadcastMany sends multiple patches to all connected clients. It shadows the
-// embedded hub's BroadcastMany([]sse.Event); to send raw events, broadcast via
-// [Broadcaster.Hub].
+// BroadcastMany sends multiple patches to all connected clients. All events
+// are appended to the replay store first, then fan-out happens in a single
+// locked hub pass, so the batch is atomic with respect to concurrent
+// broadcasters. It shadows the embedded hub's BroadcastMany([]sse.Event); to
+// send raw events, broadcast via [Broadcaster.Hub].
 func (b *Broadcaster) BroadcastMany(patches ...datastar.Patch) {
-	for _, p := range patches {
-		b.Broadcast(p)
+	if len(patches) == 0 {
+		return
 	}
+
+	evts := make([]sse.Event, 0, len(patches))
+	for _, p := range patches {
+		evts = append(evts, p.Event())
+	}
+
+	if b.store != nil {
+		for _, evt := range evts {
+			b.store.Append(evt)
+		}
+	}
+
+	b.Broadcaster.BroadcastMany(evts...)
 }
 
-// BroadcastEvent sends a raw [sse.Event] to all connected clients. If replay
-// is enabled, the event is also appended to the store.
+// BroadcastEvent sends a raw [sse.Event] to all connected clients. With replay
+// enabled, the event is appended to the store BEFORE the fan-out, so a client
+// reconnecting mid-broadcast replays it instead of missing it.
 func (b *Broadcaster) BroadcastEvent(evt sse.Event) {
-	b.Broadcaster.Broadcast(evt)
-
 	if b.store != nil {
 		b.store.Append(evt)
 	}
+
+	b.Broadcaster.Broadcast(evt)
 }
 
 // SubscriberCount returns the number of currently connected SSE clients.
@@ -129,6 +141,8 @@ func (b *Broadcaster) SubscriberCount() int {
 // snapshot and the subscribe would otherwise be silently missed. With the
 // subscription established first, those events race into the channel and are
 // delivered as (harmless, idempotent) duplicates alongside the replayed ones.
+// A replay failure (store error or client write error) ends the connection; a
+// well-behaved client reconnects with its Last-Event-ID and retries.
 func (b *Broadcaster) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	stream := sse.NewStream(w, r)
 	defer func() { _ = stream.Close() }()
