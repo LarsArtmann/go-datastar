@@ -246,6 +246,12 @@ No CQRS, no event bus, no domain opinions. It is a pure protocol layer. Consumer
   FIXED: the datastartest check now uses a MINIMAL src fileset (datastartest,
   root *.go + go.mod, static/), so metadata edits don't touch it; the FOD
   converges on one paste. Don't widen that fileset.
+- **nix CI reports only the FIRST hash mismatch.** A require-bump release can
+  move BOTH submodule vendor hashes while the nix workflow names just
+  broadcast and exits — datastartest's failure hides behind it (seen
+  2026-09-18, v0.6.0 prep). Always reproduce with a full local
+  `nix flake check` and paste every moved hash; never trust the CI error
+  line as the complete list.
 - **`buildGoModule` `modRoot`** builds a submodule in place (vendor + main
   derivations both `cd "$modRoot"`).
 - **BOM in Go source = compile error.** Use the escape `"\xef\xbb\xbf"` in
