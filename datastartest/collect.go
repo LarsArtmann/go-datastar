@@ -27,7 +27,11 @@ func Collect(tb testing.TB, handler http.Handler, opts ...RequestOption) []Event
 	tb.Helper()
 
 	resp := doRequest(tb, handler, http.MethodGet, nil, "", context.Background(), opts)
-	defer closeBody(tb, resp)
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			tb.Errorf("close response body: %v", err)
+		}
+	}()
 
 	return MustReadEvents(tb, resp.Body)
 }
@@ -49,7 +53,11 @@ func CollectWithRequest(
 	tb.Helper()
 
 	resp := doRequest(tb, handler, method, body, contentType, context.Background(), opts)
-	defer closeBody(tb, resp)
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			tb.Errorf("close response body: %v", err)
+		}
+	}()
 
 	return MustReadEvents(tb, resp.Body)
 }
@@ -88,7 +96,11 @@ func CollectN(tb testing.TB, handler http.Handler, count int, opts ...RequestOpt
 	}
 
 	resp := doRequest(tb, handler, http.MethodGet, nil, "", context.Background(), opts)
-	defer closeBody(tb, resp)
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			tb.Errorf("close response body: %v", err)
+		}
+	}()
 
 	events, err := ReadNEvents(resp.Body, count)
 	if err != nil {
@@ -118,7 +130,11 @@ func CollectWithTimeout(
 	defer cancel()
 
 	resp := doRequest(tb, handler, http.MethodGet, nil, "", ctx, opts)
-	defer closeBody(tb, resp)
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			tb.Errorf("close response body: %v", err)
+		}
+	}()
 
 	return readEventsWithin(tb, resp, timeout)
 }
@@ -142,7 +158,11 @@ func CollectWithRequestWithTimeout(
 	defer cancel()
 
 	resp := doRequest(tb, handler, method, body, contentType, ctx, opts)
-	defer closeBody(tb, resp)
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			tb.Errorf("close response body: %v", err)
+		}
+	}()
 
 	return readEventsWithin(tb, resp, timeout)
 }
@@ -172,18 +192,10 @@ func CollectPostWithTimeout(
 	)
 }
 
-// closeBody closes resp's body, reporting a close error via tb.
-func closeBody(tb testing.TB, resp *http.Response) {
-	tb.Helper()
-
-	if err := resp.Body.Close(); err != nil {
-		tb.Errorf("close response body: %v", err)
-	}
-}
-
 // readEventsWithin drains resp's body with no event-count limit, so the
 // request context's timeout is what ends the read. Used by the
-// Collect*WithTimeout family.
+// Collect*WithTimeout family. Closing resp's body stays the caller's job so
+// each collector's close remains locally visible.
 func readEventsWithin(tb testing.TB, resp *http.Response, timeout time.Duration) []Event {
 	tb.Helper()
 
