@@ -1,9 +1,10 @@
 name: fuzz
 
-# Short scheduled fuzz runs keep the parsers exercised between human
-# sessions. Seed corpora are committed (testdata/fuzz/**), so crashes found
+# Scheduled fuzz runs keep the parsers exercised between human sessions.
+# Seed corpora are committed (testdata/fuzz/**), so crashes found
 # here become permanent regression seeds; any NEW crash input is uploaded as
-# an artifact before the job fails.
+# an artifact before the job fails. Fuzztime promoted 60s → 300s on
+# 2026-09-18 after two stable green weeks (see docs/ci-watch.md).
 
 on:
   schedule:
@@ -36,11 +37,11 @@ jobs:
         with:
           go-version: "1.26.7"
 
-      - name: Fuzz ${{ matrix.target }} (60s)
+      - name: Fuzz ${{ matrix.target }} (300s)
         id: fuzz
         working-directory: ${{ matrix.module }}
         run: |
-          go test -run '^$' -fuzz '^${{ matrix.target }}$' -fuzztime 60s .
+          go test -run '^$' -fuzz '^${{ matrix.target }}$' -fuzztime 300s .
 
       - name: Upload crash corpus on failure
         if: failure()

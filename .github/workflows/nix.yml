@@ -2,10 +2,12 @@ name: nix
 
 # Runs the canonical hermetic gate (`nix flake check`: three Go modules
 # built/tested in isolation + treefmt format check) on GitHub runners.
-# Non-required (continue-on-error) until the job has proven stable in CI —
-# the flake builds go1.26.7 from source on first run, so cold runs take
-# several minutes. erraudit is deliberately NOT part of the flake (private
-# deps); CI's probe-gated erraudit job covers it instead.
+# Promoted 2026-09-18 (continue-on-error dropped): 15 consecutive green
+# master runs 2026-09-03 → 2026-09-18 and v0.5.0 tagged from a tree with a
+# green run — see docs/ci-watch.md. The flake builds go1.26.7 from source
+# on first run, so cold runs take several minutes. erraudit is deliberately
+# NOT part of the flake (private deps); CI's probe-gated erraudit job covers
+# it instead.
 
 on:
   push:
@@ -34,7 +36,6 @@ on:
 jobs:
   flake-check:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 

@@ -7,12 +7,15 @@ workflow change.
 
 ## nix.yml — hermetic `nix flake check`
 
-State: `continue-on-error` until proven stable (first green run 2026-09-03).
+State: PROMOTED 2026-09-18 — `continue-on-error` dropped. Criteria met: 15
+consecutive green master runs 2026-09-03 → 2026-09-18, and v0.5.0 tagged from
+`831bbfb` which itself has a green run. Red is now red master per the general
+rules below.
 
 - **Promote** (drop `continue-on-error`, make the check blocking in spirit —
   it still cannot gate without branch protection, so "promote" = treat red as
   a master-breaking incident): after 2 consecutive green weeks on master AND
-  at least one release tagged from a tree where it passed.
+  at least one release tagged from a tree where it passed. ✅ done 2026-09-18.
 - **Verify:** `nix flake check` locally at the same commit; a red run with a
   green local run usually means a nixpkgs drift (new `nixpkgs-unstable` rev
   changed a derivation input) — pin or rebase the flake.lock.
@@ -22,7 +25,14 @@ State: `continue-on-error` until proven stable (first green run 2026-09-03).
 
 ## fuzz.yml — scheduled 60s fuzz runs
 
-State: daily cron over all four fuzz targets, crash artifacts uploaded.
+State: daily cron over all four fuzz targets, crash artifacts uploaded;
+fuzztime 300s since 2026-09-18 (promoted from 60s after two stable green
+weeks). First artifact triaged 2026-09-18: the 2026-09-03 FuzzReadEvents
+red run produced a 51-input artifact that is byte-identical to the committed
+corpus and unreproducible (seed run green on the exact CI tree `dba6a2f`,
+60s fuzz mirror = 10.5M execs green, 15 subsequent daily runs green) —
+conclusion: one-off worker-shutdown flake at fuzztime expiry, not a parser
+bug. No action needed; seeds stay committed.
 
 - **Verify after first runs:** check the artifacts — a crash artifact is a
   REAL bug: reproduce it with the committed corpus + `go test -run '^$' -fuzz
@@ -35,7 +45,8 @@ State: daily cron over all four fuzz targets, crash artifacts uploaded.
 
 ## codeql.yml — Go security analysis
 
-State: SHA-pinned, default query suite.
+State: SHA-pinned, default query suite. First alert review 2026-09-18:
+zero alerts since enablement; recent runs green. Nothing to triage.
 
 - **Verify after first runs:** triage every alert. A true positive is
   master-breaking: fix immediately, note the fix in the CHANGELOG. A false
@@ -48,7 +59,11 @@ State: SHA-pinned, default query suite.
 
 State: custom manager proposing `static/static.go` Version bumps from
 upstream DataStar releases; coexists with dependabot.yml (one-bot decision
-pending — see TODO_LIST).
+pending — see TODO_LIST). First verification 2026-09-18: zero proposals to
+date, which is EXPECTED — upstream latest is v1.0.3 (2026-08-27), older than
+the 2026-08-29 onboarding and matching the currently pinned bundle. NOTE:
+zero PRs also means the Renovate app's delivery is still unverified; the
+next upstream release is the first real test.
 
 - **Verify each PR:** the proposed version must match a real upstream release
   tag; the bundle change must be re-verified against the wire-format goldens
