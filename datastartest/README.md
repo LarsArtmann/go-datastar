@@ -42,16 +42,16 @@ func TestFeedHandler(t *testing.T) {
 
 ## Collecting events
 
-| Helper                                                | Use when                                               |
-| ----------------------------------------------------- | ------------------------------------------------------ |
-| `Collect(t, handler, opts...)`                        | Handler sends patches and returns (GET)                |
-| `CollectPost(t, handler, jsonBody, opts...)`          | POST with a JSON body (form submissions)               |
-| `CollectWithRequest(t, h, method, body, ct, opts...)` | Any method/body/content-type                           |
-| `CollectN(t, handler, count, opts...)`                | Streaming handler; reads exactly N events, then closes |
-| `CollectWithTimeout(t, handler, timeout, opts...)`    | Defensive read with a deadline; returns partial events |
-| `CollectPostWithTimeout(t, h, timeout, json, opts...)`   | POST + deadline (streaming form submissions)           |
-| `CollectWithRequestWithTimeout(t, h, timeout, method, body, ct, opts...)` | Any method/body/content-type + deadline      |
-| `ReadEvents(r)` / `ReadNEvents(r, n)`                 | Parse SSE from any `io.Reader` yourself                |
+| Helper                                                                    | Use when                                               |
+| ------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `Collect(t, handler, opts...)`                                            | Handler sends patches and returns (GET)                |
+| `CollectPost(t, handler, jsonBody, opts...)`                              | POST with a JSON body (form submissions)               |
+| `CollectWithRequest(t, h, method, body, ct, opts...)`                     | Any method/body/content-type                           |
+| `CollectN(t, handler, count, opts...)`                                    | Streaming handler; reads exactly N events, then closes |
+| `CollectWithTimeout(t, handler, timeout, opts...)`                        | Defensive read with a deadline; returns partial events |
+| `CollectPostWithTimeout(t, h, timeout, json, opts...)`                    | POST + deadline (streaming form submissions)           |
+| `CollectWithRequestWithTimeout(t, h, timeout, method, body, ct, opts...)` | Any method/body/content-type + deadline                |
+| `ReadEvents(r)` / `ReadNEvents(r, n)`                                     | Parse SSE from any `io.Reader` yourself                |
 
 ## Request options
 

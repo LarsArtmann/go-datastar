@@ -6,12 +6,12 @@
 
 ## Scope
 
-| File                  | Lines (review → now) | Role                                    |
-| --------------------- | -------------------- | --------------------------------------- |
-| `broadcaster.go`      | 163 → 183            | Patch fan-out hub + `http.Handler`      |
-| `broadcaster_test.go` | 427 → 471            | 13 tests, race-covered                  |
-| `doc.go`              | 21                   | Package docs                            |
-| `README.md`           | 63                   | Module README                           |
+| File                  | Lines (review → now) | Role                                       |
+| --------------------- | -------------------- | ------------------------------------------ |
+| `broadcaster.go`      | 163 → 183            | Patch fan-out hub + `http.Handler`         |
+| `broadcaster_test.go` | 427 → 471            | 13 tests, race-covered                     |
+| `doc.go`              | 21                   | Package docs                               |
+| `README.md`           | 63                   | Module README                              |
 | `go.mod` / `go.sum`   | —                    | Requires go-datastar v0.5.0, go-sse v0.6.0 |
 
 ## Verdict
@@ -24,17 +24,17 @@ the spot; repo-wide CI-parity lint now exits 0.
 
 ## Fixed on the spot
 
-| #  | Severity | Location                                  | Issue                                                                                                                               | Fix                                                                                                      |
-| -- | -------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| F1 | BUG      | `Broadcast`/`BroadcastEvent`              | Event appended to replay store AFTER hub fan-out: a reconnect racing between the two replays nothing and receives nothing — event permanently lost for that client | Append to store BEFORE fan-out; reconnecting mid-broadcast now replays the event instead of missing it    |
-| F2 | Smell    | `BroadcastMany`                           | Looped per-patch `Broadcast`: N lock passes, batch interleavable by concurrent broadcasters                                         | Single-pass atomic `BroadcastMany` on the hub; all events appended first, then one fan-out pass           |
-| F3 | Split brain | `Broadcast` vs `BroadcastEvent`        | Identical fan-out+store logic duplicated in two methods                                                                             | `Broadcast` now delegates to `BroadcastEvent(patch.Event())`                                              |
-| F4 | Test bug | `TestBroadcasterBroadcastEvent`           | Never called `BroadcastEvent` — tested `Broadcast` under the wrong name                                                             | Rewritten: raw `sse.Event` in, `event: raw` / `data: payload` asserted on the wire                        |
-| F5 | Test gap | `TestBroadcasterBroadcastMany`            | Zero delivery assertions (only SubscriberCount after disconnect)                                                                    | Asserts both patch families (`datastar-patch-signals`, `datastar-patch-elements`) reach the wire          |
-| F6 | Flake risk | `readFirstResponse` helper              | Single `Read` of the first chunk — body split across TCP segments breaks assertions; channel-based, error-swallowing                | Replaced by `startReader`/`readBody`: drain-until-EOF (deterministic), typed result, `t.Fatalf` on test goroutine |
-| F7 | Gate red | whole module                              | CI-parity `golangci-lint` failed on committed master with 9 findings (mnd, noctx ×2, varnamelen ×5, makezero) — unnoticed because nothing is a required check | Fixed all 9: `defaultHeartbeatInterval` const, `httptest.NewRequestWithContext`, `events`/`recorder`/`countMu` renames; makezero resolved by F6 rewrite |
-| F8 | Docs     | `ServeHTTP`                               | Replay-failure path silently returned with no documented semantics                                                                  | Documented: connection ends; a well-behaved client reconnects with Last-Event-ID and retries              |
-| F9 | Docs     | `Broadcast`/`BroadcastEvent`/`BroadcastMany` | Store/fan-out ordering invariant undocumented                                                                                   | Doc comments now state append-BEFORE-fan-out and the single-pass batch atomicity                          |
+| #  | Severity    | Location                                     | Issue                                                                                                                                                              | Fix                                                                                                                                                     |
+| -- | ----------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F1 | BUG         | `Broadcast`/`BroadcastEvent`                 | Event appended to replay store AFTER hub fan-out: a reconnect racing between the two replays nothing and receives nothing — event permanently lost for that client | Append to store BEFORE fan-out; reconnecting mid-broadcast now replays the event instead of missing it                                                  |
+| F2 | Smell       | `BroadcastMany`                              | Looped per-patch `Broadcast`: N lock passes, batch interleavable by concurrent broadcasters                                                                        | Single-pass atomic `BroadcastMany` on the hub; all events appended first, then one fan-out pass                                                         |
+| F3 | Split brain | `Broadcast` vs `BroadcastEvent`              | Identical fan-out+store logic duplicated in two methods                                                                                                            | `Broadcast` now delegates to `BroadcastEvent(patch.Event())`                                                                                            |
+| F4 | Test bug    | `TestBroadcasterBroadcastEvent`              | Never called `BroadcastEvent` — tested `Broadcast` under the wrong name                                                                                            | Rewritten: raw `sse.Event` in, `event: raw` / `data: payload` asserted on the wire                                                                      |
+| F5 | Test gap    | `TestBroadcasterBroadcastMany`               | Zero delivery assertions (only SubscriberCount after disconnect)                                                                                                   | Asserts both patch families (`datastar-patch-signals`, `datastar-patch-elements`) reach the wire                                                        |
+| F6 | Flake risk  | `readFirstResponse` helper                   | Single `Read` of the first chunk — body split across TCP segments breaks assertions; channel-based, error-swallowing                                               | Replaced by `startReader`/`readBody`: drain-until-EOF (deterministic), typed result, `t.Fatalf` on test goroutine                                       |
+| F7 | Gate red    | whole module                                 | CI-parity `golangci-lint` failed on committed master with 9 findings (mnd, noctx ×2, varnamelen ×5, makezero) — unnoticed because nothing is a required check      | Fixed all 9: `defaultHeartbeatInterval` const, `httptest.NewRequestWithContext`, `events`/`recorder`/`countMu` renames; makezero resolved by F6 rewrite |
+| F8 | Docs        | `ServeHTTP`                                  | Replay-failure path silently returned with no documented semantics                                                                                                 | Documented: connection ends; a well-behaved client reconnects with Last-Event-ID and retries                                                            |
+| F9 | Docs        | `Broadcast`/`BroadcastEvent`/`BroadcastMany` | Store/fan-out ordering invariant undocumented                                                                                                                      | Doc comments now state append-BEFORE-fan-out and the single-pass batch atomicity                                                                        |
 
 F1 detail: subscribe-before-replay already closed one half of the gap
 (duplicates instead of loss after subscribe). The other half — events that left

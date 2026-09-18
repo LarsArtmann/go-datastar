@@ -210,7 +210,12 @@ func TestCollectPostWithTimeout_StreamingReturnsPartial(t *testing.T) {
 		<-r.Context().Done()
 	})
 
-	events := datastartest.CollectPostWithTimeout(t, handler, 200*time.Millisecond, `{"name":"bob"}`)
+	events := datastartest.CollectPostWithTimeout(
+		t,
+		handler,
+		200*time.Millisecond,
+		`{"name":"bob"}`,
+	)
 
 	if len(events) != 1 {
 		t.Errorf("expected 1 event before timeout; got %d", len(events))

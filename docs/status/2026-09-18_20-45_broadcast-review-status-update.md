@@ -134,58 +134,58 @@ documented-tolerated `Close` blank-ignore.
 Priority tiers: **P1** = do next, **P2** = near, **P3** = when convenient,
 **P?** = owner decision.
 
-| #  | Pri | Item                                                                                                              | Trace                                     |
-| -- | --- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
-| 1  | P1  | Tag/ship the broadcast replay fix (rides lockstep train; CHANGELOG entry ready)                                    | d5, a14                                   |
-| 2  | P1  | R1: `NewBroadcasterWithStore(sse.EventStore)` injection seam (NO backends in-repo)                                 | TODO_LIST R1                              |
-| 3  | P1  | R2: close buffer-size × replay constructor-matrix gap (functional options or combined constructor)                 | TODO_LIST R2                              |
-| 4  | P2  | R3: optional heartbeat interval (also unlocks a fast heartbeat test)                                               | R3, f25                                   |
-| 5  | P2  | Test: `BroadcastMany()` with zero patches (early-return path untested)                                             | my own F2 edit                            |
-| 6  | P2  | Test: `NewBroadcasterWithBufferSize(0/-1)` falls back to default 64                                                | go-sse WithBufferSize contract            |
-| 7  | P2  | Test: reconnect with malformed Last-Event-ID header → treated as zero → full replay                                 | F8 docs path                              |
-| 8  | P2  | Test: client disconnect mid-replay (Unsubscribe/Close defer order)                                                 | ServeHTTP defers                          |
-| 9  | P2  | Test: BroadcastEvent with empty Event name — assert acceptable wire output                                         | F4 rewrite neighbor                       |
-| 10 | P2  | Race-stress test approximating F1: broadcast/reconnect churn loop asserting no loss (best-effort, flake-aware design) | F1 detail b2                             |
-| 11 | P2  | Chaos test: `Close()` during in-flight `BroadcastMany` — no panic, store consistent                                | F2 atomicity                              |
-| 12 | P2  | Broadcast benchmarks (fan-out N subscribers; single-pass vs loop) for docs/performance.md                           | R4 neighbor; repo has a perf page         |
-| 13 | P2  | Fuzz or race-stress target for broadcast (module has none; root/datastartest each have one)                        | b5                                        |
-| 14 | P3  | Observability surface: `OnDrop` passthrough so consumers see slow-client drops without unwrapping `Hub()`           | drop policy docs                          |
-| 15 | P3  | Optional `OnReplayError` callback (replay failures are currently silent by design)                                  | F8                                        |
-| 16 | P3  | ReplayFiltered integration: per-subscription filtered replay (go-sse already supports it)                           | go-sse replay.go                          |
-| 17 | P3  | Split broadcaster_test.go by theme (lifecycle/delivery/replay) if it crosses ~600 lines                             | R4                                        |
-| 18 | P3  | doc.go example showing raw-event `BroadcastEvent` (only `Broadcast` shown today)                                    | F4                                        |
-| 19 | P3  | README: document Last-Event-ID non-numeric → full-replay behavior                                                   | MemoryStore semantics                     |
-| 20 | P3  | README: graceful-shutdown recipe (Shutdown + drain + Close fallback)                                                | hub Shutdown docs                         |
-| 21 | P3  | README: reconnect-replay client behavior snippet (retry semantics from F8)                                          | F8                                        |
-| 22 | P3  | README API table: add `SubscriberCount`/`Hub` rows (currently prose-only)                                           | README review                             |
-| 23 | P3  | Document drop-on-full policy explicitly in broadcast README (15s heartbeat is there; drops are only in go-sse docs) | F7 context                                |
-| 24 | P3  | Verify example/domain-adapter against post-fix broadcast (tests pass; walk it once for doc accuracy)                | session build pass                        |
-| 25 | P3  | Consider example snippet using replay (domain-adapter currently exercises fan-out only)                             | c-list                                    |
-| 26 | P?  | Make the lint gate required or alerting — it sat red on master unnoticed; policy says local gates are the real gate | F7                                        |
-| 27 | P?  | AGENTS.md gotcha: gopls `infertypeargs` false positive on `WithBufferSize` (settle point ≤15KB — prune first)        | d2                                        |
-| 28 | P3  | AGENTS.md gotcha candidate: golangci worktree-cache ghosting (same 15KB cap applies)                                | d4                                        |
-| 29 | P3  | CI-watch ritual: add "run full local gate before push" to the monthly checklist explicitly                          | F7 root cause                             |
-| 30 | P3  | Lockstep check: broadcast's go-sse v0.6.0 pin vs root's — one dependency sweep to confirm no drift                   | go.mod review                             |
-| 31 | P3  | Sweep for `connectSubscriber`-style helpers duplicated across module tests; dedupe via datastartest if allowed by boundaries | helper consolidation idea              |
-| 32 | P3  | Fuzz corpus: add this session's raw-event wire case as a seed where applicable                                      | F4                                        |
-| 33 | P3  | `waitFor` helper: consider deadline param instead of hardcoded 2s (two timeouts needed manual diagnosis)             | d1                                        |
-| 34 | P3  | Consider exposing drain-completed signal after `Shutdown` for orchestrated shutdowns                                | hub Shutdown docs                         |
-| 35 | P?  | API naming review: `BroadcastEvent` vs `BroadcastRaw` (current name shadows semantics fine, but raw-verb is clearer) | F3/F4                                     |
-| 36 | P3  | Add `TestBroadcasterPromotedHealthAndShutdown` coverage note — Health tested, Shutdown tested, OnUnsubscribe NOT     | test inventory                            |
-| 37 | P3  | Test: hub sharing via `NewBroadcasterFromHub` + replay-less wrapper documented behavior (no store)                   | constructor matrix                        |
-| 38 | P3  | Table-driven sweep of constructor × (broadcast/broadcastMany/broadcastEvent) combinations                            | F2–F4                                     |
-| 39 | P3  | Verify `sse.Replay` count return could feed a future metric/log hook without API change                             | f14/f15 design                            |
-| 40 | P3  | Docs map: AGENTS.md "Key files" list predates broadcast — check whether broadcast belongs there (settle point!)      | docs map review                           |
-| 41 | P?  | Release notes: decide whether broadcast fix is its own highlight or bundled (ties to #1)                            | d5                                        |
-| 42 | P3  | Add `//` comment-free invariant: current code is comment-clean; keep F9-style doc comments on ordering changes       | F9                                        |
-| 43 | P3  | Double-check `WithOnDrop` interplay: drops during replay window are invisible to consumers (ties to f14)             | replay+drop overlap                       |
-| 44 | P3  | Consider `context.Context` parameter for future broadcast APIs (ServeHTTP uses request ctx; constructors don't need)  | API hygiene                               |
-| 45 | P3  | Review whether `MemoryStore` export from root + broadcast's private store field should unify on one type              | R1 design                                 |
-| 46 | P3  | Post-release: monitor fuzz.yml 300s runs for the broadcast-adjacent seeds (ritual, no code)                          | CI changelog entries                      |
-| 47 | P3  | Confirm erraudit CI probe still tolerates broadcast's Close pattern when repo goes public                            | owner-blocked row exists                  |
-| 48 | P3  | Sweep TODO_LIST "Notes" section after this session's rows land (keep ≤ current size)                                 | docs hygiene                              |
-| 49 | P3  | Archive companion review report when docs-health verifies every F/R item resolved (policy)                           | status policy                             |
-| 50 | P3  | Re-run the full local gate at the tagged commit before any push (release checklist step, unchanged)                  | a13                                       |
+| #  | Pri | Item                                                                                                                         | Trace                             |
+| -- | --- | ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| 1  | P1  | Tag/ship the broadcast replay fix (rides lockstep train; CHANGELOG entry ready)                                              | d5, a14                           |
+| 2  | P1  | R1: `NewBroadcasterWithStore(sse.EventStore)` injection seam (NO backends in-repo)                                           | TODO_LIST R1                      |
+| 3  | P1  | R2: close buffer-size × replay constructor-matrix gap (functional options or combined constructor)                           | TODO_LIST R2                      |
+| 4  | P2  | R3: optional heartbeat interval (also unlocks a fast heartbeat test)                                                         | R3, f25                           |
+| 5  | P2  | Test: `BroadcastMany()` with zero patches (early-return path untested)                                                       | my own F2 edit                    |
+| 6  | P2  | Test: `NewBroadcasterWithBufferSize(0/-1)` falls back to default 64                                                          | go-sse WithBufferSize contract    |
+| 7  | P2  | Test: reconnect with malformed Last-Event-ID header → treated as zero → full replay                                          | F8 docs path                      |
+| 8  | P2  | Test: client disconnect mid-replay (Unsubscribe/Close defer order)                                                           | ServeHTTP defers                  |
+| 9  | P2  | Test: BroadcastEvent with empty Event name — assert acceptable wire output                                                   | F4 rewrite neighbor               |
+| 10 | P2  | Race-stress test approximating F1: broadcast/reconnect churn loop asserting no loss (best-effort, flake-aware design)        | F1 detail b2                      |
+| 11 | P2  | Chaos test: `Close()` during in-flight `BroadcastMany` — no panic, store consistent                                          | F2 atomicity                      |
+| 12 | P2  | Broadcast benchmarks (fan-out N subscribers; single-pass vs loop) for docs/performance.md                                    | R4 neighbor; repo has a perf page |
+| 13 | P2  | Fuzz or race-stress target for broadcast (module has none; root/datastartest each have one)                                  | b5                                |
+| 14 | P3  | Observability surface: `OnDrop` passthrough so consumers see slow-client drops without unwrapping `Hub()`                    | drop policy docs                  |
+| 15 | P3  | Optional `OnReplayError` callback (replay failures are currently silent by design)                                           | F8                                |
+| 16 | P3  | ReplayFiltered integration: per-subscription filtered replay (go-sse already supports it)                                    | go-sse replay.go                  |
+| 17 | P3  | Split broadcaster_test.go by theme (lifecycle/delivery/replay) if it crosses ~600 lines                                      | R4                                |
+| 18 | P3  | doc.go example showing raw-event `BroadcastEvent` (only `Broadcast` shown today)                                             | F4                                |
+| 19 | P3  | README: document Last-Event-ID non-numeric → full-replay behavior                                                            | MemoryStore semantics             |
+| 20 | P3  | README: graceful-shutdown recipe (Shutdown + drain + Close fallback)                                                         | hub Shutdown docs                 |
+| 21 | P3  | README: reconnect-replay client behavior snippet (retry semantics from F8)                                                   | F8                                |
+| 22 | P3  | README API table: add `SubscriberCount`/`Hub` rows (currently prose-only)                                                    | README review                     |
+| 23 | P3  | Document drop-on-full policy explicitly in broadcast README (15s heartbeat is there; drops are only in go-sse docs)          | F7 context                        |
+| 24 | P3  | Verify example/domain-adapter against post-fix broadcast (tests pass; walk it once for doc accuracy)                         | session build pass                |
+| 25 | P3  | Consider example snippet using replay (domain-adapter currently exercises fan-out only)                                      | c-list                            |
+| 26 | P?  | Make the lint gate required or alerting — it sat red on master unnoticed; policy says local gates are the real gate          | F7                                |
+| 27 | P?  | AGENTS.md gotcha: gopls `infertypeargs` false positive on `WithBufferSize` (settle point ≤15KB — prune first)                | d2                                |
+| 28 | P3  | AGENTS.md gotcha candidate: golangci worktree-cache ghosting (same 15KB cap applies)                                         | d4                                |
+| 29 | P3  | CI-watch ritual: add "run full local gate before push" to the monthly checklist explicitly                                   | F7 root cause                     |
+| 30 | P3  | Lockstep check: broadcast's go-sse v0.6.0 pin vs root's — one dependency sweep to confirm no drift                           | go.mod review                     |
+| 31 | P3  | Sweep for `connectSubscriber`-style helpers duplicated across module tests; dedupe via datastartest if allowed by boundaries | helper consolidation idea         |
+| 32 | P3  | Fuzz corpus: add this session's raw-event wire case as a seed where applicable                                               | F4                                |
+| 33 | P3  | `waitFor` helper: consider deadline param instead of hardcoded 2s (two timeouts needed manual diagnosis)                     | d1                                |
+| 34 | P3  | Consider exposing drain-completed signal after `Shutdown` for orchestrated shutdowns                                         | hub Shutdown docs                 |
+| 35 | P?  | API naming review: `BroadcastEvent` vs `BroadcastRaw` (current name shadows semantics fine, but raw-verb is clearer)         | F3/F4                             |
+| 36 | P3  | Add `TestBroadcasterPromotedHealthAndShutdown` coverage note — Health tested, Shutdown tested, OnUnsubscribe NOT             | test inventory                    |
+| 37 | P3  | Test: hub sharing via `NewBroadcasterFromHub` + replay-less wrapper documented behavior (no store)                           | constructor matrix                |
+| 38 | P3  | Table-driven sweep of constructor × (broadcast/broadcastMany/broadcastEvent) combinations                                    | F2–F4                             |
+| 39 | P3  | Verify `sse.Replay` count return could feed a future metric/log hook without API change                                      | f14/f15 design                    |
+| 40 | P3  | Docs map: AGENTS.md "Key files" list predates broadcast — check whether broadcast belongs there (settle point!)              | docs map review                   |
+| 41 | P?  | Release notes: decide whether broadcast fix is its own highlight or bundled (ties to #1)                                     | d5                                |
+| 42 | P3  | Add `//` comment-free invariant: current code is comment-clean; keep F9-style doc comments on ordering changes               | F9                                |
+| 43 | P3  | Double-check `WithOnDrop` interplay: drops during replay window are invisible to consumers (ties to f14)                     | replay+drop overlap               |
+| 44 | P3  | Consider `context.Context` parameter for future broadcast APIs (ServeHTTP uses request ctx; constructors don't need)         | API hygiene                       |
+| 45 | P3  | Review whether `MemoryStore` export from root + broadcast's private store field should unify on one type                     | R1 design                         |
+| 46 | P3  | Post-release: monitor fuzz.yml 300s runs for the broadcast-adjacent seeds (ritual, no code)                                  | CI changelog entries              |
+| 47 | P3  | Confirm erraudit CI probe still tolerates broadcast's Close pattern when repo goes public                                    | owner-blocked row exists          |
+| 48 | P3  | Sweep TODO_LIST "Notes" section after this session's rows land (keep ≤ current size)                                         | docs hygiene                      |
+| 49 | P3  | Archive companion review report when docs-health verifies every F/R item resolved (policy)                                   | status policy                     |
+| 50 | P3  | Re-run the full local gate at the tagged commit before any push (release checklist step, unchanged)                          | a13                               |
 
 Owner-decision items: #2–#4 (public API), #14–#16 (API surface growth),
 #26 (CI policy), #27–#28 (AGENTS.md settle point), #35 (naming), #41 (release
