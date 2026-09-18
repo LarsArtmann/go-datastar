@@ -66,10 +66,9 @@ func connectSubscriber(t *testing.T, b *broadcast.Broadcaster) func() {
 	done := make(chan struct{})
 
 	go func() {
-		w := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/events", nil)
-		req = req.WithContext(ctx)
-		b.ServeHTTP(w, req)
+		recorder := httptest.NewRecorder()
+		req := httptest.NewRequestWithContext(ctx, http.MethodGet, "/events", nil)
+		b.ServeHTTP(recorder, req)
 		close(done)
 	}()
 
@@ -319,24 +318,24 @@ func TestBroadcasterOnSubscribeCallback(t *testing.T) {
 	b := broadcast.NewBroadcaster()
 
 	var (
-		count int
-		mu    sync.Mutex
+		count   int
+		countMu sync.Mutex
 	)
 
 	b.OnSubscribe(func() {
-		mu.Lock()
+		countMu.Lock()
 		count++
-		mu.Unlock()
+		countMu.Unlock()
 	})
 
 	disconnect := connectSubscriber(t, b)
 
-	mu.Lock()
+	countMu.Lock()
 	if count != 1 {
-		mu.Unlock()
+		countMu.Unlock()
 		t.Fatalf("OnSubscribe calls: got %d, want 1", count)
 	}
-	mu.Unlock()
+	countMu.Unlock()
 
 	disconnect()
 }
@@ -355,15 +354,14 @@ func TestBroadcasterReplayOnReconnect(t *testing.T) {
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
-	w := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/events", nil)
+	recorder := httptest.NewRecorder()
+	req := httptest.NewRequestWithContext(ctx, http.MethodGet, "/events", nil)
 	req.Header.Set("Last-Event-ID", "1")
-	req = req.WithContext(ctx)
 
 	done := make(chan struct{})
 
 	go func() {
-		b.ServeHTTP(w, req)
+		b.ServeHTTP(recorder, req)
 		close(done)
 	}()
 
@@ -372,7 +370,7 @@ func TestBroadcasterReplayOnReconnect(t *testing.T) {
 	cancel()
 	<-done
 
-	body := w.Body.String()
+	body := recorder.Body.String()
 	for _, want := range []string{"item-2", "item-3"} {
 		if !strings.Contains(body, want) {
 			t.Errorf("replayed body %q does not contain %q", body, want)
@@ -414,14 +412,14 @@ func TestBroadcasterHubSharesFanOut(t *testing.T) {
 	hub := sse.NewBroadcaster[sse.Event]()
 	b := broadcast.NewBroadcasterFromHub(hub)
 
-	ch := hub.Subscribe()
-	defer hub.Unsubscribe(ch)
+	events := hub.Subscribe()
+	defer hub.Unsubscribe(events)
 
 	b.BroadcastEvent(sse.Event{Event: "cross", Data: "transport"})
 
 	waitFor(t, "cross-transport event", func() bool {
 		select {
-		case evt := <-ch:
+		case evt := <-events:
 			return evt.Event == "cross"
 		default:
 			return false
@@ -436,19 +434,19 @@ func TestBroadcasterPromotedSubscribeFilter(t *testing.T) {
 
 	b := broadcast.NewBroadcaster()
 
-	ch := b.SubscribeFilter(func(evt sse.Event) bool { return evt.Event == "wanted" })
-	defer b.Unsubscribe(ch)
+	events := b.SubscribeFilter(func(evt sse.Event) bool { return evt.Event == "wanted" })
+	defer b.Unsubscribe(events)
 
 	b.BroadcastEvent(sse.Event{Event: "skipped", Data: "no"})
 	b.BroadcastEvent(sse.Event{Event: "wanted", Data: "yes"})
 
-	evt := <-ch
+	evt := <-events
 	if evt.Event != "wanted" || evt.Data != "yes" {
 		t.Fatalf("filtered event: got %+v, want {wanted yes}", evt)
 	}
 
 	select {
-	case evt := <-ch:
+	case evt := <-events:
 		t.Fatalf("unexpected extra event: %+v", evt)
 	default:
 	}

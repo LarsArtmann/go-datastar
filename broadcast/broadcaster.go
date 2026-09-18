@@ -8,6 +8,11 @@ import (
 	"github.com/larsartmann/go-sse"
 )
 
+// defaultHeartbeatInterval is the per-connection SSE comment-ping interval.
+// It keeps idle streams alive through reverse proxies and firewalls (15s,
+// documented in the README).
+const defaultHeartbeatInterval = 15 * time.Second
+
 // Broadcaster fans out DataStar patches to all connected SSE clients. It embeds
 // [sse.Broadcaster[sse.Event]] and implements [http.Handler].
 //
@@ -147,8 +152,8 @@ func (b *Broadcaster) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	stream := sse.NewStream(w, r)
 	defer func() { _ = stream.Close() }()
 
-	ch := b.Subscribe()
-	defer b.Unsubscribe(ch)
+	events := b.Subscribe()
+	defer b.Unsubscribe(events)
 
 	if b.store != nil {
 		if lastID := stream.LastEventID(); !lastID.IsZero() {
@@ -158,13 +163,13 @@ func (b *Broadcaster) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	go stream.Heartbeat(r.Context(), 15*time.Second)
+	go stream.Heartbeat(r.Context(), defaultHeartbeatInterval)
 
 	for {
 		select {
 		case <-r.Context().Done():
 			return
-		case evt, ok := <-ch:
+		case evt, ok := <-events:
 			if !ok {
 				return
 			}
