@@ -35,7 +35,9 @@ func TestFeedHandler(t *testing.T) {
 ```
 
 Variants: `CollectPost` (JSON body), `CollectWithRequest` (custom method +
-options), `CollectN` (streaming handlers), `CollectWithTimeout` (deadlines).
+options), `CollectN` (streaming handlers), `CollectWithTimeout` /
+`CollectPostWithTimeout` / `CollectWithRequestWithTimeout` (deadlines that
+return the events received so far).
 Request options: `WithPath`, `WithDatastarSignals`, `WithLastEventID`
 (reconnection replay), `WithHeader`.
 
