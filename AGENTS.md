@@ -156,6 +156,17 @@ CHANGELOG.
   prune stale lineage after branch deletions). `git town propose` =
   one-command branch+push+PR. Session ritual: `git town status`, `git status`,
   `gh pr list` at start; clean tree + synced master at end.
+- **Shared golangci-lint cache can replay ghost findings** (verified
+  2026-09-18). The session env points `GOLANGCI_LINT_CACHE` at
+  `/mnt/buildcache/golangci-lint` (shared, multi-GB); it held results for a
+  concurrent session's worktree (`/tmp/gd-prereview`), and after that
+  worktree was deleted the cache kept emitting its gochecknoglobals/nolintlint
+  findings on every full lint — with warnings that the files no longer exist.
+  If lint reports issues in paths outside the repo, do NOT chase them in the
+  code: re-run with a fresh cache
+  (`GOLANGCI_LINT_CACHE=$(mktemp -d) go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run ...`)
+  and trust only that verdict. Purging the shared cache itself is an owner
+  decision (other sessions rely on it).
 - `go.work` is committed, but a **global** gitignore (`~/.config/git/ignore`)
   can still hide it on some machines. After touching `.gitignore` or creating
   module files, run `git check-ignore -v <file>` and `git ls-files <file>` —
