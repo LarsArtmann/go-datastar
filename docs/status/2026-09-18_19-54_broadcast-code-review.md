@@ -60,10 +60,12 @@ invariant is enforced by construction and documented in F9.
 
 ## Recommendations (routed to TODO_LIST, not fixed)
 
-- **R1 — pluggable replay store**: `store` is hardwired to
-  `*datastar.MemoryStore`; `sse.Replay` already accepts any `sse.EventStore`.
-  A `NewBroadcasterWithStore` would unlock Redis/Postgres replay for
-  multi-instance deployments (the exact limitation `store.go` documents).
+- **R1 — pluggable replay store (injection seam only)**: `store` is hardwired
+  to `*datastar.MemoryStore`; `sse.Replay` already accepts any
+  `sse.EventStore`. A `NewBroadcasterWithStore` would let consumers inject
+  their own store for multi-instance deployments (the exact limitation
+  `store.go` documents). No backend implementations ship in this repo —
+  Redis/Postgres adapters stay consumer-side, per the module's non-goals.
 - **R2 — constructor matrix gap**: buffer-size × replay are orthogonal axes
   with only 3 of 4 combos constructible. Functional options (or one combined
   constructor) would close it without breaking v0.x callers.

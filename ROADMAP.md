@@ -54,7 +54,11 @@ Raw ideas:
   internal polish (accessor methods over the public ID/Retry fields,
   tag-attribute parsing beyond quotes, indexTagEnd rename, table-driven
   benchmark shapes). First three shipped 2026-09-03: RequireElementsOrdered,
-  Diff, Snapshot (see CHANGELOG [Unreleased]).
+  Diff, Snapshot (see CHANGELOG [0.5.0]). Tranche 2 shipped 2026-09-18:
+  RequireNotScript, FindScript, FindAllElements, EventToSelectorMap, and
+  timeout variants of CollectWithRequest/CollectPost
+  (`CollectPostWithTimeout`/`CollectWithRequestWithTimeout`; see CHANGELOG
+  [Unreleased]).
 - `datastartest.NewResponse`-style helper for test ergonomics
 - Response ergonomics: `ErrorResponse`/`NotificationResponse`/
   `ErrorResponseFromError` as `Response` methods; a `signalsMap` type for the
