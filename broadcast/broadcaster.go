@@ -45,7 +45,7 @@ func NewBroadcaster() *Broadcaster {
 // buffer size and no replay support.
 func NewBroadcasterWithBufferSize(size int) *Broadcaster {
 	return &Broadcaster{
-		Broadcaster: sse.NewBroadcaster[sse.Event](sse.WithBufferSize(size)),
+		Broadcaster: sse.NewBroadcaster[sse.Event](sse.WithBufferSize[sse.Event](size)),
 	}
 }
 

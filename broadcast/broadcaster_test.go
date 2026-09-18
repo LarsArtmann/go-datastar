@@ -100,32 +100,58 @@ func TestBroadcasterSubscriberCount(t *testing.T) {
 	waitFor(t, "second disconnect", func() bool { return b.SubscriberCount() == 0 })
 }
 
-// readBody connects to server and accumulates the response body until the
-// server closes the stream or the 5s deadline elapses. Blocking until EOF
-// (after b.Close()) keeps assertions deterministic — no chunk-splitting races.
-func readBody(t *testing.T, server *httptest.Server) string {
+// readResult carries the outcome of a background SSE body read.
+type readResult struct {
+	body string
+	err  error
+}
+
+// startReader connects to server in a goroutine and accumulates the response
+// body until the server closes the stream (or a 5s deadline elapses). The
+// connect-then-collect split lets the test wait for the subscriber to register
+// before broadcasting; draining until EOF keeps assertions deterministic — no
+// chunk-splitting races.
+func startReader(t *testing.T, server *httptest.Server) <-chan readResult {
 	t.Helper()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	out := make(chan readResult, 1)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, server.URL, nil)
-	if err != nil {
-		t.Fatalf("NewRequestWithContext: %v", err)
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, server.URL, nil)
+		if err != nil {
+			out <- readResult{err: fmt.Errorf("NewRequestWithContext: %w", err)}
+
+			return
+		}
+
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			out <- readResult{err: fmt.Errorf("Do: %w", err)}
+
+			return
+		}
+		defer func() { _ = resp.Body.Close() }()
+
+		body, err := io.ReadAll(resp.Body)
+		out <- readResult{body: string(body), err: err}
+	}()
+
+	return out
+}
+
+// readBody collects a startReader result, failing the test on read errors.
+func readBody(t *testing.T, results <-chan readResult) string {
+	t.Helper()
+
+	res := <-results
+	if res.err != nil {
+		t.Fatalf("read body: %v", res.err)
 	}
 
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		t.Fatalf("Do: %v", err)
-	}
-	defer func() { _ = resp.Body.Close() }()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		t.Fatalf("ReadAll: %v", err)
-	}
-
-	return string(body)
+	return res.body
 }
 
 func TestBroadcasterBroadcastDeliversPatch(t *testing.T) {
@@ -135,6 +161,8 @@ func TestBroadcasterBroadcastDeliversPatch(t *testing.T) {
 
 	server := httptest.NewServer(b)
 	defer server.Close()
+
+	results := startReader(t, server)
 
 	waitFor(t, "subscriber to connect", func() bool { return b.SubscriberCount() == 1 })
 
@@ -146,7 +174,7 @@ func TestBroadcasterBroadcastDeliversPatch(t *testing.T) {
 	b.Broadcast(patch)
 	b.Close()
 
-	body := readBody(t, server)
+	body := readBody(t, results)
 	if want := "datastar-patch-signals"; !strings.Contains(body, want) {
 		t.Errorf("body %q does not contain %q", body, want)
 	}
@@ -164,6 +192,8 @@ func TestBroadcasterBroadcastMany(t *testing.T) {
 	server := httptest.NewServer(b)
 	defer server.Close()
 
+	results := startReader(t, server)
+
 	waitFor(t, "subscriber to connect", func() bool { return b.SubscriberCount() == 1 })
 
 	sigPatch, err := datastar.NewSignalsPatch(map[string]any{"step": 1})
@@ -177,7 +207,7 @@ func TestBroadcasterBroadcastMany(t *testing.T) {
 	)
 	b.Close()
 
-	body := readBody(t, server)
+	body := readBody(t, results)
 	for _, want := range []string{"datastar-patch-signals", "datastar-patch-elements", "step", "update"} {
 		if !strings.Contains(body, want) {
 			t.Errorf("body %q does not contain %q", body, want)
@@ -193,12 +223,14 @@ func TestBroadcasterBroadcastEvent(t *testing.T) {
 	server := httptest.NewServer(b)
 	defer server.Close()
 
+	results := startReader(t, server)
+
 	waitFor(t, "subscriber to connect", func() bool { return b.SubscriberCount() == 1 })
 
 	b.BroadcastEvent(sse.Event{Event: "raw", Data: "payload"})
 	b.Close()
 
-	body := readBody(t, server)
+	body := readBody(t, results)
 	if want := "event: raw"; !strings.Contains(body, want) {
 		t.Errorf("body %q does not contain %q", body, want)
 	}
