@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nothing yet.
 
+### Changed
+
+- Go toolchain floor raised to 1.27.1 across all modules (go.mod ×3, go.work, CI `go-version`, flake `goPkg` = nixpkgs `go_1_27`): the 1.26.7 directives could not build under a 1.27 toolchain (`encoding/json/v2` language-version gate), which the 1.26.7 CI pin was masking. `GOEXPERIMENT=jsonv2` is no longer required. Root and datastartest vendor hashes recomputed for the new module set.
+
 ### Fixed
 
 - Nothing yet.
