@@ -28,8 +28,8 @@ accumulate in `go.work.sum` without a reproducibility contract — consumers
 never see it. Sibling requires use
 real published versions (not `v0.0.0`) so consumers testing without replaces
 resolve to a real published module. The `go` directive pins the exact patch
-release (currently **1.26.7** across go.mod ×3, go.work, CI, and the flake
-`overrideAttrs` pin) to clear stdlib CVEs under `GOTOOLCHAIN=local`.
+release (currently **1.27.1** across go.mod ×3, go.work, CI, and the flake
+`goPkg`) to clear stdlib CVEs under `GOTOOLCHAIN=local`.
 
 ## Commands
 

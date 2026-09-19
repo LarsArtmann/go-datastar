@@ -7,7 +7,7 @@ or error handling.
 
 - [ ] I searched existing issues and discussions for this question
 - [ ] I checked the README quick start and the relevant guide under `docs/`
-- [ ] I am on Go 1.26.7+ with `GOEXPERIMENT=jsonv2` set (required)
+- [ ] I am on Go 1.27.1+ (GOEXPERIMENT=jsonv2 no longer needed under Go 1.27)
 
 ## Question
 

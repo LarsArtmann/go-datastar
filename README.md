@@ -67,7 +67,7 @@ Both libraries emit the exact same DataStar wire format. The difference is what 
 Honesty first:
 
 - **Built-in SSE compression** — gzip, Brotli, Zstd, and Deflate with client- or server-priority negotiation. go-datastar leaves compression to the HTTP layer (a reverse proxy does this best); a working gzip middleware pattern ships in `example/sse_middleware.go`.
-- **Fewer environment constraints** — works on Go 1.24+ with standard tooling. go-datastar requires Go 1.26.7+ and `GOEXPERIMENT=jsonv2` (transitive, via go-sse).
+- **Fewer environment constraints** — works on Go 1.24+ with standard tooling. go-datastar requires Go 1.27.1+ (GOEXPERIMENT=jsonv2 is no longer needed under Go 1.27).
 - **First-party cadence** — the reference implementation, tracking DataStar client releases day one.
 
 ### When to choose which
@@ -84,7 +84,7 @@ this library speaks is defined there.
 
 ## Requirements
 
-- **Go 1.26.7+**
+- **Go 1.27.1+**
 - **`GOEXPERIMENT=jsonv2`** environment variable (required transitively via go-branded-id through go-sse)
 
 ```bash

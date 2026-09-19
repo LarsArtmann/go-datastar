@@ -37,17 +37,7 @@
           ...
         }:
         let
-          # TODO(go-1.26.7): drop this override when nixpkgs ships go_1_26 >= 1.26.7.
-          # The go.mod directives pin 1.26.7 to clear stdlib CVEs
-          # (GO-2026-5972/6089/6090/6218) and GOTOOLCHAIN=local forbids
-          # auto-downloading a newer toolchain in hermetic builds.
-          goPkg = pkgs.go_1_26.overrideAttrs (_old: rec {
-            version = "1.26.7";
-            src = pkgs.fetchurl {
-              url = "https://go.dev/dl/go${version}.src.tar.gz";
-              hash = "sha256-DtJOrHVRBQhbif6cq8J0K5GgrXuUtZ0602SRjryJVq0=";
-            };
-          });
+          goPkg = pkgs.go_1_27;
           buildGoModule = pkgs.buildGoModule.override { go = goPkg; };
           version = self.rev or self.dirtyRev or "dev";
           # Root vendorHash moves ONLY on requires changes (go.mod/go.sum) or
