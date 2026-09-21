@@ -16,9 +16,13 @@ build_mode: full
 #   DataStar client bundle; there is no first-party JS/TS to configure for.
 #   (BuildFlow now also auto-defers eslint when no eslint config exists.)
 #
-# go-auto-upgrade: its remaining suggestions replace trivial for-range
-#   filters/maps with samber/lo, adding a dependency to a minimal-dependency
-#   protocol library for zero behavioral gain.
+# go-auto-upgrade: policy skip (retested 2026-09-22 against gau v0.6.2). The
+#   dependency gate now correctly suppresses import-adding rewrites (lo is not
+#   in go.mod, and this minimal-dependency protocol library will not add it),
+#   so a run is a green no-op that emits lo-dependency-missing + manual-Filter
+#   suggestion warnings every time. Pure noise against a standing policy:
+#   trivial for-range loops stay, no samber/lo dependency for zero behavioral
+#   gain.
 skip_steps:
   - go-structure-linter
   - eslint-check
