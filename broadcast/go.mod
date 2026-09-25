@@ -4,7 +4,7 @@ go 1.27.1
 
 require (
 	github.com/larsartmann/go-datastar v0.6.0
-	github.com/larsartmann/go-sse v0.6.0
+	github.com/larsartmann/go-sse v0.6.1
 )
 
 require (
