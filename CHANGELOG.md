@@ -5,19 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Added
-
-- Nothing yet.
+## [0.6.1] - 2026-09-29
 
 ### Changed
 
 - Go toolchain floor raised to 1.27.1 across all modules (go.mod ×3, go.work, CI `go-version`, flake `goPkg` = nixpkgs `go_1_27`): the 1.26.7 directives could not build under a 1.27 toolchain (`encoding/json/v2` language-version gate), which the 1.26.7 CI pin was masking. `GOEXPERIMENT=jsonv2` is no longer required. Root and datastartest vendor hashes recomputed for the new module set.
-
-### Fixed
-
-- Nothing yet.
+- go-sse pins bumped to v0.6.1 (root, broadcast, datastartest) and go-sse/ssetest to v0.4.0 (datastartest): the pairing bump for ssetest v0.4.0's breaking scan-error change — datastartest is unaffected by it (its `datastartest.sse_scan_failed` code is its own constant, and scan errors now arrive wrapping the underlying cause, which the re-wrap preserves). `go-sse/sseparse` v0.1.0 enters the graph transitively through ssetest. All three submodule vendor hashes re-derived.
 
 ## [0.6.0] - 2026-09-18
 
