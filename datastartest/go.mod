@@ -14,7 +14,3 @@ require (
 	github.com/larsartmann/go-datastar/static v0.6.1 // indirect
 	github.com/larsartmann/go-sse/sseparse v0.1.0 // indirect
 )
-
-replace github.com/larsartmann/go-datastar => ..
-
-replace github.com/larsartmann/go-datastar/static => ../static
