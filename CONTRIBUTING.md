@@ -49,7 +49,7 @@ go test ./... ./datastartest/... ./static/... -race -count=1
 golangci-lint run ./... ./datastartest/... ./static/...
 
 # Pre-push, ALWAYS use the exact-CI lint (same version CI installs):
-go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 \
+go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.2 \
   run ./... ./datastartest/... ./static/... --timeout 5m
 # (or: nix run .#lint-ci)
 

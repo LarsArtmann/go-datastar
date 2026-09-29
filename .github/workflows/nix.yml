@@ -15,8 +15,8 @@ on:
     paths:
       - "**.go"
       - "**.nix"
-      - "go.mod"
-      - "go.sum"
+      - "**/go.mod"
+      - "**/go.sum"
       - "go.work"
       - ".github/workflows/nix.yml"
       - "static/datastar.js"
@@ -26,8 +26,8 @@ on:
     paths:
       - "**.go"
       - "**.nix"
-      - "go.mod"
-      - "go.sum"
+      - "**/go.mod"
+      - "**/go.sum"
       - "go.work"
       - ".github/workflows/nix.yml"
       - "static/datastar.js"

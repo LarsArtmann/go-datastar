@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- CI lint job un-red: the `go install` pin `golangci-lint@v2.12.2` bundled a
+  go-tools whose `buildir` pass panicked while analyzing a dependency package
+  (`unexpected expr: *ast.KeyValueExpr`, exit 3), failing master and every
+  dependabot PR while the devshell's 2.13.2 reported 0 issues on the same
+  tree. CI now pins v2.13.2 — the same version the flake's devshell and
+  `lint-ci` app ship — restoring the local-parity invariant. Note: the frozen
+  v0.6.1 tags keep their red tag-CI (the workflow file at a tag is
+  immutable); release content was verified green (build/test/flake-check)
+  before tagging.
+- `datastartestVendorHash` re-derived for the replace-drop release follow-up:
+  dropping datastartest's directory replaces changed its vendored set, and
+  `nix.yml`'s path filter (root-only `go.mod`/`go.sum`) let master's nix gate
+  silently skip the commit. The filter now matches `**/go.mod`/`**/go.sum`.
+  Local `nix flake check` is green again.
+
 ### Changed
 
 - datastartest's two inert `replace` directives (`go-datastar => ..`,

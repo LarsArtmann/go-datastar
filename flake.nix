@@ -51,7 +51,7 @@
           # included), so this hash moves on ANY edit to any tracked file
           # under the repo root or static/ (plus requires/toolchain changes)
           # — verified 2026-09-02 (ADR 004 correction, evidence matrix).
-          datastartestVendorHash = "sha256-LNqCJKDACsCu5w77RzG2536KsHuzs4vgkgh1mYO8Ha4=";
+          datastartestVendorHash = "sha256-QAoGudgZ2+BLdsB/HteD2nDrOsuiftxRR1kKYbWC4bs=";
           # broadcast vendors root + static through its directory replaces —
           # same movement rules as datastartestVendorHash above.
           broadcastVendorHash = "sha256-Kfqpia4gI4qqMwMt7NZ+ZqK5677sbj4t5Sp11AwZAkY=";
@@ -293,7 +293,7 @@
 
             lint-ci = mkApp "lint-ci" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run ./... ./broadcast/... ./datastartest/... ./static/... --timeout 5m
+              go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.2 run ./... ./broadcast/... ./datastartest/... ./static/... --timeout 5m
             '';
 
             # erraudit is NOT hermetically buildable (its dependency tree

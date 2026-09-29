@@ -145,12 +145,17 @@ jobs:
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.cache/golangci-lint
-          key: golangci-lint-${{ runner.os }}-v2.12.2-go1.27.1-${{ hashFiles('**/go.sum') }}
+          key: golangci-lint-${{ runner.os }}-v2.13.2-go1.27.1-${{ hashFiles('**/go.sum') }}
           restore-keys: |
-            golangci-lint-${{ runner.os }}-v2.12.2-go1.27.1-
+            golangci-lint-${{ runner.os }}-v2.13.2-go1.27.1-
 
+      # Pin to the SAME version the flake's devshell ships (nixpkgs
+      # golangci-lint, currently 2.13.2) so local and CI lint agree.
+      # v2.12.2 bundled a go-tools whose buildir pass panics on a
+      # dependency package ("unexpected expr: *ast.KeyValueExpr", exit 3)
+      # while 2.13.2 reports 0 issues on the same tree.
       - name: Install golangci-lint
-        run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
+        run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.2
 
       - name: Lint
         run: golangci-lint run ./... ./broadcast/... ./datastartest/... ./static/... --timeout 5m

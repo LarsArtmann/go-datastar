@@ -39,7 +39,7 @@ GOEXPERIMENT=jsonv2 go test ./... ./broadcast/... ./datastartest/... ./static/..
 GOEXPERIMENT=jsonv2 go vet ./... ./broadcast/... ./datastartest/... ./static/...
 GOEXPERIMENT=jsonv2 golangci-lint run ./... ./broadcast/... ./datastartest/... ./static/...
 # Pre-push lint = EXACT CI parity (flake: `nix run .#lint-ci`):
-GOEXPERIMENT=jsonv2 go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run ./... ./broadcast/... ./datastartest/... ./static/... --timeout 5m
+GOEXPERIMENT=jsonv2 go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.2 run ./... ./broadcast/... ./datastartest/... ./static/... --timeout 5m
 
 # Isolation mode (GOWORK=off, per-module — verifies replace directives; run from each module dir):
 GOWORK=off GOEXPERIMENT=jsonv2 go test ./...
@@ -114,8 +114,9 @@ CHANGELOG.
 - `ci.yml` — test as a per-module matrix (root/datastartest/static: GOWORK=off
   build/vet/race + `go mod verify` + tidy-diff, in parallel) plus a workspace
   job (workspace race suite, go.work use-vs-disk, sync idempotency, replace
-  audit, JS-version-in-CHANGELOG drift test); lint (golangci-lint v2.12.2
-  go-installed, analysis cache cached), erraudit (probe-gated while the repo
+  audit, JS-version-in-CHANGELOG drift test); lint (golangci-lint v2.13.2
+  go-installed, pinned to the devshell's nixpkgs version — v2.12.2's go-tools
+  buildir pass panics on a dependency package in CI, analysis cache cached), erraudit (probe-gated while the repo
   is private), govulncheck. Runs ONLY on code-affecting paths (`paths`
   filter) — docs-only pushes skip it entirely.
 - `actionlint.yml` — workflow YAML validation on EVERY push/PR (the signal
@@ -164,7 +165,7 @@ CHANGELOG.
   findings on every full lint — with warnings that the files no longer exist.
   If lint reports issues in paths outside the repo, do NOT chase them in the
   code: re-run with a fresh cache
-  (`GOLANGCI_LINT_CACHE=$(mktemp -d) go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run ...`)
+  (`GOLANGCI_LINT_CACHE=$(mktemp -d) go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.2 run ...`)
   and trust only that verdict. Purging the shared cache itself is an owner
   decision (other sessions rely on it).
 - `go.work` is committed, but a **global** gitignore (`~/.config/git/ignore`)
@@ -252,6 +253,17 @@ No CQRS, no event bus, no domain opinions. It is a pure protocol layer. Consumer
   2026-09-18, v0.6.0 prep). Always reproduce with a full local
   `nix flake check` and paste every moved hash; never trust the CI error
   line as the complete list.
+- **"Inert" datastartest replace drops are NOT vendorHash-inert; the nix CI
+  path filter can hide it.** Dropping datastartest's directory replaces
+  (2026-09-29, `c1826fb`) changed the vendored set, but `nix.yml`'s `paths`
+  filter only watched ROOT `go.mod`/`go.sum`, so the workflow never ran on
+  master and `nix flake check` sat red locally-unnoticed until the next
+  session ran it. FIXED: the filter now uses `**/go.mod` + `**/go.sum` (and
+  the datastartest vendorHash was re-derived). Lesson: `datastartestSrc`'s
+  minimal fileset includes the WHOLE `datastartest/` dir, so ANY
+  `datastartest/go.mod` edit moves `datastartestVendorHash`; root metadata
+  (`.md`, CI yml) stays outside both filesets and never moves a hash. Always
+  run `nix flake check` locally before pushing go.mod edits in ANY module.
 - **`buildGoModule` `modRoot`** builds a submodule in place (vendor + main
   derivations both `cd "$modRoot"`).
 - **BOM in Go source = compile error.** Use the escape `"\xef\xbb\xbf"` in
