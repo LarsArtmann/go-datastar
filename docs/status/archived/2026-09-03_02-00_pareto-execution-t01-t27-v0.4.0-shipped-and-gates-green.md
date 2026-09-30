@@ -84,16 +84,29 @@ GitHub Release, proxy + pkg.go.dev verified); every gate green at HEAD
 
 ## e) What we should improve next
 
-1. **The final datastartestVendorHash (post-treefmt) must be committed with
-   this report** — it converged at `O1o+dHD…`; future root *.go or
-   datastartest edits re-stale it (loud, one-paste fix).
-2. Promote nix.yml after two green weeks (drop `continue-on-error`).
-3. v0.5.0: the `[Unreleased]` section is release-ready; scope per checklist.
-4. datastartest helper tranche 2 (ROADMAP theme 2, source-cited).
-5. Consider a `Broadcaster[datastar.Patch]`-typed example upgrade if go-sse
-   gains a subscription-hook that renders lazily (watch item).
-6. Keep the docspec contract alive: every API change touching a documented
-   snippet updates snippet + mirror in one commit.
+1. ~~**The final datastartestVendorHash (post-treefmt) must be committed
+   with this report** — it converged at `O1o+dHD…`; future root *.go or
+   datastartest edits re-stale it (loud, one-paste fix).~~ done — final
+   vendorHash refreshes landed with the session's final integration on
+   `dba6a2f` (see the debrief's final-integration row); `nix flake check`
+   green there.
+2. ~~Promote nix.yml after two green weeks (drop `continue-on-error`).~~ done
+   2026-09-18 — 15 consecutive green runs + v0.5.0 tagged from a green tree
+   (`2026-09-18_21-02` report a1).
+3. ~~v0.5.0: the `[Unreleased]` section is release-ready; scope per
+   checklist.~~ done — v0.5.0 cut 2026-09-03 23:00 (`831bbfb`, lockstep ×3;
+   `2026-09-03_23-00` report).
+4. ~~datastartest helper tranche 2 (ROADMAP theme 2, source-cited).~~ done
+   2026-09-18 — `RequireNotScript`, `FindScript`, `FindAllElements`,
+   `EventToSelectorMap`, timeout Collect variants (`2026-09-18_21-02` a6;
+   CHANGELOG [0.6.0]).
+5. ~~Consider a `Broadcaster[datastar.Patch]`-typed example upgrade if go-sse
+   gains a subscription-hook that renders lazily (watch item).~~ **NOT-DO —
+   the condition never materialized: go-sse is at v0.6.1 with no such hook;
+   revisit only if one appears.**
+6. ~~Keep the docspec contract alive: every API change touching a documented
+   snippet updates snippet + mirror in one commit.~~ done — the contract is
+   codified in CONTRIBUTING.md by T26 (`b055625`); standing practice since.
 
 ## f) Time and effort
 
