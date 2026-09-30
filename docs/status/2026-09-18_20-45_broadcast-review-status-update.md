@@ -68,7 +68,7 @@ documented-tolerated `Close` blank-ignore.
 3. **R1–R3 routed, not implemented** (injection-seam constructor, constructor
    matrix, heartbeat option) — API additions are owner-gated for the next
    minor.
-4. **R4 noted only**: broadcaster_test.go at 471 lines is under control;
+4. **R4 noted only**: broadcaster_test.go at 471 lines is under control; **→ open — 453 lines today, under the ~600 threshold; revisit if it grows**
    split threshold (≈600) documented, not acted on.
 5. **Benchmark/fuzz surface for broadcast**: none exists (root and datastartest
    have both); identified, not built.
@@ -136,7 +136,7 @@ Priority tiers: **P1** = do next, **P2** = near, **P3** = when convenient,
 
 | #  | Pri | Item                                                                                                                         | Trace                             |
 | -- | --- | ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
-| 1  | P1  | Tag/ship the broadcast replay fix (rides lockstep train; CHANGELOG entry ready)                                              | d5, a14                           |
+| ~~1~~  | ~~P1~~ done — v0.6.0 tagged 2026-09-18 20:18 — fix rode the lockstep train with its own CHANGELOG highlight (`2026-09-18_22-29`) | ~~Tag/ship the broadcast replay fix (rides lockstep train; CHANGELOG entry ready)~~ | ~~d5, a14~~ |
 | 2  | P1  | R1: `NewBroadcasterWithStore(sse.EventStore)` injection seam (NO backends in-repo)                                           | TODO_LIST R1                      |
 | 3  | P1  | R2: close buffer-size × replay constructor-matrix gap (functional options or combined constructor)                           | TODO_LIST R2                      |
 | 4  | P2  | R3: optional heartbeat interval (also unlocks a fast heartbeat test)                                                         | R3, f25                           |
@@ -163,9 +163,9 @@ Priority tiers: **P1** = do next, **P2** = near, **P3** = when convenient,
 | 25 | P3  | Consider example snippet using replay (domain-adapter currently exercises fan-out only)                                      | c-list                            |
 | 26 | P?  | Make the lint gate required or alerting — it sat red on master unnoticed; policy says local gates are the real gate          | F7                                |
 | 27 | P?  | AGENTS.md gotcha: gopls `infertypeargs` false positive on `WithBufferSize` (settle point ≤15KB — prune first)                | d2                                |
-| 28 | P3  | AGENTS.md gotcha candidate: golangci worktree-cache ghosting (same 15KB cap applies)                                         | d4                                |
+| ~~28~~ | ~~P3~~ done — documented in AGENTS.md — "Shared golangci-lint cache can replay ghost findings" gotcha (`2026-09-18_21-02` a9) | ~~AGENTS.md gotcha candidate: golangci worktree-cache ghosting (same 15KB cap applies)~~ | ~~d4~~ |
 | 29 | P3  | CI-watch ritual: add "run full local gate before push" to the monthly checklist explicitly                                   | F7 root cause                     |
-| 30 | P3  | Lockstep check: broadcast's go-sse v0.6.0 pin vs root's — one dependency sweep to confirm no drift                           | go.mod review                     |
+| ~~30~~ | ~~P3~~ done — via v0.6.1 — go-sse pinned v0.6.1 across root/broadcast/datastartest in one sweep (CHANGELOG [0.6.1]) | ~~Lockstep check: broadcast's go-sse v0.6.0 pin vs root's — one dependency sweep to confirm no drift~~ | ~~go.mod review~~ |
 | 31 | P3  | Sweep for `connectSubscriber`-style helpers duplicated across module tests; dedupe via datastartest if allowed by boundaries | helper consolidation idea         |
 | 32 | P3  | Fuzz corpus: add this session's raw-event wire case as a seed where applicable                                               | F4                                |
 | 33 | P3  | `waitFor` helper: consider deadline param instead of hardcoded 2s (two timeouts needed manual diagnosis)                     | d1                                |
@@ -175,17 +175,17 @@ Priority tiers: **P1** = do next, **P2** = near, **P3** = when convenient,
 | 37 | P3  | Test: hub sharing via `NewBroadcasterFromHub` + replay-less wrapper documented behavior (no store)                           | constructor matrix                |
 | 38 | P3  | Table-driven sweep of constructor × (broadcast/broadcastMany/broadcastEvent) combinations                                    | F2–F4                             |
 | 39 | P3  | Verify `sse.Replay` count return could feed a future metric/log hook without API change                                      | f14/f15 design                    |
-| 40 | P3  | Docs map: AGENTS.md "Key files" list predates broadcast — check whether broadcast belongs there (settle point!)              | docs map review                   |
-| 41 | P?  | Release notes: decide whether broadcast fix is its own highlight or bundled (ties to #1)                                     | d5                                |
-| 42 | P3  | Add `//` comment-free invariant: current code is comment-clean; keep F9-style doc comments on ordering changes               | F9                                |
+| 40 | P3 **→ settled — AGENTS.md covers broadcast in the module table + intro; the Key-files list stays root-package-scoped by design** | Docs map: AGENTS.md "Key files" list predates broadcast — check whether broadcast belongs there (settle point!)              | docs map review                   |
+| ~~41~~ | ~~P?~~ done — answered — v0.6.0 bundled the fix as its own "Added — broadcast module" highlight | ~~Release notes: decide whether broadcast fix is its own highlight or bundled (ties to #1)~~ | ~~d5~~ |
+| ~~42~~ | ~~P3~~ **NOT-DO — standing practice, not a task — current code is comment-clean with F9-style doc comments on invariants.** | ~~Add `//` comment-free invariant: current code is comment-clean; keep F9-style doc comments on ordering changes~~ | ~~F9~~ |
 | 43 | P3  | Double-check `WithOnDrop` interplay: drops during replay window are invisible to consumers (ties to f14)                     | replay+drop overlap               |
 | 44 | P3  | Consider `context.Context` parameter for future broadcast APIs (ServeHTTP uses request ctx; constructors don't need)         | API hygiene                       |
 | 45 | P3  | Review whether `MemoryStore` export from root + broadcast's private store field should unify on one type                     | R1 design                         |
 | 46 | P3  | Post-release: monitor fuzz.yml 300s runs for the broadcast-adjacent seeds (ritual, no code)                                  | CI changelog entries              |
 | 47 | P3  | Confirm erraudit CI probe still tolerates broadcast's Close pattern when repo goes public                                    | owner-blocked row exists          |
-| 48 | P3  | Sweep TODO_LIST "Notes" section after this session's rows land (keep ≤ current size)                                         | docs hygiene                      |
+| ~~48~~ | ~~P3~~ done (docs-health pass 2026-10-01) | ~~Sweep TODO_LIST "Notes" section after this session's rows land (keep ≤ current size)~~ | ~~docs hygiene~~ |
 | 49 | P3  | Archive companion review report when docs-health verifies every F/R item resolved (policy)                                   | status policy                     |
-| 50 | P3  | Re-run the full local gate at the tagged commit before any push (release checklist step, unchanged)                          | a13                               |
+| ~~50~~ | ~~P3~~ done — the v0.6.0 ceremony re-ran the full local gate at the tagged commit (`2026-09-18_22-29` a-list) | ~~Re-run the full local gate at the tagged commit before any push (release checklist step, unchanged)~~ | ~~a13~~ |
 
 Owner-decision items: #2–#4 (public API), #14–#16 (API surface growth),
 #26 (CI policy), #27–#28 (AGENTS.md settle point), #35 (naming), #41 (release
@@ -193,9 +193,9 @@ framing).
 
 ## g) QUESTIONS I CANNOT ANSWER MYSELF
 
-1. **Release framing**: should the broadcast replay-loss fix ship as an
-   immediate patch tag (v0.5.1 lockstep) since it is a consumer-visible bug
-   fix, or wait for the next feature minor that carries R1–R3?
+1. ~~**Release framing**: should the broadcast replay-loss fix ship as an~~ done — answered — shipped same day in v0.6.0 with its own CHANGELOG highlight
+   ~~immediate patch tag (v0.5.1 lockstep) since it is a consumer-visible bug~~
+   ~~fix, or wait for the next feature minor that carries R1–R3?~~
 2. **API growth policy**: are the observability hooks (#14 OnDrop passthrough,
    #15 OnReplayError, #16 filtered replay) wanted on this module's public API,
    or does the minimal-API philosophy say consumers reach them via `Hub()`

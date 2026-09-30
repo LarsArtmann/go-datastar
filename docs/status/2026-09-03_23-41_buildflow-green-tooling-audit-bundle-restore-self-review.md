@@ -70,13 +70,13 @@
 
 ## c) NOT STARTED (observed this session; deliberately untouched)
 
-1. **Push to origin** — master ahead 8 (incl. bundle restore + vendorHash fix). Why: never push without explicit instruction. Priority: high, blocked on owner.
-2. **v0.5.0 release** — `[Unreleased]` holds consumer-facing additions (Response method forms, `version` package, datastartest debug helpers, static v1.0.3). Waiting on release decision.
+1. ~~**Push to origin** — master ahead 8 (incl. bundle restore + vendorHash fix). Why: never push without explicit instruction. Priority: high, blocked on owner.~~ done — pushed — v0.5.0 tagged from that tree the same night (`831bbfb`)
+2. ~~**v0.5.0 release** — `[Unreleased]` holds consumer-facing additions (Response method forms, `version` package, datastartest debug helpers, static v1.0.3). Waiting on release decision.~~ done at `831bbfb`
 3. **docs/static-js.md runbook** — not verified against the new shields/checksum-pin workflow.
-4. **TODO_LIST.md harvest** of section (f) — belongs to docs-health HARVEST, not done yet.
+4. ~~**TODO_LIST.md harvest** of section (f) — belongs to docs-health HARVEST, not done yet.~~ done (docs-health pass 2026-10-01)
 5. **Fuzz smoke runs** (30s × FuzzReadSignals / FuzzReadEvents) — not run this session.
 6. **`version/` package has zero test files** (visible in every test run).
-7. **nix.yml promotion** off `continue-on-error` (first green run was today) — decision pending per docs/ci-watch.md.
+7. ~~**nix.yml promotion** off `continue-on-error` (first green run was today) — decision pending per docs/ci-watch.md.~~ done — promoted 2026-09-18 (`2026-09-18_21-02` a1)
 8. **One-bot decision** (renovate.json vs dependabot.yml) — pre-existing pending; also unverified whether the JS renovate-manager updates `bundleSHA256` in the same PR.
 9. **aarch64 hermetic coverage** — `nix flake check` skipped aarch64-darwin/linux (warning visible today).
 10. **codespell/erraudit in CI** — currently buildflow-only enforcement.
@@ -102,28 +102,28 @@
 
 | #  | Task                                                                                                                      | Impact   | Effort | Category      |
 | -- | ------------------------------------------------------------------------------------------------------------------------- | -------- | ------ | ------------- |
-| 1  | Push master (8 commits: bundle restore, vendorHash fix, docs) after owner approval                                        | Critical | S      | Process       |
+| ~~1~~  | ~~Push master (8 commits: bundle restore, vendorHash fix, docs) after owner approval~~ done — pushed — v0.5.0 tagged from that tree (`831bbfb`) | ~~Critical~~ | ~~S~~ | ~~Process~~ |
 | 2  | Add oxfmt/oxlint ignore for `static/datastar.js` (config file)                                                            | High     | S      | Quality       |
 | 3  | Fix buildflow nix-hash-fix false-success (upstream in buildflow repo)                                                     | High     | M      | Tooling       |
 | 4  | Make buildflow's erraudit honor `//nolint:erraudit` or pin its flags                                                      | High     | M      | Tooling       |
 | 5  | Guard the daemon against committing `static/datastar.js` changes (checksum test pre-commit)                               | High     | S      | Tooling       |
 | 6  | Verify the renovate JS-bump manager updates `bundleSHA256` in the same PR                                                 | High     | M      | Tooling       |
-| 7  | Cut v0.5.0 per docs/release-checklist.md (Unreleased is substantial)                                                      | High     | M      | Release       |
+| ~~7~~  | ~~Cut v0.5.0 per docs/release-checklist.md (Unreleased is substantial)~~ done at `831bbfb` | ~~High~~ | ~~M~~ | ~~Release~~ |
 | 8  | Unify the two documented erraudit invocations into one contract                                                           | Medium   | S      | Quality       |
 | 9  | Update docs/static-js.md with checksum-pin + shields upgrade runbook                                                      | Medium   | S      | Documentation |
 | 10 | Add `.gitattributes`: `static/datastar.js linguist-vendored -diff`                                                        | Medium   | S      | Cleanup       |
 | 11 | Wire `erraudit nolint-audit` into a gate (lint-ci or CI)                                                                  | Medium   | S      | Quality       |
-| 12 | HARVEST this list into TODO_LIST/ROADMAP (docs-health)                                                                    | Medium   | S      | Documentation |
+| ~~12~~ | ~~HARVEST this list into TODO_LIST/ROADMAP (docs-health)~~ done (docs-health pass 2026-10-01) | ~~Medium~~ | ~~S~~ | ~~Documentation~~ |
 | 13 | Run fuzz smoke tests (FuzzReadSignals, FuzzReadEvents, 30s each)                                                          | Medium   | S      | Quality       |
 | 14 | Add `version/` package unit test                                                                                          | Medium   | S      | Quality       |
 | 15 | Audit for other ef10422 collateral: check `example/Dockerfile` hadolint edits changed semantics only                      | Medium   | S      | Cleanup       |
 | 16 | Add `nix flake check` to AGENTS.md commands + pre-push ritual                                                             | Medium   | S      | CI            |
-| 17 | Promote nix.yml off `continue-on-error` after 7 green days (ci-watch runbook)                                             | Medium   | S      | CI            |
+| ~~17~~ | ~~Promote nix.yml off `continue-on-error` after 7 green days (ci-watch runbook)~~ done — promoted 2026-09-18 (`2026-09-18_21-02` a1) | ~~Medium~~ | ~~S~~ | ~~CI~~ |
 | 18 | Decide one-bot: renovate vs dependabot (pending per AGENTS.md)                                                            | Medium   | S      | Process       |
 | 19 | Consolidate non-Go formatters (pick dprint or prettier; wire into treefmt)                                                | Medium   | L      | Quality       |
 | 20 | Run `erraudit nolint-audit .` and record result (directive freshness)                                                     | Medium   | S      | Quality       |
 | 21 | Manually audit for encoding/json v1 remnants (go-auto-upgrade step is now skipped)                                        | Medium   | S      | Quality       |
-| 22 | Confirm datastartest README documents Diff/Snapshot/RequireElementsOrdered (Unreleased helpers)                           | Medium   | S      | Documentation |
+| ~~22~~ | ~~Confirm datastartest README documents Diff/Snapshot/RequireElementsOrdered (Unreleased helpers)~~ done — datastartest README documents RequireElementsOrdered, Diff, and Snapshot with snippets | ~~Medium~~ | ~~S~~ | ~~Documentation~~ |
 | 23 | Document CONTRIBUTING.md bundle-upgrade procedure (checksum pin, shields)                                                 | Medium   | S      | Documentation |
 | 24 | Add belt-and-braces test: bundle must stay minified (line-count heuristic) alongside checksum                             | Low      | S      | Quality       |
 | 25 | datastartest/diff.go: add explicit bounds guards to silence branching-flow index warnings legitimately                    | Low      | S      | Quality       |
@@ -135,29 +135,29 @@
 | 31 | Decide coverage-badge scope: include/exclude `example/` (23.6% / 14.3%)                                                   | Low      | S      | Quality       |
 | 32 | Make example handler error paths testable (extract handler, raise coverage honestly)                                      | Low      | M      | Quality       |
 | 33 | aarch64: run `nix flake check --all-systems` (CI job or local one-off)                                                    | Low      | M      | CI            |
-| 34 | Verify clean-checkout `nix flake check` on HEAD `caa0986` (kill the red-window class)                                     | Medium   | S      | Process       |
+| ~~34~~ | ~~Verify clean-checkout `nix flake check` on HEAD `caa0986` (kill the red-window class)~~ done — superseded — the nix gate ran green through v0.5.0/v0.6.0/v0.6.1 incl. hash repairs | ~~Medium~~ | ~~S~~ | ~~Process~~ |
 | 35 | Document in AGENTS.md: buildflow result cache can mask fresh findings (`BUILDFLOW_NO_RESULT_CACHE=1`)                     | Low      | S      | Documentation |
-| 36 | Cross-link `.buildflow.yml` skip rationale from AGENTS.md Commands section                                                | Low      | S      | Documentation |
+| ~~36~~ | ~~Cross-link `.buildflow.yml` skip rationale from AGENTS.md Commands section~~ done — AGENTS.md buildflow gotcha reads and explains `.buildflow.yml` skip_steps | ~~Low~~ | ~~S~~ | ~~Documentation~~ |
 | 37 | Review whether the daemon should run at all on `static/**` (config outside repo — propose to owner)                       | High     | S      | Process       |
 | 38 | Pin buildflow + erraudit versions used by gates in one place (flake/devShell)                                             | Low      | M      | Tooling       |
-| 39 | Check ci.yml actually ran green on the post-`ef10422` pushes (informational ≠ watched)                                    | Medium   | S      | CI            |
-| 40 | Add release-audit report for v0.5.0 when cutting it (status-report convention)                                            | Low      | M      | Release       |
-| 41 | Verify v0.4.0 module proxy/pkg.go.dev propagation as release-checklist dry run                                            | Low      | S      | Release       |
+| ~~39~~ | ~~Check ci.yml actually ran green on the post-`ef10422` pushes (informational ≠ watched)~~ done — verified — ci.yml green on every subsequent release commit (2026-09-03/18/29 reports) | ~~Medium~~ | ~~S~~ | ~~CI~~ |
+| ~~40~~ | ~~Add release-audit report for v0.5.0 when cutting it (status-report convention)~~ done — v0.5.0 release report exists (`2026-09-03_23-00`) | ~~Low~~ | ~~M~~ | ~~Release~~ |
+| ~~41~~ | ~~Verify v0.4.0 module proxy/pkg.go.dev propagation as release-checklist dry run~~ done — v0.4.0 proxy + pkg.go.dev verified by the same-day release-superb audit (a1/a7) | ~~Low~~ | ~~S~~ | ~~Release~~ |
 | 42 | Document that `example/` is intentionally not scanned by the local erraudit gates (or start scanning it)                  | Low      | S      | Documentation |
 | 43 | Consider `.codespellrc` skip list for `docs/modularization/*.html` (vendored-style audit HTML) if it ever false-positives | Low      | S      | Quality       |
-| 44 | Add session-start ritual line: `git town status` + baseline gate suite (AGENTS.md)                                        | Low      | S      | Process       |
+| 44 | Add session-start ritual line: `git town status` + baseline gate suite (AGENTS.md) **→ partial — session-start ritual line exists in AGENTS.md; baseline-gate-suite part still open** | Low      | S      | Process       |
 | 45 | Evaluate extracting flake hashes to `hash.nix` only WITH an ADR-004 addendum proving no FOD self-reference                | Low      | M      | Cleanup       |
 | 46 | Sweep `docs/` for pre-2026-08 formatter reformats that changed meaning (spot-check 5 oldest)                              | Low      | M      | Cleanup       |
 | 47 | Add TODO_LIST entry for buildflow/erraudit upstream fixes (items 3, 4, 30) so they survive sessions                       | Medium   | S      | Documentation |
-| 48 | Decide whether `example/` should move to its own module (likely reject; document why)                                     | Low      | S      | Documentation |
+| ~~48~~ | ~~Decide whether `example/` should move to its own module (likely reject; document why)~~ done — decided — ADR 002 addendum keeps example/ in root (T22, `592e12c`) | ~~Low~~ | ~~S~~ | ~~Documentation~~ |
 | 49 | Add CI leg comment: which leg would have caught the mangled bundle, and why it did not (post-mortem note in ci-watch doc) | Medium   | S      | Documentation |
-| 50 | Close this session properly: re-run one fast buildflow pass post-daemon-sweep to confirm green on committed HEAD          | Medium   | S      | Process       |
+| ~~50~~ | ~~Close this session properly: re-run one fast buildflow pass post-daemon-sweep to confirm green on committed HEAD~~ done — superseded — full local gates re-ran green through the 09-18 sessions | ~~Medium~~ | ~~S~~ | ~~Process~~ |
 
 ## g) THREE QUESTIONS I CANNOT ANSWER MYSELF
 
-1. **Push now or hold?** Master is 8 commits ahead (bundle restore, stale-hash fix, docs, shields). I checked `git status` and AGENTS.md (no branch protection; pushes normally flow through you/git-town) and my own rule is no unprompted pushes. **Do you want master pushed to origin now, or after you review?**
+1. ~~**Push now or hold?** Master is 8 commits ahead (bundle restore, stale-hash fix, docs, shields). I checked `git status` and AGENTS.md (no branch protection; pushes normally flow through you/git-town) and my own rule is no unprompted pushes. **Do you want master pushed to origin now, or after you review?**~~ done — answered — pushed; v0.5.0/v0.6.0/v0.6.1 tagged from the lineage since
 2. **Are buildflow and erraudit in scope for me?** Both are your tools. I tried to pin buildflow's erraudit invocation from the repo side (argv shim, binary strings, run records — failed) and observed nix-hash-fix claiming success on a hash it did not fix. **Should I file/fix these two upstream in buildflow (and the erraudit detector divergence), or treat them as black boxes and route around them here?**
-3. **Release timing: v0.5.0 now or batch?** `[Unreleased]` contains real consumer-facing work (Response method forms, `version` package, three datastartest helpers, static v1.0.3 with CSP support). I read the CHANGELOG and release checklist exists — but whether you want a release cut this week is a product call only you can make. **Cut v0.5.0 next, or accumulate more first?**
+3. ~~**Release timing: v0.5.0 now or batch?** `[Unreleased]` contains real consumer-facing work (Response method forms, `version` package, three datastartest helpers, static v1.0.3 with CSP support). I read the CHANGELOG and release checklist exists — but whether you want a release cut this week is a product call only you can make. **Cut v0.5.0 next, or accumulate more first?**~~ done — answered — v0.5.0 cut the same night (`831bbfb`)
 
 ---
 

@@ -60,6 +60,9 @@ invariant is enforced by construction and documented in F9.
 
 ## Recommendations (routed to TODO_LIST, not fixed)
 
+_Routed 2026-10-01: R1–R3 live in the TODO_LIST "Verified next-up" row
+(broadcast ergonomics tranche); still open there._
+
 - **R1 — pluggable replay store (injection seam only)**: `store` is hardwired
   to `*datastar.MemoryStore`; `sse.Replay` already accepts any
   `sse.EventStore`. A `NewBroadcasterWithStore` would let consumers inject
@@ -74,7 +77,8 @@ invariant is enforced by construction and documented in F9.
   only if a consumer asks (YAGNI).
 - **R4 — test file size**: 471 lines for 13 cohesive tests; under control, but
   split by theme (lifecycle / delivery / replay) if it keeps growing past
-  ~600.
+  ~600. _NOT-DO (2026-10-01): condition not met — the file is 453 lines
+  today, still under the threshold._
 
 ## Verification (all green at report time)
 

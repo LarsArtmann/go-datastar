@@ -35,17 +35,17 @@
 2. **erraudit loop skipped pre-release** — inherited from the prior session's report; the checklist doesn't list it so the tag is formally clean, but the AGENTS.md commands section includes it and both v0.5.0 and v0.6.0 shipped without it.
 3. **Fresh-cache lint as a gate** — I used it (correctly), but only reactively: the shared-cache ghost findings burned one lint run before I re-ran with `GOLANGCI_LINT_CACHE=$(mktemp -d)`. Not standardized; owner decision still open.
 4. **Consumer smoke test** — passed, but only after my own program failed to compile (`static.Version` is a const, not a function; `broadcast.Hub` is a method, not a var). The check itself was improvised rather than derived from `go doc` first.
-5. **Status-report closure** — this report exists; the docs/status/README.md index row is added; but HARVEST of this report's section (f) into TODO_LIST/ROADMAP is not done (per the skill, that loop stays open until a docs-health HARVEST pass).
-6. **Prior session's open questions** — Q2 (cut v0.6.0 now?) answered by your "Release a new version!" and executed. Q1 (lint cache) and Q3 (one-bot) remain open and still cost real time (see g).
+5. ~~**Status-report closure** — this report exists; the docs/status/README.md index row is added; but HARVEST of this report's section (f) into TODO_LIST/ROADMAP is not done (per the skill, that loop stays open until a docs-health HARVEST pass).~~ done (docs-health pass 2026-10-01)
+6. ~~**Prior session's open questions** — Q2 (cut v0.6.0 now?) answered by your "Release a new version!" and executed. Q1 (lint cache) and Q3 (one-bot) remain open and still cost real time (see g).~~ done — partially — Q2 answered (v0.6.0 released); Q1 (lint cache) and Q3 (one-bot) remain open owner questions
 
 ## c) NOT STARTED
 
 1. **Checklist §5 comparison re-verify** (quarterly or after upstream release) — by design not part of this release; last comparison footnote says datastar-go v1.2.2.
 2. **Broadcast API ergonomics tranche** (TODO_LIST: `NewBroadcasterWithStore` seam, constructor-matrix gap, optional heartbeat interval) — next feature work, untouched this session.
-3. **One-bot decision + the 4 open dependabot PRs** (#11, #14, #15, #16) — deliberately untouched.
+3. ~~**One-bot decision + the 4 open dependabot PRs** (#11, #14, #15, #16) — deliberately untouched.~~ done — mostly — actions-group PR #16 merged (`4b1fc5d`); codeql-analyze PR #14 still open; one-bot decision itself still open
 4. **Shared lint-cache purge** — untouched (needs your call; I worked around it).
 5. **datastartest coverage re-measurement** — untouched (inherited).
-6. **ROADMAP raw-idea pruning** — untouched (inherited).
+6. ~~**ROADMAP raw-idea pruning** — untouched (inherited).~~ done (docs-health pass 2026-10-01)
 
 ## d) TOTALLY FUCKED UP
 
@@ -89,9 +89,9 @@ _Impact-ordered. ★ = harvest candidate for TODO_LIST (actionable now); the res
 **Docs (inherited gaps, small and concrete):**
 11. Fix `FindAllElements` godoc: script patches participate (EventToSelectorMap's doc already does).
 12. Add godoc Examples for the six tranche-2 helpers (pkg.go.dev shows examples only for pre-tranche-2 API).
-13. Prune shipped items from ROADMAP theme 2 raw list (annotated as shipped, but list not pruned).
-14. Run docs-health HARVEST on this report + the 2026-09-18 21:02 report's section (f) into TODO_LIST/ROADMAP.
-15. Update docs/ci-watch.md with the v0.6.0 release evidence (nix promotion held through a real release; first-failure lesson).
+13. ~~Prune shipped items from ROADMAP theme 2 raw list (annotated as shipped, but list not pruned).~~ done (docs-health pass 2026-10-01)
+14. ~~Run docs-health HARVEST on this report + the 2026-09-18 21:02 report's section (f) into TODO_LIST/ROADMAP.~~ done (docs-health pass 2026-10-01)
+15. ~~Update docs/ci-watch.md with the v0.6.0 release evidence (nix promotion held through a real release; first-failure lesson).~~ done (docs-health pass 2026-10-01)
 16. docs/migration-guide.md: add a v0.5.0→v0.6.0 note (purely additive; keeps the per-release guide precedent).
 17. datastartest README: note which helpers arrived in v0.6.0.
 18. README comparison footnote: check upstream datastar-go for a release newer than v1.2.2 (§5 cadence).
@@ -111,7 +111,7 @@ _Impact-ordered. ★ = harvest candidate for TODO_LIST (actionable now); the res
 **Dependencies & bots:**
 29. One-bot decision (Renovate vs Dependabot) — then merge/close the 4 stale dependabot PRs.
 30. Prove the Renovate embedded-JS custom manager actually fires (simulate/dry-run an upstream release; delivery flagged unverified in the CI-watch ritual).
-31. Sweep golang.org/x/mod (dependabot PR #15) into a normal bump if the one-bot decision retires dependabot.
+31. ~~Sweep golang.org/x/mod (dependabot PR #15) into a normal bump if the one-bot decision retires dependabot.~~ done — superseded — the x/mod bump PRs (#15/#22) closed via the minor-and-patch group; version current
 32. Renovate: add broadcast/ to whatever module config assumes root+datastartest (verify lockstep groups cover 4 modules).
 
 **Quality gates:**

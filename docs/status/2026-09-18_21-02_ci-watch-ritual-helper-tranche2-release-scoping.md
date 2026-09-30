@@ -36,11 +36,11 @@ honestly.
 
 ## b) PARTIALLY DONE
 
-1. **Release scoping** — scoping itself done (verdict: next release is
-   **v0.6.0**, the first lockstep tag including `broadcast/`; `[Unreleased]`
-   currently = broadcast module + helper tranche 2 + CI promotions). The
-   release CUT is intentionally not started: tagging is an owner go/no-go and
-   a dedicated runbook operation. TODO_LIST now carries the sharpened row.
+1. ~~**Release scoping** — scoping itself done (verdict: next release is~~ done — v0.6.0 cut 2026-09-18 20:18 by the follow-up session (`2026-09-18_22-29`)
+   ~~**v0.6.0**, the first lockstep tag including `broadcast/`; `[Unreleased]`~~
+   ~~currently = broadcast module + helper tranche 2 + CI promotions). The~~
+   ~~release CUT is intentionally not started: tagging is an owner go/no-go and~~
+   ~~a dedicated runbook operation. TODO_LIST now carries the sharpened row.~~
 2. **ROADMAP tranche-2 annotation** — appended the shipped-items note, but did
    NOT prune items that already shipped (`Diff`, `Snapshot` still sit in the
    raw-idea list they graduated from; `RequireElementsOrdered` was already
@@ -49,25 +49,29 @@ honestly.
 3. **ci-watch.md fuzz section consistency** — State line updated and the
    promotion executed in fuzz.yml, but the fuzz **Promote** bullet lacks the
    ✅-done annotation the nix Promote bullet received.
-4. **End-of-session tree state** — `docs/testing.md` was still dirty at
-   session end (the auto-commit daemon sweeps it; AGENTS wants "clean tree at
-   end"). Cosmetic, pending the daemon.
+4. ~~**End-of-session tree state** — `docs/testing.md` was still dirty at~~ done — swept by the daemon; tree clean at the v0.6.0 tag
+   ~~session end (the auto-commit daemon sweeps it; AGENTS wants "clean tree at~~
+   ~~end"). Cosmetic, pending the daemon.~~
 5. **New-helper example coverage** — the house pattern includes godoc
    `Example*` functions (e.g. `ExampleFindElement`); tranche 2 shipped without
    them. README snippets exist; pkg.go.dev examples do not.
 
 ## c) NOT STARTED
 
-- **Cut v0.6.0** (see b1 — deliberately owner-gated).
+- **Cut v0.6.0** (see b1 — deliberately owner-gated). _Done — v0.6.0 cut
+  2026-09-18 20:18 (`2026-09-18_22-29`); v0.6.1 followed 2026-09-29._
 - **Broadcast API ergonomics tranche** (`NewBroadcasterWithStore`, constructor
   matrix, heartbeat interval) — separate session's row, untouched by design.
+  _Still open — TODO_LIST "Verified next-up" row._
 - **Four open dependabot PRs** (actions group ×3-in-1, `x/mod` 0.41.0,
   codeql-action init/analyze SHA bumps) — reviewed as part of the ritual's
   context but not merged; note the actions-group PR touches the same
-  SHA-pinned actions this session's edited workflows use.
+  SHA-pinned actions this session's edited workflows use. _Mostly resolved —
+  actions-group PR #16 merged 2026-09-29 (`4b1fc5d`), x/mod PRs closed by the
+  minor-and-patch group; codeql-action analyze PR #14 still open._
 - **One-bot decision** (Renovate vs dependabot) and other owner-blocked items
   (CODEOWNERS, erraudit CI probe flip, branch deletions) — owner-blocked,
-  unchanged.
+  unchanged. _Still open — TODO_LIST Owner-blocked section._
 
 ## d) TOTALLY FUCKED UP (own mistakes this session, honest)
 
@@ -138,23 +142,23 @@ before completion. Listed by how much time they burned:
 Brainstorm, sorted by impact; items 1–8 are actionable NOW, the rest are
 ROADMAP-fuel to be routed through docs-health HARVEST with rigor.
 
-1. **Cut the v0.6.0 lockstep release** (first `broadcast/` tag) per the
-   updated release checklist — all pre-tag gates already green.
-2. **Watch the first nix.yml run WITHOUT `continue-on-error`** after the next
-   master push — a red run is now a red-master incident by the runbook's own
-   definition.
-3. **Watch tomorrow's 300 s fuzz run** (~03:17 cron) — first run at the new
-   fuzztime; also empirically confirm 300 s + cold build stays under
-   `timeout-minutes: 15`.
-4. **Merge/triage the four dependabot PRs** — the actions-group bump touches
-   the SHA-pinned actions just edited in nix.yml/fuzz.yml; x/mod 0.41.0
-   touches go.sum (vendorHash sensitivity per AGENTS).
+1. ~~**Cut the v0.6.0 lockstep release** (first `broadcast/` tag) per the~~ done — v0.6.0 cut 2026-09-18 20:18; v0.6.1 on 2026-09-29 (`2026-09-18_22-29` + tags)
+   ~~updated release checklist — all pre-tag gates already green.~~
+2. ~~**Watch the first nix.yml run WITHOUT `continue-on-error`** after the next~~ done — green — the nix gate ran without continue-on-error through the v0.6.x releases (incl. the 2026-09-29 paths-filter fix)
+   ~~master push — a red run is now a red-master incident by the runbook's own~~
+   ~~definition.~~
+3. ~~**Watch tomorrow's 300 s fuzz run** (~03:17 cron) — first run at the new~~ done — 300s runs green since 2026-09-18, within timeout-minutes 15 (ci-watch documents the promotion)
+   ~~fuzztime; also empirically confirm 300 s + cold build stays under~~
+   ~~`timeout-minutes: 15`.~~
+4. ~~**Merge/triage the four dependabot PRs** — the actions-group bump touches~~ done — mostly — actions-group PR #16 merged (`4b1fc5d`), x/mod closed via group; codeql-analyze PR #14 remains open
+   ~~the SHA-pinned actions just edited in nix.yml/fuzz.yml; x/mod 0.41.0~~
+   ~~touches go.sum (vendorHash sensitivity per AGENTS).~~
 5. **Run the erraudit loop** over all four modules (skipped this session).
 6. **Re-measure datastartest coverage** post-tranche-2 and record it in the
    CHANGELOG entry (house precedent: 92.7 % → 93.4 %).
-7. **Prune ROADMAP theme-2 raw-idea list** of shipped items (Diff, Snapshot,
-   FindScript, …) — close the b2 split-brain.
-8. **Annotate the ci-watch fuzz Promote bullet** with ✅ (b3 consistency).
+7. ~~**Prune ROADMAP theme-2 raw-idea list** of shipped items (Diff, Snapshot,~~ done (docs-health pass 2026-10-01)
+   ~~FindScript, …) — close the b2 split-brain.~~
+8. ~~**Annotate the ci-watch fuzz Promote bullet** with ✅ (b3 consistency).~~ done (docs-health pass 2026-10-01)
 9. Add godoc `Example*` functions for the five new helpers.
 10. Add `FindAllElements` doc paragraph on script patches participating.
 11. Failure-path test for `readEventsWithin` (zero-events-before-deadline ⇒
@@ -198,8 +202,8 @@ ROADMAP-fuel to be routed through docs-health HARVEST with rigor.
 32. Community metadata (Sponsors/funding, contributor list) — ROADMAP.
 33. Migration-guide refresh for the starfederation SDK against JS v1.0.3 —
     ROADMAP.
-34. `docs/architecture.md`: finish the broadcast module layer in the diagram —
-    ROADMAP (annotated as "started").
+34. ~~`docs/architecture.md`: finish the broadcast module layer in the diagram —~~ done — docs/architecture.md includes the broadcast module in the protocol layer (ROADMAP theme 2 notes it)
+    ~~ROADMAP (annotated as "started").~~
 35. More example apps: toasts, progress bars, signal merge modes — ROADMAP.
 36. Refresh `docs/performance.md` with current benchmark numbers.
 37. Fuzz corpus minimization pass (51 seeds include near-duplicates; smaller
@@ -208,18 +212,18 @@ ROADMAP-fuel to be routed through docs-health HARVEST with rigor.
     omitted aarch64/darwin systems).
 39. Decide whether CI workflow changes belong in the library CHANGELOG
     (keepachangelog purists say no; current entries do) — document the call.
-40. Investigate the root-owned `.crush -> /mnt/hot/crush/go-datastar` symlink
-    in the repo root (unexpected; not covered by AGENTS).
-41. The `result` Nix symlink reappeared (AGENTS says it was removed) — trash
-    it or document that nix builds recreate it.
+40. ~~Investigate the root-owned `.crush -> /mnt/hot/crush/go-datastar` symlink~~ **NOT-DO — local env artifact — the .crush symlink is untracked (git ls-files empty); AGENTS.md need not cover machine-local state.**
+    ~~in the repo root (unexpected; not covered by AGENTS).~~
+41. ~~The `result` Nix symlink reappeared (AGENTS says it was removed) — trash~~ **NOT-DO — local nix-build artifact — the `result` symlink is untracked AND gitignored; recreated by local builds, harmless.**
+    ~~it or document that nix builds recreate it.~~
 42. Repo-wide grep for stale "three modules" claims (release checklist is
     fixed; ADR 002 and others may still say 3).
 43. ADR 002: confirm it reflects broadcast joining the lockstep train, or
     amend it.
-44. Update `docs/status/README.md` index tier for this report + the two
-    2026-09-18 broadcast reports (index hygiene per docs-health).
-45. Rename TODO_LIST release row evidence after the cut (v0.6.0 row will need
-    the same staleness check v0.5.0's row got).
+44. ~~Update `docs/status/README.md` index tier for this report + the two~~ done — docs/status/README.md carries rows for all three 2026-09-18 reports
+    ~~2026-09-18 broadcast reports (index hygiene per docs-health).~~
+45. ~~Rename TODO_LIST release row evidence after the cut (v0.6.0 row will need~~ done — superseded — TODO_LIST rebuilt since; no stale release row remains
+    ~~the same staleness check v0.5.0's row got).~~
 46. datastartest `doc.go`: surface the timeout-variant family in the package
     doc tour, not only README.
 47. Consider `-shuffle=on` for the workspace race suite (cheap flake finder).
@@ -227,9 +231,9 @@ ROADMAP-fuel to be routed through docs-health HARVEST with rigor.
     block so every session gets the fresh-cache fix for free.
 49. Wire the fuzz matrix for `broadcast/` targets if any exist (currently
     only root + datastartest fuzz; broadcast has parsers too).
-50. Harvest this list: move items 1–8 into TODO_LIST (done for 1, 5, 6, 7, 8
-    partially), route 9–50 through ROADMAP/docs-health HARVEST with routing
-    rigor.
+50. ~~Harvest this list: move items 1–8 into TODO_LIST (done for 1, 5, 6, 7, 8~~ done (docs-health pass 2026-10-01)
+    ~~partially), route 9–50 through ROADMAP/docs-health HARVEST with routing~~
+    ~~rigor.~~
 
 ## g) Questions I cannot figure out myself
 
@@ -237,9 +241,9 @@ ROADMAP-fuel to be routed through docs-health HARVEST with rigor.
    (3.8 G, shared across sessions) replays ghost findings from deleted
    worktrees. Purge it once (other sessions lose their warm cache), or leave
    it and standardize on the fresh-cache override documented in AGENTS.md?
-2. **Release timing:** cut v0.6.0 now (broadcast's first lockstep tag; gates
-   green today), or hold the train until the broadcast ergonomics tranche
-   (`NewBroadcasterWithStore` et al.) rides the same release?
+2. ~~**Release timing:** cut v0.6.0 now (broadcast's first lockstep tag; gates~~ done — answered — v0.6.0 cut the same evening (`2026-09-18_22-29`)
+   ~~green today), or hold the train until the broadcast ergonomics tranche~~
+   ~~(`NewBroadcasterWithStore` et al.) rides the same release?~~
 3. **One-bot:** when the Renovate-vs-dependabot decision lands — which bot
    survives? Renovate owns the embedded-JS custom manager; dependabot owns
    the actions/go-modules PRs currently open. (TODO_LIST marks this
