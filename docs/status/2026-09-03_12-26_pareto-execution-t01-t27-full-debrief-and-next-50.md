@@ -61,26 +61,41 @@ the honest accounting: including the fuckups.
    verifiable from the repo); no direct playground URL.
 7. **T21.2 (verdict spot-check):** 5 items sampled from ONE report (07-27);
    the plan said "08-10 reports" (plural).
-8. **AGENTS.md size:** 15,415B — 55 bytes OVER the ≤15,360 target I set in
-   T11 (regrowth from the CI-matrix and Docs-Map rows).
+8. ~~**AGENTS.md size:** 15,415B — 55 bytes OVER the ≤15,360 target I set in
+   T11 (regrowth from the CI-matrix and Docs-Map rows).~~ done — met by the
+   T11 prune to ~15.0KB; later regrowth past 15KB is tracked as its own
+   TODO_LIST row (19,008B at the 2026-10-01 docs-health pass).
 9. **Final gate completeness:** erraudit ×3 was never run this session
    (probe-gated in CI while private, so nothing covers it), and govulncheck
-   was last run at the release, not at HEAD.
+   was last run at the release, not at HEAD. _Still open for erraudit
+   (skipped at v0.5.0 and v0.6.0 too — `2026-09-18_22-29` b2); govulncheck
+   re-ran green 2026-09-18 (`2026-09-18_21-02` a8)._
 10. **aarch64/darwin:** `nix flake check` omits those systems — never
     validated anywhere.
 
 ## c) NOT STARTED
 
-1. fuzz.yml first-runs artifact triage (a scheduled run already happened
-   2026-09-02; artifacts not inspected).
-2. CodeQL first-results triage (Security tab never opened).
-3. nix.yml promotion (drop `continue-on-error` after the green window).
-4. v0.5.0 release (the `[Unreleased]` section is ready).
-5. datastartest helper tranche 2 (RequireNotScript, FindAllElements, …).
+1. ~~fuzz.yml first-runs artifact triage (a scheduled run already happened
+   2026-09-02; artifacts not inspected).~~ done 2026-09-18 — the 09-03
+   crash triaged to a one-off worker-shutdown flake; inputs kept as
+   regression seeds (`2026-09-18_21-02` a2).
+2. ~~CodeQL first-results triage (Security tab never opened).~~ done
+   2026-09-18 — zero alerts since enablement, recent runs green
+   (`2026-09-18_21-02` a4).
+3. ~~nix.yml promotion (drop `continue-on-error` after the green window).~~
+   done 2026-09-18 — 15 consecutive green runs + v0.5.0 released from a
+   green tree (`2026-09-18_21-02` a1).
+4. ~~v0.5.0 release (the `[Unreleased]` section is ready).~~ done — cut
+   2026-09-03 23:00, lockstep tags ×3 on `831bbfb`.
+5. ~~datastartest helper tranche 2 (RequireNotScript, FindAllElements, …).~~
+   done 2026-09-18 — five helpers + 11 tests (`2026-09-18_21-02` a6;
+   CHANGELOG [0.6.0]).
 6. All owner-blocked items (bots, branch deletions, CODEOWNERS, erraudit
-   flip, website, status-index tiers) — untouched by design (G11).
+   flip, website, status-index tiers) — untouched by design (G11). _Still
+   open — routed to the TODO_LIST Owner-blocked section (2026-10-01 pass)._
 7. darwin/arm64 flake validation.
-8. Committed status-index "Monitoring" tier (owner question).
+8. Committed status-index "Monitoring" tier (owner question). _Still open —
+   owner-blocked (TODO_LIST)._
 
 ## d) TOTALLY FUCKED UP (all recovered, but they happened)
 
@@ -144,12 +159,12 @@ the honest accounting: including the fuckups.
 
 **Release & CI (high leverage):**
 
-1. Scope + cut v0.5.0 from the ready `[Unreleased]` section (release checklist).
-2. Promote nix.yml: drop `continue-on-error` after the green window (per runbook).
-3. Triage fuzz.yml artifacts from the 2026-09-02 scheduled run; commit any crashers as corpus seeds.
-4. Triage first CodeQL alerts; fix or write suppression rationale.
-5. Watch the next scheduled fuzz run with `-fuzztime` promotion in mind (60s → 300s after a clean fortnight).
-6. Add datastartest/static module files to release-checklist's verification list (proxy check per module is there; go.sum tidy check is not mentioned).
+1. ~~Scope + cut v0.5.0 from the ready `[Unreleased]` section (release checklist).~~ done at `831bbfb`
+2. ~~Promote nix.yml: drop `continue-on-error` after the green window (per runbook).~~ done — promoted 2026-09-18 — 15 green runs + release evidence (`2026-09-18_21-02` a1)
+3. ~~Triage fuzz.yml artifacts from the 2026-09-02 scheduled run; commit any crashers as corpus seeds.~~ done — triaged 2026-09-18 — one-off shutdown flake, inputs kept as seeds (`2026-09-18_21-02` a2)
+4. ~~Triage first CodeQL alerts; fix or write suppression rationale.~~ done — reviewed 2026-09-18 — zero alerts (`2026-09-18_21-02` a4)
+5. ~~Watch the next scheduled fuzz run with `-fuzztime` promotion in mind (60s → 300s after a clean fortnight).~~ done — promoted 60s to 300s 2026-09-18 (`2026-09-18_21-02` a3)
+6. ~~Add datastartest/static module files to release-checklist's verification list (proxy check per module is there; go.sum tidy check is not mentioned).~~ done — release-checklist updated to 4 modules 2026-09-18 (`2026-09-18_21-02` a7)
 7. Add the erraudit loop to the release gate (it is in AGENTS but was skipped this session — make the checklist explicit).
 8. Wire `nix run .#docspec` into CI (a small job or a step in lint) so doc drift fails remotely, not just locally.
 9. Extend the coverage.yml badge to per-module badges (root/datastartest/static) — the single 81.6% number mixes example code.
@@ -157,11 +172,11 @@ the honest accounting: including the fuckups.
 11. Consider required-check placeholder: even without branch protection, a "gate" job aggregating CI+nix would make promotion mechanical.
 12. Pin the Renovate manager's regex against a real upstream tag on its first PR (runbook item).
 13. Add a CI paths-filter entry for `docs/*.md` snippet-affecting guides → run docspec on doc PRs.
-14. Evaluate `GOEXPERIMENT=jsonv2` removal timing once go-branded-id ships a go1.27-compatible release (watch go-sse/go-branded-id releases).
+14. ~~Evaluate `GOEXPERIMENT=jsonv2` removal timing once go-branded-id ships a go1.27-compatible release (watch go-sse/go-branded-id releases).~~ done — GOEXPERIMENT=jsonv2 no longer required under Go 1.27.1 (v0.6.1, CHANGELOG)
 
 **datastartest (consumer value):**
-15. Helper tranche 2: `RequireNotScript`, `FindAllElements`, `FindScript`, `EventToSelectorMap`.
-16. Timeout variants of `CollectWithRequest`/`CollectPost` (`CollectPostWithTimeout`).
+15. ~~Helper tranche 2: `RequireNotScript`, `FindAllElements`, `FindScript`, `EventToSelectorMap`.~~ done — tranche 2 shipped 2026-09-18 (`2026-09-18_21-02` a6, CHANGELOG [0.6.0])
+16. ~~Timeout variants of `CollectWithRequest`/`CollectPost` (`CollectPostWithTimeout`).~~ done — CollectPostWithTimeout + CollectWithRequestWithTimeout shipped 2026-09-18 (CHANGELOG [0.6.0])
 17. JSON-aware `RequireSignalsContain` (nested key paths, typed values).
 18. `ServeSSE` / `NewRecorder` helpers for handler-less SSE synthesis.
 19. `RawSSE` accessor (raw wire bytes per event) for golden-style consumer tests.
@@ -180,38 +195,38 @@ the honest accounting: including the fuckups.
 30. Headless-browser E2E (chromedp/Playwright) exercising the real DataStar JS client — the current E2E stops at wire format (ROADMAP theme 2).
 31. Compat-test matrix: go-datastar × go-sse versions (ROADMAP theme 5).
 32. Watch go-sse for Stream-level OnDrop (reopens Response drop-observability; ROADMAP theme 5).
-33. Evaluate `errors.AsType[E]` modernization when the toolchain allows (go-error-modernization pass on the error family).
+33. ~~Evaluate `errors.AsType[E]` modernization when the toolchain allows (go-error-modernization pass on the error family).~~ done at `489256b`, `8cc56a7`
 
 **Docs & community:**
 34. `docs/error-system.md` deep-dive: why `--enforce-samber-oops` must never be used (ROADMAP theme 4).
 35. SSE heartbeat documentation outside example/README (ROADMAP theme 4).
 36. Add more example apps (toasts, progress bars, signal merge modes — ROADMAP theme 2).
 37. Website launch — owner-blocked, but prepare the content inventory so it is unblockable in one session.
-38. AGENTS.md back under 15,360B (currently 55 bytes over): fold the CI-matrix line shorter or drop a redundant pointer.
-39. Update ADR 004's "refresh at release gate" policy with the new rule: refresh BOTH hashes in the same commit as any go.mod change.
+38. ~~AGENTS.md back under 15,360B (currently 55 bytes over): fold the CI-matrix line shorter or drop a redundant pointer.~~ done — met by the T11 prune to ~15.0KB (`9d09512`); regrowth tracked as its own TODO_LIST row
+39. ~~Update ADR 004's "refresh at release gate" policy with the new rule: refresh BOTH hashes in the same commit as any go.mod change.~~ done — mechanism recorded in ADR 004; operational rule lives in AGENTS.md gotchas (2026-09-18/29)
 40. Add the plan-quality lessons (probe API claims, verify commit hashes) to the pareto-planning skill's checklist or AGENTS.
 
 **Hygiene:**
 41. Run the erraudit ×3 loop (overdue — last full run was a previous session).
-42. Re-run govulncheck at HEAD (last at the release).
+42. ~~Re-run govulncheck at HEAD (last at the release).~~ done — govulncheck green 2026-09-18 (`2026-09-18_21-02` a8)
 43. Validate the flake on aarch64-darwin (or record "linux-only, accepted").
 44. Commit-or-discard `dprint.json`'s intent (it is still unwired; either wire it for MD/JSON or trim it).
-45. Grep for leftover `// fod-probe` or experiment markers in tracked files (the worktree experiments were restored, but a final sweep is cheap).
+45. ~~Grep for leftover `// fod-probe` or experiment markers in tracked files (the worktree experiments were restored, but a final sweep is cheap).~~ done — sweep clean — no fod-probe markers in tracked files (2026-10-01 pass)
 46. `example/` dependency audit: confirm the demo adds no require the library must not have (the ADR 002 addendum's revisit trigger).
-47. Re-verify FEATURES "16+ methods" claim after the method forms landed (count drifted upward).
-48. Sweep TODO_LIST evidence column for stale hashes after the next release.
+47. ~~Re-verify FEATURES "16+ methods" claim after the method forms landed (count drifted upward).~~ done — 20 methods counted 2026-10-01; FEATURES 16+ claim holds
+48. ~~Sweep TODO_LIST evidence column for stale hashes after the next release.~~ done — superseded — TODO_LIST rebuilt 2026-09-18 with report-based evidence
 49. Consider a `just`-free one-shot `nix run .#gate` app composing the full pre-push sequence (test-race, vet, lint-ci, docspec, sync, tidy) — one command, no forgotten legs.
 50. After the owner answers g.1–g.3, fold the decisions into ROADMAP/TODO_LIST the same day.
 
 ## g) QUESTIONS FOR THE OWNER (cannot figure out myself)
 
-1. **nix.yml promotion timing:** two consecutive green runs exist (2026-09-03).
-   Drop `continue-on-error` NOW and treat red as master-breaking, or wait the
-   full green fortnight the runbook prescribes? (Affects how loudly the next
-   vendorHash drift screams.)
-2. **v0.5.0 cadence:** cut v0.5.0 now (helpers, CI matrix, static hardening,
-   method forms, docspec are all in `[Unreleased]`), or hold until helper
-   tranche 2 lands so consumer-facing releases stay chunkier?
+1. ~~**nix.yml promotion timing:** two consecutive green runs exist (2026-09-03).~~ done — answered — promoted 2026-09-18 (`2026-09-18_21-02` a1)
+   ~~Drop `continue-on-error` NOW and treat red as master-breaking, or wait the~~
+   ~~full green fortnight the runbook prescribes? (Affects how loudly the next~~
+   ~~vendorHash drift screams.)~~
+2. ~~**v0.5.0 cadence:** cut v0.5.0 now (helpers, CI matrix, static hardening,~~ done — answered — v0.5.0 cut the same day (`831bbfb`); v0.6.0/v0.6.1 followed
+   ~~method forms, docspec are all in `[Unreleased]`), or hold until helper~~
+   ~~tranche 2 lands so consumer-facing releases stay chunkier?~~
 3. **Dependency bots:** Renovate or Dependabot — which one survives? (Both
    run today; the runbook's Renovate verification path assumes an answer, and
    the duplicate churn will only grow.)
