@@ -6,11 +6,11 @@
 
 **Commit chain (this session):**
 
-| Commit | What | Tagged? |
-| ------ | ---- | ------- |
+| Commit    | What                                                            | Tagged?                                 |
+| --------- | --------------------------------------------------------------- | --------------------------------------- |
 | `684b97d` | chore(release): CHANGELOG cut + sibling require bumps to v0.6.0 | — (nix CI red on this commit — see d-1) |
-| `89cd0dc` | fix(nix): update broadcast + datastartest vendor hashes | **YES — all 4 tags point here** |
-| `5146ce8` | docs: TODO_LIST row removed + AGENTS nix-CI gotcha | — |
+| `89cd0dc` | fix(nix): update broadcast + datastartest vendor hashes         | **YES — all 4 tags point here**         |
+| `5146ce8` | docs: TODO_LIST row removed + AGENTS nix-CI gotcha              | —                                       |
 
 ---
 
@@ -71,9 +71,10 @@ Nothing about the released artifact is damaged — the tags, proxy state, docs, 
 
 ## f) UP TO 50 THINGS WE SHOULD GET DONE NEXT
 
-*Impact-ordered. ★ = harvest candidate for TODO_LIST (actionable now); the rest are ROADMAP fuel, not commitments.*
+_Impact-ordered. ★ = harvest candidate for TODO_LIST (actionable now); the rest are ROADMAP fuel, not commitments._
 
 **Release & CI process (this session's direct lessons):**
+
 1. ★ Add checklist §2.5: post-bump `nix flake check`, paste EVERY moved hash, green before tagging (the d-1 fix).
 2. ★ Fix checklist §2: replace phantom `go mod edit -version` with the real sibling-require procedure.
 3. ★ Checklist §3: explicit tag-push refs instead of `git push --tags`.
@@ -145,4 +146,4 @@ Nothing about the released artifact is damaged — the tags, proxy state, docs, 
 
 ---
 
-*Point-in-time snapshot. Successor reports: annotate, don't rewrite (docs-health ANNOTATE mode).*
+_Point-in-time snapshot. Successor reports: annotate, don't rewrite (docs-health ANNOTATE mode)._
