@@ -146,3 +146,75 @@ func ExampleEventsString() {
 	// Event{type=datastar-patch-elements datalines=1}
 	// Event{type=datastar-patch-signals datalines=1}
 }
+
+// ExampleFindScript demonstrates finding the first script patch in a stream.
+// Script patches (ExecuteScript, Redirect, ConsoleLog, ...) wrap JavaScript
+// in <script> tags inside patch-elements events; FindScript returns the
+// first one, (Event, bool)-style like FindSignals. Use [datastartest.RequireScript]
+// when the exact JavaScript content must match.
+func ExampleFindScript() {
+	sseOutput := "event: datastar-patch-elements\ndata: selector #feed\ndata: elements <div>1</div>\n\n" +
+		"event: datastar-patch-elements\ndata: selector body\ndata: elements <script>console.log('done')</script>\n\n"
+
+	events, _ := datastartest.ReadEvents(strings.NewReader(sseOutput))
+
+	evt, ok := datastartest.FindScript(events)
+	fmt.Printf("found=%v js=%s", ok, evt.ScriptContent())
+	// Output: found=true js=console.log('done')
+}
+
+// ExampleFindAllElements demonstrates the plural counterpart of FindElement:
+// every elements patch for one selector, in stream order — for handlers that
+// legitimately patch the same target more than once (feed appends, progress).
+// Script-bearing patches are elements patches too and match when their
+// selector matches.
+func ExampleFindAllElements() {
+	sseOutput := "event: datastar-patch-elements\ndata: selector #feed\ndata: elements <div>1</div>\n\n" +
+		"event: datastar-patch-signals\ndata: signals {\"x\":1}\n\n" +
+		"event: datastar-patch-elements\ndata: selector #feed\ndata: elements <div>2</div>\n\n"
+
+	events, _ := datastartest.ReadEvents(strings.NewReader(sseOutput))
+
+	for _, evt := range datastartest.FindAllElements(events, "#feed") {
+		fmt.Println(evt.Elements())
+	}
+	// Output:
+	// <div>1</div>
+	// <div>2</div>
+}
+
+// ExampleEventToSelectorMap demonstrates O(1) lookup by selector. When
+// several events share a selector, the last patch wins — later patches
+// overwrite earlier DOM state, so the map reflects the DOM the client ends
+// with. Use FindAllElements when you need every occurrence instead.
+func ExampleEventToSelectorMap() {
+	sseOutput := "event: datastar-patch-elements\ndata: selector #title\ndata: elements <h1>Draft</h1>\n\n" +
+		"event: datastar-patch-elements\ndata: selector #title\ndata: elements <h1>Final</h1>\n\n" +
+		"event: datastar-patch-elements\ndata: selector #body\ndata: elements <p>Text</p>\n\n"
+
+	events, _ := datastartest.ReadEvents(strings.NewReader(sseOutput))
+
+	bySelector := datastartest.EventToSelectorMap(events)
+	fmt.Printf("selectors=%d title=%s", len(bySelector), bySelector["#title"].Elements())
+	// Output: selectors=2 title=<h1>Final</h1>
+}
+
+// ExampleRequireNotScript demonstrates pinning a handler that must NOT
+// respond with JavaScript — the negative counterpart of RequireScript, for
+// pure-DOM endpoints where a script patch would be a regression.
+//
+// In your test:
+//
+//	events := datastartest.Collect(t, handler)
+//	datastartest.RequireNotScript(t, events[0])
+//
+// A script patch reaching such an endpoint fails with a message showing the
+// JavaScript that regressed. Under the hood the assertion checks IsScript:
+func ExampleRequireNotScript() {
+	sseOutput := "event: datastar-patch-elements\ndata: selector #feed\ndata: elements <div>hello</div>\n\n"
+
+	events, _ := datastartest.ReadEvents(strings.NewReader(sseOutput))
+
+	fmt.Println(events[0].IsScript())
+	// Output: false
+}

@@ -43,9 +43,12 @@ func FindScript(events []Event) (Event, bool) {
 
 // FindAllElements returns every patch-elements event in events whose selector
 // equals selector, in stream order — the plural counterpart of [FindElement].
-// Events of other types (signals, comments, keep-alives) are ignored. An empty
-// selector matches patches without an explicit selector dataline (the client
-// merges those into the target element). Returns nil when nothing matches.
+// Events of other types (signals, comments, keep-alives) are ignored.
+// Script-bearing patches are elements patches too and participate when their
+// selector matches (use [FindScript] to find a script regardless of selector).
+// An empty selector matches patches without an explicit selector dataline
+// (the client merges those into the target element). Returns nil when
+// nothing matches.
 //
 // Use [RequireElementsOrdered] when count and order matter; use
 // [EventToSelectorMap] for O(1) lookup when selectors are unique.

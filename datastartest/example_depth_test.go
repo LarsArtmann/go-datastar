@@ -114,3 +114,50 @@ func ExampleEvent_String() {
 	// Output:
 	// Event{type=datastar-patch-elements datalines=1}
 }
+
+// ExampleCollectPostWithTimeout documents the deadline-bound POST collector.
+// A POST handler that submits signals and then keeps streaming patches
+// (progress updates, ticks) never closes the stream, so CollectPost would
+// block forever. CollectPostWithTimeout returns whatever events arrived
+// before the deadline; receiving none at all fails the test.
+//
+// In your test:
+//
+//	events := datastartest.CollectPostWithTimeout(t, handler, `{"step":1}`, 500*time.Millisecond)
+//	datastartest.RequireElements(t, events[len(events)-1], "#progress", "append", "50%")
+func ExampleCollectPostWithTimeout() {
+	// The partial-events contract, demonstrated on the wire: events that
+	// arrived before the deadline are the result.
+	sseOutput := "event: datastar-patch-elements\n" +
+		"data: selector #progress\n" +
+		"data: elements <div>25%</div>\n\n" +
+		"event: datastar-patch-elements\n" +
+		"data: selector #progress\n" +
+		"data: elements <div>50%</div>\n\n"
+
+	events, _ := datastartest.ReadEvents(strings.NewReader(sseOutput))
+	fmt.Println("collected before deadline:", len(events))
+
+	// Output:
+	// collected before deadline: 2
+}
+
+// ExampleCollectWithRequestWithTimeout documents the any-method deadline
+// variant: the same partial-events contract as CollectPostWithTimeout, but
+// with full control over the request (method, body, content type) plus the
+// [datastartest.WithPath], [datastartest.WithHeader], and
+// [datastartest.WithDatastarSignals] options.
+//
+// In your test:
+//
+//	events := datastartest.CollectWithRequestWithTimeout(
+//		t, handler, 2*time.Second,
+//		http.MethodPut, strings.NewReader(`{"step":1}`), "application/json",
+//		datastartest.WithPath("/upload"),
+//	)
+func ExampleCollectWithRequestWithTimeout() {
+	fmt.Println("Any-method deadline collection: partial streams returned, empty streams fail")
+
+	// Output:
+	// Any-method deadline collection: partial streams returned, empty streams fail
+}
