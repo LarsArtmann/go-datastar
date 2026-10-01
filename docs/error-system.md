@@ -78,6 +78,13 @@ if errorfamily.IsRetryable(err) {
    chain, so matching either code works.
 5. **No samber/oops in the library.** Libraries classify; applications
    enrich. Wrap these errors with your observability stack at your boundary.
+6. **Best-effort senders never fail on their own payload.** The diagnostic
+   senders (`ErrorResponseFromError`, `ErrorResponse`, `NotificationResponse`)
+   sanitize invalid UTF-8 to U+FFFD (json/v1 semantics) before marshaling:
+   json/v2 rejects invalid UTF-8, and a reporting path must not die on the
+   very text it is trying to deliver. General signal senders
+   (`NewSignalsPatch`, `MarshalAndPatchSignals`) keep strict semantics and
+   return the marshal error instead.
 
 ## A complete handler
 
