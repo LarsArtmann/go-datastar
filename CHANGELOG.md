@@ -23,6 +23,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `nix.yml`'s path filter (root-only `go.mod`/`go.sum`) let master's nix gate
   silently skip the commit. The filter now matches `**/go.mod`/`**/go.sum`.
   Local `nix flake check` is green again.
+- Master CI (tidy leg) and nix un-red again: broadcast/ and datastartest/
+  lagged root's transitive `go-branded-id` pin (v0.6.0 vs v0.7.0 — the
+  dependabot minor-and-patch merges bumped root and datastartest's error-family
+  without a follow-up workspace `go work sync` + isolation-mode tidy), so
+  `GOWORK=off go mod tidy -diff` failed in broadcast and ALL THREE vendor
+  hashes were stale. Fixed by tidying both modules (datastartest also records
+  its `golang.org/x/mod v0.41.0` indirect now) and re-deriving the root,
+  broadcast, and datastartest hashes — collected in one `nix flake check
+  --keep-going` pass (plain `flake check` reports only the first mismatch).
 
 ### Changed
 
