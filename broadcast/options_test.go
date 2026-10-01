@@ -152,7 +152,11 @@ func TestWithStoreReplayOnReconnect(t *testing.T) {
 
 	for _, want := range []string{"item-2", "item-3"} {
 		if !strings.Contains(body, want) {
-			t.Errorf("replayed body %q does not contain %q (replay must serve from the injected store)", body, want)
+			t.Errorf(
+				"replayed body %q does not contain %q (replay must serve from the injected store)",
+				body,
+				want,
+			)
 		}
 	}
 
@@ -161,7 +165,9 @@ func TestWithStoreReplayOnReconnect(t *testing.T) {
 	}
 
 	if got := store.replayQueries(); got == 0 {
-		t.Error("injected store's EventsAfter was never queried — replay did not use the injected store")
+		t.Error(
+			"injected store's EventsAfter was never queried — replay did not use the injected store",
+		)
 	}
 }
 
