@@ -3,6 +3,7 @@ package datastar
 import (
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	errorfamily "github.com/larsartmann/go-error-family"
@@ -210,6 +211,11 @@ func ErrorResponse(stream *sse.Stream, message string, code string) error {
 //
 // A nil error is caller misuse and returns a classified Rejection
 // ([CodeErrorResponseNilError]) without sending anything.
+//
+// The error message and code are sanitized to valid UTF-8 (invalid bytes
+// become U+FFFD, matching encoding/json v1 semantics): both are diagnostic
+// text that must never make this reporting path itself fail — and json/v2
+// rejects invalid UTF-8 where v1 replaced it.
 func ErrorResponseFromError(stream *sse.Stream, err error) error {
 	if err == nil {
 		return errorfamily.NewRejection(
@@ -218,10 +224,13 @@ func ErrorResponseFromError(stream *sse.Stream, err error) error {
 		)
 	}
 
+	message := strings.ToValidUTF8(err.Error(), "\ufffd")
+	code := strings.ToValidUTF8(errorfamily.Code(err), "\ufffd")
+
 	return sendSignalsMap(stream, map[string]any{
 		"error": map[string]any{
-			signalKeyMessage: err.Error(),
-			"code":           errorfamily.Code(err),
+			signalKeyMessage: message,
+			"code":           code,
 			"family":         errorfamily.Classify(err).String(),
 			"retryable":      errorfamily.IsRetryable(err),
 			"httpStatus":     errorfamily.HTTPStatus(err),
