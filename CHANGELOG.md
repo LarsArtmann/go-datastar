@@ -103,6 +103,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   prints the sha256 for `checksum_test.go` and the provenance line for
   `static.go`; verified against the v1.0.3 pin (byte-identical).
 - datastartest README marks the tranche-2 helpers as "arrived in v0.6.0".
+- `docs/version.md` disentangles the repo's three version concepts (module
+  tags, the embedded JS client, the ldflags-injected example binary), and
+  the README's compression row now links the gzip middleware example
+  directly.
 - datastartest's two inert `replace` directives (`go-datastar => ..`,
   `go-datastar/static => ../static`) are dropped from `go.mod` — consumers
   ignore dependency replaces, so the tagged module was unaffected, but the

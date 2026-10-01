@@ -36,7 +36,7 @@ func ReadSignals(req *http.Request, signals any) error {
 	if err := json.Unmarshal(input, signals); err != nil {
 		preview := string(input)
 		if len(preview) > maxInputPreviewLen {
-			preview = preview[:200]
+			preview = preview[:maxInputPreviewLen]
 		}
 
 		return errorfamily.WrapOncef(err, errorfamily.Rejection,

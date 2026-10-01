@@ -258,7 +258,9 @@ No CQRS, no event bus, no domain opinions. It is a pure protocol layer. Consumer
   never-converging FOD).
 - **nix CI reports only the FIRST hash mismatch** — a require bump can move
   BOTH submodule vendor hashes while the workflow names one and exits.
-  Reproduce with a full local `nix flake check` and paste every moved hash.
+  Reproduce with a full local `nix flake check --keep-going` (the
+  `--keep-going` flag collects EVERY moved hash in one pass; a plain check
+  stops at the first) and paste every moved hash in the same commit.
 - **ANY `go.mod`/`go.sum` edit in ANY module moves vendor hashes — and the
   nix path filter once hid it.** `datastartestSrc` includes the whole
   `datastartest/` dir, so even replace-directive drops there move
@@ -298,6 +300,7 @@ when adding helpers.
 | `docs/testing.md`                  | datastartest quick start, fuzzing, coverage story           |
 | `docs/ci-watch.md`                 | Promote/drop/verify runbook for the non-required workflows  |
 | `docs/performance.md`              | Measured benchmark table                                    |
+| `docs/version.md`                  | The three version concepts (module / JS client / ldflags)   |
 | `docs/migration-guide.md`          | v0.2.0 → v0.3.0 upgrade guide                               |
 | `docs/static-js.md`                | Embedded JS pinning + upgrade process                       |
 | `docs/status/` (+ its README)      | Point-in-time status reports and audits (index + policy)    |
