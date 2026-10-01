@@ -110,7 +110,8 @@ never ship.
 
 ## Fuzzing
 
-Four fuzz targets guard the parsers and serializers. Their seed corpora are
+Six fuzz targets guard the parsers, serializers, and the best-effort
+response senders. Their seed corpora are
 committed, so every regular `go test` run replays them as regression cases;
 `-fuzz` explores beyond the seeds.
 
@@ -118,8 +119,13 @@ committed, so every regular `go test` run replays them as regression cases;
 | ----------------------------- | -------------- | -------------------------------------------------------------------------------------- |
 | `FuzzReadSignals`             | root           | `ReadSignals` request-body parsing (malformed JSON, closed bodies)                     |
 | `FuzzMarshalSignalsRoundtrip` | root           | signals marshal → unmarshal roundtrip stability                                        |
+| `FuzzErrorResponseFromError`  | root           | error-metadata extraction never fails on its own payload (found the invalid-UTF-8 bug) |
+| `FuzzBestEffortSignalSenders` | root           | the whole best-effort sender class survives arbitrary message/code/kind bytes          |
 | `FuzzReadEvents`              | `datastartest` | SSE wire-format parser conformance (51-seed corpus in `testdata/fuzz/FuzzReadEvents/`) |
 | `FuzzUnmarshalSignals`        | `datastartest` | dataline signals decoding                                                              |
+
+The nightly matrix (`.github/workflows/fuzz.yml`) runs every target for
+300s; smokes are for local iteration.
 
 Quick smoke (30 seconds, per module — fuzzing runs one target at a time):
 
@@ -132,6 +138,21 @@ On a crash, Go writes the failing input to `testdata/fuzz/<FuzzName>/` as a
 new seed — commit it so the regression is replayed by every future `go test`
 run. The seeds are intentionally portable across checkouts; do not gitignore
 them.
+
+## Testing conventions
+
+- **SSE connection waits are relative, never absolute.** Wait for
+  `SubscriberCount() >= n`, never `== 1`: in any multi-connection test a prior
+  subscriber can still be connected, and an absolute wait can pass by polling
+  inside a race window — an assertion that can pass by luck is worse than one
+  that always fails (a `-count=10` stress run cornered exactly such a flake).
+- **Format after each edit batch, not only at gates.** The auto-commit daemon
+  commits dirty files within minutes, so every unformatted window becomes a
+  commit; run `nix fmt` (or `buildflow format`) right after a Go edit batch.
+- **New test artifacts land WITH their gate wiring.** A new fuzz target ships
+  in the same change as its `fuzz.yml` matrix entry; a new docspec mirror
+  ships with its gate entry. "Green locally, wired nowhere" is the
+  test-infrastructure ghost-system pattern.
 
 ## Reporting Issues
 

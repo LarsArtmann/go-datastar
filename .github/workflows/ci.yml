@@ -94,6 +94,9 @@ jobs:
           go vet ./... ./broadcast/... ./datastartest/... ./static/...
           go test ./... ./broadcast/... ./datastartest/... ./static/... -race -count=1
 
+      - name: Docspec (guide snippets compile + execute)
+        run: go test -tags docspec -run TestDocspec -count=1 ./... ./broadcast/... ./datastartest/...
+
       - name: go.work use-vs-disk check
         run: |
           cp go.work go.work.use-check.bak
