@@ -209,7 +209,7 @@ func ExampleEventToSelectorMap() {
 //	datastartest.RequireNotScript(t, events[0])
 //
 // A script patch reaching such an endpoint fails with a message showing the
-// JavaScript that regressed. Under the hood the assertion checks IsScript:
+// JavaScript that regressed. Under the hood the assertion checks IsScript.
 func ExampleRequireNotScript() {
 	sseOutput := "event: datastar-patch-elements\ndata: selector #feed\ndata: elements <div>hello</div>\n\n"
 
