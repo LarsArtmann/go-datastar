@@ -241,6 +241,7 @@
             packages = [
               goPkg
               pkgs.actionlint
+              pkgs.go-licenses
               pkgs.golangci-lint
               pkgs.gopls
               pkgs.govulncheck
