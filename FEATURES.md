@@ -67,11 +67,11 @@ The connection-lifecycle layer the root module deliberately omits.
 
 | Feature                    | Status                | Notes                                                                                                                                                                                    |
 | -------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Broadcaster` http.Handler | 🟢 `FULLY_FUNCTIONAL` | SSE endpoint embedding `*sse.Broadcaster[sse.Event]`; 15s per-connection heartbeat (`broadcast/broadcaster.go`). 13 race-covered tests.                                                  |
+| `Broadcaster` http.Handler | 🟢 `FULLY_FUNCTIONAL` | SSE endpoint embedding `*sse.Broadcaster[sse.Event]`; per-connection heartbeat — 15s default, configurable via `WithHeartbeatInterval` (`broadcast/broadcaster.go`). 21 race-covered tests.                                                  |
 | Patch fan-out              | 🟢 `FULLY_FUNCTIONAL` | `Broadcast` / `BroadcastMany` (single-pass atomic batch) / `BroadcastEvent` (raw events); append-BEFORE-fan-out ordering so a reconnect racing a broadcast replays instead of losing it. |
 | Reconnection replay        | 🟢 `FULLY_FUNCTIONAL` | `NewBroadcasterWithReplay(capacity)` — ring-buffer `MemoryStore` + `Last-Event-ID`, subscribe-before-replay ordering (duplicates possible, loss impossible; documented).                 |
 | Hub sharing                | 🟢 `FULLY_FUNCTIONAL` | `Hub()` exposes the underlying go-sse broadcaster; `NewBroadcasterFromHub` shares one hub across transports/wrappers. `SubscriberCount()` for tests and ops.                             |
-| Injection seam for stores  | ⚪ `PLANNED`          | `NewBroadcasterWithStore(sse.EventStore)` — consumer-supplied stores only, NO backend implementations in this repo (owner-gated for the next minor; TODO_LIST row).                      |
+| Options + store seam       | 🟢 `FULLY_FUNCTIONAL` | `NewBroadcaster(opts...)` composes `WithBufferSize` / `WithReplayCapacity` / `WithStore` / `WithHeartbeatInterval` (legacy constructors are sugar over the option path). `broadcast.Store` (`sse.EventStore` + `Append`) injects consumer-owned shared replay stores — NO backend implementations in this repo by design. Unreleased: CHANGELOG `[Unreleased]`. |
 
 ## Version Package
 
@@ -86,6 +86,7 @@ The connection-lifecycle layer the root module deliberately omits.
 | Embedded DataStar JS client  | 🟢 `FULLY_FUNCTIONAL` | v1.0.3 embedded in `static/` separate module. `ScriptHandler()` with ETag + Cache-Control (`script_handler.go`). |
 | HEAD request support         | 🟢 `FULLY_FUNCTIONAL` | RFC 7231 §4.3.2 compliant — headers only, no body (`script_handler.go`). Tested.                                 |
 | `static.Bytes()` / `Version` | 🟢 `FULLY_FUNCTIONAL` | Direct access to the embedded JS bundle and version (`static/static.go`).                                        |
+| `Version()`                 | 🟢 `FULLY_FUNCTIONAL` | JS-client version accessor; reads `static.Version` directly (deprecated `DatastarJSVersion` kept for compat). `ScriptHandlerWith`'s version parameter is signature-compatibility-only — removal pencilled in for v0.7.0 (owner-gated). |
 
 ## Inbound Helpers
 
