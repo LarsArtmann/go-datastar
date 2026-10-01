@@ -173,10 +173,10 @@ However, there are honest criticisms:
 
 8. ~~Add `go work sync && git diff --exit-code go.work` idempotency check to CI~~ done at `dc0d6f2`
 9. ~~Add replace directive audit (no absolute paths) to CI~~ done at `dc0d6f2`
-10. Add version drift detection script to CI
-11. Add `go mod verify` step to CI
-12. Consider parallelizing CI jobs per module for faster feedback
-13. Add a CI step that verifies `go.work` `use` directives match actual go.mod files on disk
+10. ~~Add version drift detection script to CI~~ done at `3d7cada`
+11. ~~Add `go mod verify` step to CI~~ done at `3d7cada`
+12. ~~Consider parallelizing CI jobs per module for faster feedback~~ done at `6cb34ae`
+13. ~~Add a CI step that verifies `go.work` `use` directives match actual go.mod files on disk~~ done at `3d7cada`
 
 ### Testing
 
@@ -191,14 +191,14 @@ However, there are honest criticisms:
 ### Modularization Refinement
 
 21. ~~Consider whether `static/` should have a go.sum file preemptively (even with zero deps)~~ **Won't implement — static is a zero-dep module; checksum strategy documented (ROADMAP 'Resolved questions').**
-22. Evaluate whether the `example/` package should get its own go.mod (currently in root)
+22. ~~Evaluate whether the `example/` package should get its own go.mod (currently in root)~~ done — decided — ADR 002 addendum keeps example/ in root (T22, `592e12c`)
 23. ~~Consider adding a `docs/modularization/README.md` index for the modularization docs~~ done (done — docs/modularization/README.md index)
 24. ~~Review whether the `datastartest/go.mod` replace directives should use `v0.0.0` instead of `v0.1.0` (the real-world-patterns.md recommends `v0.0.0`) ← open, routed to ROADMAP "Open questions" 2026-08-16~~ done (resolved — siblings use real published versions (ROADMAP 'Resolved questions'))
 25. ~~Evaluate whether `go.work.sum` should be tracked in git (currently gitignored) ← open, routed to ROADMAP "Open questions" 2026-08-16~~ done (resolved — go.work.sum intentionally gitignored (ROADMAP 'Resolved questions'))
 
 ### Code Quality
 
-26. Fix gopls `stdversion` warnings — `json.Unmarshal` requires go1.27 in 4 files (datastartest/event.go, inbound.go, script_convenience.go, signals.go)
+26. ~~Fix gopls `stdversion` warnings — `json.Unmarshal` requires go1.27 in 4 files (datastartest/event.go, inbound.go, script_convenience.go, signals.go)~~ done at `cd54cdc`
 27. Fix gopls `bloop` warnings — modernize `b.N` to `b.Loop()` in benchmark_test.go (4 instances) and reader_fuzz_test.go ← open — benchmarks use `for range b.N`, not `b.Loop()` (2026-08-16)
 28. ~~Fix gopls `writestring` warnings — inefficient string concatenation in reader_fuzz_test.go (3 instances)~~ done at `fd3a5ac` — `strings.Builder.WriteString` now used
 29. ~~Fix gopls `errorsastype` hint — simplify `errors.As` in errors_test.go:253 ← open — `errors.As` still used (errors_test.go:289, 2026-08-16)~~ done (done — errors.AsType migration (489256b))

@@ -84,13 +84,13 @@ this library speaks is defined there.
 
 ## Requirements
 
-- **Go 1.27.1+**
-- **`GOEXPERIMENT=jsonv2`** environment variable (required transitively via go-branded-id through go-sse)
+- **Go 1.27.1+** (v0.6.1 raised the floor; `encoding/json/v2` is available
+  without any experiment under Go 1.27, so the old `GOEXPERIMENT=jsonv2`
+  prefix is no longer needed)
 
 ```bash
-# All go commands need this:
-GOEXPERIMENT=jsonv2 go build ./...
-GOEXPERIMENT=jsonv2 go test ./... -race -count=1
+go build ./...
+go test ./... -race -count=1
 ```
 
 ## Install

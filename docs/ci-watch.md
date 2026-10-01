@@ -23,7 +23,7 @@ rules below.
   hermeticity value — but per [ADR 004](adr/004-hermetic-checks.md) the flake
   IS the canonical gate, so dropping CI's copy means owning the check locally.
 
-## fuzz.yml — scheduled 60s fuzz runs
+## fuzz.yml — scheduled 300s fuzz runs
 
 State: daily cron over all four fuzz targets, crash artifacts uploaded;
 fuzztime 300s since 2026-09-18 (promoted from 60s after two stable green
@@ -32,14 +32,20 @@ red run produced a 51-input artifact that is byte-identical to the committed
 corpus and unreproducible (seed run green on the exact CI tree `dba6a2f`,
 60s fuzz mirror = 10.5M execs green, 15 subsequent daily runs green) —
 conclusion: one-off worker-shutdown flake at fuzztime expiry, not a parser
-bug. No action needed; seeds stay committed.
+bug. No action needed; seeds stay committed. Release-week evidence
+(2026-10-01): the gate stayed green through the v0.6.0 and v0.6.1 lockstep
+releases; nix promotion held (no red master run attributable to fuzz or
+nix); the one red nix episode in that window was the 2026-09-29 paths-filter
+miss, fixed in `[Unreleased]` (filter now `**/go.mod` + `**/go.sum`).
 
 - **Verify after first runs:** check the artifacts — a crash artifact is a
   REAL bug: reproduce it with the committed corpus + `go test -run '^$' -fuzz
   '<Target>' -fuzztime 30s`, fix, and commit the failing input as a corpus
   regression seed (see CONTRIBUTING "Fuzzing").
 - **Promote:** extend `-fuzztime` (60s → 300s) once runs are stable and no
-  crashes for two weeks.
+  crashes for two weeks. ✅ done 2026-09-18 — `-fuzztime 300s` in fuzz.yml;
+  runs green since, within `timeout-minutes: 15` (held through the v0.6.0 and
+  v0.6.1 release weeks).
 - **Drop:** only if fuzzing moves to a required local gate (it shouldn't —
   scheduled runs cover what local smoke runs can't).
 

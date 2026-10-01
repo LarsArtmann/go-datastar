@@ -30,7 +30,7 @@ But the session also surfaced a **mid-session incident**: local master's tip sil
 
 ## b) PARTIALLY DONE
 
-1. **CodeRabbit thread replies on PR #3** — the five inline fixes were verified and merged, but the review threads were never answered (courtesy/closure gap; not a merge blocker — `required_conversation_resolution` is off). _Still open — routed to TODO_LIST (low)._
+1. ~~**CodeRabbit thread replies on PR #3** — the five inline fixes were verified and merged, but the review threads were never answered (courtesy/closure gap; not a merge blocker — `required_conversation_resolution` is off).~~ done — all 5 threads answered (T17, `06b84fb`)
 2. ~~**Local verification before merge** — actionlint and coverage parsing were validated in the _prior_ session; this session merged without ever running `nix flake check` / `nix run .#test-race` locally. CI covered the Go jobs (green), but **CI has no nix jobs**: treefmt formatting, hermetic builds, and `go.work` idempotency beyond what ci.yml does are unverified on master. My own AGENTS.md markdown edit specifically was never format-checked.~~ done (done — nix.yml runs the hermetic gate in CI (88c1eed); nix flake check green)
 3. ~~**Prior session's 3 open questions** — push scope: resolved (moot, everything was pushed); master reconciliation: resolved (this session); badge semantics (all 3 modules at 88.9% vs root-only): **still unanswered** — the badge now publishes all-modules by default.~~ done (resolved by the live CI badge (ed815c7))
 4. ~~**TODO_LIST routing** — master's TODO_LIST.md was updated by the parallel session (via PR #3 merge) but contains a stale item (see d/e); this report's next-actions list is not yet harvested into it.~~ done (docs-health pass 2026-08-29)
@@ -42,7 +42,7 @@ But the session also surfaced a **mid-session incident**: local master's tip sil
 3. Coverage-floor policy (optional CI gate at a threshold) — undecided. _Still open — routed to ROADMAP._
 4. Merged-branch cleanup: remote `pr/docs-test-consolidation` and local tracking branch still exist (`delete_branch_on_merge` is false). _Still open — owner-blocked; routed TODO_LIST._
 5. ~~Adding `nix flake check` to CI as a required check — the gap that let master merge on Go-only evidence.~~ **Won't implement — superseded — owner removed branch protection entirely (257c395); nix-in-CI idea routed to ROADMAP.**
-6. Reviewing the parallel session's 5 merged commits for content (they were CI-verified but never read by this session). _Still open — routed TODO_LIST (low)._
+6. ~~Reviewing the parallel session's 5 merged commits for content (they were CI-verified but never read by this session).~~ done — reviewed, all clean and well-motivated (T17, `06b84fb`)
 7. ~~Next release cut — CHANGELOG on master now carries multiple unreleased entries (coverage badge, gotchas, datastartest fixes).~~ done (v0.3.0 cut 2026-08-29 — the unreleased entries shipped)
 
 ## d) TOTALLY FUCKED UP

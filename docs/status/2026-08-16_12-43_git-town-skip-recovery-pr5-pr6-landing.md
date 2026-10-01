@@ -68,7 +68,7 @@ No. Every claim in the session was verifiable and verified. The closest to a lie
 ## c) NOT STARTED
 
 1. ~~Root-cause fix for recurring blocked-master incidents (branch-first rule / pre-push guard / lighter docs CI path).~~ **Won't implement — moot — branch protection removed (257c395); direct pushes are the norm again.**
-2. Stale branch cleanup: `pr/docs-test-consolidation` (local + remote; PR #3 merged), `preserve/status-report-coderabbit-pr3` (snapshot already entombed in docs/status).
+2. ~~Stale branch cleanup: `pr/docs-test-consolidation` (local + remote; PR #3 merged), `preserve/status-report-coderabbit-pr3` (snapshot already entombed in docs/status).~~ **→ open — owner-blocked (TODO_LIST branch-deletion rows).**
 3. ~~`docs/status/` index (28 reports, no README).~~ done (done — docs/status/README.md index (12a2de4))
 4. ~~CI acceleration for docs-only PRs (path filters) and golangci-lint caching (1m33s long pole).~~ done (done — CI path filters (5887043) + golangci-lint analysis cache (88c1eed))
 5. ~~PR-template honesty guard (agents must not pre-check CI-dependent boxes).~~ done (done — PR-template honesty guard (5887043))

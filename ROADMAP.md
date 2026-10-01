@@ -29,12 +29,6 @@ Lower the barrier for new users discovering and adopting go-datastar.
 
 Raw ideas:
 
-- "Migrating from starfederation/datastar-go" guide — what changes, why patches
-  as values matters
-- Architecture diagram (D2 or mermaid) showing the three-layer architecture
-  (go-sse → go-datastar → domain adapter) — started in
-  [docs/architecture.md](docs/architecture.md), which now includes the
-  broadcast module in the protocol layer
 - More example applications (toasts, progress bars, signal merge modes)
 - Playground or example repo link for interactive exploration
 - Comparison table vs upstream SDK in README
@@ -53,20 +47,22 @@ Raw ideas:
   SignalsContain, timeout variants of CollectWithRequest/CollectPost; plus
   internal polish (accessor methods over the public ID/Retry fields,
   tag-attribute parsing beyond quotes, indexTagEnd rename, table-driven
-  benchmark shapes). First three shipped 2026-09-03: RequireElementsOrdered,
-  Diff, Snapshot (see CHANGELOG [0.5.0]). Tranche 2 shipped 2026-09-18:
-  RequireNotScript, FindScript, FindAllElements, EventToSelectorMap, and
-  timeout variants of CollectWithRequest/CollectPost
-  (`CollectPostWithTimeout`/`CollectWithRequestWithTimeout`; see CHANGELOG
-  [Unreleased]).
+  benchmark shapes). Shipped so far: tranche 1 (RequireElementsOrdered,
+  Diff, Snapshot) in v0.5.0 and tranche 2 (RequireNotScript, FindScript,
+  FindAllElements, EventToSelectorMap, CollectPostWithTimeout,
+  CollectWithRequestWithTimeout) in v0.6.0. Natural tranche-3 heads:
+  JSON-aware `RequireSignalsContain`, `RequireRedirect`/`RequireHeader`
+  assertion wrappers, `ServeSSE`/`NewRecorder` handler-less synthesis
 - `datastartest.NewResponse`-style helper for test ergonomics
-- Response ergonomics: `ErrorResponse`/`NotificationResponse`/
-  `ErrorResponseFromError` as `Response` methods; a `signalsMap` type for the
-  signals-patch pattern; review `signalKeyMessage` naming
-- Compile-checked doc snippets (a tiny docspec test target) so guide examples
-  like `BroadcastMany` cannot drift from the API
+- Response ergonomics: a `signalsMap` type for the signals-patch pattern
+  (held pending a concrete consumer example); review `signalKeyMessage` naming
 - `example/README.md` and an `example/docker-compose.yml` for easy local
   runs; benchmark for `Collect` helper overhead
+- Worked multi-instance replay example: a minimal Redis `sse.EventStore`
+  implementation in `example/` (the broadcast README promises "bring your
+  own" store but shows nothing)
+- Broadcast subscriber-level metrics (connection counts, dropped-event
+  counters) behind an optional interface
 - Community metadata: GitHub Sponsors / funding, contributor list
 
 ### 3. CI/CD & Hermeticity
@@ -76,27 +72,21 @@ Make quality gates hermetic and reproducible.
 Raw ideas:
 
 - Route all lint/audit tools through nix checks so `nix flake check` is the
-  single canonical quality gate (golangci-lint, erraudit, govulncheck)
-- Nix CI job (cachix/install-nix-action) running `nix flake check` so
-  hermetic build regressions surface before merge, not after
+  single canonical quality gate (golangci-lint, erraudit, govulncheck);
+  erraudit `--format sarif` output for GitHub code scanning
 - Hermetic `checks.lint` / `checks.vet` / `checks.govulncheck` derivations;
   `flake.nix` `apps.bench` for running benchmarks
-- vendorHash fragility under the `gitTracked` fileset — RESOLVED 2026-09-03:
-  mechanism verified and corrected in ADR 004 (`go mod vendor` copies replaced
-  directories entirely; root hash requires/toolchain-only; datastartest check
-  now builds from a minimal fileset so the hash converges)
 - Verify the erraudit probe-gate transition once the repo goes public
   (manual trigger or scheduled probe)
-- Scheduled fuzz runs in CI (`go test -fuzz` on a cron, corpus committed);
-  CodeQL workflow for Go security analysis
-- CI matrix / parallel jobs per module for faster feedback
 - `go work vendor` support or a flake app for offline module graphs
-- `example/` as its own Go module (structural decision — keeps demo deps out
-  of the root module graph)
-- Coverage-floor policy decision (optional CI gate at a threshold)
-- Release automation (goreleaser, changelog-from-release, tag-triggered
-  GitHub releases)
-- Build-time version variable or `version` package
+- Coverage-floor policy decision (optional CI gate at a threshold); per-module
+  coverage badges (the single badge mixes example code)
+- goreleaser: decide the skeleton's fate (run `build --snapshot` dry-run or
+  delete it)
+- Scheduled upstream-drift alarm beyond Renovate's custom manager (proxy
+  `@latest` == newest pushed tag; embedded-JS `gh api releases/latest` check)
+- Wire `nix run .#docspec` into CI so doc drift fails remotely, not just
+  locally
 
 ### 4. Documentation Depth
 
@@ -104,20 +94,16 @@ Move beyond API reference into conceptual and operational docs.
 
 Raw ideas:
 
-- `docs/error-system.md` deep-dive: the full contract, decision rationale,
-  why `--enforce-samber-oops` must NOT be used
-- ADRs: 003 error classification, 004 nix per-module hermetic checks,
-  005 coverage strategy (what the % includes)
-- Consumer guides: `docs/replay.md` (EventStore + LastEventID),
-  `docs/wire-format.md` (annotated dataline examples),
-  `docs/testing.md` (unit/E2E/fuzz/WPT strategy), `docs/performance.md`,
-  `docs/migration-guide.md` (for the next minor bump)
-- `docs/architecture.md` overview diagram (transport → protocol → domain)
+- SSE heartbeat documentation outside `example/README.md` (the only place it
+  is documented today)
+- `docs/migration-guide.md` refresh per minor release (currently covers up to
+  the 1.26.7 era; needs the 1.27.1/v0.6.x note)
 - Website launch (Astro + Starlight pattern)
-- Document the DataStar JS version pinning strategy and upgrade process
-- SSE heartbeat documentation
-- Constraint check tying `static.Version` mentions to the CHANGELOG (pinning
-  hygiene)
+- CSP-mode (`data-nonce`, no `unsafe-eval`) documentation for ScriptHandler
+  consumers — upstream v1.0.3 capability, undocumented here
+- `docs/architecture.md`: add the lockstep release-train diagram
+- CONTRIBUTING.md: release-prep walkthrough pointing at the checklist,
+  mentioning the auto-commit daemon
 
 ### 5. Upstream Protocol Tracking
 

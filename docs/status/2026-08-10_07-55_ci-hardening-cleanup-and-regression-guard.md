@@ -323,7 +323,7 @@ working tree was committed by the auto-commit daemon (3 commits: `3cd669e`,
 
 ### CI Hardening (immediate)
 
-8. Add `go mod verify` step to CI (all 3 modules)
+8. ~~Add `go mod verify` step to CI (all 3 modules)~~ done at `3d7cada`
 9. Add version drift detection script to CI
 10. Add a CI step that verifies `go.work` `use` directives match actual
     go.mod files on disk

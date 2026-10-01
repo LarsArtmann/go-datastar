@@ -35,33 +35,33 @@ release (currently **1.27.1** across go.mod ×3, go.work, CI, and the flake
 
 ```bash
 # Workspace mode (default, uses go.work) — covers all four modules:
-GOEXPERIMENT=jsonv2 go test ./... ./broadcast/... ./datastartest/... ./static/... -race -count=1
-GOEXPERIMENT=jsonv2 go vet ./... ./broadcast/... ./datastartest/... ./static/...
-GOEXPERIMENT=jsonv2 golangci-lint run ./... ./broadcast/... ./datastartest/... ./static/...
+go test ./... ./broadcast/... ./datastartest/... ./static/... -race -count=1
+go vet ./... ./broadcast/... ./datastartest/... ./static/...
+golangci-lint run ./... ./broadcast/... ./datastartest/... ./static/...
 # Pre-push lint = EXACT CI parity (flake: `nix run .#lint-ci`):
-GOEXPERIMENT=jsonv2 go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.2 run ./... ./broadcast/... ./datastartest/... ./static/... --timeout 5m
+go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.2 run ./... ./broadcast/... ./datastartest/... ./static/... --timeout 5m
 
 # Isolation mode (GOWORK=off, per-module — verifies replace directives; run from each module dir):
-GOWORK=off GOEXPERIMENT=jsonv2 go test ./...
+GOWORK=off go test ./...
 
 # Error audit (all modules — erraudit v0.3.0 takes ONE directory per run, never package patterns):
 for mod in . ./broadcast ./datastartest ./static; do
-  (cd "$mod" && GOEXPERIMENT=jsonv2 erraudit . --type-aware --enforce-go-error-family --no-suppress)
+  (cd "$mod" && erraudit . --type-aware --enforce-go-error-family --no-suppress)
 done
 
 # Fuzz smoke tests (30s; corpora are committed regression suites — see CONTRIBUTING.md "Fuzzing"):
-GOEXPERIMENT=jsonv2 go test -run '^$' -fuzz '^FuzzReadSignals$' -fuzztime 30s .
-(cd datastartest && GOEXPERIMENT=jsonv2 go test -run '^$' -fuzz '^FuzzReadEvents$' -fuzztime 30s .)
+go test -run '^$' -fuzz '^FuzzReadSignals$' -fuzztime 30s .
+(cd datastartest && go test -run '^$' -fuzz '^FuzzReadEvents$' -fuzztime 30s .)
 
 # CI also enforces (run locally to preempt CI failures):
-GOEXPERIMENT=jsonv2 go work sync        # go.work must not change after sync (idempotency)
+go work sync        # go.work must not change after sync (idempotency)
 go work use . ./broadcast ./datastartest ./static   # go.work must match this exactly
 GOWORK=off go mod tidy -diff            # per module; must print nothing
 GOWORK=off go mod verify                # per module; "all modules verified"
 grep -rn 'replace.*=>/' go.mod datastartest/go.mod static/go.mod  # must find nothing (relative paths only)
 ```
 
-**`GOEXPERIMENT=jsonv2` is required** (transitively via go-branded-id through go-sse).
+`GOEXPERIMENT=jsonv2` is **no longer required** under the Go 1.27.1 floor (v0.6.1 un-gated `encoding/json/v2`); it survives in CI/flake env as a harmless no-op.
 
 Note: do **not** pass `--enforce-samber-oops` to erraudit. This is a library, and
 the go-error-family contract is that libraries classify via go-error-family only
@@ -123,9 +123,9 @@ CHANGELOG.
   that still fires when ci.yml skips).
 - `coverage.yml` — master-push coverage badge to the orphan `coverage`
   branch (same `paths` filter).
-- `nix.yml` — hermetic `nix flake check` on code-affecting paths (first
-  green run 2026-09-03; `continue-on-error` until proven stable).
-- `fuzz.yml` — scheduled daily 60s fuzz runs over all four fuzz targets,
+- `nix.yml` — hermetic `nix flake check` on code-affecting paths (promoted
+  2026-09-18: `continue-on-error` dropped; a red run is red master).
+- `fuzz.yml` — scheduled daily 300s fuzz runs over all four fuzz targets,
   crash artifacts uploaded.
 - `codeql.yml` — GitHub CodeQL Go security analysis (SHA-pinned action).
 - `renovate.json` — custom manager proposing embedded-DataStar-JS bumps from
@@ -136,13 +136,13 @@ CHANGELOG.
 
 ## Gotchas
 
-- **gopls `stdversion` warnings on `encoding/json/v2` are false positives — do
-  not "fix" them.** gopls (v0.23.0) flags ANY json/v2 symbol as "requires
-  go1.27" (its stdlib DB has no GOEXPERIMENT awareness); under
-  `GOEXPERIMENT=jsonv2` the package is fully available in go1.26. `go vet` and
-  golangci-lint never flag it. Every alternative spelling triggers the same
-  warning, and the v1 `encoding/json` API would change error types and HTML
-  escaping (wire format). Leave the v2 direct calls.
+- **gopls warnings on `encoding/json/v2` are false positives — do not "fix"
+  them.** Its stdlib DB lags the toolchain (flagged json/v2 as "requires
+  go1.27" long before it was standard; `go vet`/golangci-lint never flag it).
+  The v1 API would change error types and HTML escaping (wire format). Same
+  class: the `infertypeargs` hint on `sse.WithBufferSize` in broadcast
+  (dropping `[sse.Event]` does not compile). Verify any LSP hint with the
+  compiler before acting on it.
 - **Shared checkout — one section for the whole operational reality:** the
   auto-commit daemon commits and pushes dirty files to whatever branch is
   checked out, multiple crush sessions share this checkout, and `git town`

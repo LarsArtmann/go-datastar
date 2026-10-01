@@ -147,35 +147,35 @@ not exhaustively), Fitness **10.0/10** — against the 2026-08-29 baseline of
    load-bearing.
 4. **Agent 5 stalled** (returned a one-line "Now checking…" instead of its
    report); I covered its four files myself, at the cost of the parallelism.
-5. **docs/performance.md prose numbers** were NOT re-verified against fresh
-   benches (only coverage was); the benchtime re-run is routed TODO_LIST.
-6. **README comparison table vs upstream datastar-go v1.2.2** — not re-verified
-   this session (quarterly standing check; left per release checklist).
-7. **actionlint output was not captured** in the gate batch (the fallback
-   chain swallowed it) — the workflow YAML validation is therefore unverified
-   this session despite the command being issued.
+5. ~~**docs/performance.md prose numbers** were NOT re-verified against fresh~~ done at `80d2f94`
+   ~~benches (only coverage was); the benchtime re-run is routed TODO_LIST.~~
+6. ~~**README comparison table vs upstream datastar-go v1.2.2** — not re-verified~~ done at `45b7399`
+   ~~this session (quarterly standing check; left per release checklist).~~
+7. ~~**actionlint output was not captured** in the gate batch (the fallback~~ done — actionlint clean in every later gate run (actionlint.yml green since)
+   ~~chain swallowed it) — the workflow YAML validation is therefore unverified~~
+   ~~this session despite the command being issued.~~
 8. **Hand-edited table rows** (README, FEATURES, TODO_LIST) are pipe-aligned
    by hand, not by a formatter; cosmetic padding drift possible.
-9. **The two modularization HTML files** were inventoried but their content
-   was not re-verified (the README already marks them executed).
+9. ~~**The two modularization HTML files** were inventoried but their content~~ done — both HTML docs marked executed in docs/modularization/README.md (v0.1.0 / ADR 002; verified by the 2026-08-29 pass)
+   ~~was not re-verified (the README already marks them executed).~~
 
 ## c) NOT STARTED
 
-1. `git worktree` of tag `v0.3.0` + `nix flake check` → record the expected
-   FAIL verdict (TODO_LIST).
-2. `docker build example/` + compose up (TODO_LIST).
-3. Exact-CI golangci-lint app in flake.nix (TODO_LIST, High).
-4. FOD/vendorHash sensitivity investigation + ADR 004 correction (TODO_LIST,
-   High).
-5. gopls cleanup: 4 `encoding/json` → `encoding/json/v2` call sites + 4
-   `b.N` → `b.Loop()` (TODO_LIST).
-6. CI hygiene batch: `go mod verify`, version-drift detection, `go.work`
-   use-vs-disk check, tidy-check mode for module_boundary_test (TODO_LIST).
+1. ~~`git worktree` of tag `v0.3.0` + `nix flake check` → record the expected~~ done at `5750fc5`
+   ~~FAIL verdict (TODO_LIST).~~
+2. ~~`docker build example/` + compose up (TODO_LIST).~~ done at `c242d3f`
+3. ~~Exact-CI golangci-lint app in flake.nix (TODO_LIST, High).~~ done at `80034e1`
+4. ~~FOD/vendorHash sensitivity investigation + ADR 004 correction (TODO_LIST,~~ done at `5750fc5`
+   ~~High).~~
+5. ~~gopls cleanup: 4 `encoding/json` → `encoding/json/v2` call sites + 4~~ done at `cd54cdc`
+   ~~`b.N` → `b.Loop()` (TODO_LIST).~~
+6. ~~CI hygiene batch: `go mod verify`, version-drift detection, `go.work`~~ done at `3d7cada`
+   ~~use-vs-disk check, tidy-check mode for module_boundary_test (TODO_LIST).~~
 7. Renovate-vs-Dependabot one-bot decision — owner (TODO_LIST, BLOCKED).
 8. Branch deletions (`pr/docs-test-consolidation`,
    `preserve/status-report-coderabbit-pr3`) — owner (TODO_LIST, BLOCKED).
-9. CodeRabbit thread replies on PR #3 + human review of the 5 parallel
-   commits (TODO_LIST).
+9. ~~CodeRabbit thread replies on PR #3 + human review of the 5 parallel~~ done at `06b84fb`
+   ~~commits (TODO_LIST).~~
 10. Community files batch: CODEOWNERS / SUPPORT.md / DISCUSSION_TEMPLATE
     (TODO_LIST, owner).
 11. Status-index row for THIS report (added immediately after writing it —

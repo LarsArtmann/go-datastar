@@ -75,10 +75,10 @@ _Routed 2026-10-01: R1–R3 live in the TODO_LIST "Verified next-up" row
 - **R3 — heartbeat configurability**: interval is now the
   `defaultHeartbeatInterval` const (was a magic number); expose as an option
   only if a consumer asks (YAGNI).
-- **R4 — test file size**: 471 lines for 13 cohesive tests; under control, but
+- ~~**R4 — test file size**: 471 lines for 13 cohesive tests; under control, but
   split by theme (lifecycle / delivery / replay) if it keeps growing past
-  ~600. _NOT-DO (2026-10-01): condition not met — the file is 453 lines
-  today, still under the threshold._
+  ~600.~~ **NOT-DO (2026-10-01): condition not met — the file is 453 lines
+  today, still under the threshold.**
 
 ## Verification (all green at report time)
 

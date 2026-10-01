@@ -109,8 +109,8 @@ The closest thing to a fuckup is the **interpretation ambiguity** (see Questions
 15. ~~Check whether upstream DataStar has released a version newer than 1.0.2~~ done — confirmed latest in the v0.0.3 session (T13, 2026-08-08; re-check periodically)
 16. ~~If newer exists, update `static/datastar.js` and `static.Version`~~ done (done — renovate.json tracks upstream releases and proposes bumps (1a72616); Version currently 1.0.2)
 17. ~~Add a `go:generate` or flake target to download/verify the upstream bundle~~ **Won't implement — superseded — renovate.json automates bump proposals; manual process documented in static-js.md.**
-18. Consider pinning the upstream commit SHA in a comment for reproducibility
-19. Add a checksum verification step for the downloaded bundle
+18. ~~Consider pinning the upstream commit SHA in a comment for reproducibility~~ done — provenance comment cites the upstream repo bundles/ directory at the release tag (`ad5ebc2`)
+19. ~~Add a checksum verification step for the downloaded bundle~~ done at `685a347`
 
 ### API Surface Polish
 

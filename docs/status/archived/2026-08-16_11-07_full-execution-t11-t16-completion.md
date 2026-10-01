@@ -194,9 +194,9 @@ are complete.
 
 ### Medium impact
 
-6. Add `erraudit` to CI as a hard gate once the repo goes public (remove probe-gate)
+6. ~~Add `erraudit` to CI as a hard gate once the repo goes public (remove probe-gate)~~ **→ open — owner-blocked (TODO_LIST: erraudit CI flip row).**
 7. ~~Upgrade system Go to 1.26.6 (fixes LSP, removes the flake overrideAttrs TODO)~~ done (system go1.26.7 verified 2026-08-29)
-8. Remove the `goPkg` overrideAttrs when nixpkgs ships go_1_26 >= 1.26.6
+8. ~~Remove the `goPkg` overrideAttrs when nixpkgs ships go_1_26 >= 1.26.6~~ done — superseded by the Go 1.27.1 move (v0.6.1): the flake now uses nixpkgs `go_1_27` directly
 9. ~~Add `ReplaceURLQuerystring` (upstream SDK has it, we don't — documented in README "Where the official SDK wins")~~ done (done — NewReplaceURLQuerystringPatch + Response method + tests (3d3cba0))
 10. ~~Add SSE compression support (gzip/Brotli/Zstd) — the only feature gap vs upstream~~ done (done — decision middleware-over-library; gzip example with tests (8f190ea); README honesty kept)
 11. ~~Add a `CONTRIBUTING.md` section on running the fuzz tests (`-fuzz=FuzzUnmarshalSignals -fuzztime=30s`)~~ done (done — CONTRIBUTING.md fuzz section with 4-target table + smoke commands (5887043))
@@ -211,7 +211,7 @@ are complete.
 17. ~~Add `docs/adr/004-nix-hermetic-checks.md` (document the per-module derivation pattern)~~ done (done — docs/adr/004-nix-hermetic-checks (cf19bf1))
 18. ~~Add a `Makefile` or `justfile` target for `nix run .#test` (wait — AGENTS says no Makefile)~~ **Won't implement — AGENTS.md assigns all build automation to flake.nix; nix run .#test already exists.**
 19. ~~Add `flake.nix` `apps.bench` for running benchmarks~~ done (done — flake.nix apps.bench + committed benchmarks (88c1eed))
-20. Add a `docs/architecture.md` overview diagram (layer separation: transport → protocol → domain)
+20. ~~Add a `docs/architecture.md` overview diagram (layer separation: transport → protocol → domain)~~ done at `7932f74`
 21. ~~Add a `datastartest/README.md` section on the WPT corpus and chunk-boundary tests~~ done (datastartest README Conformance section (d032dc5))
 22. ~~Add a `datastartest/README.md` section on the fuzz test and how to run it~~ done (same Conformance section documents the fuzz corpus and go-sse seed port)
 23. ~~Add `docs/testing.md` (testing strategy: unit, integration, E2E, fuzz, WPT corpus)~~ done (done — docs/testing.md (3fa96f0))
