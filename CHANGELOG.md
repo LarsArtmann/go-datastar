@@ -63,6 +63,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   awaits the owner's merge — merged 2026-10-01 (squash `1bd2161`), actionlint
   green on the merge commit.
 
+### Added — broadcast ergonomics (v0.7.0 tranche)
+
+- `broadcast.NewBroadcaster` now takes variadic `Option`s (source-compatible:
+  `NewBroadcaster()` keeps its behavior) — `WithBufferSize`,
+  `WithReplayCapacity`, `WithStore`, and `WithHeartbeatInterval` compose
+  freely, closing the constructor-matrix gap (buffer size × replay were
+  orthogonal axes with only 3 of 4 combos constructible).
+- `broadcast.Store` (the injection seam: `sse.EventStore` + `Append`) lets
+  multi-instance deployments share replay state in their own store (Redis,
+  Postgres, ...) — the exact limitation `MemoryStore` documents. No backends
+  ship in this repo by design; the store is owned and closed by the caller,
+  and `WithStore(nil)` disables replay. Append-before-fan-out ordering is
+  pinned by tests, and the heartbeat interval is now configurable (default
+  15s unchanged).
+- Fixed the tagged `go test -tags docspec` run in broadcast: the adoption
+  snippet called `ServeHTTP` synchronously on a non-cancellable request,
+  hanging the run for the full 10-minute test timeout.
+
 ### Added — docs & tooling
 
 - datastartest tranche-2 helpers now have runnable godoc examples

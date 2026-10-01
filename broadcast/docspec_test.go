@@ -10,6 +10,7 @@
 package broadcast_test
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -33,10 +34,27 @@ func docspecMigrationGuideAdoption(t *testing.T) {
 	// reconnecting clients replay instead of missing the event.
 	broadcaster.Broadcast(patch)
 
-	recorder := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/events", nil)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	broadcaster.ServeHTTP(recorder, req)
+	recorder := httptest.NewRecorder()
+	req := httptest.NewRequestWithContext(ctx, http.MethodGet, "/events", nil)
+
+	// The request context drives the disconnect: ServeHTTP runs in a
+	// goroutine and returns when ctx is cancelled.
+	done := make(chan struct{})
+
+	go func() {
+		broadcaster.ServeHTTP(recorder, req)
+		close(done)
+	}()
+
+	for broadcaster.SubscriberCount() == 0 {
+		time.Sleep(time.Millisecond)
+	}
+
+	cancel()
+	<-done
 }
 
 // docs/migration-guide.md — patch-level fan-out surface.
