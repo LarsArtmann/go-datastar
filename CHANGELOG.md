@@ -39,7 +39,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (json/v2 rejects invalid UTF-8 where v1 replaced it) — sending nothing to
   the client exactly when an error UI was needed. Found by the new
   `FuzzErrorResponseFromError` target (T16.8 closure); its two crash seeds
-  are committed as regression cases. The deferred fuzz smokes
+  are committed as regression cases. The fix is class-wide: `ErrorResponse`
+  and `NotificationResponse` sanitize their message/code/kind through the
+  same helper (a best-effort reporting path must never fail on its own
+  payload), pinned by `TestBestEffortSendersSurviveInvalidUTF8` and the new
+  `FuzzBestEffortSignalSenders` target; both new targets joined the nightly
+  fuzz matrix. The deferred fuzz smokes
   (FuzzReadSignals, FuzzReadEvents) also ran clean at HEAD.
 - BuildFlow `license-check` failure loop (4+ identical failures across
   sessions) routed: go-licenses' stdlib detection (`isStdLib`) compares
@@ -78,7 +83,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and merged the same day (squash `1bd2161`); actionlint green on the merge
   commit.
 
-### Added — broadcast ergonomics (v0.7.0 tranche)
+### Added — broadcast ergonomics
 
 - `broadcast.NewBroadcaster` now takes variadic `Option`s (source-compatible:
   `NewBroadcaster()` keeps its behavior) — `WithBufferSize`,

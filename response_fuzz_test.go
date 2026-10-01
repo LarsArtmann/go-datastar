@@ -57,3 +57,41 @@ func FuzzErrorResponseFromError(f *testing.F) {
 		}
 	})
 }
+
+// FuzzBestEffortSignalSenders pins the delivery invariant for the whole class
+// of best-effort reporting senders, beyond [datastar.ErrorResponseFromError]:
+// whatever bytes a handler supplies as message, code, or kind, the sender must
+// never fail on its own payload (json/v2 rejects invalid UTF-8 where v1
+// replaced it — the senders sanitize to U+FFFD instead).
+func FuzzBestEffortSignalSenders(f *testing.F) {
+	// Regression seeds: invalid UTF-8 in every field (the class the original
+	// crash seed exposed).
+	f.Add("\xff\xfe", "\x80code", uint8(0))
+	// Plain message, empty code.
+	f.Add("boom", "", uint8(1))
+	// Control characters and newlines.
+	f.Add("line\nbreak\x00ctl", "kind\x00", uint8(2))
+
+	f.Fuzz(func(t *testing.T, message, code string, sender uint8) {
+		recorder := httptest.NewRecorder()
+		req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events", nil)
+		stream := sse.NewStream(recorder, req)
+
+		defer func() { _ = stream.Close() }()
+
+		var err error
+
+		switch sender % 3 {
+		case 0:
+			err = datastar.ErrorResponse(stream, message, code)
+		case 1:
+			err = datastar.NotificationResponse(stream, message, code)
+		case 2:
+			err = datastar.ErrorResponseFromError(stream, errorfamily.NewTransient(code, message))
+		}
+
+		if err != nil {
+			t.Fatalf("sender %d failed on its own payload: %v", sender%3, err)
+		}
+	})
+}

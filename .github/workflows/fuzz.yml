@@ -26,6 +26,10 @@ jobs:
             target: FuzzReadSignals
           - module: .
             target: FuzzMarshalSignalsRoundtrip
+          - module: .
+            target: FuzzErrorResponseFromError
+          - module: .
+            target: FuzzBestEffortSignalSenders
           - module: datastartest
             target: FuzzReadEvents
           - module: datastartest

@@ -177,8 +177,23 @@ func (r *Response) Stream() *sse.Stream { return r.stream }
 
 const signalKeyMessage = "message"
 
+// sanitizeUTF8 replaces invalid UTF-8 sequences with U+FFFD, restoring the
+// encoding/json v1 replacement behavior. The best-effort reporting senders
+// (ErrorResponse, NotificationResponse, ErrorResponseFromError) run every
+// handler-supplied diagnostic string through this: json/v2 — unlike v1 —
+// rejects invalid UTF-8, and a reporting path must never fail on its own
+// payload.
+func sanitizeUTF8(s string) string {
+	return strings.ToValidUTF8(s, "\ufffd")
+}
+
 // sendSignalsMap builds a [SignalsPatch] from a key→value map and sends it on
-// the stream. It is the shared core of [ErrorResponse] and [NotificationResponse].
+// the stream. It is the shared core of the best-effort reporting senders
+// ([ErrorResponse], [NotificationResponse], [ErrorResponseFromError]); those
+// sanitize their string fields first because json/v2 rejects invalid UTF-8
+// and a reporting path must not fail on its own payload. General signal
+// senders ([NewSignalsPatch], [Response.MarshalAndPatchSignals]) keep strict
+// semantics: marshal errors propagate to the caller, who can decide.
 func sendSignalsMap(stream *sse.Stream, signals map[string]any) error {
 	patch, err := NewSignalsPatch(signals)
 	if err != nil {
@@ -189,12 +204,14 @@ func sendSignalsMap(stream *sse.Stream, signals map[string]any) error {
 }
 
 // ErrorResponse sends a signals patch with error information that the
-// DataStar client can display.
+// DataStar client can display. The message and code are sanitized to valid
+// UTF-8 (invalid bytes become U+FFFD): this is a best-effort reporting path
+// that must never fail on its own payload.
 func ErrorResponse(stream *sse.Stream, message string, code string) error {
 	return sendSignalsMap(stream, map[string]any{
 		"error": map[string]any{
-			signalKeyMessage: message,
-			"code":           code,
+			signalKeyMessage: sanitizeUTF8(message),
+			"code":           sanitizeUTF8(code),
 		},
 	})
 }
@@ -224,8 +241,8 @@ func ErrorResponseFromError(stream *sse.Stream, err error) error {
 		)
 	}
 
-	message := strings.ToValidUTF8(err.Error(), "\ufffd")
-	code := strings.ToValidUTF8(errorfamily.Code(err), "\ufffd")
+	message := sanitizeUTF8(err.Error())
+	code := sanitizeUTF8(errorfamily.Code(err))
 
 	return sendSignalsMap(stream, map[string]any{
 		"error": map[string]any{
@@ -239,11 +256,14 @@ func ErrorResponseFromError(stream *sse.Stream, err error) error {
 }
 
 // NotificationResponse sends a signals patch with a notification message.
+// The message and kind are sanitized to valid UTF-8 (invalid bytes become
+// U+FFFD): this is a best-effort reporting path that must never fail on its
+// own payload.
 func NotificationResponse(stream *sse.Stream, message string, kind string) error {
 	return sendSignalsMap(stream, map[string]any{
 		"notification": map[string]any{
-			signalKeyMessage: message,
-			"kind":           kind,
+			signalKeyMessage: sanitizeUTF8(message),
+			"kind":           sanitizeUTF8(kind),
 			"time":           time.Now().Unix(),
 		},
 	})
