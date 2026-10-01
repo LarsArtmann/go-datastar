@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/larsartmann/go-datastar"
 	"github.com/larsartmann/go-datastar/broadcast"
@@ -45,6 +46,23 @@ func docspecMigrationGuideFanOut(broadcaster *broadcast.Broadcaster, patches []d
 	broadcaster.BroadcastEvent(patches[0].Event())
 }
 
+// broadcast README — "Options": buffer size, replay, store, and heartbeat
+// are orthogonal knobs on one constructor.
+func docspecReadmeOptions(t *testing.T) {
+	t.Helper()
+
+	b := broadcast.NewBroadcaster(
+		broadcast.WithBufferSize(64),
+		broadcast.WithReplayCapacity(256),
+		broadcast.WithHeartbeatInterval(30*time.Second),
+	)
+	defer b.Close()
+
+	b.Broadcast(datastar.NewElementsPatch("<div>hello</div>"))
+
+	var _ broadcast.Store = datastar.NewMemoryStore(16)
+}
+
 // TestDocspec_BroadcastSnippets executes the adoption path end to end so
 // constructor or ordering drift (append-before-fan-out) fails loudly.
 func TestDocspec_BroadcastSnippets(t *testing.T) {
@@ -62,6 +80,7 @@ func TestDocspec_BroadcastSnippets(t *testing.T) {
 
 	docspecMigrationGuideFanOut(broadcaster, patches)
 	docspecMigrationGuideAdoption(t)
+	docspecReadmeOptions(t)
 
 	var _ http.Handler = broadcaster // mountable as a handler, per the guide
 }

@@ -13,6 +13,10 @@
 //	broadcaster.Broadcast(datastar.NewElementsPatch("<div>hi</div>",
 //		datastar.WithSelectorID("feed")))
 //
+// Buffer size, replay, a custom replay store ([Store] via [WithStore] for
+// multi-instance deployments), and the heartbeat interval are orthogonal
+// [Option]s on [NewBroadcaster].
+//
 // It is domain-agnostic: mapping domain events to patches (an EventBridge)
 // stays a consumer concern, per the root module's non-goals.
 //
