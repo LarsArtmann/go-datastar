@@ -3,6 +3,16 @@
 # The repo's canonical gates are the flake apps (nix run .#test / .#lint-ci /
 # .#erraudit) plus the CI workflow; this file only tunes BuildFlow's
 # broader-than-repo toolset so it stays green without masking real findings.
+#
+# license-check environment contract: run BuildFlow inside the devshell
+# (`nix develop -c buildflow ...`). The devshell provides go-licenses and,
+# critically, pins GOTOOLCHAIN=local with a real GOROOT; in a plain user
+# shell GOTOOLCHAIN=auto switches to the toolchain cache
+# (/mnt/buildcache/go-mod/golang.org/toolchain@...), and go-licenses stdlib
+# detection (isStdLib compares package paths against the GOROOT the binary
+# was built/run with) misaligns, so every stdlib package errors with "does
+# not have module info" (adjacent to google/go-licenses#128). That was the
+# license-check x4+ failure loop closed 2026-10-01.
 
 build_mode: full
 

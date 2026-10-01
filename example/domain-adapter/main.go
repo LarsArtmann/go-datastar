@@ -101,7 +101,12 @@ func Bridge(evt DomainEvent) ([]datastar.Patch, error) {
 		}, nil
 
 	default:
-		return nil, errorfamily.WrapRejectionf(errUnknownDomainEvent, "example.unknown_domain_event", "bridge: %T", evt)
+		return nil, errorfamily.WrapRejectionf(
+			errUnknownDomainEvent,
+			"example.unknown_domain_event",
+			"bridge: %T",
+			evt,
+		)
 	}
 }
 
