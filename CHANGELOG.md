@@ -125,7 +125,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `docs/migration-guide.md` snippets now execute behind the `docspec` build
   tag (root and broadcast), and the `docs/testing.md` quick-start shows the
   full handler its assertion always expected (`WithModeAppend`) — the doc
-  and its mirror no longer diverge.
+  and its mirror no longer diverge. Docspec also joined the CI workspace
+  job (it was a local-only ritual; `fuzz.yml`'s matrix grew from four
+  targets to six the same way), and FEATURES.md's broadcast section caught
+  up with the options/store tranche. Coverage re-measured 2026-10-01:
+  root 98.8%, datastartest 95.5%, static 100%.
 - datastartest's two inert `replace` directives (`go-datastar => ..`,
   `go-datastar/static => ../static`) are dropped from `go.mod` — consumers
   ignore dependency replaces, so the tagged module was unaffected, but the
