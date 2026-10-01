@@ -49,19 +49,19 @@ Policy:
 
 ## Archived (fully resolved)
 
-| Date       | Report                                                                                                            | Topic                                         |
-| ---------- | ----------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| 2026-08-16 | [README comparison vs official SDK](archived/2026-08-16_07-52_readme-comparison-official-sdk.md)                  | Comparison table rewrite; every item resolved |
-| 2026-08-16 | [docs health audit annotations](archived/2026-08-16_08-20_docs-health-audit-annotations.md)                       | Audit annotation pass; every item resolved    |
-| 2026-08-16 | [docs health audit completion self-review](archived/2026-08-16_08-47_docs-health-audit-completion-self-review.md) | Audit completion review; every item resolved  |
-| 2026-08-16 | [full execution progress](archived/2026-08-16_09-55_full-execution-progress.md)                                   | Execution progress; every item resolved       |
-| 2026-08-08 | [docs health audit and self-critique](archived/2026-08-08_03-05_docs-health-audit-and-self-critique.md)                       | Every item resolved (verified 2026-10-01)    |
-| 2026-08-10 | [datastartest E2E package](archived/2026-08-10_02-55_datastartest-e2e-testing-package.md)                                     | Module created; every item resolved           |
-| 2026-08-10 | [datastartest API expansion and doc sync](archived/2026-08-10_03-49_datastartest-api-expansion-and-doc-sync.md)               | API growth; every item resolved               |
-| 2026-08-10 | [datastartest hardening and API expansion](archived/2026-08-10_04-25_datastartest-hardening-and-api-expansion.md)             | Hardening pass; every item resolved           |
-| 2026-08-16 | [full execution T11–T16 completion](archived/2026-08-16_11-07_full-execution-t11-t16-completion.md)                            | T11–T16 done; every item resolved             |
+| Date       | Report                                                                                                                           | Topic                                         |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| 2026-08-16 | [README comparison vs official SDK](archived/2026-08-16_07-52_readme-comparison-official-sdk.md)                                 | Comparison table rewrite; every item resolved |
+| 2026-08-16 | [docs health audit annotations](archived/2026-08-16_08-20_docs-health-audit-annotations.md)                                      | Audit annotation pass; every item resolved    |
+| 2026-08-16 | [docs health audit completion self-review](archived/2026-08-16_08-47_docs-health-audit-completion-self-review.md)                | Audit completion review; every item resolved  |
+| 2026-08-16 | [full execution progress](archived/2026-08-16_09-55_full-execution-progress.md)                                                  | Execution progress; every item resolved       |
+| 2026-08-08 | [docs health audit and self-critique](archived/2026-08-08_03-05_docs-health-audit-and-self-critique.md)                          | Every item resolved (verified 2026-10-01)     |
+| 2026-08-10 | [datastartest E2E package](archived/2026-08-10_02-55_datastartest-e2e-testing-package.md)                                        | Module created; every item resolved           |
+| 2026-08-10 | [datastartest API expansion and doc sync](archived/2026-08-10_03-49_datastartest-api-expansion-and-doc-sync.md)                  | API growth; every item resolved               |
+| 2026-08-10 | [datastartest hardening and API expansion](archived/2026-08-10_04-25_datastartest-hardening-and-api-expansion.md)                | Hardening pass; every item resolved           |
+| 2026-08-16 | [full execution T11–T16 completion](archived/2026-08-16_11-07_full-execution-t11-t16-completion.md)                              | T11–T16 done; every item resolved             |
 | 2026-09-03 | [pareto execution T01–T27: v0.4.0 shipped](archived/2026-09-03_02-00_pareto-execution-t01-t27-v0.4.0-shipped-and-gates-green.md) | All 27 tasks + §e items resolved              |
-| 2026-09-03 | [release v0.5.0: lockstep tags, full gate green](archived/2026-09-03_23-00_release-v0.5.0-lockstep-tags-full-gate-green.md)    | Pure release ledger; every item resolved      |
+| 2026-09-03 | [release v0.5.0: lockstep tags, full gate green](archived/2026-09-03_23-00_release-v0.5.0-lockstep-tags-full-gate-green.md)      | Pure release ledger; every item resolved      |
 
 Related: executed plans live in [`docs/planning/archived/`](../planning/archived/)
 (the 2026-08-16 CI-trust plan and the 2026-09-02 v0.4.0 plan are there,
