@@ -196,11 +196,14 @@ gap that I perpetuated rather than introduced.
 
 ### Code improvements (from prior reports, still relevant)
 
-6. **CHANGELOG comparison links** — add the Keep a Changelog footer convention.
-7. **`actionlint` in nix checks or CI** — I ran it ad hoc; it should be
-   permanent.
-8. **`ErrorResponseFromError` could parse JSON in tests instead of substring
-   matching** — mentioned in 07-04 report, still valid.
+6. ~~**CHANGELOG comparison links** — add the Keep a Changelog footer convention.~~
+   done — compare links maintained in CHANGELOG since v0.1.0
+7. ~~**`actionlint` in nix checks or CI** — I ran it ad hoc; it should be
+   permanent.~~ done — actionlint.yml workflow runs on every push/PR (AGENTS
+   CI section)
+8. ~~**`ErrorResponseFromError` could parse JSON in tests instead of substring
+   matching** — mentioned in 07-04 report, still valid.~~ done — decoded-JSON
+   assertions shipped in the Response test-depth batch (T16, `72aed78`)
 
 ---
 
@@ -219,7 +222,8 @@ gap that I perpetuated rather than introduced.
 
 ### Release follow-up
 
-7. Verify pkg.go.dev picks up v0.0.3 (may take minutes to hours).
+7. ~~Verify pkg.go.dev picks up v0.0.3 (may take minutes to hours).~~ done —
+   pkg.go.dev renders all modules (verified repeatedly through v0.6.0)
 8. Add coverage badge to README (once a coverage service is configured).
 9. ~~GitHub repo polish: set topics (`datastar`, `sse`, `go`, `hypermedia`).~~ done (`cfe328d`)
 10. ~~GitHub repo polish: disable empty wiki.~~ done (`cfe328d`)
@@ -227,9 +231,9 @@ gap that I perpetuated rather than introduced.
 
 ### CI / tooling
 
-12. Add `actionlint` to nix `checks` (hermetic CI validation).
-13. Add `actionlint` to the CI pipeline itself (lint the workflow files).
-14. Add caching for `go mod` in CI for faster builds.
+12. Add `actionlint` to nix `checks` (hermetic CI validation). **→ open — hermetic nix-check variant not built; the actionlint.yml workflow covers CI validation**
+13. ~~Add `actionlint` to the CI pipeline itself (lint the workflow files).~~ done — actionlint.yml runs on every push/PR (AGENTS CI section)
+14. ~~Add caching for `go mod` in CI for faster builds.~~ done — setup-go default module caching + documented lint analysis cache (AGENTS CI section)
 15. Add status badges for erraudit and govulncheck (not just test/lint).
 16. Consider matrix testing across Go 1.26.x patch versions.
 17. Add `go test -short` / `go test -long` separation for faster CI feedback.
@@ -239,9 +243,9 @@ gap that I perpetuated rather than introduced.
 
 ### Documentation
 
-20. Write migration guide from `starfederation/datastar-go` to go-datastar.
-21. Add ARCHITECTURE.md explaining the 3-layer design (transport → protocol →
-    domain).
+20. ~~Write migration guide from `starfederation/datastar-go` to go-datastar.~~ done at `ac1de23`
+21. ~~Add ARCHITECTURE.md explaining the 3-layer design (transport → protocol →~~ done at `7932f74`
+    ~~domain).~~
 22. Add "Error Handling Guide" section to README showing `ErrorResponseFromError`.
 23. Document the CI pipeline in CONTRIBUTING.md (what jobs run, what they check).
 24. Review all godoc comments for accuracy (the doc bugs prove this is needed).

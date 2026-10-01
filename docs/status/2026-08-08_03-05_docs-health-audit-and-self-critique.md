@@ -243,8 +243,8 @@ The skill says to produce two independent scores (Accuracy + Fitness) with visib
 28. ~~Update `doc.go` package comment to mention classified errors.~~ done at `4f7595e`
 29. ~~Add `SECURITY.md` and `CODE_OF_CONDUCT.md`.~~ done at `3cebe14`
 30. ~~Create issue templates and PR template.~~ done at `3cebe14`
-31. Add "Migrating from starfederation/datastar-go" guide.
-32. Add architecture diagram (D2 or mermaid).
+31. ~~Add "Migrating from starfederation/datastar-go" guide.~~ done at `ac1de23`
+32. ~~Add architecture diagram (D2 or mermaid).~~ done at `7932f74`
 33. ~~Add coverage badge to README.~~ done (done — README coverage badge + coverage.yml (ed815c7))
 34. ~~Add `errors_example_test.go` showing all three error-handling patterns.~~ done at `eb8bf29`
 35. ~~Add markdown formatter to treefmt.~~ **Won't implement — ADR 006 — dprint.json deliberately unwired into treefmt/CI (cf19bf1).**
@@ -253,8 +253,8 @@ The skill says to produce two independent scores (Accuracy + Fitness) with visib
 
 36. ~~Address `nestif` complexity in `ReadSignals` (complexity 6).~~ done at `5bab343`
 37. ~~Consider splitting `response.go` (195 lines, 18 methods).~~ **Won't implement — response.go is a cohesive fluent builder; splitting is churn.**
-38. Add `Broadcaster[datastar.Patch]` typed-filtering example.
-39. Add `SubscribeFilter` usage example.
+38. ~~Add `Broadcaster[datastar.Patch]` typed-filtering example.~~ done at `ac1de23`
+39. ~~Add `SubscribeFilter` usage example.~~ done at `ac1de23`
 40. ~~Add `//nolint` comments on accepted `generic_return` / `silent_swallow` sites.~~ **Won't implement** — superseded by `--severity-threshold error` in CI (T09)
 
 ### GitHub repo polish
@@ -266,9 +266,9 @@ The skill says to produce two independent scores (Accuracy + Fitness) with visib
 ### Release tooling
 
 44. ~~Tag v0.0.3 with the HEAD spec-compliance fix + godoc fix.~~ done — v0.0.3 tagged 2026-08-08
-45. Add CHANGELOG automation.
-46. Consider goreleaser.
-47. Add `version` package or build-time variable.
+45. ~~Add CHANGELOG automation.~~ **Won't implement — decided 2026-09-03 — manual keep-a-changelog + release-checklist gate stays (ROADMAP resolved questions).**
+46. ~~Consider goreleaser.~~ done at `9cb1d17`
+47. ~~Add `version` package or build-time variable.~~ done at `49a0ae6`
 
 ### Upstream tracking
 

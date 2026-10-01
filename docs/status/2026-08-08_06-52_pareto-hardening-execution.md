@@ -155,7 +155,7 @@ Commits `de6abaf`, `eb8bf29`, and `17325c2` have empty commit messages (just whi
 10. ~~Run `FuzzMarshalSignalsRoundtrip` for 60+ seconds and verify 0 panics.~~ done (done — FuzzMarshalSignalsRoundtrip runs daily (fuzz.yml, 1a72616))
 11. Add fuzz test for `NewDispatchCustomEventPatch` with unmarshallable detail values.
 12. Add test that `MarshalSignals` error message includes the Go type name.
-13. Add test for `ErrorResponseFromError` with nil error (edge case).
+13. ~~Add test for `ErrorResponseFromError` with nil error (edge case).~~ done at `72aed78`
 14. Add test for `DispatchCustomEventPatch.Event()` when `detailJSON` is nil (detail is nil at construction).
 
 ### CI / tooling
@@ -172,8 +172,8 @@ Commits `de6abaf`, `eb8bf29`, and `17325c2` have empty commit messages (just whi
 21. ~~Add `docs/error-system.md` deep-dive with full contract + decision rationale.~~ done (done — docs/error-system.md + docs/adr/003-error-classification.md)
 22. ~~Document why `--enforce-samber-oops` must NOT be used with this library in CI config comments.~~ done — documented in `AGENTS.md` (Error System)
 23. Update CONTRIBUTING.md to mention erraudit and govulncheck commands.
-24. Add architecture diagram (D2 or mermaid) showing go-sse → go-datastar → consumer.
-25. Write migration guide from `starfederation/datastar-go` to go-datastar.
+24. ~~Add architecture diagram (D2 or mermaid) showing go-sse → go-datastar → consumer.~~ done at `7932f74`
+25. ~~Write migration guide from `starfederation/datastar-go` to go-datastar.~~ done at `ac1de23`
 
 ### Code quality
 
@@ -186,8 +186,8 @@ Commits `de6abaf`, `eb8bf29`, and `17325c2` have empty commit messages (just whi
 ### Dependency hygiene
 
 31. ~~Consider whether `go-branded-id` should become a direct dependency.~~ **Won't implement — go-branded-id remains transitive via go-sse; promoting it buys nothing.**
-32. Investigate the `gopls stdversion` warnings — is `encoding/json/v2` actually stable in Go 1.26 or does it need 1.27?
-33. Check if `GOEXPERIMENT=jsonv2` can be replaced with a stable flag in Go 1.27+.
+32. ~~Investigate the `gopls stdversion` warnings — is `encoding/json/v2` actually stable in Go 1.26 or does it need 1.27?~~ done at `cd54cdc`
+33. ~~Check if `GOEXPERIMENT=jsonv2` can be replaced with a stable flag in Go 1.27+.~~ done — GOEXPERIMENT=jsonv2 no longer required under Go 1.27.1 (v0.6.1, CHANGELOG)
 
 ### Community / repo polish
 

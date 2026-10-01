@@ -137,10 +137,10 @@ Nothing partially done. All 4 fixes were binary: either fixed or not.
 
 9. ~~Refactor `ReadSignals` to reduce `nestif` complexity (currently 6)~~ done at `5bab343`
 10. ~~Add `actionlint` to nix flake checks or CI pipeline~~ done (done — actionlint.yml workflow validates every push)
-11. Consider making `ErrorResponse`/`NotificationResponse`/`ErrorResponseFromError` into `Response` methods for fluent API consistency
-12. Parse JSON in `TestErrorResponseFromError` instead of substring matching
+11. ~~Consider making `ErrorResponse`/`NotificationResponse`/`ErrorResponseFromError` into `Response` methods for fluent API consistency~~ done at `49a0ae6`
+12. ~~Parse JSON in `TestErrorResponseFromError` instead of substring matching~~ done at `72aed78`
 13. Add integration test that exercises the full `ErrorResponseFromError` → client round-trip
-14. Add test for `NotificationResponse` with edge-case message content (empty, unicode, very long)
+14. ~~Add test for `NotificationResponse` with edge-case message content (empty, unicode, very long)~~ done at `72aed78`
 15. Add test for `ErrorResponse` with empty code or message
 16. ~~Review whether `signalKeyMessage` should be renamed to something clearer~~ **Won't implement — internal JSON-key constant with no consumer surface; renaming is churn.**
 17. Consider extracting a `signalsMap` type to make the signals-patch pattern more explicit
@@ -150,20 +150,20 @@ Nothing partially done. All 4 fixes were binary: either fixed or not.
 18. ~~Verify `doc.go` examples compile and match current API~~ done (done — doc.go verified in the 2026-08-29 docs-health audit; examples use the current API)
 19. ~~Add a "Error Handling Guide" section to README showing `ErrorResponseFromError` usage~~ done (done — README 'Error handling' section covers ErrorResponseFromError + the codes table)
 20. Review all godoc comments for accuracy (the `ErrorResponseFromError` doc bug proves this is needed)
-21. Add ARCHITECTURE.md or architecture section to README explaining the 3-layer design
+21. ~~Add ARCHITECTURE.md or architecture section to README explaining the 3-layer design~~ done at `7932f74`
 22. Document the CI pipeline in CONTRIBUTING.md (what jobs run, what they check)
-23. Add CODEOWNERS file
+23. Add CODEOWNERS file **→ open — owner-blocked (TODO_LIST: CODEOWNERS naming)**
 24. ~~Review LICENSE year (2026 current?)~~ done — LICENSE says 2026 (current)
 
 ### Testing
 
 25. Add fuzz test for `ErrorResponseFromError` with random error types
 26. Add benchmark for `ErrorResponseFromError` (measures `errorfamily.Classify` overhead)
-27. Add test for concurrent `Response` method calls (thread safety)
+27. ~~Add test for concurrent `Response` method calls (thread safety)~~ done at `72aed78`
 28. ~~Add test for `MemoryStore` at capacity (ring buffer behavior)~~ done (`TestMemoryStore_RingBufferEviction`, `store_test.go:106`)
 29. ~~Add E2E test for SSE reconnection replay with DataStar patches~~ done (done — TestE2E_ReplayWithLastEventID exercises SSE reconnection replay (datastartest/e2e_test.go))
 30. ~~Add test for `ScriptHandler` with custom bundle (`ScriptHandlerWith`)~~ done (done — TestScriptHandlerWith covers custom bundles (response_test.go))
-31. Add test for very large elements patches (multi-line splitting at scale)
+31. ~~Add test for very large elements patches (multi-line splitting at scale)~~ done at `72aed78`
 32. Add test for signals patches with nested JSON objects
 33. Add test for `ReadSignals` with query param + body simultaneously (which wins?)
 34. ~~Add property-based test for wire-format parity (generate patches, check format)~~ done (done — TestPatchWireGoldens pins exact wire bytes (a0c0aea); FuzzMarshalSignalsRoundtrip property-tests the roundtrip)

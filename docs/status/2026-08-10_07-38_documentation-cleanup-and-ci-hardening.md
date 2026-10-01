@@ -95,7 +95,7 @@ list) but were out of scope for this session's documentation/CI focus. They
 remain as future work:
 
 1. ~~**FEATURES.md update** — no mention of the modularization fix~~ done at `b5465f2` (module-structure rows; re-verified 2026-08-16)
-2. **Version drift detection CI check** — proposed in real-world-patterns.md
+2. ~~**Version drift detection CI check** — proposed in real-world-patterns.md~~ done at `3d7cada`
 3. ~~**Regression guard test** — a test verifying root's go.mod does NOT contain
    datastartest~~ done at `fda70c7` (`module_boundary_test.go`)
 4. ~~**Programmatic DAG acyclicity check** — test that verifies the module
@@ -241,8 +241,8 @@ is clean (3 files modified, no new untracked files except this status report).
 
 7. ~~Fix the `diff` exit-code handling in the workspace sync idempotency check~~ done at `dc0d6f2`
 8. ~~Add `actionlint` or `yamllint` step to validate CI YAML syntax ← open, routed to TODO_LIST 2026-08-16~~ done (done — dedicated actionlint.yml workflow validates every push (88c1eed lineage))
-9. Add `go mod verify` step to CI
-10. Add version drift detection script to CI
+9. ~~Add `go mod verify` step to CI~~ done at `3d7cada`
+10. ~~Add version drift detection script to CI~~ done at `3d7cada`
 11. Add a CI step that verifies `go.work` `use` directives match actual
     go.mod files on disk
 12. Consider parallelizing CI jobs per module for faster feedback

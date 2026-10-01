@@ -149,7 +149,7 @@ focus:
 
 1. ~~**FEATURES.md update** — no mention of the modularization fix or the new
    regression guard test~~ done at `b5465f2` — module-structure rows; the guard is documented in AGENTS.md (`fda70c7`); CI rows re-verified 2026-08-16
-2. **Version drift detection CI check** — proposed in real-world-patterns.md
+2. ~~**Version drift detection CI check** — proposed in real-world-patterns.md~~ done at `3d7cada`
 3. ~~**Programmatic DAG acyclicity check** — a test that verifies the module
    dependency graph is acyclic (more robust than the text-scanning regression
    guard I added)~~ NOT-DO — superseded by `fda70c7`; the boundary guard covers the only cycle risk in this 3-module layout

@@ -89,32 +89,32 @@
 
 11. ~~Decide on comparison links strategy: retag v0.0.3 (destructive) or accept links start at v0.0.4~~ resolved — accepted: links live on master, not at the frozen tag
 12. ~~Add `[0.0.1]` and `[0.0.2]` comparison links retroactively (at least on master)~~ done — present in `CHANGELOG.md`
-13. Update v0.0.3 release notes on GitHub if go.mod fix is applied (remove false "lowered to 1.26" claim)
-14. Verify pkg.go.dev renders godoc for v0.0.3 (trigger re-index if needed)
-15. Add coverage badge to README (need a coverage reporting service or CI step)
-16. Update CHANGELOG `[Unreleased]` section to track the go.mod fix and CI erraudit fix
+13. ~~Update v0.0.3 release notes on GitHub if go.mod fix is applied (remove false "lowered to 1.26" claim)~~ **NOT-DO — historical release page — six accurate releases since; amending frozen v0.0.3 notes is moot.**
+14. ~~Verify pkg.go.dev renders godoc for v0.0.3 (trigger re-index if needed)~~ done — pkg.go.dev renders all modules (verified repeatedly through v0.6.0)
+15. ~~Add coverage badge to README (need a coverage reporting service or CI step)~~ done — coverage.yml orphan-branch badge, live since 2026-08-16
+16. ~~Update CHANGELOG `[Unreleased]` section to track the go.mod fix and CI erraudit fix~~ done — shipped in v0.1.0 CHANGELOG history
 17. ~~Write CONTRIBUTING.md note about GOPRIVATE for contributors with private dep access~~ **Won't implement** — moot since the erraudit job is non-blocking
 
 ### Low priority (polish and quality of life)
 
 18. ~~Address `nestif` complexity in `ReadSignals` (complexity 6) — `inbound.go`~~ done at `5bab343`
-19. Add `actionlint` to CI as a dedicated job (currently only run manually via nix)
-20. Consider adding `nix flake check` to CI
+19. ~~Add `actionlint` to CI as a dedicated job (currently only run manually via nix)~~ done — actionlint.yml workflow on every push/PR
+20. ~~Consider adding `nix flake check` to CI~~ done — nix.yml runs nix flake check on code paths (promoted 2026-09-18)
 21. ~~Add `Makefile`-equivalent document in CONTRIBUTING for non-Nix users (or clarify flake.nix is the only path)~~ done — CONTRIBUTING documents the manual workflow
 22. ~~Consider versioning the embedded DataStar JS client independently~~ done — `static/` is a separately tagged module (`static/v0.1.0`+)
-23. Review if go.mod `go 1.26.5` should actually be `go 1.26` for broader compatibility (patch versions in go.mod ARE unusual) — still open, TODO_LIST
-24. Add a `RELEASING.md` checklist (tag → CHANGELOG → release → verify go get → verify CI)
-25. Consider GitHub Discussions for Q&A (currently disabled)
+23. ~~Review if go.mod `go 1.26.5` should actually be `go 1.26` for broader compatibility (patch versions in go.mod ARE unusual) — still open, TODO_LIST~~ done — resolved — policy pins exact patch releases (ROADMAP resolved questions; currently 1.27.1)
+24. ~~Add a `RELEASING.md` checklist (tag → CHANGELOG → release → verify go get → verify CI)~~ done — docs/release-checklist.md is the runbook
+25. ~~Consider GitHub Discussions for Q&A (currently disabled)~~ done — discussion templates shipped (T18, `69ede1b`)
 26. ~~Review whether wiki should stay disabled permanently or be used for guides~~ resolved — stays disabled
-27. Consider adding `go test -bench=. -benchmem` results to README or docs
-28. Review error_example_test.go LSP warnings (noctx, wsl_v5) — cosmetic but visible
+27. ~~Consider adding `go test -bench=. -benchmem` results to README or docs~~ done — docs/performance.md carries the measured table
+28. ~~Review error_example_test.go LSP warnings (noctx, wsl_v5) — cosmetic but visible~~ done at `cd54cdc`
 
 ### Future enhancements (from prior TODO_LIST)
 
 29. Address `nestif` complexity in `ReadSignals`
-30. Add coverage badge to README
-31. Verify pkg.go.dev docs are rendered for latest version
-32. Consider SSE reconnection integration test
+30. ~~Add coverage badge to README~~ done — coverage.yml orphan-branch badge, live since 2026-08-16
+31. ~~Verify pkg.go.dev docs are rendered for latest version~~ done — pkg.go.dev renders all modules at latest versions
+32. ~~Consider SSE reconnection integration test~~ done — datastartest e2e dogfoods replay via WithLastEventID + RequireEventID (FEATURES "Replay testing")
 33. Consider adding `WithContext` variants of patch constructors
 34. Consider typed signal accessors (not just `ReadSignals` into `any`)
 35. Review if `MemoryStore` needs persistence options

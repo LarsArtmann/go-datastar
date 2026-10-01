@@ -108,7 +108,7 @@ a4712ab test(e2e): relocate datastartest-based E2E test to break circular depend
 1. ~~**AGENTS.md update** — file layout table, datastartest section, and line 172 all need updating to reflect the e2e_test.go relocation.~~ done at `3cd669e`
 2. ~~**go.work sync idempotency CI check** — proposed but not added.~~ done at `dc0d6f2`
 3. ~~**Replace directive audit CI check** — proposed but not added.~~ done at `dc0d6f2`
-4. **Version drift detection CI check** — proposed in real-world-patterns.md reference, not added.
+4. ~~**Version drift detection CI check** — proposed in real-world-patterns.md reference, not added.~~ done at `3d7cada`
 5. ~~**FEATURES.md update** — no mention of the modularization fix.~~ done at `b5465f2` (module-structure rows; re-verified 2026-08-16)
 6. ~~**CHANGELOG.md update** — no entry for the circular dependency fix.~~ done at `3cd669e`
 7. ~~**README.md review** — not checked for stale references to the old module structure.~~ done — reviewed in the 07-38 session, no stale references

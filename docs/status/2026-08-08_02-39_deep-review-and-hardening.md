@@ -152,8 +152,8 @@ Each required a separate edit-test cycle. **Root cause:** I didn't run `golangci
 8. ~~Verify pkg.go.dev docs rendered for latest version~~ done (verified 2026-09-02 — pkg.go.dev renders v0.3.0 for all 3 modules)
 9. ~~Disable GitHub wiki (empty wiki looks unfinished)~~ done (`cfe328d`)
 10. ~~Add error codes table to README (9 codes from AGENTS.md, also in errors.go)~~ done at `eb8bf29` (11 codes)
-11. Add "Migrating from starfederation/datastar-go" guide
-12. Add architecture diagram (D2 or mermaid) showing three-layer architecture
+11. ~~Add "Migrating from starfederation/datastar-go" guide~~ done at `ac1de23`
+12. ~~Add architecture diagram (D2 or mermaid) showing three-layer architecture~~ done at `7932f74`
 13. ~~Create issue templates (bug report, feature request)~~ done at `3cebe14`
 14. ~~Create PR template~~ done at `3cebe14`
 15. ~~Add SECURITY.md~~ done at `3cebe14`
@@ -185,8 +185,8 @@ Each required a separate edit-test cycle. **Root cause:** I didn't run `golangci
 32. ~~**Audit `DispatchCustomEventPatch.Event()` silent error swallowing** — marshal failure sets `detailsJSON = []byte("null")` with no logging. Consider whether this masks real bugs.~~ done at `eb8bf29` — marshaled in constructor, classified error
 33. ~~Address `nestif` complexity in `inbound.go` `ReadSignals` (complexity 6, from retrospective)~~ done at `5bab343`
 34. ~~Consider splitting `response.go` — 195 lines with 18 methods (from retrospective)~~ **Won't implement — response.go is a cohesive fluent builder; splitting is churn.**
-35. Add `Broadcaster[datastar.Patch]` typed-filtering example
-36. Add `SubscribeFilter` usage example
+35. ~~Add `Broadcaster[datastar.Patch]` typed-filtering example~~ done at `ac1de23`
+36. ~~Add `SubscribeFilter` usage example~~ done at `ac1de23`
 
 ### Nix flake improvements
 
@@ -198,9 +198,9 @@ Each required a separate edit-test cycle. **Root cause:** I didn't run `golangci
 
 ### Release tooling
 
-42. Add CHANGELOG automation (e.g., `changelog-from-release`)
-43. Consider goreleaser for automated releases
-44. Add a `version` package or build-time version variable
+42. ~~Add CHANGELOG automation (e.g., `changelog-from-release`)~~ **Won't implement — decided 2026-09-03 — manual keep-a-changelog + release-checklist gate stays (ROADMAP resolved questions).**
+43. ~~Consider goreleaser for automated releases~~ done at `9cb1d17`
+44. ~~Add a `version` package or build-time version variable~~ done at `49a0ae6`
 45. Consider GitHub release automation on tag push
 
 ### Future features
@@ -209,7 +209,7 @@ Each required a separate edit-test cycle. **Root cause:** I didn't run `golangci
 47. ~~Consider comparison table vs upstream SDK in README~~ done at `cf3683e` (verified vs datastar-go v1.2.2)
 48. Add more DataStar examples (toasts, progress bars, merge modes)
 49. ~~Add `WithScriptRetryDuration` documentation~~ done — documented (`script.go:82-85`)
-50. Consider playground/example repo link
+50. ~~Consider playground/example repo link~~ done — Learn DataStar section links the interactive playground site (T25, `ac1de23`)
 
 ---
 
