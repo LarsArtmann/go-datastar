@@ -19,6 +19,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -102,6 +103,41 @@ func docspecHeartbeat(w http.ResponseWriter, r *http.Request) {
 	go stream.Heartbeat(r.Context(), 15*time.Second) //nolint:mnd // documented typical interval
 }
 
+// docs/wire-format.md — "ElementsPatch": constructor options and the exact
+// datalines they emit.
+func docspecWireFormatElementsPatch(t *testing.T) {
+	t.Helper()
+
+	data := datastar.NewElementsPatch("<div>Hello</div>",
+		datastar.WithSelector("#feed"),
+		datastar.WithModePrepend(),
+	).Event().Data
+
+	want := []string{"selector #feed", "mode prepend", "elements <div>Hello</div>"}
+
+	if got := strings.Split(data, "\n"); !slices.Equal(got, want) {
+		t.Fatalf("ElementsPatch wire format drifted:\n got %q\nwant %q", got, want)
+	}
+}
+
+// docs/wire-format.md — "ScriptPatch": script patches are elements patches
+// appending to <body>, with data-effect auto-remove by default.
+func docspecWireFormatScriptPatch(t *testing.T) {
+	t.Helper()
+
+	data := datastar.NewScriptPatch(`console.log("hi")`).Event().Data
+
+	want := []string{
+		"selector body",
+		"mode append",
+		`elements <script data-effect="el.remove()">console.log("hi")</script>`,
+	}
+
+	if got := strings.Split(data, "\n"); !slices.Equal(got, want) {
+		t.Fatalf("ScriptPatch wire format drifted:\n got %q\nwant %q", got, want)
+	}
+}
+
 // docs/error-system.md — the three matching dimensions.
 // TestDocspec_GuideSnippets executes the cheap snippet paths so semantic
 // drift (a renamed dataline key, a changed error payload shape) fails loudly.
@@ -153,5 +189,17 @@ func TestDocspec_GuideSnippets(t *testing.T) {
 		req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/", nil)
 
 		docspecHeartbeat(probe, req)
+	})
+
+	t.Run("wire-format ElementsPatch datalines", func(t *testing.T) {
+		t.Parallel()
+
+		docspecWireFormatElementsPatch(t)
+	})
+
+	t.Run("wire-format ScriptPatch datalines", func(t *testing.T) {
+		t.Parallel()
+
+		docspecWireFormatScriptPatch(t)
 	})
 }

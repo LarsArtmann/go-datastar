@@ -20,11 +20,29 @@ Add the module (it is versioned separately: `datastartest/v0.x.y`):
 go get github.com/larsartmann/go-datastar/datastartest@latest
 ```
 
-One-liner E2E: spin up `httptest`, GET, parse SSE, decode DataStar datalines:
+One-liner E2E: spin up `httptest`, GET, parse SSE, decode DataStar datalines.
+The handler under test (what `myFeedHandler` stands for):
+
+```go
+handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	stream := sse.NewStream(w, r)
+	defer func() { _ = stream.Close() }()
+
+	resp := datastar.NewResponse(stream)
+	_ = resp.PatchElements(
+		"<div>hello</div>",
+		datastar.WithSelector("#feed"),
+		datastar.WithModeAppend(),
+	)
+	_ = resp.MarshalAndPatchSignals(map[string]any{"count": 1})
+})
+```
+
+And the test:
 
 ```go
 func TestFeedHandler(t *testing.T) {
-	events := datastartest.Collect(t, myFeedHandler)
+	events := datastartest.Collect(t, handler)
 
 	datastartest.RequireEventCount(t, events, 2)
 	datastartest.RequireElements(t, events[0], "#feed", "append", "<div>hello</div>")
