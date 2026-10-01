@@ -74,9 +74,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to the embedded-JS custom manager only via `enabledManagers: ["regex"]` in
   `renovate.json` — keeping the one capability Dependabot lacks (upstream
   DataStar JS release proposals) while ending the duplicate gomod/actions PR
-  churn. Remaining dependabot PR #14 (codeql-action SHA bump) is green and
-  awaits the owner's merge — merged 2026-10-01 (squash `1bd2161`), actionlint
-  green on the merge commit.
+  churn. The remaining dependabot PR #14 (codeql-action SHA bump) was green
+  and merged the same day (squash `1bd2161`); actionlint green on the merge
+  commit.
 
 ### Added — broadcast ergonomics (v0.7.0 tranche)
 

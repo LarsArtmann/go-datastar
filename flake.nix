@@ -289,7 +289,7 @@
             # gate; first run compiles the linter from source (module cache).
             docspec = mkApp "docspec" [ goPkg ] ''
               export GOEXPERIMENT=jsonv2
-              go test -tags docspec -run TestDocspec -count=1 ./... ./datastartest/...
+              go test -tags docspec -run TestDocspec -count=1 ./... ./broadcast/... ./datastartest/...
             '';
 
             lint-ci = mkApp "lint-ci" [ goPkg ] ''
