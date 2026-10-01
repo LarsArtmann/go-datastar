@@ -128,8 +128,9 @@ CHANGELOG.
   crash artifacts uploaded.
 - `codeql.yml` — GitHub CodeQL Go security analysis (SHA-pinned action).
 - `renovate.json` — custom manager proposing embedded-DataStar-JS bumps from
-  upstream releases into `static/static.go`; coexists with
-  `.github/dependabot.yml` (one-bot decision pending, see TODO_LIST).
+  upstream releases into `static/static.go`. One-bot decision settled
+  2026-10-01: Dependabot owns ecosystems (gomod ×4 + actions); Renovate is
+  scoped to this custom manager only via `enabledManagers: ["regex"]`.
 - Actions are SHA-pinned; nothing is a required check (branch protection
   removed); local gates are the real gate.
 
