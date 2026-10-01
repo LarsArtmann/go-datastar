@@ -111,14 +111,13 @@ CHANGELOG.
 
 ## CI
 
-- `ci.yml` — test as a per-module matrix (root/datastartest/static: GOWORK=off
-  build/vet/race + `go mod verify` + tidy-diff, in parallel) plus a workspace
-  job (workspace race suite, go.work use-vs-disk, sync idempotency, replace
-  audit, JS-version-in-CHANGELOG drift test); lint (golangci-lint v2.13.2
-  go-installed, pinned to the devshell's nixpkgs version — v2.12.2's go-tools
-  buildir pass panics on a dependency package in CI, analysis cache cached), erraudit (probe-gated while the repo
-  is private), govulncheck. Runs ONLY on code-affecting paths (`paths`
-  filter) — docs-only pushes skip it entirely.
+- `ci.yml` — per-module matrix (GOWORK=off build/vet/race + mod verify +
+  tidy-diff) plus a workspace job (race suite, use-vs-disk, sync idempotency,
+  replace audit, JS-version drift test); lint (golangci-lint v2.13.2,
+  go-installed, pinned to the devshell's nixpkgs version — earlier pins'
+  go-tools buildir pass panics on a dependency package), erraudit
+  (probe-gated while private), govulncheck. Runs ONLY on code-affecting paths
+  — docs-only pushes skip it entirely.
 - `actionlint.yml` — workflow YAML validation on EVERY push/PR (the signal
   that still fires when ci.yml skips).
 - `coverage.yml` — master-push coverage badge to the orphan `coverage`
@@ -239,31 +238,22 @@ No CQRS, no event bus, no domain opinions. It is a pure protocol layer. Consumer
   directive-satisfying `go` first on PATH, the sandbox tries a network
   toolchain download. Keep `flakeCheck = false` + a guarded `checks.format`
   that prepends `goPkg` to `buildInputs`.
-- **vendorHash sensitivity (verified 2026-09-02/03, ADR 004 correction).**
-  Root `vendorHash` moves only on requires (go.mod/go.sum) or toolchain
-  `modules.txt` changes. `datastartestVendorHash` used to move on ANY edit to
-  any tracked file under the repo root or static/ — and with flake.nix in the
-  FOD input the paste-dance could NEVER converge (unsolvable self-reference).
-  FIXED: the datastartest check now uses a MINIMAL src fileset (datastartest,
-  root *.go + go.mod, static/), so metadata edits don't touch it; the FOD
-  converges on one paste. Don't widen that fileset.
-- **nix CI reports only the FIRST hash mismatch.** A require-bump release can
-  move BOTH submodule vendor hashes while the nix workflow names just
-  broadcast and exits — datastartest's failure hides behind it (seen
-  2026-09-18, v0.6.0 prep). Always reproduce with a full local
-  `nix flake check` and paste every moved hash; never trust the CI error
-  line as the complete list.
-- **"Inert" datastartest replace drops are NOT vendorHash-inert; the nix CI
-  path filter can hide it.** Dropping datastartest's directory replaces
-  (2026-09-29, `c1826fb`) changed the vendored set, but `nix.yml`'s `paths`
-  filter only watched ROOT `go.mod`/`go.sum`, so the workflow never ran on
-  master and `nix flake check` sat red locally-unnoticed until the next
-  session ran it. FIXED: the filter now uses `**/go.mod` + `**/go.sum` (and
-  the datastartest vendorHash was re-derived). Lesson: `datastartestSrc`'s
-  minimal fileset includes the WHOLE `datastartest/` dir, so ANY
-  `datastartest/go.mod` edit moves `datastartestVendorHash`; root metadata
-  (`.md`, CI yml) stays outside both filesets and never moves a hash. Always
-  run `nix flake check` locally before pushing go.mod edits in ANY module.
+- **vendorHash sensitivity (ADR 004).** Root `vendorHash` moves only on
+  requires/toolchain changes. `datastartestVendorHash` moves on edits inside
+  its MINIMAL src fileset (datastartest/, root *.go + go.mod, static/) —
+  which is what makes the FOD converge on one paste. Don't widen that
+  fileset (the pre-fix repo-root fileset was a self-referencing
+  never-converging FOD).
+- **nix CI reports only the FIRST hash mismatch** — a require bump can move
+  BOTH submodule vendor hashes while the workflow names one and exits.
+  Reproduce with a full local `nix flake check` and paste every moved hash.
+- **ANY `go.mod`/`go.sum` edit in ANY module moves vendor hashes — and the
+  nix path filter once hid it.** `datastartestSrc` includes the whole
+  `datastartest/` dir, so even replace-directive drops there move
+  `datastartestVendorHash` (2026-09-29). `nix.yml`'s paths filter now matches
+  `**/go.mod` + `**/go.sum`, but the lesson stands: run `nix flake check`
+  locally before pushing go.mod edits in ANY module. Root metadata (`.md`,
+  CI yml) stays outside both filesets and never moves a hash.
 - **`buildGoModule` `modRoot`** builds a submodule in place (vendor + main
   derivations both `cd "$modRoot"`).
 - **BOM in Go source = compile error.** Use the escape `"\xef\xbb\xbf"` in
