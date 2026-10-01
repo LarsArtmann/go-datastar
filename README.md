@@ -48,19 +48,19 @@ Both libraries emit the exact same DataStar wire format. The difference is what 
 
 ### Feature comparison
 
-| Capability                              | official datastar-go                    | go-datastar                                                                                                                             |
-| --------------------------------------- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| Patch model                             | Methods on a connection-bound generator | First-class values (`Patch` → `sse.Event`)                                                                                              |
-| Build a patch without a live connection | No                                      | Yes                                                                                                                                     |
-| Broadcast one patch to N connections    | Not built in                            | Yes — [`broadcast`](broadcast/) submodule (`NewBroadcaster` + options, `Hub`) or raw go-sse `Broadcaster`                               |
+| Capability                              | official datastar-go                    | go-datastar                                                                                                                                        |
+| --------------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Patch model                             | Methods on a connection-bound generator | First-class values (`Patch` → `sse.Event`)                                                                                                         |
+| Build a patch without a live connection | No                                      | Yes                                                                                                                                                |
+| Broadcast one patch to N connections    | Not built in                            | Yes — [`broadcast`](broadcast/) submodule (`NewBroadcaster` + options, `Hub`) or raw go-sse `Broadcaster`                                          |
 | Reconnection replay                     | Not built in                            | Yes — `broadcast.NewBroadcaster(WithReplayCapacity(n))` or your own store via `WithStore` (multi-instance); also `MemoryStore`, `Last-Event-ID(r)` |
-| Per-subscriber event filtering          | Not built in                            | Yes, via go-sse `SubscribeFilter`                                                                                                       |
-| Error handling                          | Standard `error` values                 | Every error classified with a stable code, family, and retryability ([go-error-family](https://github.com/LarsArtmann/go-error-family)) |
-| E2E test helpers for your handlers      | None                                    | `datastartest` module: SSE parsing, typed decoding, assertions                                                                          |
-| Serve the DataStar JS client            | Bring your own                          | `ScriptHandler()` with ETag + Cache-Control, embedded zero-dep `static` module (JS client v1.0.3)                                       |
-| SSE compression (gzip, Brotli, Zstd)    | Yes, built in                           | Bring your own middleware (example included)                                                                                            |
-| Templ / GoStar rendering                | Yes                                     | Yes                                                                                                                                     |
-| Printf-style variants (`…f`)            | Yes                                     | Yes                                                                                                                                     |
+| Per-subscriber event filtering          | Not built in                            | Yes, via go-sse `SubscribeFilter`                                                                                                                  |
+| Error handling                          | Standard `error` values                 | Every error classified with a stable code, family, and retryability ([go-error-family](https://github.com/LarsArtmann/go-error-family))            |
+| E2E test helpers for your handlers      | None                                    | `datastartest` module: SSE parsing, typed decoding, assertions                                                                                     |
+| Serve the DataStar JS client            | Bring your own                          | `ScriptHandler()` with ETag + Cache-Control, embedded zero-dep `static` module (JS client v1.0.3)                                                  |
+| SSE compression (gzip, Brotli, Zstd)    | Yes, built in                           | Bring your own middleware (example included)                                                                                                       |
+| Templ / GoStar rendering                | Yes                                     | Yes                                                                                                                                                |
+| Printf-style variants (`…f`)            | Yes                                     | Yes                                                                                                                                                |
 
 ### Where the official SDK wins
 

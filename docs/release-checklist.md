@@ -19,10 +19,10 @@ Run everything from the repo root under the pinned toolchain
 - [ ] `GOTOOLCHAIN=go1.27.1 go test ./... ./broadcast/... ./datastartest/... ./static/... -race -count=1` — all green
 - [ ] `GOTOOLCHAIN=go1.27.1 go vet ./... ./broadcast/... ./datastartest/... ./static/...` — clean
 - [ ] `GOTOOLCHAIN=go1.27.1 go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.2 run ./... ./broadcast/... ./datastartest/... ./static/... --timeout 5m` — 0 issues (version pinned = CI parity)
-- [ ] Fresh-cache lint — the shared `GOLANGCI_LINT_CACHE` can replay ghost findings from other sessions' deleted worktrees: re-run the same command with `GOLANGCI_LINT_CACHE=$(mktemp -d)` and trust only that verdict — 0 issues. *(owner-policy pending: decide whether this replaces or supplements the shared-cache run)*
+- [ ] Fresh-cache lint — the shared `GOLANGCI_LINT_CACHE` can replay ghost findings from other sessions' deleted worktrees: re-run the same command with `GOLANGCI_LINT_CACHE=$(mktemp -d)` and trust only that verdict — 0 issues. _(owner-policy pending: decide whether this replaces or supplements the shared-cache run)_
 - [ ] erraudit loop with CI flags, all four modules — "No violations found" ×4:
       `for mod in . ./broadcast ./datastartest ./static; do (cd "$mod" && GOEXPERIMENT=jsonv2 erraudit . --type-aware --enforce-go-error-family --severity-threshold error); done`
-      *(owner-policy pending: the CI erraudit leg is probe-gated off while the repo is private; this row is the substitute — the `--no-suppress` audit-mode variant in AGENTS.md intentionally lists a few documented-tolerated patterns on top)*
+      _(owner-policy pending: the CI erraudit leg is probe-gated off while the repo is private; this row is the substitute — the `--no-suppress` audit-mode variant in AGENTS.md intentionally lists a few documented-tolerated patterns on top)_
 - [ ] `nix flake check` — all checks passed
 - [ ] `go work sync` — go.work unchanged (idempotency)
 - [ ] Per-module isolation (`GOWORK=off`) build + test for all 4 modules

@@ -120,6 +120,7 @@ mid-session and shipped `docs/status/2026-10-01_04-37_*`).
    but only as long as future bot-policy changes update both.
 
 ## f) Next (session-real list; NOT padded to 50 — everything below already
+
 lives in TODO_LIST or was observed this session)
 
 From TODO_LIST next-up (18 rows, impact/effort as recorded):

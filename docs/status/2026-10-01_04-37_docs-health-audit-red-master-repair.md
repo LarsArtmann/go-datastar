@@ -11,25 +11,25 @@
 ## a) FULLY DONE
 
 1. **All 46 `2026-0*` files viewed** (29 active status + 11 archived status +
-  2 archived planning + 2 active planning + 2 modularization HTML): the nine
-  un-annotated files read in full; older ones via unstruck-item extraction +
-  targeted reads of every section that carried verdicts.
+   2 archived planning + 2 active planning + 2 modularization HTML): the nine
+   un-annotated files read in full; older ones via unstruck-item extraction +
+   targeted reads of every section that carried verdicts.
 2. **ANNOTATE — ~120 new inline verdicts across 25 files.** The 2026-09-03 ×5
-  and 2026-09-18 ×4 reports fully resolved (every f-list item, b/c sections,
-  g questions); delta-annotated ~16 older files for items closed after the
-  2026-09-02 pass (migration guide `ac1de23`, architecture doc `7932f74`,
-  version pkg `49a0ae6`, goreleaser `9cb1d17`, CI-hygiene batch `3d7cada`,
-  docspec `b055625`, nix/fuzz promotions 2026-09-18, v0.5.0/v0.6.0/v0.6.1
-  releases, dependabot #16 merge…). Open items left bare; NOT-DO/Won't-implement
-  verdicts carry reasons.
+   and 2026-09-18 ×4 reports fully resolved (every f-list item, b/c sections,
+   g questions); delta-annotated ~16 older files for items closed after the
+   2026-09-02 pass (migration guide `ac1de23`, architecture doc `7932f74`,
+   version pkg `49a0ae6`, goreleaser `9cb1d17`, CI-hygiene batch `3d7cada`,
+   docspec `b055625`, nix/fuzz promotions 2026-09-18, v0.5.0/v0.6.0/v0.6.1
+   releases, dependabot #16 merge…). Open items left bare; NOT-DO/Won't-implement
+   verdicts carry reasons.
 3. **ARCHIVE — 8 fully-resolved files** (`git mv`): the 2026-09-02 pareto plan
-  (27 task rows struck + resolution appendix — it had ZERO inline markers
-  despite full execution), 2026-09-03_02-00 + 23-00, 2026-08-08_03-05,
-  2026-08-10_02-55/03-49/04-25, 2026-08-16_11-07. Index moved 7 rows to the
-  Archived table (11 rows = 11 files, verified).
+   (27 task rows struck + resolution appendix — it had ZERO inline markers
+   despite full execution), 2026-09-03_02-00 + 23-00, 2026-08-08_03-05,
+   2026-08-10_02-55/03-49/04-25, 2026-08-16_11-07. Index moved 7 rows to the
+   Archived table (11 rows = 11 files, verified).
 4. **Completeness gates green:** `grep -rLn '~~'` empty across all 2026-0* md;
-  status-index live-link check 1:1; check-rows shows only verdict-append and
-  ✅-done rows (no mixed-cell misses).
+   status-index live-link check 1:1; check-rows shows only verdict-append and
+   ✅-done rows (no mixed-cell misses).
 5. **Living docs brought to verified-fresh state:**
    - **README:** the Requirements section claimed `GOEXPERIMENT=jsonv2`
      "required" — false since v0.6.1, DISPROVEN EMPIRICALLY (clean build +

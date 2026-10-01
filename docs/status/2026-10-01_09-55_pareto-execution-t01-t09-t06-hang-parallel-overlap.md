@@ -46,6 +46,7 @@ Phase gates run before each commit: race ×4, vet, isolation builds ×4, tidy-di
 ## f) UP TO 50 THINGS NEXT (impact-ordered; ★ = ready now)
 
 **T06 closure + gate truth (this session's direct residue):**
+
 1. ★ Extend flake `.#docspec` and the AGENTS docspec command with `./broadcast/...` (one line each) — closes the split brain.
 2. ★ Rewrite the contradictory PR-14 CHANGELOG sentence (d2).
 3. Run the FULL gate at current HEAD (parallel sessions' T07/T08 changed broadcast + root API surface; I have not seen a post-`225b925` full gate: race ×4, lint, erraudit, `nix flake check`).

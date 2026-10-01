@@ -3,11 +3,11 @@
 Three different "versions" live in this repo. They are independent and move
 on different schedules:
 
-| What                  | Where                                    | How it changes                                                                 |
-| --------------------- | ---------------------------------------- | ------------------------------------------------------------------------------ |
-| Module versions       | git tags (`v0.x.y`, lockstep ×4 modules) | Release process — see [release-checklist.md](release-checklist.md)              |
-| DataStar JS client    | `static.Version` (currently v1.0.3)     | Upstream DataStar release — see [static-js.md](static-js.md)                    |
-| Example binary        | `version.Version` (default `"dev"`)     | Build-time `-ldflags` injection                                                |
+| What               | Where                                    | How it changes                                                     |
+| ------------------ | ---------------------------------------- | ------------------------------------------------------------------ |
+| Module versions    | git tags (`v0.x.y`, lockstep ×4 modules) | Release process — see [release-checklist.md](release-checklist.md) |
+| DataStar JS client | `static.Version` (currently v1.0.3)      | Upstream DataStar release — see [static-js.md](static-js.md)       |
+| Example binary     | `version.Version` (default `"dev"`)      | Build-time `-ldflags` injection                                    |
 
 ## Module versions
 

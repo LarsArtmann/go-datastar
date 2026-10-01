@@ -36,16 +36,16 @@ broadcaster.Broadcast(datastar.NewElementsPatch("<div>Update</div>",
 
 ## API
 
-| Function                          | Description                                               |
-| --------------------------------- | --------------------------------------------------------- |
-| `NewBroadcaster(opts...)`         | Fan-out SSE patches; options compose buffer, replay, store, heartbeat |
-| `NewBroadcasterWithBufferSize(n)` | Sugar for `NewBroadcaster(WithBufferSize(n))`             |
+| Function                          | Description                                                                                         |
+| --------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `NewBroadcaster(opts...)`         | Fan-out SSE patches; options compose buffer, replay, store, heartbeat                               |
+| `NewBroadcasterWithBufferSize(n)` | Sugar for `NewBroadcaster(WithBufferSize(n))`                                                       |
 | `NewBroadcasterWithReplay(n)`     | Sugar for `NewBroadcaster(WithReplayCapacity(n))` — ring-buffer replay on reconnect (Last-Event-ID) |
-| `NewBroadcasterFromHub(hub)`      | Wrap an existing `*sse.Broadcaster[sse.Event]` hub        |
-| `Broadcaster.Hub()`               | Access/share the embedded go-sse hub                      |
-| `Broadcaster.Broadcast(patch)`    | Send one patch to all clients                             |
-| `Broadcaster.BroadcastMany(...)`  | Send multiple patches                                     |
-| `Broadcaster.BroadcastEvent(evt)` | Send a raw `sse.Event`                                    |
+| `NewBroadcasterFromHub(hub)`      | Wrap an existing `*sse.Broadcaster[sse.Event]` hub                                                  |
+| `Broadcaster.Hub()`               | Access/share the embedded go-sse hub                                                                |
+| `Broadcaster.Broadcast(patch)`    | Send one patch to all clients                                                                       |
+| `Broadcaster.BroadcastMany(...)`  | Send multiple patches                                                                               |
+| `Broadcaster.BroadcastEvent(evt)` | Send a raw `sse.Event`                                                                              |
 
 ### Options
 

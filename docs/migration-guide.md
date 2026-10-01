@@ -59,7 +59,7 @@ layer the root module deliberately omits:
 - `Broadcaster` — an `http.Handler` embedding `*sse.Broadcaster[sse.Event]`
 - patch-level fan-out: `Broadcast`/`BroadcastMany`/`BroadcastEvent`
 - reconnection replay: `NewBroadcasterWithReplay` (ring-buffer `MemoryStore`
-  + `Last-Event-ID`, subscribe-before-replay ordering)
+  - `Last-Event-ID`, subscribe-before-replay ordering)
 - a 15s per-connection heartbeat
 - cross-transport hub sharing: `Hub()`/`NewBroadcasterFromHub`
 
