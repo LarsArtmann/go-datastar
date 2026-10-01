@@ -10,7 +10,8 @@ require (
 )
 
 require (
-	github.com/larsartmann/go-branded-id v0.6.0 // indirect
+	github.com/larsartmann/go-branded-id v0.7.0 // indirect
 	github.com/larsartmann/go-datastar/static v0.6.1 // indirect
 	github.com/larsartmann/go-sse/sseparse v0.1.0 // indirect
+	golang.org/x/mod v0.41.0 // indirect
 )
