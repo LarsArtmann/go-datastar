@@ -45,11 +45,15 @@ go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.2 run ./... 
 GOWORK=off go test ./...
 
 # Error audit (all modules — erraudit v0.3.0 takes ONE directory per run, never package patterns):
+# audit view below (--no-suppress lists intentional patterns too); the CI gate uses
+# `--severity-threshold error` WITHOUT --no-suppress (tolerates AST-heuristic-suppressed
+# deferred closes, honors //nolint:erraudit) — that CI-mode ×4 is the canonical green target.
 for mod in . ./broadcast ./datastartest ./static; do
   (cd "$mod" && erraudit . --type-aware --enforce-go-error-family --no-suppress)
 done
 
-# Fuzz smoke tests (30s; corpora are committed regression suites — see CONTRIBUTING.md "Fuzzing"):
+# Fuzz smoke tests (30s; corpora are committed regression suites — see CONTRIBUTING.md "Fuzzing"
+# for the full six-target table; the nightly matrix runs all of them at 300s):
 go test -run '^$' -fuzz '^FuzzReadSignals$' -fuzztime 30s .
 (cd datastartest && go test -run '^$' -fuzz '^FuzzReadEvents$' -fuzztime 30s .)
 
@@ -124,7 +128,7 @@ CHANGELOG.
   branch (same `paths` filter).
 - `nix.yml` — hermetic `nix flake check` on code-affecting paths (promoted
   2026-09-18: `continue-on-error` dropped; a red run is red master).
-- `fuzz.yml` — scheduled daily 300s fuzz runs over all four fuzz targets,
+- `fuzz.yml` — scheduled daily 300s fuzz runs over all six fuzz targets,
   crash artifacts uploaded.
 - `codeql.yml` — GitHub CodeQL Go security analysis (SHA-pinned action).
 - `renovate.json` — custom manager proposing embedded-DataStar-JS bumps from

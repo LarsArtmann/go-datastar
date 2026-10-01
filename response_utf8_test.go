@@ -60,7 +60,12 @@ func TestBestEffortSendersSurviveInvalidUTF8(t *testing.T) {
 			t.Parallel()
 
 			recorder := httptest.NewRecorder()
-			req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events", nil)
+			req := httptest.NewRequestWithContext(
+				context.Background(),
+				http.MethodGet,
+				"/events",
+				nil,
+			)
 			stream := sse.NewStream(recorder, req)
 
 			defer func() { _ = stream.Close() }()
