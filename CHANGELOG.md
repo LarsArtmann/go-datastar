@@ -32,6 +32,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   its `golang.org/x/mod v0.41.0` indirect now) and re-deriving the root,
   broadcast, and datastartest hashes — collected in one `nix flake check
   --keep-going` pass (plain `flake check` reports only the first mismatch).
+- BuildFlow `license-check` failure loop (4+ identical failures across
+  sessions) routed: go-licenses' stdlib detection (`isStdLib`) compares
+  package paths against the GOROOT of the Go that built/ran the binary; in a
+  plain user shell `GOTOOLCHAIN=auto` switches to the toolchain cache while
+  buildflow's on-demand go-licenses was built against another root, so every
+  stdlib package errored with "does not have module info" (adjacent to
+  google/go-licenses#128). go-licenses now ships in the devshell, whose
+  `GOTOOLCHAIN=local` + real GOROOT guarantee the alignment: `nix develop -c
+  buildflow -s license-check` is green for all five module instances. The
+  environment contract is documented in `.buildflow.yml`.
 
 ### Changed
 
@@ -74,6 +84,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ignore dependency replaces, so the tagged module was unaffected, but the
   checked-in file now tells the truth. Local development resolves the sibling
   modules through `go.work` instead. Ships with the next datastartest tag.
+- All three published submodules (`broadcast/`, `datastartest/`, `static/`)
+  now carry the MIT LICENSE — their module zips were license-less (go-licenses
+  reported `static` as "Unknown"), which left the embedded-JS module legally
+  ambiguous for consumers. The root LICENSE's copyright-holder typo ("Lars
+  Arttmann") is corrected to "Lars Artmann" in root and all copies;
+  `broadcastVendorHash` re-derived accordingly (broadcast vendors the root
+  module, LICENSE included).
 
 ## [0.6.1] - 2026-09-29
 

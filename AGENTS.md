@@ -189,6 +189,17 @@ CHANGELOG.
   erraudit variant flags `defer x.Close()` blank-ignores that the canonical
   gate tolerates; errcheck excludes in `.golangci.yml` cover the concrete
   Close types (`*sse.Stream`, `*gzip.Writer`).
+- **buildflow `license-check` must run inside the devshell** (`nix develop -c
+  buildflow ...`, closed 2026-10-01): go-licenses' stdlib detection compares
+  package paths against the GOROOT of the Go that built/ran it; outside the
+  devshell `GOTOOLCHAIN=auto` switches to the toolchain cache and every
+  stdlib package errors with "does not have module info" (the ×4 failure
+  loop). The devshell ships go-licenses + `GOTOOLCHAIN=local` + real GOROOT.
+  Do NOT add `GOTOOLCHAIN: local` to `.buildflow.yml` env — plain user-shell
+  go is 1.26.7, local would then fail every go1.27.1-directive module build.
+- Each published submodule (`broadcast/`, `datastartest/`, `static/`) carries
+  its own MIT LICENSE (module zips ship only the module dir; go-licenses
+  flagged license-less modules). Keep them in sync with the root LICENSE.
 - `origin/master` has NO branch protection (owner decision): CI is
   informational, nothing blocks a bad push — run the gates locally first.
 - Status reports live in `docs/status/*.md` (indexed by its README) and are
