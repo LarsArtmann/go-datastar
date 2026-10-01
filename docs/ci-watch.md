@@ -64,8 +64,10 @@ zero alerts since enablement; recent runs green. Nothing to triage.
 ## renovate.json — embedded-JS-client bumps
 
 State: custom manager proposing `static/static.go` Version bumps from
-upstream DataStar releases; coexists with dependabot.yml (one-bot decision
-pending — see TODO_LIST). First verification 2026-09-18: zero proposals to
+upstream DataStar releases. One-bot decision settled 2026-10-01: Dependabot
+owns all ecosystem updates (gomod ×4, actions); Renovate is scoped to this
+custom manager only (`enabledManagers: ["regex"]`) — duplicate PR churn ends,
+embedded-JS proposals stay. First verification 2026-09-18: zero proposals to
 date, which is EXPECTED — upstream latest is v1.0.3 (2026-08-27), older than
 the 2026-08-29 onboarding and matching the currently pinned bundle. NOTE:
 zero PRs also means the Renovate app's delivery is still unverified; the
@@ -75,10 +77,10 @@ next upstream release is the first real test.
   tag; the bundle change must be re-verified against the wire-format goldens
   (`go test ./... -run TestPatchWireGoldens`) because the JS client and the
   server protocol must stay in lockstep; run the E2E suite.
-- **Promote:** label/schedule tuning after the first successful merge;
-  replace dependabot.yml once the one-bot decision lands (owner-blocked).
-- **Drop:** if the one-bot decision keeps Renovate — delete the OTHER bot
-  instead. Never drop both.
+- **Promote:** label/schedule tuning after the first successful merge.
+- **Drop:** if the JS proposals prove noisier than useful, delete
+  `renovate.json` and fall back to ROADMAP theme 5's scheduled upstream-drift
+  alarm. Never drop Dependabot's ecosystem coverage.
 
 ## General rules
 

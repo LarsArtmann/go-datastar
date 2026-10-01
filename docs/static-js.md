@@ -40,9 +40,13 @@ CDN a browser page points at reintroduces drift.
 
 ## Renovate
 
-Automated bump proposals for the bundle are on the roadmap (a Renovate rule
-watching the upstream client); until then upgrades are manual per the steps
-above.
+`renovate.json`'s custom manager (scoped via `enabledManagers: ["regex"]` —
+Dependabot owns every other ecosystem, owner decision 2026-10-01) proposes
+`Version` bumps when `starfederation/datastar` cuts a release. The proposal
+only touches the version string: the bundle download, checksum update, and
+golden re-run above still land manually. Delivery is unverified until the
+first upstream release after the 2026-08-29 onboarding (see
+`docs/ci-watch.md`).
 
 ## Hardening decisions
 

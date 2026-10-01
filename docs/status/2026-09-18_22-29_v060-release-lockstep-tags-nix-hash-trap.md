@@ -142,7 +142,7 @@ _Impact-ordered. ★ = harvest candidate for TODO_LIST (actionable now); the res
 
 1. **Shared lint cache:** purge the 3.8G `/mnt/buildcache/golangci-lint` (ghost findings from deleted foreign worktrees burned a lint run AGAIN during this release's gate), or keep it and bless `GOLANGCI_LINT_CACHE=$(mktemp -d)` as the documented default for gates?
 2. **Release-gate policy:** should the checklist gain erraudit + fresh-cache-lint as MANDATORY pre-tag steps (both were skipped/ad-hoc for v0.5.0 and v0.6.0), or is the current §1 list the intended contract? I can draft the checklist edits either way — the policy call is yours.
-3. **One-bot:** Renovate or Dependabot? This decides the fate of the 4 open dependabot PRs (#11, #14, #15, #16) and whether item 30's custom-manager verification is worth building.
+3. **One-bot:** Renovate or Dependabot? This decides the fate of the 4 open dependabot PRs (#11, #14, #15, #16) and whether item 30's custom-manager verification is worth building. ~~Answered 2026-10-01: Dependabot owns ecosystems (gomod ×4 + actions); Renovate stays scoped to the embedded-JS custom manager only (`enabledManagers: ["regex"]`). #11/#15/#16 already resolved; #14 green, awaiting owner merge.~~
 
 ---
 

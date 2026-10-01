@@ -133,6 +133,12 @@ Things we are deliberately NOT pursuing and why:
 
 ## Resolved questions
 
+- **Dependency bots: one-bot policy (decided 2026-10-01):** Dependabot is the
+  sole ecosystem bot (gomod ×4 modules + GitHub Actions); Renovate stays,
+  scoped by `enabledManagers: ["regex"]` to the embedded-DataStar-JS custom
+  manager — the one update class Dependabot cannot express. Duplicate
+  gomod/actions PR churn ends. If the JS proposals ever prove not worth it,
+  the fallback is theme 5's scheduled drift alarm, not hand-bumping.
 - **Changelog automation (decided 2026-09-03):** manual keep-a-changelog
   stays. Evaluated changie and GitHub-native auto-notes: with ~monthly
   releases, an append-only hand-maintained file plus the release-checklist

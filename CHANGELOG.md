@@ -35,6 +35,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Dependency bots de-duplicated (owner decision 2026-10-01): Dependabot owns
+  all ecosystem updates (gomod ×4 modules, GitHub Actions); Renovate is scoped
+  to the embedded-JS custom manager only via `enabledManagers: ["regex"]` in
+  `renovate.json` — keeping the one capability Dependabot lacks (upstream
+  DataStar JS release proposals) while ending the duplicate gomod/actions PR
+  churn. Remaining dependabot PR #14 (codeql-action SHA bump) is green and
+  awaits the owner's merge.
 - datastartest's two inert `replace` directives (`go-datastar => ..`,
   `go-datastar/static => ../static`) are dropped from `go.mod` — consumers
   ignore dependency replaces, so the tagged module was unaffected, but the
