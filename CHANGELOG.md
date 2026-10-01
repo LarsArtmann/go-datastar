@@ -116,6 +116,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   tags, the embedded JS client, the ldflags-injected example binary), and
   the README's compression row now links the gzip middleware example
   directly.
+- Docspec mirroring is complete: `docs/wire-format.md` and
+  `docs/migration-guide.md` snippets now execute behind the `docspec` build
+  tag (root and broadcast), and the `docs/testing.md` quick-start shows the
+  full handler its assertion always expected (`WithModeAppend`) — the doc
+  and its mirror no longer diverge.
 - datastartest's two inert `replace` directives (`go-datastar => ..`,
   `go-datastar/static => ../static`) are dropped from `go.mod` — consumers
   ignore dependency replaces, so the tagged module was unaffected, but the
