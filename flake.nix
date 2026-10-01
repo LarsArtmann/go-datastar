@@ -54,7 +54,7 @@
           datastartestVendorHash = "sha256-6gMbMai5kS2UBIYrE5AYpIfwUKCeObAvbJSy9avSBG0=";
           # broadcast vendors root + static through its directory replaces —
           # same movement rules as datastartestVendorHash above.
-          broadcastVendorHash = "sha256-u9TrYRINwF9df5ITGzB/7TGGqPyClG8gXp9i//33GPk=";
+          broadcastVendorHash = "sha256-CK22hnEU5wAe5BdrK+3QqscNI0SnV7EnJ8fnSdn+A0w=";
 
           maintainer = {
             name = "Lars Artmann";

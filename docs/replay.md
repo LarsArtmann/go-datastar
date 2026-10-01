@@ -81,6 +81,17 @@ The exact backlog/live handoff (and its duplicate window) is a policy
 choice — see the `example/` app for a working broadcaster + MemoryStore
 combination.
 
+## Multi-instance replay (broadcast module)
+
+Root's `MemoryStore` is per-process. When several instances of your app must
+serve the same replay history, the `broadcast` module exposes the seam:
+`broadcast.Store` (= `sse.EventStore` + `Append`) with
+`NewBroadcaster(broadcast.WithStore(yourStore))` injects a consumer-owned
+shared store — Redis, Postgres, whatever holds the events. The broadcaster
+appends before fan-out (pinned by tests), stores are owned and closed by the
+caller, and `WithStore(nil)` disables replay entirely. No backends ship in
+this repo by design; the broadcast README's Options section has the shape.
+
 ## Testing replay with datastartest
 
 `datastartest.CollectWithRequest` + `WithLastEventID` simulates the
