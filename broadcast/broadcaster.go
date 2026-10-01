@@ -31,38 +31,59 @@ const defaultHeartbeatInterval = 15 * time.Second
 //	broadcaster.Broadcast(datastar.NewElementsPatch(renderTodo(todo),
 //		datastar.WithSelectorID("list")))
 //
-// For reconnection replay, use NewBroadcasterWithReplay. When a client
-// reconnects with a Last-Event-ID header, missed events are replayed from an
-// in-memory ring buffer before the live event stream resumes.
+// Buffer size, replay, a custom replay store, and the heartbeat interval
+// are orthogonal: combine them freely as [Option]s on [NewBroadcaster].
+// For reconnection replay, use NewBroadcasterWithReplay or
+// WithReplayCapacity/WithStore. When a client reconnects with a
+// Last-Event-ID header, missed events are replayed before the live event
+// stream resumes.
 type Broadcaster struct {
 	*sse.Broadcaster[sse.Event]
 
-	store *datastar.MemoryStore
+	store             Store
+	heartbeatInterval time.Duration
 }
 
 // NewBroadcaster creates a DataStar patch broadcaster with default settings
-// and no replay support.
-func NewBroadcaster() *Broadcaster {
-	return &Broadcaster{Broadcaster: sse.NewBroadcaster[sse.Event]()}
+// and no replay support. Options override individual knobs — buffer size,
+// replay capacity, an injected replay [Store], the heartbeat interval — and
+// compose freely:
+//
+//	b := broadcast.NewBroadcaster(
+//		broadcast.WithBufferSize(64),
+//		broadcast.WithReplayCapacity(256),
+//	)
+func NewBroadcaster(opts ...Option) *Broadcaster {
+	cfg := newConfig(opts...)
+
+	var sseOpts []sse.Option[sse.Event]
+	if cfg.bufferSize > 0 {
+		sseOpts = append(sseOpts, sse.WithBufferSize[sse.Event](cfg.bufferSize))
+	}
+
+	return &Broadcaster{
+		Broadcaster:       sse.NewBroadcaster[sse.Event](sseOpts...),
+		store:             cfg.store,
+		heartbeatInterval: cfg.heartbeatInterval,
+	}
 }
 
 // NewBroadcasterWithBufferSize creates a broadcaster with a custom subscriber
-// buffer size and no replay support.
+// buffer size and no replay support. It is sugar for
+// NewBroadcaster(WithBufferSize(size)); see [WithBufferSize] for sizing
+// guidance.
 func NewBroadcasterWithBufferSize(size int) *Broadcaster {
-	return &Broadcaster{
-		Broadcaster: sse.NewBroadcaster[sse.Event](sse.WithBufferSize[sse.Event](size)),
-	}
+	return NewBroadcaster(WithBufferSize(size))
 }
 
 // NewBroadcasterWithReplay creates a broadcaster that retains the last capacity
 // events in an in-memory ring buffer for reconnection replay. When a client
 // reconnects with a Last-Event-ID header, missed events are replayed before the
-// live stream resumes.
+// live stream resumes. It is sugar for
+// NewBroadcaster(WithReplayCapacity(capacity)); to inject a custom store
+// (multi-instance deployments), use [WithStore].
 func NewBroadcasterWithReplay(capacity int) *Broadcaster {
-	return &Broadcaster{
-		Broadcaster: sse.NewBroadcaster[sse.Event](),
-		store:       datastar.NewMemoryStore(capacity),
-	}
+	return NewBroadcaster(WithReplayCapacity(capacity))
 }
 
 // NewBroadcasterFromHub wraps an existing [*sse.Broadcaster] in a
@@ -136,6 +157,17 @@ func (b *Broadcaster) SubscriberCount() int {
 	return b.Health().SubscriberCount
 }
 
+// effectiveHeartbeatInterval returns the configured heartbeat interval,
+// falling back to defaultHeartbeatInterval when unset (zero) — the state of
+// every constructor path that does not pass [WithHeartbeatInterval].
+func (b *Broadcaster) effectiveHeartbeatInterval() time.Duration {
+	if b.heartbeatInterval > 0 {
+		return b.heartbeatInterval
+	}
+
+	return defaultHeartbeatInterval
+}
+
 // ServeHTTP handles a DataStar SSE connection. It creates an [sse.Stream],
 // subscribes to the broadcaster FIRST, then replays missed events from the
 // store (if replay is enabled and the client sends a Last-Event-ID), and
@@ -163,7 +195,7 @@ func (b *Broadcaster) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	go stream.Heartbeat(r.Context(), defaultHeartbeatInterval)
+	go stream.Heartbeat(r.Context(), b.effectiveHeartbeatInterval())
 
 	for {
 		select {
