@@ -85,6 +85,7 @@ policy, v0.6.1 retro-report decision.
 | T11  | Code-review residue: `ReadSignals` nestif review, example `silent_swallow`                               | Rest    | Low                 | 30min  | —              | Code                   | Ready   |
 | T12  | AGENTS.md settle point: prune to ≤15KB (git-town detail, CI history) or accept the 15–30KB band + update the TODO trigger | Rest | Low-Medium | 30min | O9 input welcome | Docs | Ready |
 | T13  | Fuzz smoke: FuzzReadSignals 30s + FuzzReadEvents 30s; commit any new seeds                                | Rest    | Low                 | 30min  | —              | Quality                | Ready   |
+| T14  | Gate-truth completion: route the buildflow `license-check` loop; verify Renovate app installation (dead-config risk) | 1%      | High (trust)        | 30min  | —              | Quality/Tooling        | Ready   |
 | O1   | Delete `pr/docs-test-consolidation` (local+remote)                                                        | Owner   | Medium              | 5min   | owner nod      | Repo                   | BLOCKED |
 | O2   | Rehome or drop `preserve/status-report-coderabbit-pr3`                                                    | Owner   | Medium              | 15min  | owner decision | Repo                   | BLOCKED |
 | O3   | CODEOWNERS with named owners                                                                             | Owner   | Low                 | 10min  | owner naming   | Community              | BLOCKED |
@@ -166,6 +167,10 @@ Phase 4 (parallel): T10 + T11 + T12 + T13. Owner lane whenever answers land.
 | 13.1  | T16.8 closure: ~15-line `FuzzErrorResponseFromError` target OR a written Not-Do in CHANGELOG/ADR                                                                                          | 12    | T13    |
 | 13.2  | Fuzz smoke: `FuzzReadSignals` 30s; commit new seeds if any                                                                                               | 12    | T13    |
 | 13.3  | Fuzz smoke: `FuzzReadEvents` 30s (datastartest); commit new seeds if any                                                                                 | 12    | T13    |
+| 14.1  | Reproduce + classify the license-check failure (`buildflow history --step "license-check [root]" --last-error`; go-licenses presence, network, license ambiguity) | 12    | T14    |
+| 14.2  | Fix on sight (devshell tool / config) or record the `skip_steps` rationale in `.buildflow.yml`; close the TODO row      | 12    | T14    |
+| 14.3  | Owner: Renovate app Settings check (~10s); record the verdict in `docs/ci-watch.md` + close the TODO row                | 5     | T14    |
+| 14.4  | If the app is absent: owner chooses install vs delete `renovate.json` (dead config); execute the choice                  | 5     | T14    |
 
 _Owner-lane micro-breakdowns omitted — each row is a single ≤15min decision
 or action once unblocked (see TODO_LIST Owner-blocked section)._
@@ -178,6 +183,7 @@ flowchart TD
         T01[T01 deferred-gate sweep<br/>erraudit ×4 + govulncheck]
         T02[T02 release-checklist hardening]
         T03[T03 migration-guide truth pass]
+        T14[T14 license-check routing<br/>+ Renovate install verify]
     end
 
     subgraph P2["Phase 2 — 4%: consumer surface (parallel)"]
@@ -229,6 +235,28 @@ flowchart TD
 **Standing rule for every task:** guards G1–G8; full local gate before each
 commit (G3); CHANGELOG `[Unreleased]` for user-visible changes (G2); stage by
 explicit path list (G4); docspec contract on snippet touches (G5).
+
+## Addendum — one-bot session extension (2026-10-01 05:20)
+
+This plan was written against the 18-next-up/8-blocked snapshot; the live
+TODO_LIST is now 22 next-up / 9 blocked (one-bot session rows: merge-PR-#14 →
+09.1, Renovate-install → 14.3/14.4; sibling rows: fuzz smoke → T13,
+`--keep-going` note → 10.3; retro → O9 — all already covered). Two findings
+from the 2026-10-01 one-bot session had NO coverage anywhere and are added
+here rather than in a second, split-braining plan file:
+
+1. **T14.1–14.2 — buildflow `license-check` loop**: 4+ consecutive identical
+   failures (`go-licenses` tool execution error) across sessions, owned by no
+   TODO row until now; a permanently-red fast gate trains everyone to ignore
+   red gates. Belongs in the 1% tier beside T01 — same theme: make the local
+   gates tell the truth.
+2. **T14.3–14.4 — Renovate app installation unproven**: zero renovate PRs ever
+   (inconclusive) and the installations API 403s with a user token. If the
+   app is absent, the regex-scoped `renovate.json` is dead config — the
+   ghost-system candidate from the 2026-10-01_04-59 report §b2.
+
+Edits are additive only (T14 row, micros 14.1–14.4, one P1 graph node,
+this addendum); the sibling session's content is unchanged.
 
 ## Sources
 

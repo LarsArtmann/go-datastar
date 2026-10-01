@@ -38,6 +38,7 @@
 | Fuzz smoke + T16.8 closure: 30s runs of `FuzzReadSignals` + `FuzzReadEvents` (commit new seeds); then EITHER the ~15-line `FuzzErrorResponseFromError` target OR a written Not-Do in the CHANGELOG. | 🔴 `TODO` | Low    | 30min  | CONTRIBUTING "Fuzzing"; `2026-09-03_12-26` f25; plan T13 |
 | AGENTS.md: make `nix flake check --keep-going` the documented hash-collection step in the vendorHash gotcha (it collected all 3 moved hashes in one pass on 2026-10-01). | 🔴 `TODO` | Low    | 5min   | CHANGELOG [Unreleased] Fixed entry; plan T10.3 |
 | Verify the Renovate GitHub App is actually installed (owner: GitHub → Settings → Applications) — zero renovate PRs ever and the installations API 403s with a user token, so installation is unproven; if absent, the regex-scoped `renovate.json` is dead config and JS-bump proposals never arrive.                                                                     | 🔴 `TODO` | Low    | 5min   | `gh pr list --author renovate[bot]` = 0; 2026-10-01 report                              |
+| Route the buildflow `license-check` failure loop (4+ consecutive identical failures across sessions, go-licenses tool execution error) — reproduce via `buildflow history --step 'license-check [root]' --last-error`, classify (tool missing in devshell / network / real license finding), fix on sight or record a `skip_steps` rationale; a permanently-red fast gate trains everyone to ignore red gates. | 🔴 `TODO` | High   | 15min  | `buildflow history` Top Failing: license-check ×4, 100% rate; 2026-10-01_04-59 report §e5 |
 
 ## Owner-blocked
 
