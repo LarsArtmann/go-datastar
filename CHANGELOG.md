@@ -45,6 +45,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `Version()` now reads `static.Version` directly instead of routing through
+  the deprecated `DatastarJSVersion` constant (same value; the deprecation
+  cycle is gone). `ScriptHandlerWith`'s unused version parameter is
+  documented as signature-compatibility-only, with removal pencilled in for
+  v0.7.0 (owner-gated). `version.Version` (the ldflags-injection package)
+  gained its first test, pinning the "dev" default.
 - Exported sentinels `ErrBodyReadAfterClose` and `ErrEventNameRequired` are now
   declared as the `error` interface instead of the concrete
   `*errorfamily.Error` type (matching the go-sse convention and the erraudit

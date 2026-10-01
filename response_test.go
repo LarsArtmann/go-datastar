@@ -255,9 +255,10 @@ func TestScriptTag(t *testing.T) {
 func TestVersion(t *testing.T) {
 	t.Parallel()
 
-	v := datastar.Version()
-	if v != "1.0.3" {
-		t.Errorf("got %q, want %q", v, "1.0.3")
+	// Derived from static.Version so a JS-bump needs no test edit; the
+	// checksum test in static/ is the actual bundle pin.
+	if v := datastar.Version(); v != static.Version {
+		t.Errorf("datastar.Version() = %q, want static.Version %q", v, static.Version)
 	}
 }
 

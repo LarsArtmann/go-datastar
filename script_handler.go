@@ -33,6 +33,11 @@ func ScriptHandler() http.Handler {
 
 // ScriptHandlerWith returns an [http.Handler] that serves a custom JavaScript
 // bundle. Use this to serve a different version of the DataStar client.
+//
+// The version parameter is unused: it is kept only for signature
+// compatibility with the v0.5.x API. Removing it is a breaking change
+// pencilled in for v0.7.0 (owner-gated); pass any value — static.Version is
+// the conventional choice.
 func ScriptHandlerWith(scriptBytes []byte, _ string) http.Handler {
 	etag := computeETag(scriptBytes)
 
@@ -78,4 +83,6 @@ func ScriptTag(path string) string {
 }
 
 // Version returns the version of the embedded DataStar JavaScript client.
-func Version() string { return DatastarJSVersion }
+// It reads [static.Version] directly; the deprecated [DatastarJSVersion]
+// constant is an alias of the same value.
+func Version() string { return static.Version }
