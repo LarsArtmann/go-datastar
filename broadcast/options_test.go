@@ -81,6 +81,8 @@ func numberedEvents(n int) []sse.Event {
 func replayBody(t *testing.T, b *broadcast.Broadcaster, lastEventID string) string {
 	t.Helper()
 
+	expected := b.SubscriberCount() + 1
+
 	ctx, cancel := context.WithCancel(context.Background())
 	recorder := httptest.NewRecorder()
 	req := httptest.NewRequestWithContext(ctx, http.MethodGet, "/events", nil)
@@ -95,7 +97,7 @@ func replayBody(t *testing.T, b *broadcast.Broadcaster, lastEventID string) stri
 		close(done)
 	}()
 
-	waitFor(t, "subscriber to connect", func() bool { return b.SubscriberCount() == 1 })
+	waitFor(t, "subscriber to connect", func() bool { return b.SubscriberCount() >= expected })
 
 	cancel()
 	<-done
