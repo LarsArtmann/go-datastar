@@ -75,7 +75,9 @@ func Bridge(evt DomainEvent) ([]datastar.Patch, error) {
 
 		signalsJSON, err := datastar.MarshalSignals(signals)
 		if err != nil {
-			return nil, errorfamily.WrapRejectionf(err, "example.bridge_marshal_failed", "bridge %s", domainEvt.EventName())
+			return nil, errorfamily.WrapRejectionf(
+				err, "example.bridge_marshal_failed", "bridge %s", domainEvt.EventName(),
+			)
 		}
 
 		return []datastar.Patch{
