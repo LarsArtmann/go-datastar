@@ -96,7 +96,10 @@ var (
 	// was already closed before reading. This usually means an SSE stream was
 	// created before ReadSignals ran; re-order so ReadSignals reads the body
 	// first. The underlying [http.ErrBodyReadAfterClose] is preserved as the cause.
-	ErrBodyReadAfterClose = errorfamily.WrapRejection(
+	//
+	// Declared as the error interface (not *errorfamily.Error) so sentinel
+	// matching is purely value-based, matching the go-sse convention.
+	ErrBodyReadAfterClose error = errorfamily.WrapRejection(
 		http.ErrBodyReadAfterClose,
 		CodeBodyReadAfterClose,
 		"request body already closed (create the SSE stream after calling ReadSignals)",
@@ -104,7 +107,7 @@ var (
 
 	// ErrEventNameRequired is returned by [NewDispatchCustomEventPatch] when the
 	// event name argument is empty.
-	ErrEventNameRequired = errorfamily.NewRejection(
+	ErrEventNameRequired error = errorfamily.NewRejection(
 		CodeEventNameRequired,
 		"eventName is required",
 	)

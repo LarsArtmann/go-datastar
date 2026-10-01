@@ -35,6 +35,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Exported sentinels `ErrBodyReadAfterClose` and `ErrEventNameRequired` are now
+  declared as the `error` interface instead of the concrete
+  `*errorfamily.Error` type (matching the go-sse convention and the erraudit
+  `sentinel_concrete_type` rule). `errors.Is` matching is unchanged (it was
+  always value-based); only direct concrete-type use of the sentinel variables
+  is affected, which the error-system docs never showed. The deferred erraudit
+  gate (probe-gated off while this repo is private) is green in CI mode for all
+  four modules again; the example programs now classify their errors with
+  go-error-family constructors instead of `fmt.Errorf`/`errors.New`.
 - Dependency bots de-duplicated (owner decision 2026-10-01): Dependabot owns
   all ecosystem updates (gomod ×4 modules, GitHub Actions); Renovate is scoped
   to the embedded-JS custom manager only via `enabledManagers: ["regex"]` in

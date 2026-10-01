@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/larsartmann/go-datastar"
+	errorfamily "github.com/larsartmann/go-error-family"
 	"github.com/larsartmann/go-sse"
 )
 
@@ -53,7 +54,10 @@ const (
 	readHeaderTimeout = 5 * time.Second
 )
 
-var errUnknownDomainEvent = errors.New("unknown domain event")
+var errUnknownDomainEvent error = errorfamily.NewRejection(
+	"example.unknown_domain_event",
+	"unknown domain event",
+)
 
 // Bridge translates one domain event into the patches that render it. This
 // is the ONLY place domain vocabulary meets the DataStar wire protocol.
@@ -71,7 +75,7 @@ func Bridge(evt DomainEvent) ([]datastar.Patch, error) {
 
 		signalsJSON, err := datastar.MarshalSignals(signals)
 		if err != nil {
-			return nil, fmt.Errorf("bridge %s: %w", domainEvt.EventName(), err)
+			return nil, errorfamily.WrapRejectionf(err, "example.bridge_marshal_failed", "bridge %s", domainEvt.EventName())
 		}
 
 		return []datastar.Patch{
@@ -95,7 +99,7 @@ func Bridge(evt DomainEvent) ([]datastar.Patch, error) {
 		}, nil
 
 	default:
-		return nil, fmt.Errorf("bridge: %T: %w", evt, errUnknownDomainEvent)
+		return nil, errorfamily.WrapRejectionf(errUnknownDomainEvent, "example.unknown_domain_event", "bridge: %T", evt)
 	}
 }
 
@@ -130,7 +134,7 @@ func run() error {
 	log.Println("domain-adapter listening on :8766")
 
 	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		return fmt.Errorf("listen: %w", err)
+		return errorfamily.WrapInfrastructure(err, "example.listen_failed", "listen")
 	}
 
 	return nil

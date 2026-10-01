@@ -2,9 +2,10 @@ package main
 
 import (
 	"compress/gzip"
-	"fmt"
 	"net/http"
 	"strings"
+
+	errorfamily "github.com/larsartmann/go-error-family"
 )
 
 // gzipSSEMiddleware compresses SSE responses for clients that send
@@ -51,7 +52,7 @@ type gzipSSEWriter struct {
 func (writer *gzipSSEWriter) Write(p []byte) (int, error) {
 	n, err := writer.gz.Write(p)
 	if err != nil {
-		return n, fmt.Errorf("gzip write: %w", err)
+		return n, errorfamily.WrapTransient(err, "example.gzip_write_failed", "gzip write")
 	}
 
 	return n, nil
