@@ -1,6 +1,7 @@
 package datastar_test
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -32,17 +33,19 @@ func FuzzErrorResponseFromError(f *testing.F) {
 
 		switch kind % 4 {
 		case 0:
+			//nolint:err113 // fuzz input: arbitrary dynamic error values are the input space under test
 			err = errors.New(message)
 		case 1:
 			err = errorfamily.NewTransient(code, message)
 		case 2:
+			//nolint:err113 // fuzz input: the wrapped cause deliberately carries fuzzed bytes
 			err = errorfamily.WrapRejectionf(errors.New(message), code, "wrap: %s", message)
 		case 3:
 			err = nil // caller misuse: must return the classified Rejection
 		}
 
 		recorder := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/events", nil)
+		req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/events", nil)
 		stream := sse.NewStream(recorder, req)
 
 		defer func() { _ = stream.Close() }()
