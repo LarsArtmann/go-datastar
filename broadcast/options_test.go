@@ -85,6 +85,7 @@ func replayBody(t *testing.T, b *broadcast.Broadcaster, lastEventID string) stri
 
 	ctx, cancel := context.WithCancel(context.Background())
 	recorder := httptest.NewRecorder()
+
 	req := httptest.NewRequestWithContext(ctx, http.MethodGet, "/events", nil)
 	if lastEventID != "" {
 		req.Header.Set("Last-Event-ID", lastEventID)
@@ -110,6 +111,7 @@ func TestWithStoreAppendBeforeFanOut(t *testing.T) {
 
 	store := newRecordingStore()
 	b := broadcast.NewBroadcaster(broadcast.WithStore(store))
+
 	defer b.Close()
 
 	sub := b.Subscribe()
@@ -139,6 +141,7 @@ func TestWithStoreReplayOnReconnect(t *testing.T) {
 
 	store := newRecordingStore()
 	b := broadcast.NewBroadcaster(broadcast.WithStore(store))
+
 	defer b.Close()
 
 	for _, evt := range numberedEvents(3) {
@@ -285,6 +288,8 @@ func TestNewBroadcasterOptionsMatrix(t *testing.T) {
 // must produce comment pings well inside the default 15s, proving the
 // option reaches the per-connection Heartbeat goroutine.
 func TestWithHeartbeatIntervalFast(t *testing.T) {
+	t.Parallel()
+
 	b := broadcast.NewBroadcaster(broadcast.WithHeartbeatInterval(20 * time.Millisecond))
 	defer b.Close()
 
@@ -307,7 +312,7 @@ func TestWithHeartbeatIntervalFast(t *testing.T) {
 
 	waitFor(t, "subscriber to connect", func() bool { return b.SubscriberCount() == 1 })
 
-	buf := make([]byte, 512)
+	var buf [512]byte
 
 	type readResult struct {
 		n   int
@@ -317,7 +322,7 @@ func TestWithHeartbeatIntervalFast(t *testing.T) {
 	reads := make(chan readResult, 1)
 
 	go func() {
-		n, err := resp.Body.Read(buf)
+		n, err := resp.Body.Read(buf[:])
 		reads <- readResult{n: n, err: err}
 	}()
 
