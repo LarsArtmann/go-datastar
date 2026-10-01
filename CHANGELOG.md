@@ -32,6 +32,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   its `golang.org/x/mod v0.41.0` indirect now) and re-deriving the root,
   broadcast, and datastartest hashes — collected in one `nix flake check
   --keep-going` pass (plain `flake check` reports only the first mismatch).
+- `ErrorResponseFromError` now sanitizes the error message and code to valid
+  UTF-8 (invalid bytes become U+FFFD, json/v1 semantics): an error message
+  containing invalid UTF-8 (syscall text, raw user input) made the
+  error-reporting path itself fail with `datastar.signals_marshal_failed`
+  (json/v2 rejects invalid UTF-8 where v1 replaced it) — sending nothing to
+  the client exactly when an error UI was needed. Found by the new
+  `FuzzErrorResponseFromError` target (T16.8 closure); its two crash seeds
+  are committed as regression cases. The deferred fuzz smokes
+  (FuzzReadSignals, FuzzReadEvents) also ran clean at HEAD.
 - BuildFlow `license-check` failure loop (4+ identical failures across
   sessions) routed: go-licenses' stdlib detection (`isStdLib`) compares
   package paths against the GOROOT of the Go that built/ran the binary; in a
