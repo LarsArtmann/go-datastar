@@ -50,7 +50,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `renovate.json` — keeping the one capability Dependabot lacks (upstream
   DataStar JS release proposals) while ending the duplicate gomod/actions PR
   churn. Remaining dependabot PR #14 (codeql-action SHA bump) is green and
-  awaits the owner's merge.
+  awaits the owner's merge — merged 2026-10-01 (squash `1bd2161`), actionlint
+  green on the merge commit.
+
+### Added — docs & tooling
+
+- datastartest tranche-2 helpers now have runnable godoc examples
+  (`ExampleRequireNotScript`, `ExampleFindScript`, `ExampleFindAllElements`,
+  `ExampleEventToSelectorMap`, `ExampleCollectPostWithTimeout`,
+  `ExampleCollectWithRequestWithTimeout`), and `FindAllElements`'s doc
+  states that script-bearing patches participate (they are elements
+  patches). datastartest statement coverage: 95.5% (93.4% at v0.5.0).
+- `docs/static-js.md` gains a CSP-mode section (`data-nonce` opt-in, no
+  `unsafe-eval` needed, per-response nonce, consumer-side only), the
+  canonical-minified-only bundle policy, and a v1.0.3 scope note (client
+  runtime changes; wire-format untouched — goldens green).
+- `static/fetch-bundle.sh` downloads the upstream minified bundle at a tag,
+  prints the sha256 for `checksum_test.go` and the provenance line for
+  `static.go`; verified against the v1.0.3 pin (byte-identical).
+- datastartest README marks the tranche-2 helpers as "arrived in v0.6.0".
 - datastartest's two inert `replace` directives (`go-datastar => ..`,
   `go-datastar/static => ../static`) are dropped from `go.mod` — consumers
   ignore dependency replaces, so the tagged module was unaffected, but the

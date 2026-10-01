@@ -26,8 +26,10 @@ CDN a browser page points at reintroduces drift.
 
 1. Check the [DataStar releases](https://github.com/starfederation/datastar)
    and the JS client changelog.
-2. Replace `static/datastar.js` with the new release and update
-   `static.Version` to match the client version.
+2. Fetch the bundle and its checksum with `static/fetch-bundle.sh <version>`
+   (downloads `bundles/datastar.js` at the tag, prints the sha256 and the
+   provenance line), then replace `static/datastar.js` and update
+   `static.Version` to match.
 3. Run the full gate (the wire-format golden tests and the WPT corpus
    attribute changes loudly):
    ```bash
@@ -37,6 +39,45 @@ CDN a browser page points at reintroduces drift.
 4. If goldens change, treat that as a protocol change: compare against the
    upstream SDK behavior and record the delta in the CHANGELOG — a golden
    change is deliberate, never incidental.
+
+## CSP mode (`data-nonce`, client v1.0.3+)
+
+The pinned client supports Content-Security-Policy deployments without
+`unsafe-eval`. It is **consumer opt-in** — nothing on the Go side changes:
+
+1. Your server renders a per-response nonce on the root element:
+   `<html data-nonce="YOUR-NONCE">`. The nonce must be nonempty (an empty
+   attribute makes the client throw) and should be a fresh random value per
+   response, same value your CSP `script-src 'nonce-…'` uses.
+2. On load the client reads and removes the attribute, creates a
+   `trustedTypes` policy named `datastar` (passthrough for the HTML/JS it
+   generates), stamps its injected `<script>` elements with the nonce, and
+   compiles expressions via nonce-carrying script elements instead of
+   `new Function(...)`.
+
+Go-served bundles need no special handling: `ScriptHandler` serves the file
+like any static asset; the CSP dance happens in your page template.
+
+## Canonical minified bundle only
+
+`static/datastar.js` is the **canonical upstream minified bundle**, kept
+byte-identical to the tag (the provenance comment lives in `static.go`, not
+in the bundle, so the file never gets a local header). The repo deliberately
+keeps no beautified variant: a second copy would drift, defeat the checksum
+pin (`static/checksum_test.go` fails on ANY byte change), and the 2026-08-29
+incident showed reformatting sweeps find exactly such files. Formatter
+shields: `.prettierignore`, `.codespellrc`, dprint excludes. If you need
+readable client source, read it at the upstream tag, never beautify in-repo.
+
+## v1.0.3 scope note
+
+The v1.0.2 → v1.0.3 bump (shipped in v0.5.0) changed **client runtime
+behavior only** — CSP mode (above), signals resent when a backend request
+retries after a network error, view-transition support checked on the
+document as well, and a dynamic `multiple` on `<select>` updating the bound
+signal — plus the artifact switch from a beautified ~56 KB file to the
+canonical minified 33.5 KB bundle. The wire format was untouched: all
+wire-format goldens stayed green, so no Go protocol changes accompanied it.
 
 ## Renovate
 

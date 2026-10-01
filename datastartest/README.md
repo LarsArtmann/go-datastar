@@ -53,6 +53,10 @@ func TestFeedHandler(t *testing.T) {
 | `CollectWithRequestWithTimeout(t, h, timeout, method, body, ct, opts...)` | Any method/body/content-type + deadline                |
 | `ReadEvents(r)` / `ReadNEvents(r, n)`                                     | Parse SSE from any `io.Reader` yourself                |
 
+_The `*WithTimeout` POST/request variants, `RequireNotScript`, `FindScript`,
+`FindAllElements`, and `EventToSelectorMap` arrived in v0.6.0 (helper
+tranche 2)._
+
 ## Request options
 
 Every `Collect*` helper accepts options:
