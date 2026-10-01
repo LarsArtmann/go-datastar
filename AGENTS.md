@@ -256,6 +256,12 @@ No CQRS, no event bus, no domain opinions. It is a pure protocol layer. Consumer
   which is what makes the FOD converge on one paste. Don't widen that
   fileset (the pre-fix repo-root fileset was a self-referencing
   never-converging FOD).
+- **`broadcastVendorHash` tracks ROOT SOURCE EDITS** (verified 2026-10-01 ×2
+  in one session): broadcast vendors root + static through its directory
+  replaces, so ANY change to root's non-test `.go` files or LICENSE that
+  `go mod vendor` copies moves it — not just require bumps. After touching
+  root source, expect one more `--keep-going` pass + paste. Test files
+  (`*_test.go`, `docspec`) do NOT move it.
 - **nix CI reports only the FIRST hash mismatch** — a require bump can move
   BOTH submodule vendor hashes while the workflow names one and exits.
   Reproduce with a full local `nix flake check --keep-going` (the
