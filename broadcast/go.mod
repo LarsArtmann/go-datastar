@@ -1,10 +1,10 @@
 module github.com/larsartmann/go-datastar/broadcast
 
-go 1.27.1
+go 1.27
 
 require (
-	github.com/larsartmann/go-datastar v0.6.1
-	github.com/larsartmann/go-sse v0.6.1
+	github.com/larsartmann/go-datastar v0.6.2
+	github.com/larsartmann/go-sse v0.6.2
 )
 
 require (
