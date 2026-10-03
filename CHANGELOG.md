@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Nothing yet.
+
+## [0.6.2] - 2026-10-03
+
+### Changed
+
+- **`go` directives back to minor form (`go 1.27`)** — root, broadcast, and datastartest re-tagged as the fleet supply-side de-poisoning (go-version-auto-configure campaign, 2026-10-03): a patch-form floor (`1.27.1`) re-poisons every consumer's `go` directive through MVS (`go mod tidy` raises the directive to the highest dependency floor). Pins moved to the clean generation in the same motion: go-sse v0.6.2, sseparse v0.2.1, datastar v0.6.2 (broadcast/datastartest). Proxy `.mod` for all three new tags verified post-push. static stays at `go 1.26` (already minor-form).
+
+### Fixed
+
 - CI lint job un-red: the `go install` pin `golangci-lint@v2.12.2` bundled a
   go-tools whose `buildir` pass panicked while analyzing a dependency package
   (`unexpected expr: *ast.KeyValueExpr`, exit 3), failing master and every
