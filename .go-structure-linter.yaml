@@ -1,0 +1,4 @@
+# Flat single-package library BY DESIGN — the root .go files ARE the public
+# API (github.com/larsartmann/go-datastar), documented in ADR-002; this
+# preset is the upstream-sanctioned encoding of that ADR.
+presets: [flat]

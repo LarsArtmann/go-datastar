@@ -13,9 +13,7 @@
 # was built/run with) misaligns, so every stdlib package errors with "does
 # not have module info" (adjacent to google/go-licenses#128). That was the
 # license-check x4+ failure loop closed 2026-10-01.
-
-build_mode: full
-
+#
 # Skipped steps, each a deliberate, documented decision:
 #
 # go-structure-linter: wants a cmd/internal/pkg layout. This repo is
@@ -34,7 +32,6 @@ build_mode: full
 #   trivial for-range loops stay, no samber/lo dependency for zero behavioral
 #   gain.
 skip_steps:
-  - go-structure-linter
   - eslint-check
   - eslint-fix
   - go-auto-upgrade
