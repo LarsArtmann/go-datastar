@@ -82,7 +82,6 @@
             doCheck = true;
             env = {
               GOWORK = "off";
-              GOEXPERIMENT = "jsonv2";
             };
 
             meta = {
@@ -146,7 +145,6 @@
             doCheck = true;
             env = {
               GOWORK = "off";
-              GOEXPERIMENT = "jsonv2";
             };
 
             meta = {
@@ -181,7 +179,6 @@
             doCheck = true;
             env = {
               GOWORK = "off";
-              GOEXPERIMENT = "jsonv2";
             };
 
             meta = {
@@ -255,37 +252,30 @@
             ];
 
             GOTOOLCHAIN = "local";
-            GOEXPERIMENT = "jsonv2";
 
             shellHook = ''
               echo "go-datastar dev shell: $(go version)"
-              echo "GOEXPERIMENT=$GOEXPERIMENT"
             '';
           };
 
           apps = {
             test = mkApp "test" [ goPkg ] ''
-              export GOEXPERIMENT=jsonv2
               go test ./... ./broadcast/... ./datastartest/... ./static/... -count=1 "$@"
             '';
 
             test-race = mkApp "test-race" [ goPkg ] ''
-              export GOEXPERIMENT=jsonv2
               go test ./... ./broadcast/... ./datastartest/... ./static/... -race -count=1 "$@"
             '';
 
             build = mkApp "build" [ goPkg ] ''
-              export GOEXPERIMENT=jsonv2
               go build ./... ./broadcast/... ./datastartest/... ./static/...
             '';
 
             vet = mkApp "vet" [ goPkg ] ''
-              export GOEXPERIMENT=jsonv2
               go vet ./... ./broadcast/... ./datastartest/... ./static/...
             '';
 
             lint = mkApp "lint" [ pkgs.golangci-lint ] ''
-              export GOEXPERIMENT=jsonv2
               golangci-lint run ./... ./broadcast/... ./datastartest/... ./static/...
             '';
 
@@ -294,13 +284,19 @@
             # which caused "green locally, red in CI" masters). THE pre-push
             # gate; first run compiles the linter from source (module cache).
             docspec = mkApp "docspec" [ goPkg ] ''
-              export GOEXPERIMENT=jsonv2
               go test -tags docspec -run TestDocspec -count=1 ./... ./broadcast/... ./datastartest/...
             '';
 
+            # GOEXPERIMENT=jsonv2 removed 2026-10-11: json/v2 is a
+            # go1.27-gated stable API, the flag is a no-op. Per-module loop:
+            # the sibling modules are separate Go modules, so one root-level
+            # `golangci-lint run ./static/...` typechecks against the wrong
+            # module graph under GOWORK=off (exit 7).
             lint-ci = mkApp "lint-ci" [ goPkg ] ''
-              export GOEXPERIMENT=jsonv2
-              go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.2 run ./... ./broadcast/... ./datastartest/... ./static/... --timeout 5m
+              for mod in . ./broadcast ./datastartest ./static; do
+                echo "== lint-ci: $mod"
+                (cd "$mod" && GOWORK=off go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.14.0 run ./... --timeout 5m) || exit 1
+              done
             '';
 
             # erraudit is NOT hermetically buildable (its dependency tree
@@ -308,7 +304,6 @@
             # go-installs it and requires local GitHub credentials. One
             # directory per run — the tool rejects package patterns.
             erraudit = mkApp "erraudit" [ goPkg ] ''
-              export GOEXPERIMENT=jsonv2
               go install github.com/larsartmann/erraudit/cmd/erraudit@v0.3.0
               for mod in . ./broadcast ./datastartest ./static; do
                 echo "== erraudit $mod"
@@ -317,19 +312,16 @@
             '';
 
             govulncheck = mkApp "govulncheck" [ pkgs.govulncheck goPkg ] ''
-              export GOEXPERIMENT=jsonv2
               govulncheck ./... ./broadcast/... ./datastartest/... ./static/...
             '';
 
             coverage = mkApp "coverage" [ goPkg ] ''
-              export GOEXPERIMENT=jsonv2
               go test ./... ./broadcast/... ./datastartest/... ./static/... -coverprofile=coverage.out -covermode=atomic "$@"
               go tool cover -func=coverage.out
             '';
 
             bench = mkApp "bench" [ goPkg ] ''
               echo "== bench: $(go version) / $(uname -s) $(uname -m) / $(nproc) cores"
-              export GOEXPERIMENT=jsonv2
               go test -run '^$' -bench . -benchmem "$@"
               (cd datastartest && go test -run '^$' -bench . -benchmem "$@")
             '';
