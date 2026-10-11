@@ -27,9 +27,16 @@ unnecessary locally, while workspace-mode hashes for EXTERNAL modules
 accumulate in `go.work.sum` without a reproducibility contract — consumers
 never see it. Sibling requires use
 real published versions (not `v0.0.0`) so consumers testing without replaces
-resolve to a real published module. The `go` directive pins the exact patch
-release (currently **1.27.1** across go.mod ×3, go.work, CI, and the flake
-`goPkg`) to clear stdlib CVEs under `GOTOOLCHAIN=local`.
+resolve to a real published module. The `go` directives are minor form
+(`go 1.27` across go.mod ×3 and go.work; static stays at `go 1.26`) since
+the 2026-10-03 fleet de-poisoning — a patch-pinned floor re-poisons
+consumers through MVS. CI's setup-go pins `1.27.1` and the flake `goPkg`
+is nixpkgs `go_1_27`, both satisfying the minor-form directives while
+keeping toolchain choice deliberate.
+
+## Session-Start CI Health Probe
+
+Before trusting a clean local tree, probe master CI health in every repo the session touches: `gh run list --branch master --limit 5`. Master has repeatedly sat red while local trees looked clean; the fix is usually already known by the time you look.
 
 ## Commands
 
@@ -65,7 +72,7 @@ GOWORK=off go mod verify                # per module; "all modules verified"
 grep -rn 'replace.*=>/' go.mod datastartest/go.mod static/go.mod  # must find nothing (relative paths only)
 ```
 
-`GOEXPERIMENT=jsonv2` is **no longer required** under the Go 1.27.1 floor (v0.6.1 un-gated `encoding/json/v2`); it survives in CI/flake env as a harmless no-op.
+`GOEXPERIMENT=jsonv2` was removed from every live surface (2026-10-11): `encoding/json/v2` is a `go1.27`-gated stable API, so the flag is a no-op under the 1.27 toolchain. Do not re-add it.
 
 Note: do **not** pass `--enforce-samber-oops` to erraudit. This is a library, and
 the go-error-family contract is that libraries classify via go-error-family only

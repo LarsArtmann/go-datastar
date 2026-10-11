@@ -43,11 +43,14 @@
           goPkg = pkgs.go_1_27;
           buildGoModule = pkgs.buildGoModule.override { go = goPkg; };
           version = self.rev or self.dirtyRev or "dev";
-          # Root vendorHash moves ONLY on requires changes (go.mod/go.sum) or
-          # toolchain modules.txt format changes (e.g. go1.26.5 -> 1.26.6) —
-          # verified 2026-09-02 (ADR 004 correction): root imports no
-          # directory-replaced package, so repo source never enters its
-          # vendor tree.
+          # Root vendorHash moves on requires changes (go.mod/go.sum), on
+          # toolchain modules.txt format changes (e.g. go1.26.5 -> 1.26.6),
+          # AND on any edit to the directory-replaced ./static sources:
+          # root imports github.com/larsartmann/go-datastar/static
+          # (script_handler.go) and `go mod vendor` copies the replaced
+          # directory ENTIRELY, so repo source DOES enter the vendor tree
+          # (corrected 2026-10-11; the earlier "root imports no
+          # directory-replaced package" claim predated the static import).
           vendorHash = "sha256-iQzWQbeGUGgNv/lEuSVvzfTo2t2we/9Jt/XUQReeCS4=";
           # datastartest vendors root + static through its directory replaces:
           # `go mod vendor` copies the replaced directories ENTIRELY (docs

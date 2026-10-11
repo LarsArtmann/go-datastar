@@ -49,8 +49,6 @@ on:
 # Docs-only changes skip this workflow entirely; actionlint.yml still runs
 # on every push so workflow and doc changes always get some CI signal.
 
-env:
-  GOEXPERIMENT: jsonv2
 
 jobs:
   test:
