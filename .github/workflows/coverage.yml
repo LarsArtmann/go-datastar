@@ -22,7 +22,6 @@ on:
       - "static/datastar.js"
       - "datastartest/testdata/**"
 
-
 permissions:
   contents: write
 

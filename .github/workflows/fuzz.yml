@@ -11,7 +11,6 @@ on:
     - cron: "17 3 * * *" # daily, off the busy minute marks
   workflow_dispatch: {}
 
-
 jobs:
   fuzz:
     runs-on: ubuntu-latest
