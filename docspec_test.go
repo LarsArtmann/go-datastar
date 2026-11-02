@@ -24,10 +24,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/larsartmann/go-datastar"
 	errorfamily "github.com/larsartmann/go-error-family"
 	"github.com/larsartmann/go-sse"
-
-	"github.com/larsartmann/go-datastar"
 )
 
 // docs/replay.md — "Minimal replay setup": render, store, broadcast.
