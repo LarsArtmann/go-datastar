@@ -67,7 +67,7 @@ jobs:
 
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
         with:
-          go-version: "1.27.1"
+          go-version: "1.27.3"
 
       - name: Build + Vet + Test (GOWORK=off, ${{ matrix.module }})
         run: |
@@ -89,7 +89,7 @@ jobs:
 
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
         with:
-          go-version: "1.27.1"
+          go-version: "1.27.3"
 
       - name: Workspace build + vet + test (race)
         run: |
@@ -160,7 +160,7 @@ jobs:
 
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
         with:
-          go-version: "1.27.1"
+          go-version: "1.27.3"
 
       # golangci-lint's analysis cache is the lint job's long pole (1m33s cold).
       # setup-go already caches the Go build/module caches (so `go install`
@@ -191,7 +191,7 @@ jobs:
 
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
         with:
-          go-version: "1.27.1"
+          go-version: "1.27.3"
 
       - name: Probe erraudit availability
         id: probe
@@ -222,7 +222,7 @@ jobs:
 
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
         with:
-          go-version: "1.27.1"
+          go-version: "1.27.3"
 
       - name: Install govulncheck
         run: go install golang.org/x/vuln/cmd/govulncheck@v1.6.0
