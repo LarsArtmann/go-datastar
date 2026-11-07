@@ -41,7 +41,7 @@ broadcaster.Broadcast(datastar.NewElementsPatch("<div>Update</div>",
 | `NewBroadcaster(opts...)`            | Fan-out SSE patches; options compose buffer, replay, store, heartbeat                                      |
 | `NewBroadcasterWithBufferSize(n)`    | Sugar for `NewBroadcaster(WithBufferSize(n))`                                                              |
 | `NewBroadcasterWithReplay(n)`        | Sugar for `NewBroadcaster(WithReplayCapacity(n))` — ring-buffer replay on reconnect (Last-Event-ID)        |
-| `NewBroadcasterFromHub(hub)`         | Wrap an existing `*sse.Broadcaster[sse.Event]` hub                                                         |
+| `NewBroadcasterFromHub(hub, opts...)` | Wrap an existing `*sse.Broadcaster[sse.Event]` hub; heartbeat + replay-store options apply, buffer size stays hub-owned |
 | `Broadcaster.Hub()`                  | Access/share the embedded go-sse hub                                                                       |
 | `Broadcaster.Broadcast(patch)`       | Send one patch to all clients                                                                              |
 | `Broadcaster.BroadcastMany(...)`     | Send multiple patches                                                                                      |
