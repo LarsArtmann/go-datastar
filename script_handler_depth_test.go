@@ -41,61 +41,66 @@ func TestScriptTag_EdgeCases(t *testing.T) {
 	}
 }
 
-// TestScriptTagVersioned_EdgeCases pins the cache-busting contract: the result
-// always carries the pinned client version as the v query parameter (?v=, or
-// replacing an existing v value so the pinned version can never be shadowed by
-// a stale one), inserted before any fragment so it lands in the URL query.
-// Other existing query parameters are preserved and join with &. The rest is
-// verbatim, like ScriptTag: no normalization, no escaping.
+// TestScriptTagVersioned_EdgeCases pins the cache-busting contract: the
+// result is a full <script> tag whose src always carries the pinned client
+// version as the v query parameter (?v=, or replacing an existing v value so
+// the pinned version can never be shadowed by a stale one), inserted before
+// any fragment so it lands in the URL query. Other existing query parameters
+// are preserved and join with &. The rest is verbatim, like ScriptTag: no
+// normalization, no escaping.
 func TestScriptTagVersioned_EdgeCases(t *testing.T) {
 	t.Parallel()
 
 	version := datastar.Version()
+	const (
+		open  = `<script type="module" src="`
+		close = `"></script>`
+	)
 
 	tests := []struct {
 		name string
 		path string
 		want string
 	}{
-		{"plain path", "/static/datastar.js", "/static/datastar.js?v=" + version},
-		{"existing query", "/js?x=1", "/js?x=1&v=" + version},
-		{"fragment", "/js#main", "/js?v=" + version + "#main"},
-		{"query and fragment", "/js?x=1#main", "/js?x=1&v=" + version + "#main"},
-		{"empty path", "", "?v=" + version},
+		{"plain path", "/static/datastar.js", open + "/static/datastar.js?v=" + version + close},
+		{"existing query", "/js?x=1", open + "/js?x=1&v=" + version + close},
+		{"fragment", "/js#main", open + "/js?v=" + version + "#main" + close},
+		{"query and fragment", "/js?x=1#main", open + "/js?x=1&v=" + version + "#main" + close},
+		{"empty path", "", open + "?v=" + version + close},
 		{
 			"absolute URL",
 			"https://cdn.example.com/datastar.js",
-			"https://cdn.example.com/datastar.js?v=" + version,
+			open + "https://cdn.example.com/datastar.js?v=" + version + close,
 		},
 		{
 			"stale v is replaced",
 			"/js?v=0.0.1",
-			"/js?v=" + version,
+			open + "/js?v=" + version + close,
 		},
 		{
 			"v replaced among other params",
 			"/js?x=1&v=0.0.1&y=2",
-			"/js?x=1&v=" + version + "&y=2",
+			open + "/js?x=1&v=" + version + "&y=2" + close,
 		},
 		{
 			"v replaced before fragment",
 			"/js?v=0.0.1#main",
-			"/js?v=" + version + "#main",
+			open + "/js?v=" + version + "#main" + close,
 		},
 		{
 			"empty v value is replaced",
 			"/js?v=",
-			"/js?v=" + version,
+			open + "/js?v=" + version + close,
 		},
 		{
 			"similar key is not matched",
 			"/js?verbose=1",
-			"/js?verbose=1&v=" + version,
+			open + "/js?verbose=1&v=" + version + close,
 		},
 		{
 			"v inside another value is not matched",
 			"/js?callback=v=1",
-			"/js?callback=v=1&v=" + version,
+			open + "/js?callback=v=1&v=" + version + close,
 		},
 	}
 
@@ -110,10 +115,11 @@ func TestScriptTagVersioned_EdgeCases(t *testing.T) {
 	}
 }
 
-// TestScriptTagVersioned_Idempotent pins the idempotency contract: applying
-// the cache-busting transform to an already-versioned path changes nothing,
-// so rendering pipelines can call it at every layer without double-appending.
-func TestScriptTagVersioned_Idempotent(t *testing.T) {
+// TestScriptTagVersioned_ExactlyOneVersionParam pins the shape that makes the
+// transform safe in rendering pipelines: however the input path is
+// pre-versioned, the rendered tag carries the pinned version exactly once —
+// never a double append.
+func TestScriptTagVersioned_ExactlyOneVersionParam(t *testing.T) {
 	t.Parallel()
 
 	for _, path := range []string{
@@ -121,13 +127,11 @@ func TestScriptTagVersioned_Idempotent(t *testing.T) {
 		"/js?x=1",
 		"/js?v=0.0.1",
 		"/js?x=1&v=0.0.1&y=2",
-		"/js#main",
 	} {
-		once := datastar.ScriptTagVersioned(path)
-		twice := datastar.ScriptTagVersioned(once)
+		tag := datastar.ScriptTagVersioned(path)
 
-		if once != twice {
-			t.Errorf("ScriptTagVersioned not idempotent for %q: once %q, twice %q", path, once, twice)
+		if got := strings.Count(tag, "v="+datastar.Version()); got != 1 {
+			t.Errorf("ScriptTagVersioned(%q): pinned version appears %d times, want 1: %q", path, got, tag)
 		}
 	}
 }

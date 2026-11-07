@@ -16,3 +16,26 @@ func BenchmarkComputeETag(b *testing.B) {
 		_ = computeETag(data)
 	}
 }
+
+// TestAppendVersionQueryIdempotent pins the URL-level idempotency contract:
+// versioning an already-versioned URL changes nothing, so rendering pipelines
+// can apply the transform at every layer without double-appending.
+func TestAppendVersionQueryIdempotent(t *testing.T) {
+	t.Parallel()
+
+	for _, path := range []string{
+		"/datastar.js",
+		"/js?x=1",
+		"/js?v=0.0.1",
+		"/js?x=1&v=0.0.1&y=2",
+		"/js#main",
+		"/js?x=1#main",
+	} {
+		once := appendVersionQuery(path, "9.9.9")
+		twice := appendVersionQuery(once, "9.9.9")
+
+		if once != twice {
+			t.Errorf("appendVersionQuery not idempotent for %q: once %q, twice %q", path, once, twice)
+		}
+	}
+}

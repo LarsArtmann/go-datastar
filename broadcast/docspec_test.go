@@ -18,6 +18,8 @@ import (
 
 	"github.com/larsartmann/go-datastar"
 	"github.com/larsartmann/go-datastar/broadcast"
+	"github.com/larsartmann/go-datastar/broadcast/storecontract"
+	"github.com/larsartmann/go-sse"
 )
 
 // docs/migration-guide.md — adopting the broadcast submodule: mount the
@@ -81,6 +83,22 @@ func docspecReadmeOptions(t *testing.T) {
 	var _ broadcast.Store = datastar.NewMemoryStore(16)
 }
 
+// broadcast README — custom-store contract testing: AssertReplayOrdering
+// against the memory store standing in for a custom store (it passes — its
+// contract is caller-assigned IDs); AssertIDAssignment targets stores that
+// receive ID-less events, which MemoryStore deliberately fails, so only the
+// ordering slice executes here.
+func docspecReadmeStoreContract(t *testing.T) {
+	t.Helper()
+
+	store := datastar.NewMemoryStore(8)
+
+	storecontract.AssertReplayOrdering(t, store, []sse.Event{
+		{ID: sse.NewEventID("1"), Event: "feed", Data: "one"},
+		{ID: sse.NewEventID("2"), Event: "feed", Data: "two"},
+	})
+}
+
 // TestDocspec_BroadcastSnippets executes the adoption path end to end so
 // constructor or ordering drift (append-before-fan-out) fails loudly.
 func TestDocspec_BroadcastSnippets(t *testing.T) {
@@ -99,6 +117,7 @@ func TestDocspec_BroadcastSnippets(t *testing.T) {
 	docspecMigrationGuideFanOut(broadcaster, patches)
 	docspecMigrationGuideAdoption(t)
 	docspecReadmeOptions(t)
+	docspecReadmeStoreContract(t)
 
 	var _ http.Handler = broadcaster // mountable as a handler, per the guide
 }

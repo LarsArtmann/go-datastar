@@ -157,3 +157,19 @@ func RequireNotScript(tb testing.TB, evt Event) {
 
 	tb.Fatalf("expected non-script event, got script patch with content %q", evt.ScriptContent())
 }
+
+// RequireScriptTagVersion fails the test unless html embeds the script tag
+// for scriptPath exactly as [datastar.ScriptTagVersioned] renders it: a
+// <script type="module"> element whose src carries the pinned client version
+// as a cache-busting query parameter. This is the consumer-side assertion for
+// the versioned-cache contract — a page referencing a bare datastar.js src,
+// a stale version, or an unversioned URL fails here, because any of those let
+// a browser cache serve an old client against a new server.
+func RequireScriptTagVersion(tb testing.TB, html string, scriptPath string) {
+	tb.Helper()
+
+	want := datastar.ScriptTagVersioned(scriptPath)
+	if !strings.Contains(html, want) {
+		tb.Fatalf("script tag: page does not embed %q — a missing or stale cache-busting src risks old-client/new-server protocol skew", want)
+	}
+}

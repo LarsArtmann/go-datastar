@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	datastar "github.com/larsartmann/go-datastar"
-	"github.com/larsartmann/go-datastar/broadcast"
 	"github.com/larsartmann/go-sse"
 )
 
@@ -84,7 +83,7 @@ func TestAssertReplayOrderingCatchesDescendingStore(t *testing.T) {
 	t.Parallel()
 
 	ftb := &fakeTB{TB: t}
-	AssertReplayOrdering(ftb, &descendingStore{events: ascendingEvents(4)}, ascendingEvents(4))
+	AssertReplayOrdering(ftb, &descendingStore{}, ascendingEvents(4))
 
 	if len(ftb.failures) == 0 {
 		t.Fatal("a store replaying in descending order must fail the ordering assertion — it did not")

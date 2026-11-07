@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/larsartmann/go-datastar"
 	"github.com/larsartmann/go-datastar/datastartest"
 )
 
@@ -276,8 +277,75 @@ func TestHelpers_AcceptTestingB(t *testing.T) {
 	datastartest.RequireEventCount(b, []datastartest.Event{{Type: "x"}}, 1)
 	datastartest.RequireEventType(b, datastartest.Event{Type: "x"}, "x")
 	datastartest.RequireEventID(b, datastartest.Event{ID: "1"}, "1")
+	datastartest.RequireScriptTagVersion(
+		b,
+		fmt.Sprintf(`<html><head>%s</head></html>`, datastar.ScriptTagVersioned("/datastar.js")),
+		"/datastar.js",
+	)
 
 	if b.Failed() {
 		t.Error("helper calls on *testing.B should not fail")
 	}
+}
+
+// TestRequireScriptTagVersion proves the consumer-side assertion for the
+// versioned-cache contract: a page embedding the exact
+// ScriptTagVersioned output passes; a bare src, a stale version, or a
+// non-module script fails.
+func TestRequireScriptTagVersion(t *testing.T) {
+	t.Parallel()
+
+	want := datastar.ScriptTagVersioned("/datastar.js")
+
+	t.Run("versioned page passes", func(t *testing.T) {
+		t.Parallel()
+
+		tb := &recordingTB{name: t.Name()}
+		datastartest.RequireScriptTagVersion(tb, "<head>"+want+"</head>", "/datastar.js")
+
+		if len(tb.fatals) != 0 {
+			t.Errorf("expected pass for versioned page; got %v", tb.fatals)
+		}
+	})
+
+	t.Run("bare src fails", func(t *testing.T) {
+		t.Parallel()
+
+		tb := &recordingTB{name: t.Name()}
+		datastartest.RequireScriptTagVersion(
+			tb,
+			`<script type="module" src="/datastar.js"></script>`,
+			"/datastar.js",
+		)
+
+		if len(tb.fatals) != 1 {
+			t.Errorf("expected fatal for bare src; got %v", tb.fatals)
+		}
+	})
+
+	t.Run("stale version fails", func(t *testing.T) {
+		t.Parallel()
+
+		tb := &recordingTB{name: t.Name()}
+		datastartest.RequireScriptTagVersion(
+			tb,
+			`<script type="module" src="/datastar.js?v=0.0.1"></script>`,
+			"/datastar.js",
+		)
+
+		if len(tb.fatals) != 1 {
+			t.Errorf("expected fatal for stale version; got %v", tb.fatals)
+		}
+	})
+
+	t.Run("wrong path fails", func(t *testing.T) {
+		t.Parallel()
+
+		tb := &recordingTB{name: t.Name()}
+		datastartest.RequireScriptTagVersion(tb, "<head>"+want+"</head>", "/js/datastar.js")
+
+		if len(tb.fatals) != 1 {
+			t.Errorf("expected fatal for wrong path; got %v", tb.fatals)
+		}
+	})
 }

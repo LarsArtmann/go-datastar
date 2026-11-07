@@ -46,6 +46,8 @@ broadcaster.Broadcast(datastar.NewElementsPatch("<div>Update</div>",
 | `Broadcaster.Broadcast(patch)`    | Send one patch to all clients                                                                       |
 | `Broadcaster.BroadcastMany(...)`  | Send multiple patches                                                                               |
 | `Broadcaster.BroadcastEvent(evt)` | Send a raw `sse.Event`                                                                              |
+| `storecontract.AssertReplayOrdering` | Prove a custom store replays verbatim, ordered, sliceable by Last-Event-ID (`broadcast/storecontract` pkg) |
+| `storecontract.AssertIDAssignment`   | Prove a custom store assigns monotonic numeric IDs to ID-less events (`broadcast/storecontract` pkg)      |
 
 ### Options
 
@@ -75,6 +77,44 @@ idempotent duplicates instead of being lost.
 Domain-event → patch mapping (an EventBridge) stays a consumer concern — see
 the root module's non-goals. A working miniature lives in
 [`example/domain-adapter/`](../example/domain-adapter/).
+
+### Custom-store contract testing
+
+The broadcaster appends events to your store verbatim and never assigns
+IDs, so a custom store must keep replay keyed on monotonic numeric IDs —
+the contract [`broadcast.Store`](options.go) documents. The
+`broadcast/storecontract` package ships two `testing.TB` assertions so your
+store's own tests can prove it (they work with `*testing.T`, `*testing.B`,
+and Ginkgo's `GinkgoT()`):
+
+```go
+import (
+    "testing"
+
+    "github.com/larsartmann/go-datastar/broadcast/storecontract"
+    "github.com/larsartmann/go-sse"
+)
+
+func TestMyRedisStoreReplay(t *testing.T) {
+    store := newRedisStore() // your broadcast.Store implementation
+
+    storecontract.AssertReplayOrdering(t, store, []sse.Event{
+        {ID: sse.NewEventID("1"), Event: "feed", Data: "one"},
+        {ID: sse.NewEventID("2"), Event: "feed", Data: "two"},
+    })
+
+    // The ID-less slice of the contract: your store assigns the IDs.
+    storecontract.AssertIDAssignment(t, store, 3)
+}
+```
+
+`AssertReplayOrdering` checks the Last-Event-ID behavior (verbatim replay,
+ascending numeric order, exact suffix slicing); `AssertIDAssignment` checks
+that ID-less events come back with assigned, strictly increasing numeric
+IDs — the degeneration the contract warns about. Note the shipped
+[`datastar.MemoryStore`](../store.go) deliberately passes only the first:
+its contract is caller-assigned IDs (what `WithReplayCapacity` consumers
+do), so it is the wrong reference for stores that receive ID-less events.
 
 ## License
 

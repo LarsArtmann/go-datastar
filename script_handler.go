@@ -86,18 +86,18 @@ func ScriptTag(path string) string {
 }
 
 // ScriptTagVersioned returns an HTML <script> tag like [ScriptTag], with the
-// pinned DataStar client version as a cache-busting query parameter.
-// [ScriptHandler] serves the bundle with Cache-Control max-age=86400, so a
-// browser that fetched the bundle skips ETag revalidation for up to 24h; a
-// versioned URL turns each release into a distinct cache key and collapses
-// that stale window to zero for pages rendered per request. If the path
-// already carries a v parameter, its value is replaced with the pinned
-// version — the result always carries exactly the pinned version, so the
-// function is idempotent; any other existing query joins with &, and a
-// fragment is preserved by inserting the parameter before it. The path is
+// pinned DataStar client version as a cache-busting query parameter in the
+// src URL. [ScriptHandler] serves the bundle with Cache-Control
+// max-age=86400, so a browser that fetched the bundle skips ETag revalidation
+// for up to 24h; a versioned URL turns each release into a distinct cache key
+// and collapses that stale window to zero for pages rendered per request. If
+// the path already carries a v parameter, its value is replaced with the
+// pinned version — the result always carries exactly the pinned version, so
+// the versioned URL is idempotent; any other existing query joins with &, and
+// a fragment is preserved by inserting the parameter before it. The path is
 // otherwise used verbatim; callers own URL correctness.
 func ScriptTagVersioned(path string) string {
-	return appendVersionQuery(path, static.Version)
+	return ScriptTag(appendVersionQuery(path, static.Version))
 }
 
 func appendVersionQuery(path string, version string) string {

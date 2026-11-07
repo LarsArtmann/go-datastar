@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `ScriptTagVersioned(path)`: cache-busting `<script>` tag — appends the pinned client version as a `?v=` query parameter (`&v=` when the path already has a query, fragments preserved) so each release of the embedded bundle is a distinct browser cache key. Motivation: the handler's `Cache-Control: public, max-age=86400` lets a browser keep the old JS client for up to 24h after an upgrade (ETag revalidation is skipped while fresh), risking old-client/new-server protocol skew. `ScriptTag` keeps its verbatim-concatenation contract; `ScriptHandler`/`ScriptHandlerWith` are unchanged.
+- `broadcast/storecontract` package: `AssertReplayOrdering` and
+  `AssertIDAssignment` — reusable `testing.TB` assertions so custom
+  `broadcast.Store` implementations (Redis, Postgres, ...) can prove the
+  replay contract in their own tests: verbatim replay, ascending numeric
+  order, exact Last-Event-ID suffix slicing, and monotonic ID assignment
+  for ID-less events (the degeneration the contract warns about).
+  `datastar.MemoryStore` deliberately passes only the ordering assertion —
+  its contract is caller-assigned IDs.
 
 ## [0.6.3] - 2026-11-04
 
