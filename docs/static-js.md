@@ -117,8 +117,50 @@ v1.0.4 bump went through the manual flow.
   fragments preserved) so every release is a distinct cache key and the stale
   window collapses to zero for pages rendered per request. `ScriptTag` keeps
   its verbatim-concatenation contract (pinned by `script_handler_depth_test.go`),
-  and the handler headers are unchanged; raising `max-age` to a long `immutable`
-  value now that URLs are versioned remains an owner-gated decision.
+  and the handler default stays `Cache-Control: public, max-age=86400`
+  (decided at the v0.7.0 cut): bare-URL consumers (`ScriptTag`, direct mux
+  mounting) have no cache key, so a long `immutable` default would strand
+  their upgrades for a year. Versioned-URL consumers can raise the window
+  themselves — see the recipe below.
+- **Versioned URL + `immutable` recipe.** When every page serves the script
+  through `ScriptTagVersioned`, the URL is the cache key and the handler's
+  freshness window buys nothing — raise it at your mux. Wrapping naively does
+  NOT work (`ScriptHandler` sets its own `Cache-Control`, overwriting yours),
+  so intercept the header before it flushes:
+
+  ```go
+  func withImmutableCache(next http.Handler) http.Handler {
+  	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+  		next.ServeHTTP(w, &immutableWriter{ResponseWriter: w})
+  	})
+  }
+
+  type immutableWriter struct {
+  	http.ResponseWriter
+  	wroteHeader bool
+  }
+
+  func (w *immutableWriter) WriteHeader(code int) {
+  	if !w.wroteHeader {
+  		w.wroteHeader = true
+  		w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+  	}
+  	w.ResponseWriter.WriteHeader(code)
+  }
+
+  func (w *immutableWriter) Write(b []byte) (int, error) {
+  	if !w.wroteHeader {
+  		w.WriteHeader(http.StatusOK)
+  	}
+  	return w.ResponseWriter.Write(b)
+  }
+  ```
+
+  Mount `withImmutableCache(datastar.ScriptHandler())` on the path your
+  `ScriptTagVersioned` pages reference. The ETag/304 contract is untouched
+  (a 304 may carry caching headers); only `ScriptTagVersioned`-served routes
+  should get this — a bare-URL route behind the same wrapper would cache
+  unversioned upgrades for a year.
 - **`Last-Modified` is deliberately NOT set.** Freshness is fully owned by the
   ETag + `Cache-Control: public, max-age=86400`, and the bundle is immutable
   per release; a `Last-Modified` header would add a second freshness axis

@@ -53,7 +53,7 @@
 | Feature              | Status                | Notes                                                                                                                                                                      |
 | -------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ScriptHandler`      | 🟢 `FULLY_FUNCTIONAL` | Serves `static.Bytes` with ETag + `Cache-Control: public, max-age=86400`; GET/HEAD only, 405 otherwise (`script_handler.go`). E2E tested.                                  |
-| `ScriptHandlerWith`  | 🟢 `FULLY_FUNCTIONAL` | Serves a custom bundle; the version parameter is dead, kept for signature compatibility only (`script_handler.go`). Removal owner-gated.                                   |
+| `ScriptHandlerWith`  | 🟢 `FULLY_FUNCTIONAL` | Serves a custom bundle (`script_handler.go`). v0.7.0 dropped the dead version parameter — `ScriptHandlerWith(bundle)`.                                  |
 | `ScriptTagVersioned` | 🟢 `FULLY_FUNCTIONAL` | Cache-busting `<script>` tag: pinned `?v=`, idempotent replacement, fragments preserved (`script_handler.go`). Consumer assertion: `datastartest.RequireScriptTagVersion`. |
 
 ## Template Adapters
@@ -91,10 +91,10 @@ The connection-lifecycle layer the root module deliberately omits.
 
 | Feature                      | Status                | Notes                                                                                                                                                                                                                                  |
 | ---------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Embedded DataStar JS client  | 🟢 `FULLY_FUNCTIONAL` | v1.0.3 embedded in `static/` separate module. `ScriptHandler()` with ETag + Cache-Control (`script_handler.go`).                                                                                                                       |
+| Embedded DataStar JS client  | 🟢 `FULLY_FUNCTIONAL` | v1.0.4 embedded in `static/` separate module. `ScriptHandler()` with ETag + Cache-Control (`script_handler.go`).                                                                                                                       |
 | HEAD request support         | 🟢 `FULLY_FUNCTIONAL` | RFC 7231 §4.3.2 compliant — headers only, no body (`script_handler.go`). Tested.                                                                                                                                                       |
 | `static.Bytes()` / `Version` | 🟢 `FULLY_FUNCTIONAL` | Direct access to the embedded JS bundle and version (`static/static.go`).                                                                                                                                                              |
-| `Version()`                  | 🟢 `FULLY_FUNCTIONAL` | JS-client version accessor; reads `static.Version` directly (deprecated `DatastarJSVersion` kept for compat). `ScriptHandlerWith`'s version parameter is signature-compatibility-only — removal pencilled in for v0.7.0 (owner-gated). |
+| `Version()`                  | 🟢 `FULLY_FUNCTIONAL` | JS-client version accessor; reads `static.Version` directly (deprecated `DatastarJSVersion` kept for compat). `ScriptHandlerWith`'s dead version parameter was removed in v0.7.0. |
 
 ## Inbound Helpers
 

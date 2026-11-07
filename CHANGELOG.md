@@ -76,6 +76,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `go-datastar/static v0.6.1`), enforced by the CHANGELOG-pin contract
   test: a version bump can never land invisibly.
 
+### Changed
+
+- **BREAKING**: `ScriptHandlerWith(bundle)` drops its dead second parameter —
+  `ScriptHandlerWith(bundle, static.Version)` becomes `ScriptHandlerWith(bundle)`.
+  The parameter had been blank-identified and unused since v0.5.x, kept only
+  for signature compatibility; the v0.5.x migration window closes with this
+  release. One-line migration for callers; see the
+  [migration guide](docs/migration-guide.md#v06x--v070). Behavior is
+  unchanged — the ETag, caching headers, and 304 contract are identical.
+
 ## [0.6.3] - 2026-11-04
 
 > **Root-only cut (release-shape defect, recorded as shipped).** The `v0.6.3`
