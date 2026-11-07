@@ -12,8 +12,9 @@ static.Bytes() // the raw datastar.js contents (//go:embed)
 ```
 
 Serve it via the root module's `ScriptHandler` (sets content-type and
-caching headers) or `ScriptTag` (renders the `<script src>` tag), or stream
-it through your own asset pipeline.
+caching headers) and reference it from pages with `ScriptTagVersioned`
+(renders the `<script src>` tag with a `?v=<version>` cache-busting query —
+see the hardening note below), or stream it through your own asset pipeline.
 
 ## Why pinning matters
 
@@ -33,7 +34,7 @@ CDN a browser page points at reintroduces drift.
 3. Run the full gate (the wire-format golden tests and the WPT corpus
    attribute changes loudly):
    ```bash
-   GOEXPERIMENT=jsonv2 go test ./... ./datastartest/... ./static/... -race -count=1
+   go test ./... ./broadcast/... ./datastartest/... ./static/... -race -count=1
    nix flake check
    ```
 4. If goldens change, treat that as a protocol change: compare against the
@@ -93,6 +94,16 @@ first upstream release after the 2026-08-29 onboarding (see
 
 - **`X-Content-Type-Options: nosniff`** is set by `ScriptHandler`/`ScriptHandlerWith`
   (correct-by-default for a fixed Content-Type asset).
+- **`ScriptTagVersioned` cache busting.** `Cache-Control: public, max-age=86400`
+  makes browsers skip ETag revalidation for up to 24h after a fetch, so after a
+  bundle bump some clients can run the OLD JS against a NEW server for that
+  window (the ETag only helps once freshness expires). `ScriptTagVersioned(path)`
+  appends `?v=<static.Version>` (`&v=` when the path already has a query,
+  fragments preserved) so every release is a distinct cache key and the stale
+  window collapses to zero for pages rendered per request. `ScriptTag` keeps
+  its verbatim-concatenation contract (pinned by `script_handler_depth_test.go`),
+  and the handler headers are unchanged; raising `max-age` to a long `immutable`
+  value now that URLs are versioned remains an owner-gated decision.
 - **`Last-Modified` is deliberately NOT set.** Freshness is fully owned by the
   ETag + `Cache-Control: public, max-age=86400`, and the bundle is immutable
   per release; a `Last-Modified` header would add a second freshness axis

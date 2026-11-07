@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `ScriptTagVersioned(path)`: cache-busting `<script>` tag — appends the pinned client version as a `?v=` query parameter (`&v=` when the path already has a query, fragments preserved) so each release of the embedded bundle is a distinct browser cache key. Motivation: the handler's `Cache-Control: public, max-age=86400` lets a browser keep the old JS client for up to 24h after an upgrade (ETag revalidation is skipped while fresh), risking old-client/new-server protocol skew. `ScriptTag` keeps its verbatim-concatenation contract; `ScriptHandler`/`ScriptHandlerWith` are unchanged.
+
 ### Fixed
 
 - CI and tooling repairs (2026-10-11): removed `GOEXPERIMENT=jsonv2` from every live surface (three workflows, the flake devShell + build envs + apps, AGENTS.md) — `encoding/json/v2` is a `go1.27`-gated stable API, the flag is a no-op; fixed the `lint-ci` flake app, which typechecked the sibling modules against the wrong module graph under `GOWORK=off` (exit 7) and now lints per module like CI's matrix; bumped the golangci-lint pin v2.13.2 → v2.14.0 in lockstep (app + workflow single-sourced via `GOLANGCI_VERSION`) because v2.13.2 cannot read go1.27.2 export data; added a directive-equality gate (go.mod ×3 + go.work, static exempt) and broadcast/ to the coverage-badge module set; corrected two false comments (nix.yml's "builds go1.27.1 from source" — `goPkg` is the nixpkgs binary; flake.nix's root-vendorHash claim — root imports `./static`, so repo source DOES enter its vendor tree); AGENTS.md directive facts corrected to the minor-form reality.
