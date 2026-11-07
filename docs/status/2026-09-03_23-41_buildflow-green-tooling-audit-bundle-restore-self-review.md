@@ -100,7 +100,8 @@
 
 ## f) NEXT 50 (brainstorm for HARVEST — not commitments)
 
-<!-- check-rows:ledger --><!-- brainstorm ledger (self-declared "not commitments"): harvested ideas' dispositions live in TODO_LIST/ROADMAP + the buildflow repo -->
+<!-- brainstorm ledger (self-declared "not commitments"): harvested ideas' dispositions live in TODO_LIST/ROADMAP + the buildflow repo -->
+<!-- check-rows:ledger -->
 | #      | Task                                                                                                                                                                                              | Impact       | Effort | Category          |
 | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ------ | ----------------- |
 | ~~1~~  | ~~Push master (8 commits: bundle restore, vendorHash fix, docs) after owner approval~~ done — pushed — v0.5.0 tagged from that tree (`831bbfb`)                                                   | ~~Critical~~ | ~~S~~  | ~~Process~~       |

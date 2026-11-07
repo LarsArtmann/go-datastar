@@ -24,7 +24,9 @@
 | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | **F1**  | Upgraded all 8 CI Actions references: `checkout@v4→v5`, `setup-go@v5→v6` across test/lint/erraudit/govulncheck jobs                                                                                                                                                                                                              | `.github/workflows/ci.yml` — verified via grep (8/8 references updated) |
 | **F2**  | Added `TestErrorResponseFromError` with 3 subtests: Rejection, Transient, non-errorfamily. Also fixed incorrect doc comment that claimed non-errorfamily defaults to Rejection/400 (actually Transient/503 per `errorfamily.Classify`)                                                                                           | `response_test.go:427-483`, `response.go:194-196`                       |
-| **F3**  | ~~Lowered `go.mod` from `go 1.26.5` to `go 1.26` to match the v0.0.2 CHANGELOG claim. Added CHANGELOG [Unreleased] entries for the fix and the doc correction~~ **never landed** — `git show` at every tag (v0.0.3 → v0.2.0) still says `go 1.26.5`; the working-tree edit was never committed. Routed to TODO_LIST (2026-08-16) | `go.mod:3` (still `1.26.5`)                                             |
+| **F3**  | ~~Lowered `go.mod` from `go 1.26.5` to `go 1.26` to match the v0.0.2 CHANGELOG claim. Added CHANGELOG [Unreleased] entries for the fix and the doc correction~~ **never landed** — `git show` at every tag (v0.0.3 → v0.2.0) still says `go 1.26.5`; the working-tree edit was never committed. Routed to TODO_LIST (2026-08-16) **→ superseded — later resolved: the directives went minor-form at `7f57346` (2026-09-19)** | `go.mod:3` (still `1.26.5`)                                             |
+
+<!-- check-rows:ledger --><!-- work log: rows F1/F2/LSP are completed fixes with in-cell evidence; the table records what this session did, not open work -->
 | **LSP** | Investigated `wsl_v5` and `noctx` warnings on `errors_example_test.go`. Confirmed stale — `golangci-lint run ./...` reports 0 issues                                                                                                                                                                                             | golangci-lint clean output                                              |
 
 ### Quality gates — all green
@@ -58,11 +60,11 @@ Nothing partially done. All 4 fixes were binary: either fixed or not.
 
 | Item                                                                                           | Why not started                                              | Blocked? |
 | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | -------- |
-| Tag v0.0.3                                                                                     | ~~User release cadence decision~~ done — tagged 2026-08-08   |          |
-| GitHub repo polish (topics, wiki)                                                              | ~~No `gh` CLI access~~ done in the 09-36 session (`cfe328d`) |          |
-| `nestif` refactor of `ReadSignals`                                                             | done at `5bab343`                                            |          |
-| ~~Coverage badge in README~~ done — live badge via coverage.yml (ed815c7)                      | Cosmetic                                                     |          |
-| ~~pkg.go.dev rendering verification~~ done — verified 2026-09-02, v0.3.0 renders all 3 modules | Done                                                         |          |
+| ~~Tag v0.0.3~~                                                                                 | ~~User release cadence decision~~ done — tagged 2026-08-08   | ~~ ~~      |
+| ~~GitHub repo polish (topics, wiki)~~                                                          | ~~No `gh` CLI access~~ done in the 09-36 session (`cfe328d`) | ~~ ~~      |
+| `nestif` refactor of `ReadSignals`                                                             | done at `5bab343`                                            | **→ resolved** |
+| ~~Coverage badge in README~~ done — live badge via coverage.yml (ed815c7)                      | ~~Cosmetic~~                                                 | ~~ ~~      |
+| ~~pkg.go.dev rendering verification~~ done — verified 2026-09-02, v0.3.0 renders all 3 modules | ~~Done~~                                                     | ~~ ~~      |
 
 ---
 

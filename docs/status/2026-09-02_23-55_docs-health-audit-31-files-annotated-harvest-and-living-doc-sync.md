@@ -253,7 +253,8 @@ not exhaustively), Fitness **10.0/10** — against the 2026-08-29 baseline of
 Items 1–15 are the verified TODO_LIST (harvested this session); 16–50 are
 session-specific follow-ups and smaller residue, ranked roughly by value.
 
-<!-- check-rows:ledger --><!-- traceability ledger: each row is a pointer into another report's §f item (Source column); dispositions live in the source reports + living docs -->
+<!-- traceability ledger: each row is a pointer into another report's §f item (Source column); dispositions live in the source reports + living docs -->
+<!-- check-rows:ledger -->
 | #  | Thing                                                                                                                                | Source                |
 | -- | ------------------------------------------------------------------------------------------------------------------------------------ | --------------------- |
 | 1  | Investigate datastartest FOD source-sensitivity; correct ADR 004                                                                     | 20-12 f.3/e.2         |

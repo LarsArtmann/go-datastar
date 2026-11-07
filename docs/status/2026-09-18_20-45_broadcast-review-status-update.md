@@ -134,7 +134,8 @@ documented-tolerated `Close` blank-ignore.
 Priority tiers: **P1** = do next, **P2** = near, **P3** = when convenient,
 **P?** = owner decision.
 
-<!-- check-rows:ledger --><!-- backlog ledger: rows 5+ are the session's ranked test matrix; R1-R3 resolved inline, the residue's dispositions live in later reports + living docs -->
+<!-- backlog ledger: rows 5+ are the session's ranked test matrix; R1-R3 resolved inline, the residue's dispositions live in later reports + living docs -->
+<!-- check-rows:ledger -->
 | #      | Pri                                                                                                                               | Item                                                                                                                         | Trace                             |
 | ------ | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
 | ~~1~~  | ~~P1~~ done — v0.6.0 tagged 2026-09-18 20:18 — fix rode the lockstep train with its own CHANGELOG highlight (`2026-09-18_22-29`)  | ~~Tag/ship the broadcast replay fix (rides lockstep train; CHANGELOG entry ready)~~                                          | ~~d5, a14~~                       |
