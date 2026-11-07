@@ -619,7 +619,10 @@ func TestNewBroadcasterFromHubWithOptions(t *testing.T) {
 
 	body := recorder.Body.String()
 	if !strings.Contains(body, "heartbeat") {
-		t.Errorf("hub-shared body %q carries no heartbeat frames — WithHeartbeatInterval did not apply", body)
+		t.Errorf(
+			"hub-shared body %q carries no heartbeat frames — WithHeartbeatInterval did not apply",
+			body,
+		)
 	}
 
 	if !strings.Contains(body, "shared-hub") {

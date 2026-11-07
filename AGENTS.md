@@ -180,6 +180,17 @@ CHANGELOG.
   prune stale lineage after branch deletions). `git town propose` =
   one-command branch+push+PR. Session ritual: `git town status`, `git status`,
   `gh pr list` at start; clean tree + synced master at end.
+- **Recurring F/spacing damage in archived reports — a parallel session's
+  formatter pass.** `docs/status/archived/2026-08-16_08-47…:19` has had the
+  space before an inline-code span stripped (the word "against" glued to
+  the following backtick span) THREE times now (re-fixed 2026-11-07 twice;
+  the third pass landed via daemon commits
+  `4539949`, `2e05692`, `ff4f51e`, `da3e0e3`). If it recurs, do NOT just
+  re-fix: hunt the loose repeat-pass in the concurrently-running sessions'
+  tooling (git log -S is the trail), and note docs-gates' annotate gate is
+  the detector. Never quote the damaged byte pattern verbatim in living
+  docs — the F/spacing detector parses file text and flags the example
+  itself.
 - **Shared golangci-lint cache can replay ghost findings** (verified
   2026-09-18). The session env points `GOLANGCI_LINT_CACHE` at
   `/mnt/buildcache/golangci-lint` (shared, multi-GB); it held results for a

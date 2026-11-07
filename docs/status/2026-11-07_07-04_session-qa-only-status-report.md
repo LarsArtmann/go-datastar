@@ -89,7 +89,7 @@ This session was **read-only Q&A**. Three user questions, three verified answers
 18. Full battery at next push: race ×4, `nix run .#lint-ci`, erraudit ×4 (CI-mode canonical), `nix flake check`.
 19. Fuzz smoke 30s (`FuzzReadSignals`, `FuzzReadEvents`) + confirm the last nightly 300s matrix artifacts were clean.
 20. CI parity set: `go work sync` idempotency, use-vs-disk, `tidy -diff` ×4, `mod verify` ×4, replace-path audit.
-21. Local `govulncheck` run (CI is informational; local gates are the real gate).
+21. ~~Local `govulncheck` run (CI is informational; local gates are the real gate).~~ done — `nix run .#govulncheck` at this session's HEAD: "No vulnerabilities found" across all four modules (same session closed the erraudit ×4 CI-mode leg the 06-36 report had flagged)
 22. Verify `go.work` is not hidden by the global gitignore on this machine (the `git check-ignore` ritual).
 23. Re-verify 2–3 inherited "done" claims from today's 05-35/06-36 reports against source (process-discipline claims are the class most often falsely asserted).
 24. Confirm the 29-file commit's docs-gates ledger markers are pure lines (glued markers silently cancel exemptions — today's sweep touched exactly those files).
