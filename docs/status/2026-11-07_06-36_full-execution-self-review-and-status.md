@@ -215,9 +215,35 @@
     fingerprint drift → canonical formatting is treefmt's, dprint unwired
     per AGENTS; dprint remote-plugin fetch = documented intent-only config
     shape). Nothing repo-specific broken
-19. datastartest diff.go bounds guards (bare row 25).
-20. Example handler testability → honest coverage raise (bare row 32).
-21. Codespell-into-treefmt decision (bare row 28).
+19. ~~datastartest diff.go bounds guards (bare row 25).~~ done at this
+    session — resolved as deliberate non-fix with evidence: the
+    branching-flow index warning does not reproduce under the pinned lint
+    (v2.14.0 fresh cache: `0 issues`, no diff.go findings) nor buildflow's
+    lint step, and every lcs/walk index access in `diffLines` is provably
+    in-bounds by loop construction (verified by reading); speculative guards
+    would add noise to silence nothing. A 5-finding wrapcheck/nonamedreturns
+    scare on script_accessors.go during this investigation was a
+    broken-cache non-canonical binary artifact — the canonical gate reports
+    clean
+20. ~~Example handler testability → honest coverage raise (bare row 32).~~
+    done at this session — resolved as pointer-correction: buildflow-ledger
+    row 32 was ALREADY dispositioned (done — badge module set decided;
+    example/ stays out of the badge), so this item's premise (open row 32)
+    was a misread. Current state stamped honestly: example/ coverage is
+    20.0% of statements with the index smoke + ondrop + middleware tests in
+    place; the demo program stays a teaching artifact, not a
+    coverage-gated target (its gate is the docspec + smoke set)
+21. ~~Codespell-into-treefmt decision (bare row 28).~~ done at this session —
+    DECIDED: wired. `programs.codespell.enable` + devshell package landed in
+    flake.nix with policy excludes (CHANGELOG.md append-only,
+    docs/status/** + docs/planning/** point-in-time snapshots, vendored
+    bundle). The investigation also fixed a REAL shield bug: `.codespellrc`
+    walk-mode skip never matched (directory scans match `./`-prefixed
+    paths, so the exact `static/datastar.js` pattern let 32 bundle hits
+    through; `*/datastar.js` wildcard = 0, verified with codespell 2.4.3)
+    and added the `keep-alives` plural false positive to the ignore list.
+    Corpus verdict: zero genuine typos on live surfaces — the gate wires in
+    already green. `nix flake check` run per the G7 rule
 22. **(owner)** Review/merge PR #29 (dependabot codeql bump, open).
 23. **(owner)** PR #23 disposition + private-vuln-reporting Settings check
     (TODO row unchanged).

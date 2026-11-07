@@ -202,7 +202,11 @@ CHANGELOG.
   daemon committed it, breaking the checksum pin
   (`static/checksum_test.go` — that test failing means the bundle drifted,
   NOT that you should update the constant). Shields: `.prettierignore`,
-  `.codespellrc` (skip + `crasher` ignore-list — legit Go fuzzing term), and
+  `.codespellrc` (walk-mode glob skip + `crasher`/`keep-alives` ignore-list;
+  skip patterns MUST be `*/…` wildcards — directory scans match
+  `./`-prefixed paths, so exact patterns silently never fire — verified
+  2026-11-07 with codespell 2.4.3; codespell also rides treefmt via
+  `programs.codespell` with history-corpus excludes), and
   dprint excludes for `.github/DISCUSSION_TEMPLATE/**` (markdown-in-yml
   GitHub templates that dprint's YAML parser rejects).
 - **docs-gates ledger markers must be a pure line.** The

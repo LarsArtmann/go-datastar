@@ -216,12 +216,23 @@
               goimports.enable = true;
               golines.enable = true;
               nixfmt.enable = true;
+              codespell.enable = true;
             };
             settings = {
               formatter = {
                 gofumpt.excludes = [ "*_templ.go" ];
                 goimports.excludes = [ "*_templ.go" ];
                 golines.excludes = [ "*_templ.go" ];
+                # codespell must never rewrite history or the vendored
+                # bundle (the .codespellrc skip already shields the bundle
+                # in codespell's own walk; treefmt excludes are the
+                # per-formatter belt for the gate itself).
+                codespell.excludes = [
+                  "CHANGELOG.md"
+                  "docs/status/**"
+                  "docs/planning/**"
+                  "static/datastar.js"
+                ];
               };
             };
           };
@@ -249,6 +260,7 @@
               pkgs.gopls
               pkgs.govulncheck
               pkgs.templ
+              pkgs.codespell
             ];
 
             GOTOOLCHAIN = "local";
