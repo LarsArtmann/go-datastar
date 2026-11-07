@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Nothing yet.
+
+### Changed
+
+- Nothing yet.
+
+## [0.7.0] - 2026-11-07
+
+> **Full four-module lockstep cut** (root, `static`, `broadcast`,
+> `datastartest` all tagged `v0.7.0` on one commit) — the release-shape
+> defect of the v0.6.3 root-only cut is repaired here; see the
+> [migration guide](docs/migration-guide.md#v06x--v070) for the breaking
+> change and the lockstep require set.
+
+### Added
+
 - broadcast: `WithHeartbeatDisabled()` — an absolute switch that turns the
   per-connection SSE comment-ping off entirely (wins over any
   `WithHeartbeatInterval` regardless of option order), for deployments
@@ -67,14 +83,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Dependencies
 
-- go-sse v0.6.2 → v0.7.0 in the root and broadcast modules (routine
-  all-latest sweep, `ba90d86`); datastartest still requires v0.6.2 —
-  workspace builds resolve up via MVS, and its published pin moves at the
-  next lockstep require bump. Release history now records the transport
-  pin set this train ships (`go-sse v0.7.0`, `go-sse/ssetest v0.5.0`,
-  `go-error-family v0.12.0`, sibling pins `go-datastar v0.6.3`,
-  `go-datastar/static v0.6.1`), enforced by the CHANGELOG-pin contract
-  test: a version bump can never land invisibly.
+- go-sse v0.6.2 → v0.7.0 across all three consumer-facing modules (routine
+  all-latest sweep, `ba90d86`; datastartest's published pin followed in
+  `9f96133`), with go-sse/ssetest v0.5.0 and go-error-family v0.12.0. The
+  v0.7.0 lockstep set this train ships: go-sse v0.7.0,
+  go-sse/ssetest v0.5.0, go-error-family v0.12.0, and the four sibling
+  modules at v0.7.0 (go-datastar v0.7.0, go-datastar/static v0.7.0),
+  enforced by the CHANGELOG-pin contract test: a version bump can never
+  land invisibly.
 
 ### Changed
 
