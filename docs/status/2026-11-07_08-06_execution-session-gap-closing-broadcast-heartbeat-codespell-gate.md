@@ -204,4 +204,4 @@
 
 ---
 
-*Awaiting instructions.*
+_Awaiting instructions._

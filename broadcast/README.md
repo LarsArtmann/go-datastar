@@ -36,18 +36,18 @@ broadcaster.Broadcast(datastar.NewElementsPatch("<div>Update</div>",
 
 ## API
 
-| Function                             | Description                                                                                                |
-| ------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
-| `NewBroadcaster(opts...)`            | Fan-out SSE patches; options compose buffer, replay, store, heartbeat                                      |
-| `NewBroadcasterWithBufferSize(n)`    | Sugar for `NewBroadcaster(WithBufferSize(n))`                                                              |
-| `NewBroadcasterWithReplay(n)`        | Sugar for `NewBroadcaster(WithReplayCapacity(n))` — ring-buffer replay on reconnect (Last-Event-ID)        |
+| Function                              | Description                                                                                                             |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `NewBroadcaster(opts...)`             | Fan-out SSE patches; options compose buffer, replay, store, heartbeat                                                   |
+| `NewBroadcasterWithBufferSize(n)`     | Sugar for `NewBroadcaster(WithBufferSize(n))`                                                                           |
+| `NewBroadcasterWithReplay(n)`         | Sugar for `NewBroadcaster(WithReplayCapacity(n))` — ring-buffer replay on reconnect (Last-Event-ID)                     |
 | `NewBroadcasterFromHub(hub, opts...)` | Wrap an existing `*sse.Broadcaster[sse.Event]` hub; heartbeat + replay-store options apply, buffer size stays hub-owned |
-| `Broadcaster.Hub()`                  | Access/share the embedded go-sse hub                                                                       |
-| `Broadcaster.Broadcast(patch)`       | Send one patch to all clients                                                                              |
-| `Broadcaster.BroadcastMany(...)`     | Send multiple patches                                                                                      |
-| `Broadcaster.BroadcastEvent(evt)`    | Send a raw `sse.Event`                                                                                     |
-| `storecontract.AssertReplayOrdering` | Prove a custom store replays verbatim, ordered, sliceable by Last-Event-ID (`broadcast/storecontract` pkg) |
-| `storecontract.AssertIDAssignment`   | Prove a custom store assigns monotonic numeric IDs to ID-less events (`broadcast/storecontract` pkg)       |
+| `Broadcaster.Hub()`                   | Access/share the embedded go-sse hub                                                                                    |
+| `Broadcaster.Broadcast(patch)`        | Send one patch to all clients                                                                                           |
+| `Broadcaster.BroadcastMany(...)`      | Send multiple patches                                                                                                   |
+| `Broadcaster.BroadcastEvent(evt)`     | Send a raw `sse.Event`                                                                                                  |
+| `storecontract.AssertReplayOrdering`  | Prove a custom store replays verbatim, ordered, sliceable by Last-Event-ID (`broadcast/storecontract` pkg)              |
+| `storecontract.AssertIDAssignment`    | Prove a custom store assigns monotonic numeric IDs to ID-less events (`broadcast/storecontract` pkg)                    |
 
 ### Options
 

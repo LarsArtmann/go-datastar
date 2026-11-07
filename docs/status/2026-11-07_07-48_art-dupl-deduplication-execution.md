@@ -169,21 +169,21 @@ LOC-neutral.
 
 ## f) Next tasks
 
-| #   | Task                                                                                                      | Impact   | Effort | Category      |
-| --- | --------------------------------------------------------------------------------------------------------- | -------- | ------ | ------------- |
-| 1   | Fix the 4 lint findings in broadcast/broadcaster_test.go (varnamelen, wsl_v5 ×3, commit 2f25449)          | High     | S      | Bug           |
-| 2   | Run the 30s fuzz smoke (FuzzReadEvents + FuzzReadSignals) over the refactor                               | High     | S      | Quality       |
-| 3   | `gh run list --branch master --limit 5` — verify CI over pushed range 33f1067..78ba2c1                    | High     | S      | Ops           |
-| 4   | Decide + wire mechanical baseline gate: art-dupl shown-count must equal docs/duplication-baseline.md (3)  | Medium   | S      | Quality       |
-| 5   | File buildflow issue: nix-hash-fix result cache replays stale verdicts when only vendored source changed  | Medium   | S      | Upstream      |
-| 6   | docs-health HARVEST this report's §f into TODO_LIST/ROADMAP                                               | Medium   | S      | Documentation |
-| 7   | Share `"<script"` prefix as a named const between IsScript and scriptTagParts (2 literal sites)           | Low      | S      | Cleanup       |
-| 8   | Add one AGENTS.md line on LS-vs-gate diagnostics divergence (wrapcheck/unused panel noise)                | Low      | S      | Documentation |
-| 9   | `buildflow format` once to re-verify cached format verdicts under the drifted formatter identities        | Low      | S      | Quality       |
-| 10  | Point dprint.json at local .wasm plugins (kill remote fetch / cold-run hang risk)                         | Low      | S      | Tooling       |
-| 11  | Trim AGENTS.md under the 220-line warn threshold (move detail into docs/, keep the map row links)         | Low      | M      | Documentation |
-| 12  | Raise or scope buildflow's 1m performance budget for nix-hash-fix runs (3m15s is expected, not a trend)   | Low      | S      | Tooling       |
-| 13  | lsp_restart + confirm the unused/wrapcheck panel warnings clear or document them as the known class       | Low      | S      | Tooling       |
+| #  | Task                                                                                                     | Impact | Effort | Category      |
+| -- | -------------------------------------------------------------------------------------------------------- | ------ | ------ | ------------- |
+| 1  | Fix the 4 lint findings in broadcast/broadcaster_test.go (varnamelen, wsl_v5 ×3, commit 2f25449)         | High   | S      | Bug           |
+| 2  | Run the 30s fuzz smoke (FuzzReadEvents + FuzzReadSignals) over the refactor                              | High   | S      | Quality       |
+| 3  | `gh run list --branch master --limit 5` — verify CI over pushed range 33f1067..78ba2c1                   | High   | S      | Ops           |
+| 4  | Decide + wire mechanical baseline gate: art-dupl shown-count must equal docs/duplication-baseline.md (3) | Medium | S      | Quality       |
+| 5  | File buildflow issue: nix-hash-fix result cache replays stale verdicts when only vendored source changed | Medium | S      | Upstream      |
+| 6  | docs-health HARVEST this report's §f into TODO_LIST/ROADMAP                                              | Medium | S      | Documentation |
+| 7  | Share `"<script"` prefix as a named const between IsScript and scriptTagParts (2 literal sites)          | Low    | S      | Cleanup       |
+| 8  | Add one AGENTS.md line on LS-vs-gate diagnostics divergence (wrapcheck/unused panel noise)               | Low    | S      | Documentation |
+| 9  | `buildflow format` once to re-verify cached format verdicts under the drifted formatter identities       | Low    | S      | Quality       |
+| 10 | Point dprint.json at local .wasm plugins (kill remote fetch / cold-run hang risk)                        | Low    | S      | Tooling       |
+| 11 | Trim AGENTS.md under the 220-line warn threshold (move detail into docs/, keep the map row links)        | Low    | M      | Documentation |
+| 12 | Raise or scope buildflow's 1m performance budget for nix-hash-fix runs (3m15s is expected, not a trend)  | Low    | S      | Tooling       |
+| 13 | lsp_restart + confirm the unused/wrapcheck panel warnings clear or document them as the known class      | Low    | S      | Tooling       |
 
 Stopped at 13 deliberately: the instruction was to report only this
 session's run — every item above was noticed in it. Padding to 50 would mean
@@ -207,5 +207,5 @@ inventing unrelated backlog, which HARVEST would rightly reject as noise.
 
 ---
 
-*Point-in-time snapshot; report-then-wait per instruction. Auto-commit daemon
-will pick this file up; no manual commit (harness contract).*
+_Point-in-time snapshot; report-then-wait per instruction. Auto-commit daemon
+will pick this file up; no manual commit (harness contract)._
