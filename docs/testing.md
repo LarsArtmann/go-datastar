@@ -80,9 +80,9 @@ Full API tour: [datastartest/README.md](../datastartest/README.md).
 
 ## Fuzzing
 
-Four fuzz targets guard the parsers; see
-[CONTRIBUTING.md "Fuzzing"](../CONTRIBUTING.md#fuzzing) for the commands.
-Seed corpora are committed and replayed by every `go test` run.
+Six fuzz targets guard the parsers, serializers, and the best-effort sender
+paths; see [CONTRIBUTING.md "Fuzzing"](../CONTRIBUTING.md#fuzzing) for the
+commands. Seed corpora are committed and replayed by every `go test` run.
 
 ## Coverage
 
