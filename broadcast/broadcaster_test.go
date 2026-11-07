@@ -451,3 +451,81 @@ func TestBroadcasterPromotedSubscribeFilter(t *testing.T) {
 	default:
 	}
 }
+
+// Reconnect-with-Last-Event-ID through SubscribeFilter against an injected
+// broadcast.Store: one predicate serves both the live subscription (the
+// promoted go-sse filter) and the replay (go-sse ReplayFiltered against the
+// injected store), so a filtered endpoint keeps its filter across
+// reconnection. datastar.MemoryStore implements no filtered-store fast path,
+// so the replay leg exercises the EventsAfter + in-memory post-filter
+// fallback.
+func TestBroadcasterReplayFilterInteraction(t *testing.T) {
+	t.Parallel()
+
+	store := datastar.NewMemoryStore(16)
+	b := broadcast.NewBroadcaster(broadcast.WithStore(store))
+
+	pred := func(evt sse.Event) bool { return evt.Event == "wanted" }
+	events := b.SubscribeFilter(pred)
+	defer b.Unsubscribe(events)
+
+	for i := range 4 {
+		kind := "noise"
+		if i%2 == 0 {
+			kind = "wanted"
+		}
+
+		b.BroadcastEvent(sse.Event{
+			ID:    sse.NewEventID(strconv.Itoa(i + 1)),
+			Event: kind,
+			Data:  fmt.Sprintf("item-%d", i+1),
+		})
+	}
+
+	// Live leg: the promoted filter admits only the two "wanted" events.
+	live := make([]sse.Event, 0, 2)
+	for range 2 {
+		select {
+		case evt := <-events:
+			live = append(live, evt)
+		case <-time.After(time.Second):
+			t.Fatalf("timed out waiting for live filtered events; got %+v", live)
+		}
+	}
+
+	if live[0].Data != "item-1" || live[1].Data != "item-3" {
+		t.Fatalf("live filtered events: got %+v, want [item-1 item-3]", live)
+	}
+
+	// Replay leg: reconnect after event 1 through the SAME predicate against
+	// the injected store — only "wanted" events after ID 1 (item-3) pass.
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodGet,
+		"/events",
+		nil,
+	)
+	stream := sse.NewStream(recorder, request)
+	defer func() { _ = stream.Close() }()
+
+	n, err := sse.ReplayFiltered(stream, store, sse.NewEventID("1"), pred)
+	if err != nil {
+		t.Fatalf("ReplayFiltered: %v", err)
+	}
+
+	if n != 1 {
+		t.Fatalf("replayed count: got %d, want 1", n)
+	}
+
+	body := recorder.Body.String()
+	if !strings.Contains(body, "item-3") {
+		t.Errorf("replayed body %q missing %q", body, "item-3")
+	}
+
+	for _, unwanted := range []string{"item-2", "item-4", "noise"} {
+		if strings.Contains(body, unwanted) {
+			t.Errorf("replayed body %q must not contain filtered-out %q", body, unwanted)
+		}
+	}
+}
