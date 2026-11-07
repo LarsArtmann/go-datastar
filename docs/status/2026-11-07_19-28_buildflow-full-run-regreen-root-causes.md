@@ -194,7 +194,7 @@ passing pipeline, and found two long-standing root causes on the way.
 19. Add `docs/gotchas.md` to CONTRIBUTING.md's doc pointers if absent.
 20. CHANGELOG `[Unreleased]`: decide whether the `.golangci.yml` change
     (contributor-facing lint behavior) warrants a note (policy says config
-   /docs only — but this one changes contributor lint runs).
+    /docs only — but this one changes contributor lint runs).
 21. Monitor: if a future BuildFlow version promotes the pseudo-version
     preflight FAIL to a run failure, the documented non-fix becomes a hard
     conflict — revisit then (the filed issue is the real fix).

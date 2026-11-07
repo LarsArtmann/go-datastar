@@ -17,7 +17,7 @@
 
 ## b) PARTIALLY DONE
 
-1. **Release-catalog audit as a repeatable process.** The audit itself is done, but it was ad hoc shell (34 sequential `gh` calls × 2 rounds, slow). No script, no checklist §4 integration, no pagination guard (fine at 34 releases, breaks past 50 without `--paginate`). The *knowledge* exists only in this report.
+1. **Release-catalog audit as a repeatable process.** The audit itself is done, but it was ad hoc shell (34 sequential `gh` calls × 2 rounds, slow). No script, no checklist §4 integration, no pagination guard (fine at 34 releases, breaks past 50 without `--paginate`). The _knowledge_ exists only in this report.
 2. **Note-quality upgrade.** Bodies are now substantive, but the new/backfilled pages lack "Full Changelog" compare links (GitHub's conventional footer) and title formats across the catalog remain inconsistent (`datastartest/v0.6.1` slash-style vs `broadcast v0.7.0` space-style vs `v0.0.3 — Quality, Correctness & Hardening` descriptive).
 3. **Claims sourcing.** All note claims trace to CHANGELOG sections, but the "Requires go-datastar@vX" pins in submodule notes were not verified directly against the tagged `go.mod` files (`git show broadcast/v0.6.2:go.mod` would settle it; CHANGELOG is trusted as the source).
 4. **v0.7.0-session acknowledged gaps** — still open, unchanged by this session (see c).
@@ -40,13 +40,14 @@
 **Found fucked up (pre-existing, now fixed by this session):** 31 of 34 releases pre-dating the sweep had catalog defects — one pre-release flag, three missing pages (published-on-proxy versions invisible on GitHub), eleven pages with one-liner or bare-link notes. The v0.6.2 trio is the worst case: real, proxy-published versions that a GitHub visitor could not see at all.
 
 **Broke this session (minor, recoverable):**
-1. **Dropped the v0.6.3 "Full Changelog" compare link.** Its original body was *only* that link (`.../compare/v0.6.2...v0.6.3`); the replacement notes omitted it. One `gh release edit` restores it. All other replaced bodies were fact-preserving (verified line by line).
+
+1. **Dropped the v0.6.3 "Full Changelog" compare link.** Its original body was _only_ that link (`.../compare/v0.6.2...v0.6.3`); the replacement notes omitted it. One `gh release edit` restores it. All other replaced bodies were fact-preserving (verified line by line).
 2. **Wasteful sweep mechanics.** Two full sequential `gh release view` loops (34 × 2 API calls) where one `gh api repos/.../releases --paginate` fetch would have returned everything in a single call. Correct output, wrong efficiency.
 3. **Untracked execution.** The work ran outside TODO_LIST (no row, no close-out). Defensible for a direct order, but it leaves no durable record outside this report and the daemon's commits.
 
 ## e) WHAT WE SHOULD IMPROVE
 
-1. **Codify the audit.** Turn this session's manual sweep into a script (`scripts/release-catalog-audit.sh`: paginate releases, assert every tag has a page, `prerelease=false`, `draft=false`, `latest` only on root, body length ≥ threshold) and reference it from release-checklist §4 — the checklist got `--latest=false` hardening last session but has *no note-quality gate*, which is exactly how eleven one-liner pages survived.
+1. **Codify the audit.** Turn this session's manual sweep into a script (`scripts/release-catalog-audit.sh`: paginate releases, assert every tag has a page, `prerelease=false`, `draft=false`, `latest` only on root, body length ≥ threshold) and reference it from release-checklist §4 — the checklist got `--latest=false` hardening last session but has _no note-quality gate_, which is exactly how eleven one-liner pages survived.
 2. **Note-quality gate in the checklist:** release creation must use `--notes-file` (already de facto) AND the audit's body-length assert must run as the §4 completeness step.
 3. **Note conventions decision:** compare links (yes/no), title format (bare version vs `module vX.Y.Z` vs descriptive), and a provenance footer ("generated from CHANGELOG §X") — decide once, apply catalog-wide.
 4. **One-shot API sweeps** over per-item CLI loops for any future catalog-wide operation.
@@ -56,9 +57,10 @@
 
 ## f) UP TO 50 THINGS WE SHOULD GET DONE NEXT
 
-*Sorted roughly by impact. Items marked [carry] are re-listed from the v0.7.0 report (never harvested); unmarked items arise from this session.*
+_Sorted roughly by impact. Items marked [carry] are re-listed from the v0.7.0 report (never harvested); unmarked items arise from this session._
 
 **Release catalog & notes (this session's domain):**
+
 1. Restore the v0.6.3 compare link (the one real content loss) — 1-minute `gh release edit`.
 2. Decide note conventions (compare links, title format, provenance footer), then apply catalog-wide to the 12 touched + 22 untouched pages for uniformity.
 3. Write `scripts/release-catalog-audit.sh` (paginate, assert tag↔page completeness, flags, latest-ownership, body length) and wire it into release-checklist §4 as the mandatory post-release assertion.
@@ -122,4 +124,4 @@
 
 ---
 
-*Point-in-time snapshot, 2026-11-07 20:15 CET. §f is brainstorm input for docs-health HARVEST, not a commitment list. THEN WAIT FOR INSTRUCTIONS — this session stops here.*
+_Point-in-time snapshot, 2026-11-07 20:15 CET. §f is brainstorm input for docs-health HARVEST, not a commitment list. THEN WAIT FOR INSTRUCTIONS — this session stops here._

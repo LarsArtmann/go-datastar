@@ -45,7 +45,7 @@
 2. **I re-enacted the exact failure the checklist warns about.** §4 says
    "Check the API with `go doc` BEFORE writing the program — guessing shapes
    cost a failed compile during the v0.6.0 release." I doc'd the root module,
-   then *guessed* `broadcast.NewBroadcaster(16)` and burned a compile cycle.
+   then _guessed_ `broadcast.NewBroadcaster(16)` and burned a compile cycle.
    Small, caught immediately, but it is literally the documented incident
    recurring in miniature.
 3. **The submodule GitHub Releases shipped without the `--latest=false` flag**
@@ -307,4 +307,4 @@
 
 ---
 
-*Waiting for instructions.*
+_Waiting for instructions._
