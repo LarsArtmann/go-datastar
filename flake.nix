@@ -57,10 +57,10 @@
           # included), so this hash moves on ANY edit to any tracked file
           # under the repo root or static/ (plus requires/toolchain changes)
           # — verified 2026-09-02 (ADR 004 correction, evidence matrix).
-          datastartestVendorHash = "sha256-PdgGcqFUfU9RhQGfbCQUdbEAk4P2CRr/5o21fhzehqo=";
+          datastartestVendorHash = "sha256-nG9m2wLXwwEdCWdQM/2pSQxuPqb5yzNAhLG3eXleULo=";
           # broadcast vendors root + static through its directory replaces —
           # same movement rules as datastartestVendorHash above.
-          broadcastVendorHash = "sha256-pOIp2HJUoNe+j5pkxnSbAQR1qNhLm6NVVDbz8G+72w8=";
+          broadcastVendorHash = "sha256-i42ehcewZ9jZOMHfGwZCKdpPScdqmlDuMRFHwnLOTqo=";
 
           maintainer = {
             name = "Lars Artmann";
