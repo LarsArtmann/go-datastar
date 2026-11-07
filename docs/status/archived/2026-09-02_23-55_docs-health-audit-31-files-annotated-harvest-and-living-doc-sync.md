@@ -255,7 +255,7 @@ not exhaustively), Fitness **10.0/10** — against the 2026-08-29 baseline of
 Items 1–15 are the verified TODO_LIST (harvested this session); 16–50 are
 session-specific follow-ups and smaller residue, ranked roughly by value.
 
-<!-- traceability ledger: each row is a pointer into another report's §f item (Source column); dispositions live in the source reports + living docs -->
+<!-- traceability ledger: each row is a pointer into another report's §f item (Source column); dispositions live in the source reports + living docs. Pointer integrity verified 2026-11-07: every referenced report file resolves under docs/status/ or docs/status/archived/ (scripted existence check, zero missing). -->
 <!-- check-rows:ledger -->
 
 | #                                                                                                                                                                                                                                           | Thing                                                                                                                                | Source                |

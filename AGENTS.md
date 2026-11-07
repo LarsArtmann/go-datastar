@@ -30,7 +30,8 @@ real published versions (not `v0.0.0`) so consumers testing without replaces
 resolve to a real published module. The `go` directives are minor form
 (`go 1.27` across go.mod ×3 and go.work; static stays at `go 1.26`) since
 the 2026-10-03 fleet de-poisoning — a patch-pinned floor re-poisons
-consumers through MVS. CI's setup-go pins `1.27.1` and the flake `goPkg`
+consumers through MVS. CI's setup-go pins `1.27.3` (moved from 1.27.1 by
+`09fe522` for the govulncheck stdlib fixes) and the flake `goPkg`
 is nixpkgs `go_1_27`, both satisfying the minor-form directives while
 keeping toolchain choice deliberate.
 
@@ -45,8 +46,13 @@ Before trusting a clean local tree, probe master CI health in every repo the ses
 go test ./... ./broadcast/... ./datastartest/... ./static/... -race -count=1
 go vet ./... ./broadcast/... ./datastartest/... ./static/...
 golangci-lint run ./... ./broadcast/... ./datastartest/... ./static/...
-# Pre-push lint = EXACT CI parity (flake: `nix run .#lint-ci`):
-go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.2 run ./... ./broadcast/... ./datastartest/... ./static/... --timeout 5m
+# Pre-push lint = EXACT CI parity (flake: `nix run .#lint-ci`); GOLANGCI_VERSION
+# in ci.yml is the single source for the pin (v2.14.0 since the 2026-10-11 repairs):
+go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.14.0 run ./... ./broadcast/... ./datastartest/... ./static/... --timeout 5m
+
+# Hermetic gate (builds + tests all four modules + format; run before pushing
+go.mod/go.sum edits — ANY such edit can move vendor hashes):
+nix flake check
 
 # Isolation mode (GOWORK=off, per-module — verifies replace directives; run from each module dir):
 GOWORK=off go test ./...
@@ -124,9 +130,9 @@ CHANGELOG.
 
 - `ci.yml` — per-module matrix (GOWORK=off build/vet/race + mod verify +
   tidy-diff) plus a workspace job (race suite, use-vs-disk, sync idempotency,
-  replace audit, JS-version drift test); lint (golangci-lint v2.13.2,
-  go-installed, pinned to the devshell's nixpkgs version — earlier pins'
-  go-tools buildir pass panics on a dependency package), erraudit
+  replace audit, JS-version drift test); lint (golangci-lint v2.14.0
+  single-sourced via `GOLANGCI_VERSION`, go-installed — 2.13.2 cannot read
+  go1.27.2+ export data), erraudit
   (probe-gated while private), govulncheck. Runs ONLY on code-affecting paths
   — docs-only pushes skip it entirely.
 - `actionlint.yml` — workflow YAML validation on EVERY push/PR (the signal
@@ -182,7 +188,7 @@ CHANGELOG.
   findings on every full lint — with warnings that the files no longer exist.
   If lint reports issues in paths outside the repo, do NOT chase them in the
   code: re-run with a fresh cache
-  (`GOLANGCI_LINT_CACHE=$(mktemp -d) go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.2 run ...`)
+  (`GOLANGCI_LINT_CACHE=$(mktemp -d) go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.14.0 run ...`)
   and trust only that verdict. Purging the shared cache itself is an owner
   decision (other sessions rely on it).
 - `go.work` is committed, but a **global** gitignore (`~/.config/git/ignore`)
@@ -209,7 +215,10 @@ CHANGELOG.
   samber/lo suggestions conflict with the minimal-dependency policy). Its
   erraudit variant flags `defer x.Close()` blank-ignores that the canonical
   gate tolerates; errcheck excludes in `.golangci.yml` cover the concrete
-  Close types (`*sse.Stream`, `*gzip.Writer`).
+  Close types (`*sse.Stream`, `*gzip.Writer`). BuildFlow's result cache keys
+  cover matched files only — a finding can replay after its cause was fixed
+  elsewhere; bypass with `BUILDFLOW_NO_RESULT_CACHE=1` when verdicts look
+  stale (documented in the buildflow skill's failure triage).
 - **buildflow `license-check` must run inside the devshell** (`nix develop -c
   buildflow ...`, closed 2026-10-01): go-licenses' stdlib detection compares
   package paths against the GOROOT of the Go that built/ran it; outside the
@@ -278,7 +287,10 @@ No CQRS, no event bus, no domain opinions. It is a pure protocol layer. Consumer
   fileset (the pre-fix repo-root fileset was a self-referencing
   never-converging FOD).
 - **`broadcastVendorHash` tracks ROOT SOURCE EDITS** (verified 2026-10-01 ×2
-  in one session): broadcast vendors root + static through its directory
+  in one session; re-verified live 2026-11-07 — comment-only root `.go` edits
+  plus the static bundle byte bump moved it, and `buildflow -s nix-hash-fix
+  --fix` landed the exact `got:` values with zero manual pastes):
+  broadcast vendors root + static through its directory
   replaces, so ANY change to root's non-test `.go` files or LICENSE that
   `go mod vendor` copies moves it — not just require bumps. After touching
   root source, expect one more `--keep-going` pass + paste. Test files
@@ -287,7 +299,9 @@ No CQRS, no event bus, no domain opinions. It is a pure protocol layer. Consumer
   BOTH submodule vendor hashes while the workflow names one and exits.
   Reproduce with a full local `nix flake check --keep-going` (the
   `--keep-going` flag collects EVERY moved hash in one pass; a plain check
-  stops at the first) and paste every moved hash in the same commit.
+  stops at the first) and paste every moved hash in the same commit — or
+  let `buildflow -s nix-hash-fix --fix` do it (verified 2026-11-07: it
+  landed both moved hashes exactly).
 - **ANY `go.mod`/`go.sum` edit in ANY module moves vendor hashes — and the
   nix path filter once hid it.** `datastartestSrc` includes the whole
   `datastartest/` dir, so even replace-directive drops there move
