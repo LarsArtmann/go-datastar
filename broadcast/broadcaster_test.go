@@ -512,13 +512,13 @@ func TestBroadcasterReplayFilterInteraction(t *testing.T) {
 	stream := sse.NewStream(recorder, request)
 	defer func() { _ = stream.Close() }()
 
-	n, err := sse.ReplayFiltered(stream, store, sse.NewEventID("1"), pred)
+	replayed, err := sse.ReplayFiltered(stream, store, sse.NewEventID("1"), pred)
 	if err != nil {
 		t.Fatalf("ReplayFiltered: %v", err)
 	}
 
-	if n != 1 {
-		t.Fatalf("replayed count: got %d, want 1", n)
+	if replayed != 1 {
+		t.Fatalf("replayed count: got %d, want 1", replayed)
 	}
 
 	body := recorder.Body.String()
@@ -552,6 +552,7 @@ func TestBroadcasterHeartbeatDisabled(t *testing.T) {
 		req := httptest.NewRequestWithContext(ctx, http.MethodGet, "/events", nil)
 
 		done := make(chan struct{})
+
 		go func() {
 			b.ServeHTTP(recorder, req)
 			close(done)
@@ -567,7 +568,7 @@ func TestBroadcasterHeartbeatDisabled(t *testing.T) {
 
 	enabledBody := run(enabled)
 	if !strings.Contains(enabledBody, "heartbeat") {
-		t.Fatalf("enabled twin body %q carries no heartbeat frames — test window too short to prove the disabled case", enabledBody)
+		t.Fatalf("enabled twin body %q carries no heartbeat frames; window too short", enabledBody)
 	}
 
 	disabledBody := run(disabled)
@@ -605,6 +606,7 @@ func TestNewBroadcasterFromHubWithOptions(t *testing.T) {
 	})
 
 	done := make(chan struct{})
+
 	go func() {
 		b.ServeHTTP(recorder, req)
 		close(done)
