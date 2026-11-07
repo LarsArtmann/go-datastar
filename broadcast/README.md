@@ -65,7 +65,14 @@ b := broadcast.NewBroadcaster(
 state in Redis/Postgres — the module ships no backends by design; the store
 is owned and closed by you. `WithStore(nil)` disables replay, and a later
 option overwrites an earlier one. `WithHeartbeatInterval(d)` overrides the
-per-connection comment-ping interval (default 15s).
+per-connection comment-ping interval (default 15s); `WithHeartbeatDisabled()`
+turns the ping off entirely — an absolute switch that wins over any interval
+regardless of order (use it when the transport below already keeps the
+connection alive).
+
+Hub-shared broadcasters take options too: `NewBroadcasterFromHub(hub, opts...)`
+applies heartbeat and replay-store options normally; only the buffer size is
+hub-owned (size the hub itself with `sse.WithBufferSize` at construction).
 
 `Broadcaster` implements `http.Handler` and embeds `*sse.Broadcaster[sse.Event]`,
 so `Subscribe`, `SubscribeFilter`, `Health`, `Shutdown`, `Close`, `OnSubscribe`,

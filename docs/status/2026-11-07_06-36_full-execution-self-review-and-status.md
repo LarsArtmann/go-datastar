@@ -253,12 +253,19 @@
 26. **(owner)** v0.6.1-report waiver decision (the retro now exists — the
     waiver question reduces to "accept the backfill or demand a dedicated
     report").
-27. Broadcast API follow-ups row: heartbeat true-off semantics + hub
-    options gap.
+27. ~~Broadcast API follow-ups row: heartbeat true-off semantics + hub
+    options gap.~~ done at this session — TODO row 27 executed:
+    `WithHeartbeatDisabled()` + `NewBroadcasterFromHub(hub, opts...)`
+    shipped with decisive tests (-race PASS); README + CHANGELOG updated;
+    row struck with evidence
 28. Example/godoc polish tranche row (Version() godoc Example, store
     demo handler, ldflags wiring).
-29. Long-tail decisions row: go-licenses leg in ci.yml? datastartest
-    coverage 95.6%→97% worth it?
+29. ~~Long-tail decisions row: go-licenses leg in ci.yml? datastartest
+    coverage 95.6%→97% worth it?~~ done at this session — decided and
+    recorded on TODO row 29: go-licenses stays OUT of ci.yml (devshell
+    GOROOT constraint; buildflow owns it locally), coverage chase declined
+    (95.6% healthy, remainder is defensive error paths, coverage not gated
+    per ADR 005)
 30. Wire the docs-gates battery into a repo gate entry point (the parallel
     session's TODO row — same shape as #3).
 31. Adopt CLAIMED_LANES formally (row exists; AGENTS ritual if Q1 = yes).

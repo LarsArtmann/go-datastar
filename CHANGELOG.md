@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- broadcast: `WithHeartbeatDisabled()` — an absolute switch that turns the
+  per-connection SSE comment-ping off entirely (wins over any
+  `WithHeartbeatInterval` regardless of option order), for deployments
+  whose transport already keeps idle connections alive. go-sse's ticker
+  panics on non-positive intervals, so disable is a separate explicit
+  option rather than a sentinel duration. `NewBroadcasterFromHub` now also
+  accepts options (variadic, source-compatible): heartbeat and replay-store
+  options apply through hub sharing; only the buffer size stays
+  hub-owned.
 - `ScriptTagVersioned(path)`: cache-busting `<script>` tag — a full
   `<script type="module">` element whose src carries the pinned client
   version as a `?v=` query parameter so each release of the embedded bundle

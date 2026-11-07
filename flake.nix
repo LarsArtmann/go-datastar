@@ -216,23 +216,39 @@
               goimports.enable = true;
               golines.enable = true;
               nixfmt.enable = true;
-              codespell.enable = true;
             };
             settings = {
               formatter = {
                 gofumpt.excludes = [ "*_templ.go" ];
                 goimports.excludes = [ "*_templ.go" ];
                 golines.excludes = [ "*_templ.go" ];
-                # codespell must never rewrite history or the vendored
-                # bundle (the .codespellrc skip already shields the bundle
-                # in codespell's own walk; treefmt excludes are the
-                # per-formatter belt for the gate itself).
-                codespell.excludes = [
-                  "CHANGELOG.md"
-                  "docs/status/**"
-                  "docs/planning/**"
-                  "static/datastar.js"
-                ];
+                # codespell is not a treefmt-nix built-in program — wired as
+                # a custom formatter so the canonical gate (and `nix fmt`)
+                # own typo fixes (fix mode exits 0 after rewriting, which
+                # treefmt's check compares). Excludes keep it out of history
+                # (CHANGELOG append-only, docs/status + docs/planning
+                # point-in-time) and the vendored bundle; .codespellrc's
+                # walk-mode skip is the belt for manual codespell runs.
+                codespell = {
+                  command = pkgs.codespell;
+                  options = [ "--write-changes" ];
+                  includes = [
+                    "*.go"
+                    "*.md"
+                    "*.nix"
+                    "*.yml"
+                    "*.yaml"
+                    "*.json"
+                    "*.sh"
+                    "*.templ"
+                  ];
+                  excludes = [
+                    "CHANGELOG.md"
+                    "docs/status/**"
+                    "docs/planning/**"
+                    "static/datastar.js"
+                  ];
+                };
               };
             };
           };
