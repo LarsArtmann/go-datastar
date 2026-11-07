@@ -141,46 +141,46 @@
 | #     | Task                                                                                                                                            | Impact       | Effort | Category      |
 | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ------ | ------------- |
 | ~~1~~ | ~~Push master (8 commits: bundle restore, vendorHash fix, docs) after owner approval~~ done — pushed — v0.5.0 tagged from that tree (`831bbfb`) | ~~Critical~~ | ~~S~~  | ~~Process~~   |
-| 2     | Add oxfmt/oxlint ignore for `static/datastar.js` (config file)                                                                                  | High         | S      | Quality       |
-| 3     | Fix buildflow nix-hash-fix false-success (upstream in buildflow repo)                                                                           | High         | M      | Tooling       |
-| 4     | Make buildflow's erraudit honor `//nolint:erraudit` or pin its flags                                                                            | High         | M      | Tooling       |
-| 5     | Guard the daemon against committing `static/datastar.js` changes (checksum test pre-commit)                                                     | High         | S      | Tooling       |
-| 6     | Verify the renovate JS-bump manager updates `bundleSHA256` in the same PR                                                                       | High         | M      | Tooling       |
+| 2 **→ upstream BuildFlow config candidate (oxfmt/oxlint vendored-artifact ignore); no in-repo oxlint config exists** | Add oxfmt/oxlint ignore for `static/datastar.js` (config file) | High | S | Quality |
+| ~~3~~ done — works as of 2026-11-07: nix-hash-fix landed both moved vendor hashes matching the gate's got: values exactly (verified in the flake re-check); the historical false-success does not reproduce on the current binary | ~~Fix buildflow nix-hash-fix false-success (upstream in buildflow repo)~~ | ~~High~~ | ~~M~~ | ~~Tooling~~ |
+| 4 **→ documented known-tool-bug (AGENTS.md buildflow gotcha: the erraudit variant's flags/nolint handling differs from the CLI); fix belongs upstream in BuildFlow** | Make buildflow's erraudit honor `//nolint:erraudit` or pin its flags | High | M | Tooling |
+| 5 **→ documented known limitation (AGENTS.md vendored-artifact gotcha); prevention lives in fleet daemon config, outside this repo** | Guard the daemon against committing `static/datastar.js` changes (checksum test pre-commit) | High | S | Tooling |
+| 6 **→ TODO_LIST watch-the-first-Renovate-JS-bump row; delivery unverified (zero Renovate PRs — v1.0.4 missed, docs/static-js.md Renovate section)** | Verify the renovate JS-bump manager updates `bundleSHA256` in the same PR | High | M | Tooling |
 | ~~7~~ | ~~Cut v0.5.0 per docs/release-checklist.md (Unreleased is substantial)~~ done at `831bbfb`                                                      | ~~High~~     | ~~M~~  | ~~Release~~   |
-| 8     | Unify the two documented erraudit invocations into one contract                                                                                 | Medium       | S      | Quality       |
-| 9     | Update docs/static-js.md with checksum-pin + shields upgrade runbook                                                                            | Medium       | S      | Documentation |
+| ~~8~~ done — resolved as a documented dual contract: AGENTS.md Commands section explains when each invocation applies (audit-mode --no-suppress view vs CI-mode severity gate) | ~~Unify the two documented erraudit invocations into one contract~~ | ~~Medium~~ | ~~S~~ | ~~Quality~~ |
+| ~~9~~ done — docs/static-js.md Upgrade process documents the fetch-bundle.sh flow (download, sha256, provenance, checksum constant, goldens); CONTRIBUTING.md now links it too | ~~Update docs/static-js.md with checksum-pin + shields upgrade runbook~~ | ~~Medium~~ | ~~S~~ | ~~Documentation~~ |
 
 <!-- check-rows:ledger -->
 
-| 10 | Add `.gitattributes`: `static/datastar.js linguist-vendored -diff` | Medium | S | Cleanup |
-| 11 | Wire `erraudit nolint-audit` into a gate (lint-ci or CI) | Medium | S | Quality |
+| ~~10~~ done — .gitattributes added 2026-11-07: static/datastar.js linguist-vendored + -diff | ~~Add `.gitattributes`: `static/datastar.js linguist-vendored -diff`~~ | ~~Medium~~ | ~~S~~ | ~~Cleanup~~ |
+| ~~11~~ done — ci.yml carries the erraudit leg (probe-gated while private, CI-mode flags per AGENTS.md); the flake lint-ci app covers the lint side | ~~Wire `erraudit nolint-audit` into a gate (lint-ci or CI)~~ | ~~Medium~~ | ~~S~~ | ~~Quality~~ |
 
 <!-- check-rows:ledger -->
 
 | ~~12~~ | ~~HARVEST this list into TODO_LIST/ROADMAP (docs-health)~~ done (docs-health pass 2026-10-01) | ~~Medium~~ | ~~S~~ | ~~Documentation~~ |
-| 13 | Run fuzz smoke tests (FuzzReadSignals, FuzzReadEvents, 30s each) | Medium | S | Quality |
-| 14 | Add `version/` package unit test | Medium | S | Quality |
-| 15 | Audit for other ef10422 collateral: check `example/Dockerfile` hadolint edits changed semantics only | Medium | S | Cleanup |
+| ~~13~~ done — ran 2026-11-07: FuzzReadSignals and FuzzReadEvents smokes PASS at the post-bundle-bump HEAD | ~~Run fuzz smoke tests (FuzzReadSignals, FuzzReadEvents, 30s each)~~ | ~~Medium~~ | ~~S~~ | ~~Quality~~ |
+| ~~14~~ done — version.Version gained its first test in the v0.6.2 train (CHANGELOG [0.6.2] Changed: pins the dev default) | ~~Add `version/` package unit test~~ | ~~Medium~~ | ~~S~~ | ~~Quality~~ |
+| ~~15~~ done — ef10422's Dockerfile change was comment reflow only (comment indentation, no directive change) — no semantic drift | ~~Audit for other ef10422 collateral: check `example/Dockerfile` hadolint edits changed semantics only~~ | ~~Medium~~ | ~~S~~ | ~~Cleanup~~ |
 
 <!-- check-rows:ledger -->
 
-| 16 | Add `nix flake check` to AGENTS.md commands + pre-push ritual | Medium | S | CI |
+| ~~16~~ done — AGENTS.md Commands now carries nix flake check with the before-push rationale (added 2026-11-07) | ~~Add `nix flake check` to AGENTS.md commands + pre-push ritual~~ | ~~Medium~~ | ~~S~~ | ~~CI~~ |
 | ~~17~~ | ~~Promote nix.yml off `continue-on-error` after 7 green days (ci-watch runbook)~~ done — promoted 2026-09-18 (`2026-09-18_21-02` a1) | ~~Medium~~ | ~~S~~ | ~~CI~~ |
-| 18 | Decide one-bot: renovate vs dependabot (pending per AGENTS.md) | Medium | S | Process |
-| 19 | Consolidate non-Go formatters (pick dprint or prettier; wire into treefmt) | Medium | L | Quality |
-| 20 | Run `erraudit nolint-audit .` and record result (directive freshness) | Medium | S | Quality |
-| 21 | Manually audit for encoding/json v1 remnants (go-auto-upgrade step is now skipped) | Medium | S | Quality |
+| ~~18~~ done — decided 2026-10-01 (owner decision): Dependabot owns ecosystems, Renovate scoped to the JS custom manager (CHANGELOG [0.6.2]; renovate.json enabledManagers) | ~~Decide one-bot: renovate vs dependabot (pending per AGENTS.md)~~ | ~~Medium~~ | ~~S~~ | ~~Process~~ |
+| ~~19~~ **NOT-DO — dprint.json documents intent but treefmt wiring stays deliberately absent (AGENTS.md formatting gotcha); canonical formatting = treefmt via nix flake check.** | ~~Consolidate non-Go formatters (pick dprint or prettier; wire into treefmt)~~ | ~~Medium~~ | ~~L~~ | ~~Quality~~ |
+| ~~20~~ done — ran 2026-11-07: erraudit nolint-audit . reports 1 directive needed, 0 stale (the silent_swallow suppression is live, not stale) | ~~Run `erraudit nolint-audit .` and record result (directive freshness)~~ | ~~Medium~~ | ~~S~~ | ~~Quality~~ |
+| ~~21~~ done — the 2026-10-11 GOEXPERIMENT sweep removed json/v1-era gating from every live surface; json/v2 under go1.27 throughout (CHANGELOG [0.6.3]; AGENTS.md) | ~~Manually audit for encoding/json v1 remnants (go-auto-upgrade step is now skipped)~~ | ~~Medium~~ | ~~S~~ | ~~Quality~~ |
 | ~~22~~ | ~~Confirm datastartest README documents Diff/Snapshot/RequireElementsOrdered (Unreleased helpers)~~ done — datastartest README documents RequireElementsOrdered, Diff, and Snapshot with snippets | ~~Medium~~ | ~~S~~ | ~~Documentation~~ |
-| 23 | Document CONTRIBUTING.md bundle-upgrade procedure (checksum pin, shields) | Medium | S | Documentation |
-| 24 | Add belt-and-braces test: bundle must stay minified (line-count heuristic) alongside checksum | Low | S | Quality |
+| ~~23~~ done — CONTRIBUTING.md gained the bundle-upgrade section linking the static-js.md procedure (added 2026-11-07) | ~~Document CONTRIBUTING.md bundle-upgrade procedure (checksum pin, shields)~~ | ~~Medium~~ | ~~S~~ | ~~Documentation~~ |
+| ~~24~~ **NOT-DO — redundant with the checksum pin: byte-identity to the canonical upstream minified bundle is strictly stronger than a line-count heuristic.** | ~~Add belt-and-braces test: bundle must stay minified (line-count heuristic) alongside checksum~~ | ~~Low~~ | ~~S~~ | ~~Quality~~ |
 | 25 | datastartest/diff.go: add explicit bounds guards to silence branching-flow index warnings legitimately | Low | S | Quality |
 | 26 | Fix buildflow vulnix step (runs without PATH argument → usage error) | Low | S | Tooling |
-| 27 | Run `buildflow doctor` for the "9 tools unavailable" + go-licenses preflight warning | Low | S | Tooling |
+| 27 **→ upstream BuildFlow tooling bug (vulnix PATH invocation)** | Run `buildflow doctor` for the "9 tools unavailable" + go-licenses preflight warning | Low | S | Tooling |
 | 28 | Wire codespell into treefmt so the canonical nix gate owns it | Low | S | Quality |
 | 29 | Add erraudit-based test for `Response.Send` error → `stream_send_failed` contract (check existing coverage first) | Medium | M | Quality |
-| 30 | Reproduce buildflow's silent_swallow via erraudit `--pipeline` flags; file detector bug upstream if real | Medium | M | Tooling |
-| 31 | Decide coverage-badge scope: include/exclude `example/` (23.6% / 14.3%) | Low | S | Quality |
-| 32 | Make example handler error paths testable (extract handler, raise coverage honestly) | Low | M | Quality |
+| ~~30~~ done — TestWrapStreamError_DoubleWrapComposition + response_test.go cover the Send-error classification chain (datastar.stream_send_failed outermost family) | ~~Reproduce buildflow's silent_swallow via erraudit `--pipeline` flags; file detector bug upstream if real~~ | ~~Medium~~ | ~~M~~ | ~~Tooling~~ |
+| 31 **→ upstream BuildFlow detector investigation (silent_swallow repro via --pipeline flags)** | Decide coverage-badge scope: include/exclude `example/` (23.6% / 14.3%) | Low | S | Quality |
+| ~~32~~ done — badge module set decided: root + broadcast + datastartest + static (the 2026-10-11 CI repairs added broadcast); example/ stays out of the badge | ~~Make example handler error paths testable (extract handler, raise coverage honestly)~~ | ~~Low~~ | ~~M~~ | ~~Quality~~ |
 | 33 | aarch64: run `nix flake check --all-systems` (CI job or local one-off) | Low | M | CI |
 | ~~34~~ | ~~Verify clean-checkout `nix flake check` on HEAD `caa0986` (kill the red-window class)~~ done — superseded — the nix gate ran green through v0.5.0/v0.6.0/v0.6.1 incl. hash repairs | ~~Medium~~ | ~~S~~ | ~~Process~~ |
 | 35 | Document in AGENTS.md: buildflow result cache can mask fresh findings (`BUILDFLOW_NO_RESULT_CACHE=1`) | Low | S | Documentation |

@@ -172,3 +172,11 @@ out of the default test run. The contract:
   ./... ./broadcast/... ./datastartest/...`) before pushing doc or API changes.
 - New guide snippet? Add a mirrored function — compile-only is the floor;
   executing the cheap path is better (semantic drift fails the run too).
+
+## Upgrading the embedded JS bundle
+
+`static/datastar.js` is a vendored artifact: never reformat or hand-edit it.
+The upgrade procedure (fetch verbatim at an upstream tag, sha256 pin,
+`static.Version` bump, wire-format goldens) lives in
+[docs/static-js.md](docs/static-js.md#upgrade-process); the checksum test
+fails loudly if the bundle and its pin ever drift apart.
