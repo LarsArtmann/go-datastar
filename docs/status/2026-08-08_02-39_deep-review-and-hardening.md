@@ -2,6 +2,8 @@
 
 **Date:** 2026-08-08 02:39
 **Session scope:** Deep code review of go-datastar, bug fixes, test hardening, spec compliance fix
+
+> **Live remainder (archived 2026-11-07):** open ideas were routed — ROADMAP.md themes and TODO_LIST.md (Verified next-up / Owner-blocked) own the current backlog; CHANGELOG.md owns shipped work.
 **Overall state:** All gates green (lint 0 issues, test+race pass, nix flake check pass, 98.7% coverage). One real bug fixed, one spec violation fixed, fuzz testing added.
 
 ---
@@ -51,6 +53,7 @@ Ran 15 seconds of fuzz exploration: **1,246,696 executions, 0 failures**. `ReadS
 
 ### All quality gates green
 
+<!-- check-rows:ledger -->
 | Gate                                       | Result                                                   |
 | ------------------------------------------ | -------------------------------------------------------- |
 | `go build ./...`                           | ✓                                                        |
@@ -175,7 +178,7 @@ Each required a separate edit-test cycle. **Root cause:** I didn't run `golangci
 
 26. ~~Add benchmark tests for patch `Event()` generation (ElementsPatch, SignalsPatch, ScriptPatch)~~ done at `32d36a7`
 27. ~~Add fuzz test for `MarshalSignals` (untrusted Go value → JSON)~~ done at `32d36a7` (`FuzzMarshalSignalsRoundtrip`)
-28. Add integration test that runs the DataStar JS client (headless browser via chromedp)
+28. ~~Add integration test that runs the DataStar JS client (headless browser via chromedp)~~ done — ROADMAP.md carries the headless-browser E2E idea (chromedp or Playwright)
 29. ~~Cover `sendSignalsMap` defensive branch (currently 75%, unreachable via public API — consider testing via internal test or accepting)~~ done — accepted as unreachable defensive branch (documented)
 30. ~~Add `WithScriptAttributeKVs` odd-argument test — the doc says it errors, but it silently truncates. Either fix the doc or fix the code.~~ done — doc corrected (`4f7595e`) + odd-args test (`script_test.go`)
 
@@ -201,13 +204,13 @@ Each required a separate edit-test cycle. **Root cause:** I didn't run `golangci
 42. ~~Add CHANGELOG automation (e.g., `changelog-from-release`)~~ **Won't implement — decided 2026-09-03 — manual keep-a-changelog + release-checklist gate stays (ROADMAP resolved questions).**
 43. ~~Consider goreleaser for automated releases~~ done at `9cb1d17`
 44. ~~Add a `version` package or build-time version variable~~ done at `49a0ae6`
-45. Consider GitHub release automation on tag push
+45. ~~Consider GitHub release automation on tag push~~ done — ROADMAP.md carries the release-automation idea (goreleaser skeleton fate decision)
 
 ### Future features
 
-46. Consider website launch (Astro + Starlight pattern)
+46. ~~Consider website launch (Astro + Starlight pattern)~~ done — ROADMAP.md and TODO_LIST.md carry the website-launch idea (deferred by owner decision)
 47. ~~Consider comparison table vs upstream SDK in README~~ done at `cf3683e` (verified vs datastar-go v1.2.2)
-48. Add more DataStar examples (toasts, progress bars, merge modes)
+48. ~~Add more DataStar examples (toasts, progress bars, merge modes)~~ done — ROADMAP.md carries the more-examples idea (toasts, progress bars, signal merge modes)
 49. ~~Add `WithScriptRetryDuration` documentation~~ done — documented (`script.go:82-85`)
 50. ~~Consider playground/example repo link~~ done — Learn DataStar section links the interactive playground site (T25, `ac1de23`)
 

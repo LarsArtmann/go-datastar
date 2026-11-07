@@ -65,6 +65,12 @@ Raw ideas:
   counters) behind an optional interface
 - Community metadata: GitHub Sponsors / funding, contributor list
   (all-contributors tool optional)
+- Micro-quality backlog consolidated from the 2026-09-03 superb audit (raw
+  ideas, unranked): static.Bytes no-BOM defensive test, ScriptHandler
+  body==Bytes + ETag-stable integration test, datastartest sha256-of-bundle
+  ETag helper, example Dockerfile rebuild smoke, release-page title
+  convention + CHANGELOG-heading-to-release-page links, release-runbook
+  page backfill note
 
 ### 3. CI/CD & Hermeticity
 
@@ -122,6 +128,8 @@ Raw ideas:
   transport regressions before consumers do)
 - Watch go-sse for a Stream-level OnDrop (would reopen the Response
   drop-observability question; through v0.6.0 OnDrop stays Broadcaster-only)
+- Expose the pinned bundle checksum as a consumer-verifiable bundle-integrity
+  API (e.g. `static.Checksum()`) — raw idea from the 2026-09-03 provenance work
 
 ## Non-goals
 
