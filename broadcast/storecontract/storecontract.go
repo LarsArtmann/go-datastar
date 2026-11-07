@@ -13,6 +13,7 @@
 package storecontract
 
 import (
+	"slices"
 	"strconv"
 	"testing"
 
@@ -30,14 +31,18 @@ func AssertReplayOrdering(tb testing.TB, store broadcast.Store, events []sse.Eve
 	tb.Helper()
 
 	previous := 0
+
 	for i, evt := range events {
 		seq := requireSeq(tb, i, evt.ID)
+
 		if seq <= previous {
-			tb.Fatalf("event %d carries ID %d, not greater than event %d's %d: the assertion expects strictly increasing numeric IDs as input", i, seq, i-1, previous)
+			tb.Fatalf("event %d carries ID %d, not greater than %d: input must be strictly increasing numeric IDs",
+				i, seq, previous)
 		}
 
-		previous = seq
 		store.Append(evt)
+
+		previous = seq
 	}
 
 	all, err := store.EventsAfter(sse.EventID{})
@@ -55,7 +60,7 @@ func AssertReplayOrdering(tb testing.TB, store broadcast.Store, events []sse.Eve
 		}
 	}
 
-	for i := len(events) - 1; i >= 0; i-- {
+	for i := range slices.Backward(events) {
 		after, err := store.EventsAfter(events[i].ID)
 		if err != nil {
 			tb.Fatalf("EventsAfter(%q) errored: %v", events[i].ID.Get(), err)
@@ -84,7 +89,7 @@ func AssertReplayOrdering(tb testing.TB, store broadcast.Store, events []sse.Eve
 func AssertIDAssignment(tb testing.TB, store broadcast.Store, count int) {
 	tb.Helper()
 
-	for i := 0; i < count; i++ {
+	for i := range count {
 		store.Append(sse.Event{Event: "tick", Data: strconv.Itoa(i + 1)})
 	}
 
@@ -98,6 +103,7 @@ func AssertIDAssignment(tb testing.TB, store broadcast.Store, count int) {
 	}
 
 	previous := 0
+
 	for i, evt := range all {
 		seq := requireSeq(tb, i, evt.ID)
 		if seq <= previous {
@@ -113,6 +119,7 @@ func requireSeq(tb testing.TB, index int, evtID sse.EventID) int {
 	tb.Helper()
 
 	text := evtID.Get()
+
 	seq, err := strconv.Atoi(text)
 	if err != nil || text == "" {
 		tb.Fatalf("event %d carries ID %q: replay is keyed on numeric IDs, so the contract assertions require non-empty numeric string IDs", index, text)

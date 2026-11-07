@@ -1,6 +1,7 @@
 package storecontract
 
 import (
+	"slices"
 	"strconv"
 	"testing"
 
@@ -167,9 +168,9 @@ func (s *descendingStore) EventsAfter(lastID sse.EventID) ([]sse.Event, error) {
 
 	var result []sse.Event
 
-	for i := len(s.events) - 1; i >= 0; i-- {
-		if id, _ := strconv.Atoi(s.events[i].ID.Get()); id > last {
-			result = append(result, s.events[i])
+	for _, evt := range slices.Backward(s.events) {
+		if id, _ := strconv.Atoi(evt.ID.Get()); id > last {
+			result = append(result, evt)
 		}
 	}
 
