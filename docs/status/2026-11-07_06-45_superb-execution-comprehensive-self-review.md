@@ -236,9 +236,12 @@ why — the sibling session paid that cost tonight already.
     release objects — probe tags, not `releases/latest`.
 22. Run `nix run .#test` vs raw `go test` parity explicitly (row 35's
     strike cites the flake check; the literal app path never ran).
-23. Dry-run release-checklist §2.5 on a worktree (M02.2 prep).
-24. Draft the v0.7.0 release notes (M02.5; mention the LICENSE holder-typo
-    fix).
+23. ~~Dry-run release-checklist §2.5 on a worktree (M02.2 prep).~~ done — the
+    sibling 05-35 session rehearsed §2.5 live on a detached worktree (cut
+    brief Appendix C)
+24. ~~Draft the v0.7.0 release notes (M02.5; mention the LICENSE holder-typo
+    fix).~~ done — the sibling 05-35 session wrote the cut-ready draft (cut
+    brief Appendix A, LICENSE provenance included)
 25. Disposition the `static.Checksum()` ROADMAP idea (skipped as YAGNI —
     record the call).
 26. Probe post-push master CI after tonight's ~30 daemon commits.
@@ -295,8 +298,9 @@ why — the sibling session paid that cost tonight already.
 47. Verify the new datastartest README "Versioned-cache assertions" section
     and its `../docs/static-js.md` links resolve (fold into the tranche-A
     datastartest README tour row).
-48. Index this report in docs/status/README.md (the sibling indexed my
-    05-01; return the favor).
+48. ~~Index this report in docs/status/README.md (the sibling indexed my
+    05-01; return the favor).~~ done — indexed 2026-11-07, chronological
+    after the 06-36 row.
 49. Post-index AGENTS.md coherence read-through — three sessions edited it
     tonight (mine: versioned-serving gotcha; siblings: hash-fix verdict,
     ledger-marker gotcha); check the gotchas still read as one voice.
