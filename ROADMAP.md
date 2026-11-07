@@ -64,6 +64,7 @@ Raw ideas:
 - Broadcast subscriber-level metrics (connection counts, dropped-event
   counters) behind an optional interface
 - Community metadata: GitHub Sponsors / funding, contributor list
+  (all-contributors tool optional)
 
 ### 3. CI/CD & Hermeticity
 
@@ -87,6 +88,9 @@ Raw ideas:
   `@latest` == newest pushed tag; embedded-JS `gh api releases/latest` check)
 - Wire `nix run .#docspec` into CI so doc drift fails remotely, not just
   locally
+- Extend nix validation to aarch64/darwin: `nix flake check --all-systems`
+  needs a darwin/aarch64 runner (recurring open item from the 2026-10-01
+  red-master-repair audit)
 
 ### 4. Documentation Depth
 
