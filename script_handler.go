@@ -86,14 +86,16 @@ func ScriptTag(path string) string {
 }
 
 // ScriptTagVersioned returns an HTML <script> tag like [ScriptTag], with the
-// pinned DataStar client version appended as a cache-busting query parameter.
+// pinned DataStar client version as a cache-busting query parameter.
 // [ScriptHandler] serves the bundle with Cache-Control max-age=86400, so a
 // browser that fetched the bundle skips ETag revalidation for up to 24h; a
 // versioned URL turns each release into a distinct cache key and collapses
-// that stale window to zero for pages rendered per request. If path already
-// contains a query, the version joins with &; a fragment is preserved by
-// inserting the parameter before it. The path is otherwise used verbatim;
-// callers own URL correctness.
+// that stale window to zero for pages rendered per request. If the path
+// already carries a v parameter, its value is replaced with the pinned
+// version — the result always carries exactly the pinned version, so the
+// function is idempotent; any other existing query joins with &, and a
+// fragment is preserved by inserting the parameter before it. The path is
+// otherwise used verbatim; callers own URL correctness.
 func ScriptTagVersioned(path string) string {
 	return appendVersionQuery(path, static.Version)
 }
@@ -107,12 +109,34 @@ func appendVersionQuery(path string, version string) string {
 		fragment = path[index:]
 	}
 
-	separator := "?"
-	if strings.Contains(head, "?") {
-		separator = "&"
+	queryStart := strings.Index(head, "?")
+	if queryStart < 0 {
+		return head + "?v=" + version + fragment
 	}
 
-	return head + separator + "v=" + version + fragment
+	query := head[queryStart+1:]
+	for start := 0; ; {
+		rest := query[start:]
+		end := strings.IndexByte(rest, '&')
+		param := rest
+		if end >= 0 {
+			param = rest[:end]
+		}
+
+		if key, _, hasValue := strings.Cut(param, "="); hasValue && key == "v" {
+			valueStart := queryStart + 1 + start + len("v=")
+
+			return head[:valueStart] + version + head[valueStart+len(param)-len("v="):] + fragment
+		}
+
+		if end < 0 {
+			break
+		}
+
+		start += end + 1
+	}
+
+	return head + "&v=" + version + fragment
 }
 
 // Version returns the version of the embedded DataStar JavaScript client.

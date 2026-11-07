@@ -158,9 +158,17 @@ templ at v0.3.1100; one 5-min check in that repo (its flake decides which
 side is canonical). This repo's own PR #12 (an unrelated closed dependabot
 nix bump) is NOT this PR — TODO_LIST now says so explicitly.
 
-## Appendix C — §2.5 rehearsal (filled from the live run)
+## Appendix C — §2.5 rehearsal (live run, 2026-11-07)
 
 Simulated §2 on a detached worktree (`/tmp/gd-rehearsal`, requires bumped
-to a hypothetical v0.7.0 lockstep set), then ran the §2.5 gate. Result:
-see the 2026-11-07 session report — recorded there with the moved-hash
-list; the worktree carries no tag and was discarded after the run.
+to a hypothetical v0.7.0 lockstep set — the §2 lockstep grep verified root
+→ static, broadcast/datastartest → root (+ static for datastartest)), then
+ran the §2.5 gate. **The gate correctly went red on the post-bump tree**:
+broadcast's and datastartest's `go-modules` FODs failed (vendor FOD
+builder exit 1), while root's vendor derivation did not move — its
+external requires are untouched by a sibling-require bump, matching the
+AGENTS.md rule that root `vendorHash` moves only on external-require or
+toolchain changes. The rehearsal's failure was partly artificial (§2's
+`go mod edit` alone leaves go.sum lagging; a real cut pairs it with a
+tidy), but the gate contract is proven: §2.5 fires red before anything can
+reach §3. Worktree discarded, no tag created.

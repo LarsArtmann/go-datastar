@@ -41,10 +41,12 @@ func TestScriptTag_EdgeCases(t *testing.T) {
 	}
 }
 
-// TestScriptTagVersioned_EdgeCases pins the cache-busting contract: the pinned
-// client version joins the path as a query parameter (?v=, or &v= when a
-// query already exists), inserted before any fragment so it lands in the URL
-// query. The rest is verbatim, like ScriptTag: no normalization, no escaping.
+// TestScriptTagVersioned_EdgeCases pins the cache-busting contract: the result
+// always carries the pinned client version as the v query parameter (?v=, or
+// replacing an existing v value so the pinned version can never be shadowed by
+// a stale one), inserted before any fragment so it lands in the URL query.
+// Other existing query parameters are preserved and join with &. The rest is
+// verbatim, like ScriptTag: no normalization, no escaping.
 func TestScriptTagVersioned_EdgeCases(t *testing.T) {
 	t.Parallel()
 
@@ -65,6 +67,36 @@ func TestScriptTagVersioned_EdgeCases(t *testing.T) {
 			"https://cdn.example.com/datastar.js",
 			"https://cdn.example.com/datastar.js?v=" + version,
 		},
+		{
+			"stale v is replaced",
+			"/js?v=0.0.1",
+			"/js?v=" + version,
+		},
+		{
+			"v replaced among other params",
+			"/js?x=1&v=0.0.1&y=2",
+			"/js?x=1&v=" + version + "&y=2",
+		},
+		{
+			"v replaced before fragment",
+			"/js?v=0.0.1#main",
+			"/js?v=" + version + "#main",
+		},
+		{
+			"empty v value is replaced",
+			"/js?v=",
+			"/js?v=" + version,
+		},
+		{
+			"similar key is not matched",
+			"/js?verbose=1",
+			"/js?verbose=1&v=" + version,
+		},
+		{
+			"v inside another value is not matched",
+			"/js?callback=v=1",
+			"/js?callback=v=1&v=" + version,
+		},
 	}
 
 	for _, tt := range tests {
@@ -75,6 +107,28 @@ func TestScriptTagVersioned_EdgeCases(t *testing.T) {
 				t.Errorf("ScriptTagVersioned(%q): got %q, want %q", tt.path, got, tt.want)
 			}
 		})
+	}
+}
+
+// TestScriptTagVersioned_Idempotent pins the idempotency contract: applying
+// the cache-busting transform to an already-versioned path changes nothing,
+// so rendering pipelines can call it at every layer without double-appending.
+func TestScriptTagVersioned_Idempotent(t *testing.T) {
+	t.Parallel()
+
+	for _, path := range []string{
+		"/datastar.js",
+		"/js?x=1",
+		"/js?v=0.0.1",
+		"/js?x=1&v=0.0.1&y=2",
+		"/js#main",
+	} {
+		once := datastar.ScriptTagVersioned(path)
+		twice := datastar.ScriptTagVersioned(once)
+
+		if once != twice {
+			t.Errorf("ScriptTagVersioned not idempotent for %q: once %q, twice %q", path, once, twice)
+		}
 	}
 }
 

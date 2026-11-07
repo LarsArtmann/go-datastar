@@ -195,7 +195,7 @@ My initial edit produced a duplicated "Note: do not pass --enforce-samber-oops" 
 40. **Consider `go-releaser` config** for multi-module tagging
 41. ~~**Add CONTRIBUTING.md note** about the dual-module structure~~ done (done — CONTRIBUTING.md 'Multi-Module Development' section)
 42. **Review whether `example/` should be its own module** — currently in root, may pull in test deps
-43. **Add `datastartest` to the PULL_REQUEST_TEMPLATE.md** checklist
+43. ~~**Add `datastartest` to the PULL_REQUEST_TEMPLATE.md** checklist~~ done — the PR template carries the per-module datastartest isolation checklist (PULL_REQUEST_TEMPLATE.md line 18)
 44. **Consider semantic import versioning** if datastartest reaches v1
 45. **Add a dependency graph visualization** (D2) to docs showing module relationships
 46. ~~**Lint the go.work file** — `go work edit -fmt`~~ done (done — go.work canonical; CI sync idempotency enforces it)

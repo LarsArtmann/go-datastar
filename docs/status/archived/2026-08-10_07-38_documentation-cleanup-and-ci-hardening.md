@@ -255,7 +255,7 @@ is clean (3 files modified, no new untracked files except this status report).
     ~~datastartest~~
     ~~14. Add a programmatic test that verifies the module DAG is acyclic~~ done at `fda70c7`
 14. Run erraudit on the updated codebase
-15. Run govulncheck on all 3 modules
+15. ~~Run govulncheck on all 3 modules~~ done — DUPLICATE — item 6 of this same report records it done at eb8bf29 (the CI govulncheck job runs every push)
 16. ~~Add test for `TestE2E_DataStarPatches` that exercises `CollectPost` and~~ done (done — TestE2E_CollectPostRoundTrip + TestE2E_CollectNStreaming (datastartest/e2e_test.go))
     ~~`CollectN` paths~~
 17. ~~Consider property-based testing for the SSE parser in datastartest~~ done (done — FuzzReadEvents + WPT/chunk-boundary corpus cover the property space)
