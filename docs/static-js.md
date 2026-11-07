@@ -31,13 +31,17 @@ CDN a browser page points at reintroduces drift.
    (downloads `bundles/datastar.js` at the tag, prints the sha256 and the
    provenance line), then replace `static/datastar.js` and update
    `static.Version` to match.
-3. Run the full gate (the wire-format golden tests and the WPT corpus
+3. Refresh every version-coupled surface before running the gate:
+   `ExampleScriptTagVersioned` in `example_test.go` pins the rendered tag
+   in a literal `Output` (`?v=<version>`), so a bundle bump breaks that
+   golden until the Output moves with `static.Version`.
+4. Run the full gate (the wire-format golden tests and the WPT corpus
    attribute changes loudly):
    ```bash
    go test ./... ./broadcast/... ./datastartest/... ./static/... -race -count=1
    nix flake check
    ```
-4. If goldens change, treat that as a protocol change: compare against the
+5. If goldens change, treat that as a protocol change: compare against the
    upstream SDK behavior and record the delta in the CHANGELOG — a golden
    change is deliberate, never incidental.
 

@@ -340,6 +340,7 @@ when adding helpers.
 | `docs/migration-starfederation.md` | Upstream SDK → go-datastar migration mapping                |
 | `docs/testing.md`                  | datastartest quick start, fuzzing, coverage story           |
 | `docs/ci-watch.md`                 | Promote/drop/verify runbook for the non-required workflows  |
+| `docs/duplication-baseline.md`     | art-dupl accepted-clone baseline (audit re-verify gate)     |
 | `docs/performance.md`              | Measured benchmark table                                    |
 | `docs/version.md`                  | The three version concepts (module / JS client / ldflags)   |
 | `docs/migration-guide.md`          | v0.2.0 → v0.3.0 upgrade guide                               |

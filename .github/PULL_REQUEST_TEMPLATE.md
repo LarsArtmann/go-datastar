@@ -14,10 +14,10 @@ Brief description of what this PR changes and why.
 
 Run these locally before opening the PR — tick only what you actually ran:
 
-- [ ] `GOWORK=off GOEXPERIMENT=jsonv2 go test ./... -race -count=1` passes
-- [ ] Per-module isolation passes from `datastartest/` and `static/`:
-      `GOWORK=off GOEXPERIMENT=jsonv2 go test ./... -count=1` in each
-- [ ] `golangci-lint run ./...` passes (0 issues)
+- [ ] `GOWORK=off go test ./... -race -count=1` passes
+- [ ] Per-module isolation passes from `broadcast/`, `datastartest/`, and `static/`:
+      `GOWORK=off go test ./... -count=1` in each
+- [ ] `nix run .#lint-ci` passes (exact CI parity, 0 issues)
 - [ ] `go vet ./...` passes
 - [ ] CHANGELOG updated (if user-visible change)
 - [ ] Tests added for new functionality
