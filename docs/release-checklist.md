@@ -72,7 +72,8 @@ it is a no-op under 1.27 and was removed from every live surface.
       - `https://pkg.go.dev/github.com/larsartmann/go-datastar/broadcast`
       - `https://pkg.go.dev/github.com/larsartmann/go-datastar/static`
       - `https://pkg.go.dev/github.com/larsartmann/go-datastar/datastartest`
-- [ ] GitHub Releases ×4 with real CHANGELOG excerpts (root = full notes; submodule releases = accurate short notes). Create the **root** release LAST — GitHub marks the newest-created release "Latest", and v0.6.0 accidentally landed it on `datastartest/v0.6.0`. Recover with `gh release edit vX.Y.Z --latest` if it lands wrong
+- [ ] GitHub Releases ×4 with real CHANGELOG excerpts (root = full notes; submodule releases = accurate short notes). Create the three **submodule** releases with `gh release create <tag> --latest=false …`, then the **root** release LAST with `--latest` — GitHub marks the newest-created release "Latest", and v0.6.0 accidentally landed it on `datastartest/v0.6.0`. Recover with `gh release edit vX.Y.Z --latest` if it lands wrong
+- [ ] `gh release list --limit 8` completeness assertion: all four `…vX.Y.Z` rows present, exactly the root row carries the `Latest` flag
 
 ## 5. Comparison re-verify (quarterly or after upstream release)
 
