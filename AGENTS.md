@@ -2,6 +2,8 @@
 
 DataStar protocol library for Go. Patches as first-class values producing `sse.Event`. Built on go-sse. Single package (`datastar`), flat layout. The `broadcast/` submodule adds SSE connection lifecycle (fan-out, replay, hub sharing); `datastartest/` is a separate Go module for consumer E2E testing.
 
+**Full gotcha text, module decisions, CI detail, and docs map: [docs/gotchas.md](docs/gotchas.md).** This file keeps only what every session needs at a glance.
+
 ## Module Structure
 
 Four Go modules in a go.work workspace (rationale and rules: [ADR 002](docs/adr/002-multi-module-split.md)):
@@ -13,27 +15,7 @@ Four Go modules in a go.work workspace (rationale and rules: [ADR 002](docs/adr/
 | static       | `github.com/larsartmann/go-datastar/static`       | Embedded DataStar JS client bundle | zero (stdlib only)      |
 | datastartest | `github.com/larsartmann/go-datastar/datastartest` | Consumer E2E test helpers          | go-datastar, go-sse     |
 
-Replace directives: root go.mod replaces `static => ./static`; broadcast and
-datastartest go.mod replace `go-datastar => ..` and `static => ../static`. All
-resolve locally
-for `GOWORK=off` builds (CI, Nix, consumers). Root must NEVER require
-datastartest (circular dependency; `module_boundary_test.go` enforces it).
-Root also never requires broadcast (same boundary, one direction).
-
-Decisions: `go.work.sum` is intentionally gitignored (the toolchain regenerates
-it on demand). Per-module `go.sum` files are the reproducibility source of
-truth for consumers; the replace directives make sibling-module checksums
-unnecessary locally, while workspace-mode hashes for EXTERNAL modules
-accumulate in `go.work.sum` without a reproducibility contract — consumers
-never see it. Sibling requires use
-real published versions (not `v0.0.0`) so consumers testing without replaces
-resolve to a real published module. The `go` directives are minor form
-(`go 1.27` across go.mod ×3 and go.work; static stays at `go 1.26`) since
-the 2026-10-03 fleet de-poisoning — a patch-pinned floor re-poisons
-consumers through MVS. CI's setup-go pins `1.27.3` (moved from 1.27.1 by
-`09fe522` for the govulncheck stdlib fixes) and the flake `goPkg`
-is nixpkgs `go_1_27`, both satisfying the minor-form directives while
-keeping toolchain choice deliberate.
+Root replaces `static => ./static`; broadcast/datastartest replace `go-datastar => ..` and `static => ../static`. Root NEVER requires datastartest or broadcast (`module_boundary_test.go` enforces it). Sibling requires use REAL published versions — never `v0.0.0` — so consumers resolve without replaces (BuildFlow's pseudo-version-hygiene preflight FAIL on this is a documented false positive). Decisions detail: [docs/gotchas.md](docs/gotchas.md#module-structure-decisions).
 
 ## Session-Start CI Health Probe
 
@@ -45,28 +27,24 @@ Before trusting a clean local tree, probe master CI health in every repo the ses
 # Workspace mode (default, uses go.work) — covers all four modules:
 go test ./... ./broadcast/... ./datastartest/... ./static/... -race -count=1
 go vet ./... ./broadcast/... ./datastartest/... ./static/...
-golangci-lint run ./... ./broadcast/... ./datastartest/... ./static/...
 # Pre-push lint = EXACT CI parity (flake: `nix run .#lint-ci`); GOLANGCI_VERSION
-# in ci.yml is the single source for the pin (v2.14.0 since the 2026-10-11 repairs):
+# in ci.yml is the single source for the pin (v2.14.0):
 go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.14.0 run ./... ./broadcast/... ./datastartest/... ./static/... --timeout 5m
 
 # Hermetic gate (builds + tests all four modules + format; run before pushing
-go.mod/go.sum edits — ANY such edit can move vendor hashes):
+# go.mod/go.sum edits — ANY such edit can move vendor hashes):
 nix flake check
 
 # Isolation mode (GOWORK=off, per-module — verifies replace directives; run from each module dir):
 GOWORK=off go test ./...
 
-# Error audit (all modules — erraudit v0.3.0 takes ONE directory per run, never package patterns):
-# audit view below (--no-suppress lists intentional patterns too); the CI gate uses
-# `--severity-threshold error` WITHOUT --no-suppress (tolerates AST-heuristic-suppressed
-# deferred closes, honors //nolint:erraudit) — that CI-mode ×4 is the canonical green target.
+# Error audit (erraudit takes ONE directory per run, never package patterns; the
+# CI gate uses `--severity-threshold error` WITHOUT --no-suppress — that ×4 is the green target):
 for mod in . ./broadcast ./datastartest ./static; do
   (cd "$mod" && erraudit . --type-aware --enforce-go-error-family --no-suppress)
 done
 
-# Fuzz smoke tests (30s; corpora are committed regression suites — see CONTRIBUTING.md "Fuzzing"
-# for the full six-target table; the nightly matrix runs all of them at 300s):
+# Fuzz smoke tests (30s; nightly matrix runs all six targets at 300s — CONTRIBUTING.md):
 go test -run '^$' -fuzz '^FuzzReadSignals$' -fuzztime 30s .
 (cd datastartest && go test -run '^$' -fuzz '^FuzzReadEvents$' -fuzztime 30s .)
 
@@ -75,19 +53,15 @@ go work sync        # go.work must not change after sync (idempotency)
 go work use . ./broadcast ./datastartest ./static   # go.work must match this exactly
 GOWORK=off go mod tidy -diff            # per module; must print nothing
 GOWORK=off go mod verify                # per module; "all modules verified"
-grep -rn 'replace.*=>/' go.mod datastartest/go.mod static/go.mod  # must find nothing (relative paths only)
+grep -rn 'replace.*=>/' go.mod datastartest/go.mod static/go.mod  # must find nothing
 ```
 
-`GOEXPERIMENT=jsonv2` was removed from every live surface (2026-10-11): `encoding/json/v2` is a `go1.27`-gated stable API, so the flag is a no-op under the 1.27 toolchain. Do not re-add it.
-
-Note: do **not** pass `--enforce-samber-oops` to erraudit. This is a library, and
-the go-error-family contract is that libraries classify via go-error-family only
-(never samber/oops). See [Error System](#error-system) below.
+`GOEXPERIMENT=jsonv2` is a no-op under the 1.27 toolchain — do not re-add it. Do **not** pass `--enforce-samber-oops` to erraudit (libraries classify via go-error-family only, never samber/oops).
 
 ## Dependencies
 
 - `github.com/larsartmann/go-sse` — SSE transport (Stream, Broadcaster, EventStore, Replay)
-- `github.com/larsartmann/go-error-family` — structured error classification (Family, Code, Context). Direct dependency; every error this library returns is a classified `*errorfamily.Error`.
+- `github.com/larsartmann/go-error-family` — structured error classification; every error this library returns is a classified `*errorfamily.Error`
 - Transitive: `go-branded-id` (via go-sse)
 
 ## Architecture
@@ -100,268 +74,45 @@ Three layers:
 | Protocol  | go-datastar (this repo) | Patch interface, ElementsPatch, SignalsPatch, ScriptPatch, RedirectPatch, etc.        |
 | Domain    | cqrs-htmx/datastar      | EventBridge (CQRS event → Patch), thin re-exports                                     |
 
-### Patch interface — the keystone
+The keystone: `type Patch interface { Event() sse.Event }` — every protocol message is a value producing an `sse.Event`, making patches storable, filterable, replayable, broadcastable (none of which the upstream SDK supports). One flat package; roles in `doc.go`; key files: `patch.go`, `errors.go`, `response.go`, `store.go`, `script_handler.go`, `example/`.
 
-```go
-type Patch interface { Event() sse.Event }
-```
+## Wire-Format Parity
 
-Every DataStar protocol message is a value that produces an `sse.Event`. This makes patches storable, filterable, replayable, and broadcastable — none of which the upstream SDK (`starfederation/datastar-go`) supports.
-
-### File layout
-
-One flat package; roles in `doc.go`, discoverable via `ls`. Key files:
-`patch.go` (Patch interface), `errors.go` (catalog), `response.go` (fluent
-builder), `store.go` (replay), `script_handler.go` (JS serving), `example/`.
-
-## Wire-Format Parity Requirements
-
-The exact upstream-parity behaviors (dataline keys/order, splitting, defaults,
-elision) are pinned by `wire_golden_test.go` and documented in
-[docs/wire-format.md](docs/wire-format.md). A golden change IS a wire-format
-change — make it deliberately, against the DataStar SDK, and record it in the
-CHANGELOG.
-
-> go-sse's `JoinLines`/`KeyedLines` are deliberately NOT adopted: `KeyedLines`
-> normalizes CRLF to LF (upstream splits on `\n` only) and its key convention
-> conflicts with the trailing-space dataline constants.
+Upstream-parity behaviors are pinned by `wire_golden_test.go` and documented in [docs/wire-format.md](docs/wire-format.md). A golden change IS a wire-format change — make it deliberately, against the DataStar SDK, record it in the CHANGELOG. go-sse's `JoinLines`/`KeyedLines` are deliberately NOT adopted (CRLF normalization + key-convention conflict).
 
 ## CI
 
-- `ci.yml` — per-module matrix (GOWORK=off build/vet/race + mod verify +
-  tidy-diff) plus a workspace job (race suite, use-vs-disk, sync idempotency,
-  replace audit, JS-version drift test); lint (golangci-lint v2.14.0
-  single-sourced via `GOLANGCI_VERSION`, go-installed — 2.13.2 cannot read
-  go1.27.2+ export data), erraudit
-  (probe-gated while private), govulncheck. Runs ONLY on code-affecting paths
-  — docs-only pushes skip it entirely.
-- `actionlint.yml` — workflow YAML validation on EVERY push/PR (the signal
-  that still fires when ci.yml skips).
-- `coverage.yml` — master-push coverage badge to the orphan `coverage`
-  branch (same `paths` filter).
-- `nix.yml` — hermetic `nix flake check` on code-affecting paths (promoted
-  2026-09-18: `continue-on-error` dropped; a red run is red master).
-- `fuzz.yml` — scheduled daily 300s fuzz runs over all six fuzz targets,
-  crash artifacts uploaded.
-- `codeql.yml` — GitHub CodeQL Go security analysis (SHA-pinned action).
-- `renovate.json` — custom manager proposing embedded-DataStar-JS bumps from
-  upstream releases into `static/static.go`. One-bot decision settled
-  2026-10-01: Dependabot owns ecosystems (gomod ×4 + actions); Renovate is
-  scoped to this custom manager only via `enabledManagers: ["regex"]`.
-- Actions are SHA-pinned; nothing is a required check (branch protection
-  removed); local gates are the real gate.
+Per-module matrix + workspace job + lint/erraudit/govulncheck (`ci.yml`, code-affecting paths only); `actionlint.yml` every push; `coverage.yml`; `nix.yml` (hermetic flake check); `fuzz.yml` (daily 300s); `codeql.yml`; Dependabot owns ecosystems, Renovate only the embedded-JS custom manager. Nothing is a required check — local gates are the real gate. Full workflow detail: [docs/gotchas.md](docs/gotchas.md#ci-detail).
 
-## Gotchas
+## Gotchas (headlines — full text in [docs/gotchas.md](docs/gotchas.md))
 
-- **Serving the JS client: `ScriptTagVersioned(path)` is the recommended
-  pattern** (versioned `?v=` cache key, idempotent — it replaces an existing
-  `v` value rather than double-appending). The example's index page pins the
-  rendered tag with a smoke test, and datastartest's
-  `RequireScriptTagVersion` is the consumer-side assertion; never regress a
-  page back to a bare `datastar.js` src.
-- **gopls warnings on `encoding/json/v2` are false positives — do not "fix"
-  them.** Its stdlib DB lags the toolchain (flagged json/v2 as "requires
-  go1.27" long before it was standard; `go vet`/golangci-lint never flag it).
-  The v1 API would change error types and HTML escaping (wire format). Same
-  class: the `infertypeargs` hint on `sse.WithBufferSize` in broadcast
-  (dropping `[sse.Event]` does not compile). Verify any LSP hint with the
-  compiler before acting on it.
-- **Shared checkout — one section for the whole operational reality:** the
-  auto-commit daemon commits and pushes dirty files to whatever branch is
-  checked out, multiple crush sessions share this checkout, and `git town`
-  (v24) manages syncs. Branch tips can move or lose commits at any moment.
-  Re-verify with `git log`/`git reflog` before and after every git operation;
-  stage by explicit path list (never `git add -A`); re-read files before
-  every edit (mod-time races); quarantine risky work in a `git worktree`.
-  A failed `git sync` leaves an unfinished run: `git town status`, then
-  `skip`/`continue` (they abort on missing lineage — fix via
-  `git config --add git-town.observed-branches <branch>` or
-  `git config git-town-branch.<branch>.parent master` without moving HEAD;
-  prune stale lineage after branch deletions). `git town propose` =
-  one-command branch+push+PR. Session ritual: `git town status`, `git status`,
-  `gh pr list` at start; clean tree + synced master at end.
-- **Recurring F/spacing damage in archived reports — a parallel session's
-  formatter pass.** `docs/status/archived/2026-08-16_08-47…:19` has had the
-  space before an inline-code span stripped (the word "against" glued to
-  the following backtick span) FOUR times now (re-fixed 2026-11-07 ×3,
-  most recently minutes after the prior fix — the pass runs continuously;
-  damage landed via daemon commits
-  `4539949`, `2e05692`, `ff4f51e`, `da3e0e3`). If it recurs, do NOT just
-  re-fix: hunt the loose repeat-pass in the concurrently-running sessions'
-  tooling (git log -S is the trail), and note docs-gates' annotate gate is
-  the detector. Never quote the damaged byte pattern verbatim in living
-  docs — the F/spacing detector parses file text and flags the example
-  itself.
-- **Shared golangci-lint cache can replay ghost findings** (verified
-  2026-09-18). The session env points `GOLANGCI_LINT_CACHE` at
-  `/mnt/buildcache/golangci-lint` (shared, multi-GB); it held results for a
-  concurrent session's worktree (`/tmp/gd-prereview`), and after that
-  worktree was deleted the cache kept emitting its gochecknoglobals/nolintlint
-  findings on every full lint — with warnings that the files no longer exist.
-  If lint reports issues in paths outside the repo, do NOT chase them in the
-  code: re-run with a fresh cache
-  (`GOLANGCI_LINT_CACHE=$(mktemp -d) go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.14.0 run ...`)
-  and trust only that verdict. Purging the shared cache itself is an owner
-  decision (other sessions rely on it).
-- `go.work` is committed, but a **global** gitignore (`~/.config/git/ignore`)
-  can still hide it on some machines. After touching `.gitignore` or creating
-  module files, run `git check-ignore -v <file>` and `git ls-files <file>` —
-  `git status` alone lies when a global ignore is in play.
-- `dprint.json` documents formatting intent for non-Go files but is NOT wired
-  into treefmt/flake (canonical formatting = treefmt via `nix flake check`).
-- **`static/datastar.js` is a vendored artifact — never reformat it.** A
-  prettier sweep once reformatted the minified bundle and the auto-commit
-  daemon committed it, breaking the checksum pin
-  (`static/checksum_test.go` — that test failing means the bundle drifted,
-  NOT that you should update the constant). Shields: `.prettierignore`,
-  `.codespellrc` (walk-mode glob skip + `crasher`/`keep-alives` ignore-list;
-  skip patterns MUST be `*/…` wildcards — directory scans match
-  `./`-prefixed paths, so exact patterns silently never fire — verified
-  2026-11-07 with codespell 2.4.3; codespell also rides treefmt via
-  `programs.codespell` with history-corpus excludes), and
-  dprint excludes for `.github/DISCUSSION_TEMPLATE/**` (markdown-in-yml
-  GitHub templates that dprint's YAML parser rejects).
-- **docs-gates ledger markers must be a pure line.** The
-  `<!-- check-rows:ledger -->` table exemption only works as its own line
-  directly above the table header; gluing it onto other text silently
-  cancels the exemption (found by the 2026-11-07 archive sweep).
-- **buildflow** (repo-external quality pipeline) reads `.buildflow.yml`:
-  `skip_steps` documents every tool intentionally skipped (go-structure-linter
-  flat-layout false positives, eslint — no first-party JS, go-auto-upgrade's
-  samber/lo suggestions conflict with the minimal-dependency policy). Its
-  erraudit variant flags `defer x.Close()` blank-ignores that the canonical
-  gate tolerates; errcheck excludes in `.golangci.yml` cover the concrete
-  Close types (`*sse.Stream`, `*gzip.Writer`). BuildFlow's result cache keys
-  cover matched files only — a finding can replay after its cause was fixed
-  elsewhere; bypass with `BUILDFLOW_NO_RESULT_CACHE=1` when verdicts look
-  stale (documented in the buildflow skill's failure triage).
-- **buildflow `license-check` must run inside the devshell** (`nix develop -c
-  buildflow ...`, closed 2026-10-01): go-licenses' stdlib detection compares
-  package paths against the GOROOT of the Go that built/ran it; outside the
-  devshell `GOTOOLCHAIN=auto` switches to the toolchain cache and every
-  stdlib package errors with "does not have module info" (the ×4 failure
-  loop). The devshell ships go-licenses + `GOTOOLCHAIN=local` + real GOROOT.
-  Do NOT add `GOTOOLCHAIN: local` to `.buildflow.yml` env — plain user-shell
-  go is 1.26.7, local would then fail every go1.27.1-directive module build.
-- Each published submodule (`broadcast/`, `datastartest/`, `static/`) carries
-  its own MIT LICENSE (module zips ship only the module dir; go-licenses
-  flagged license-less modules). Keep them in sync with the root LICENSE.
-- `origin/master` has NO branch protection (owner decision): CI is
-  informational, nothing blocks a bad push — run the gates locally first.
-- Status reports live in `docs/status/*.md` (indexed by its README) and are
-  point-in-time snapshots — excluded from CHANGELOG entries by policy.
-  `.md` is the repo's report format (the status-report skill's HTML default
-  is overridden by convention).
+- **`ScriptTagVersioned(path)` is the recommended JS-serving pattern** — never regress to a bare `datastar.js` src.
+- **gopls warnings on `encoding/json/v2` are false positives** — do not "fix" them; verify any LSP hint with the compiler first.
+- **Shared checkout:** auto-commit daemon commits/pushes dirty files; multiple sessions share this checkout; `git town` v24. Re-verify `git log` before/after git ops; stage by explicit paths; re-read files before edits. The daemon's heuristic has DELETED `.buildflow.yml` once (`99d4ab5`) — if documented skips vanish, `git log --follow -- .buildflow.yml`.
+- **Recurring F/spacing damage in archived reports — root cause found:** the dprint markdown plugin strips the space itself when it mis-parses escaped backticks. `docs/status/archived/**` is now excluded in `dprint.json` (2026-11-07); docs-gates' annotate gate is the detector.
+- **Shared golangci-lint cache can replay ghost findings** — paths outside the repo: re-run with `GOLANGCI_LINT_CACHE=$(mktemp -d)`.
+- **`static/datastar.js` is vendored — never reformat it** (`static/checksum_test.go` failing = bundle drifted, not a constant to update). Shields: `.prettierignore`, `.codespellrc`, dprint excludes.
+- **BuildFlow:** every skip in `.buildflow.yml` is deliberate (oxfmt/eslint: only JS is the vendored bundle; go-auto-upgrade: no samber/lo policy; `max_file_size: 700` for table-driven tests). go-structure-linter is shaped via `.go-structure-linter.yaml` (`presets: [flat]`). Run inside `nix develop -c` for license-check and govulncheck. Stale verdicts: `BUILDFLOW_NO_RESULT_CACHE=1`.
+- **docs-gates ledger markers must be a pure line** directly above the table header.
+- **No branch protection on master** — run the gates locally; CI is informational.
+- **Status reports** (`docs/status/`) are point-in-time snapshots, excluded from CHANGELOG; `.md` format overrides the status-report skill's HTML default.
 
 ## Error System
 
-Every error returned by go-datastar is a classified `*errorfamily.Error` carrying
-a stable machine-readable **code**, a behavioral **family**, and structured
-**context**. The catalog lives in `errors.go`; the full matching guide (by
-code / sentinel / family, with the family table and every code) is
-[docs/error-system.md](docs/error-system.md) and the README.
-
-### Sentinels
-
-- `ErrBodyReadAfterClose` (wraps `http.ErrBodyReadAfterClose`, preserving the cause)
-- `ErrEventNameRequired`
-
-### Design decisions
-
-1. **Library contract: go-error-family only, never samber/oops.** Libraries
-   classify but never presume the app's observability stack.
-2. **Return `error` interface, not `*errorfamily.Error`.** Idiomatic Go;
-   typed access via `errorfamily.Code` / `errors.Is` / `errors.As`. erraudit's
-   `generic_return` warnings on these signatures are accepted by design.
-3. **Sentinels stay context-pristine.** `WithContext` returns a clone, so shared
-   sentinels never leak caller-specific context.
-4. **Context loss is a bug.** Wrapping errors include relevant in-scope values
-   (HTTP method, input byte length, value type) so diagnosis needs no re-run.
-5. **Layered composition with go-sse v0.5+.** The transport classifies its own
-   errors; `wrapStreamError` wraps Send failures as
-   `datastar.stream_send_failed` (Transient). `errorfamily.Classify` returns
-   the outermost family, so go-datastar's classification wins; `errors.Is`
-   traverses the chain, so callers matching go-sse codes work transparently.
+Every error is a classified `*errorfamily.Error` (stable code, behavioral family, structured context); catalog in `errors.go`, full matching guide in [docs/error-system.md](docs/error-system.md). Sentinels: `ErrBodyReadAfterClose`, `ErrEventNameRequired`. Design decisions: go-error-family only (never samber/oops); return `error`, not `*errorfamily.Error`; sentinels stay context-pristine (`WithContext` clones); context loss is a bug; go-sse Send failures wrap as `datastar.stream_send_failed` (Transient) — go-datastar's classification wins, `errors.Is` still traverses to go-sse codes.
 
 ## What This Library Is NOT
 
-No CQRS, no event bus, no domain opinions. It is a pure protocol layer. Consumers build domain adapters on top (e.g., cqrs-htmx/datastar's EventBridge).
+No CQRS, no event bus, no domain opinions. Pure protocol layer; consumers build domain adapters (e.g., cqrs-htmx/datastar's EventBridge).
 
-## Nix / Build Gotchas
+## E2E Testing: `datastartest/`
 
-- **erraudit + go-finding are private repos** → no hermetic Nix build possible.
-  CI probe-gates with `go list -m`; the flake app go-installs with credentials.
-- **treefmt-nix `flakeCheck = true` registers its OWN unguarded `checks.treefmt`**
-  without go on PATH. goimports shells out to `go env` per file; without a
-  directive-satisfying `go` first on PATH, the sandbox tries a network
-  toolchain download. Keep `flakeCheck = false` + a guarded `checks.format`
-  that prepends `goPkg` to `buildInputs`.
-- **vendorHash sensitivity (ADR 004).** Root `vendorHash` moves only on
-  requires/toolchain changes. `datastartestVendorHash` moves on edits inside
-  its MINIMAL src fileset (datastartest/, root *.go + go.mod, static/) —
-  which is what makes the FOD converge on one paste. Don't widen that
-  fileset (the pre-fix repo-root fileset was a self-referencing
-  never-converging FOD).
-- **`broadcastVendorHash` tracks ROOT SOURCE EDITS** (verified 2026-10-01 ×2
-  in one session; re-verified live 2026-11-07 — comment-only root `.go` edits
-  plus the static bundle byte bump moved it, and `buildflow -s nix-hash-fix
-  --fix` landed the exact `got:` values with zero manual pastes):
-  broadcast vendors root + static through its directory
-  replaces, so ANY change to root's non-test `.go` files or LICENSE that
-  `go mod vendor` copies moves it — not just require bumps. After touching
-  root source, expect one more `--keep-going` pass + paste. Test files
-  (`*_test.go`, `docspec`) do NOT move it.
-- **nix CI reports only the FIRST hash mismatch** — a require bump can move
-  BOTH submodule vendor hashes while the workflow names one and exits.
-  Reproduce with a full local `nix flake check --keep-going` (the
-  `--keep-going` flag collects EVERY moved hash in one pass; a plain check
-  stops at the first) and paste every moved hash in the same commit — or
-  let `buildflow -s nix-hash-fix --fix` do it (verified 2026-11-07: it
-  landed both moved hashes exactly).
-- **ANY `go.mod`/`go.sum` edit in ANY module moves vendor hashes — and the
-  nix path filter once hid it.** `datastartestSrc` includes the whole
-  `datastartest/` dir, so even replace-directive drops there move
-  `datastartestVendorHash` (2026-09-29). `nix.yml`'s paths filter now matches
-  `**/go.mod` + `**/go.sum`, but the lesson stands: run `nix flake check`
-  locally before pushing go.mod edits in ANY module. Root metadata (`.md`,
-  CI yml) stays outside both filesets and never moves a hash.
-- **`buildGoModule` `modRoot`** builds a submodule in place (vendor + main
-  derivations both `cd "$modRoot"`).
-- **BOM in Go source = compile error.** Use the escape `"\xef\xbb\xbf"` in
-  test seed data.
+Separate module of consumer E2E helpers (SSE parsing, dataline decoding, `Collect*`, assertions); full API tour: [datastartest/README.md](datastartest/README.md). Root never requires it. **Invariant:** all public helpers accept `testing.TB` (works with `*testing.T`, `*testing.B`, Ginkgo's `GinkgoT()`) — keep it.
 
-## E2E Testing for Consumers: `datastartest/`
+## Nix / Build (headlines — full text in [docs/gotchas.md](docs/gotchas.md#nix--build-gotchas))
 
-`datastartest` is a separate module of reusable E2E helpers (SSE parsing,
-dataline decoding, `Collect*` helpers, assertions). Full API tour:
-[datastartest/README.md](datastartest/README.md). The wire-format E2E test
-lives in `datastartest/e2e_test.go`; root's retains only go-sse-owned header
-checks. Root must never require datastartest.
-
-**Invariant:** all public helpers accept `testing.TB` (not `*testing.T`), so
-they work with `*testing.T`, `*testing.B`, and Ginkgo's `GinkgoT()`. Keep this
-when adding helpers.
-
-## Docs Map
-
-| Path                               | Content                                                     |
-| ---------------------------------- | ----------------------------------------------------------- |
-| `doc.go`                           | Package docs: design rationale, quick start, error contract |
-| `docs/adr/`                        | Architecture decision records (multi-module, …)             |
-| `docs/release-checklist.md`        | Pre-release gate, versioning, lockstep tags, verification   |
-| `docs/replay.md`                   | MemoryStore + Last-Event-ID reconnection guide              |
-| `docs/error-system.md`             | The three error-matching dimensions, codes + families       |
-| `docs/wire-format.md`              | Annotated datalines per patch family (+ golden tests)       |
-| `docs/architecture.md`             | Three-layer architecture diagram + file map                 |
-| `docs/migration-starfederation.md` | Upstream SDK → go-datastar migration mapping                |
-| `docs/testing.md`                  | datastartest quick start, fuzzing, coverage story           |
-| `docs/ci-watch.md`                 | Promote/drop/verify runbook for the non-required workflows  |
-| `docs/duplication-baseline.md`     | art-dupl accepted-clone baseline (audit re-verify gate)     |
-| `docs/performance.md`              | Measured benchmark table                                    |
-| `docs/version.md`                  | The three version concepts (module / JS client / ldflags)   |
-| `docs/migration-guide.md`          | v0.2.0 → v0.3.0 upgrade guide                               |
-| `docs/static-js.md`                | Embedded JS pinning + upgrade process                       |
-| `docs/status/` (+ its README)      | Point-in-time status reports and audits (index + policy)    |
-| `docs/planning/`                   | Pareto plans; `archived/` holds executed plans              |
-| `CONTRIBUTING.md`                  | Dev setup, workspace rules, fuzzing                         |
-| `CHANGELOG.md`                     | Released history (append-only) + `[Unreleased]` draft       |
+- erraudit + go-finding are private → no hermetic build; CI probe-gates.
+- treefmt must stay `flakeCheck = false` with a guarded `checks.format` (goimports needs go on PATH).
+- `broadcastVendorHash` moves on ANY root non-test `.go`/LICENSE edit, not just require bumps; `nix flake check --keep-going` collects ALL moved hashes; `buildflow -s nix-hash-fix --fix` lands them.
+- ANY `go.mod`/`go.sum` edit in ANY module can move vendor hashes — `nix flake check` before pushing.
+- BOM in Go source = compile error; use `"\xef\xbb\xbf"` in test seeds.
