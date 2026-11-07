@@ -11,7 +11,6 @@ all five CI workflows green, v0.3.0 shipped and rendered on pkg.go.dev.
 
 ## Verdict at a glance
 
-
 <!-- check-rows:ledger -->
 
 | Tier | Tasks | Verdict |
@@ -27,16 +26,12 @@ all five CI workflows green, v0.3.0 shipped and rendered on pkg.go.dev.
 | 20% (T10–T20) | CI depth, docs, features | ✅ done (T20 includes decision spike) |
 | Rest (T21–T27) | long tail | 🟡 5 done, T21/T27 delivered as scoped deferrals, not spikes |
 
-
 17 commits pushed. Every gate re-verified at HEAD: race ×5 packages, vet,
-
 
 lint 0 issues ×3 modules, `GOWORK=off` isolation ×3, `go work sync`
 idempotent, govulncheck clean, `nix flake check` all-passed, actionlint
 
-
 clean, and all five CI workflows **success** on the final push (run
-
 
 33266637847 et al.).
 
@@ -126,6 +121,7 @@ clean, and all five CI workflows **success** on the final push (run
 - **Tag only from a quiescent, fully-gated tree** — the release commit was
   gated, but the gate evidence predated the release commit's own go.mod
   change.
+
 ---
 
 ## a) FULLY DONE

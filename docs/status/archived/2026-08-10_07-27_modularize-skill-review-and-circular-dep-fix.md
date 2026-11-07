@@ -10,15 +10,11 @@ Run the `go-modularize` skill against go-datastar to review module boundaries, f
 
 ## A) FULLY DONE
 
-
 ### Modularization Analysis (Phases 1-2)
-
 
 - **Phase 1 — State Detection:** Mapped all 3 go.mod files (root, static/, datastartest/). Classified as "partial split" with a circular dependency. Confirmed go.work workspace mode active.
 
-
 - **Phase 2 — Research & Analysis:** Mapped all intra-repo import relationships across 15 production files and 16+ test files. Identified:
-
 
 - root → static (production: `script_handler.go`)
 - root → datastartest (test-only: `e2e_test.go` — LEAK)
@@ -26,45 +22,34 @@ Run the `go-modularize` skill against go-datastar to review module boundaries, f
 - static → nothing (clean leaf)
 - Confirmed no `internal/` packages exist (no access breakage risk).
 
-
 - Confirmed all error types in root `errors.go` — no cross-module error accessibility issues.
 - Confirmed no god-packages — root is a single cohesive `datastar` package at correct granularity.
 
-
 - Verified all 3 modules build standalone with `GOWORK=off` before changes.
-
 
 ### Proposal & Self-Review (Phases 3-4)
 
-
 - **Phase 3:** Wrote comprehensive HTML proposal to `docs/modularization/2026-08-10_PROPOSAL.html` with:
-
 
 - Module inventory table (3 modules)
 
-
 - Current dependency graph (with circular dep highlighted)
-
 
 - Proposed dependency graph (clean DAG)
 - DAG verification table (3 layers: 0, 1, 2)
 - Replace/workspace strategy (dual: go.work + replace, already in place)
 - Error type placement analysis (all in root, no issues)
 
-
 - Versioning strategy (shared versioning, single tag)
 - Breaking change analysis (zero consumer impact)
 - Risk assessment (4 risks, all low/medium)
 
-
 - Build system impact (flake.nix vendorHash, CI)
-
 
 - **Phase 4:** Ran brutal self-review against the proposal-specific checklist:
   - No forgotten packages
   - No split brains
   - Right granularity (3 modules, no over/under-modularization)
-
 
 - No reinventing the wheel
 - Import paths verified (traced full chain)
@@ -73,7 +58,6 @@ Run the `go-modularize` skill against go-datastar to review module boundaries, f
 - No internal/ breakage risk
 - No consumers broken
 - Cross-referenced with how-to-golang skill (no banned deps, correct patterns)
-
 
 ### Execution Plan (Phase 5)
 
@@ -102,7 +86,6 @@ All 5 steps executed and verified:
 - `go test ./... ./datastartest/... ./static/... -race -count=1` — ALL PASS
 - `go vet ./... ./datastartest/... ./static/...` — CLEAN
 - `golangci-lint run ./... ./datastartest/... ./static/...` — 0 ISSUES
-
 
 - `GOWORK=off go build` per module — ALL 3 PASS
 - `GOWORK=off go test` per module — ALL 3 PASS

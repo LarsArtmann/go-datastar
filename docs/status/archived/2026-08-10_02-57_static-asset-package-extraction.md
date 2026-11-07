@@ -10,7 +10,6 @@ Extract the `//go:embed datastar.js` from the root `datastar` package into a ded
 
 ## What Was Done
 
-
 The `//go:embed static/datastar.js` directive, the `embeddedDatastarJS []byte` var, and the `DatastarJSVersion` constant were moved out of `script_handler.go` into a new **`static` subpackage** (`static/static.go`). The root package now imports `static` and re-exports its symbols for backward compatibility.
 
 ### Files Created
@@ -34,9 +33,7 @@ The `//go:embed static/datastar.js` directive, the `embeddedDatastarJS []byte` v
 | `script_handler.go` | Dropped `_ "embed"` import + `embeddedDatastarJS` var + inline version const. Added `static` import. `ScriptHandler()` now calls `ScriptHandlerWith(static.Bytes(), static.Version)`. `DatastarJSVersion` re-exports `static.Version` as a backward-compatible alias. |
 | `AGENTS.md` | File-layout table: `script_handler.go` row updated; new `static/` row added. |
 
-
 ### Verification (all passed)
-
 
 <!-- check-rows:ledger -->
 
@@ -51,11 +48,9 @@ The `//go:embed static/datastar.js` directive, the `embeddedDatastarJS []byte` v
 | `golangci-lint run ./...` | 0 issues |
 | `go vet ./example/` | clean |
 
-
 ---
 
 ## a) FULLY DONE
-
 
 1. **`static` package created** — owns the embed, exposes `Bytes()` + `Version`, documented with package-level godoc.
 2. **`script_handler.go` refactored** — consumes `static` package; public API (`ScriptHandler`, `ScriptHandlerWith`, `ScriptTag`, `Version`, `DatastarJSVersion`) unchanged.
@@ -64,7 +59,6 @@ The `//go:embed static/datastar.js` directive, the `embeddedDatastarJS []byte` v
 5. **All quality gates pass** — build, vet, test (race), lint, example vet.
 
 ## b) PARTIALLY DONE
-
 
 Nothing is half-finished. The refactor itself is complete and verified.
 
@@ -91,7 +85,6 @@ The closest thing to a fuckup is the **interpretation ambiguity** (see Questions
 1. **`Bytes()` returns the shared embedded slice, not a copy.** Documented as "must not be modified," but a careless caller can corrupt the asset for all subsequent `ScriptHandler` requests. Go's own `embed.FS.ReadFile` returns a copy. Tradeoff: zero-allocation vs. safety. If this is a public API that consumers call directly, a defensive copy may be wiser.
 
 2. **`DatastarJSVersion` redundancy.** Both `datastar.DatastarJSVersion` and `static.Version` exist. The const alias (`const DatastarJSVersion = static.Version`) is backward-compatible, but it is two names for the same value. Consider deprecating the root alias with a doc comment once consumers migrate.
-
 
 3. **`ScriptHandlerWith(scriptBytes []byte, _ string)`.** The second parameter (`version`) is unused — the `_` discard was pre-existing, but the signature now looks odd when the version is available from `static.Version`. The parameter exists for custom bundles where the caller supplies their own version string, but it's never read. Consider using it (e.g., in a header) or removing it in a future major version.
 

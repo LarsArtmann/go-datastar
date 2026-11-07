@@ -23,7 +23,6 @@
   I claimed was "blocked on access" was a false assumption propagated across
   3 status reports without verification.
 
-
 ---
 
 ## a) FULLY DONE

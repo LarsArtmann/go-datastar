@@ -8,52 +8,55 @@
 - **Input baseline:** master `3974cd7` (later swept by the auto-commit daemon
   into `af3ce90`+). One crush session, shared checkout.
 
-
 ## Verdict in one paragraph
-
 
 All three queued tasks were executed and verified. The CI-watch ritual
 
-
 completed all four workflow checklists and triggered two promotions
-
 
 (nix.yml blocking, fuzz 300s). The datastartest tranche shipped five helpers
 
-
 with eleven tests. The scoping task exposed that its own TODO row was stale
-
 
 (v0.5.0 shipped 2026-09-03) and produced the correct v0.6.0 next-release row
 instead. Full local gate suite is green. Two of the session's own mistakes
 (a near split-brain `find.go`, a linter-fighting helper extraction) were
 
-
 self-caught and corrected before completion; the report below documents them
 honestly.
-
 
 ---
 
 ## a) FULLY DONE
 
 <!-- check-rows:ledger -->
-| # | Work                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Evidence                                                                                 |
+
+| # | Work | Evidence |
+
 <!-- check-rows:ledger -->
+
 | - | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+
 <!-- check-rows:ledger -->
-| 1 | **nix.yml promoted** — `continue-on-error` dropped. Criteria verified, not assumed: 15 consecutive green master runs 2026-09-03 → 2026-09-18; v0.5.0 tagged from `831bbfb`, which itself has a green run (exact SHA match via API). `actionlint` clean; local `nix flake check` green post-edit.                                                                                                                                                                                        | `.github/workflows/nix.yml`; `docs/ci-watch.md` State updated                            |
+
+| 1 | **nix.yml promoted** — `continue-on-error` dropped. Criteria verified, not assumed: 15 consecutive green master runs 2026-09-03 → 2026-09-18; v0.5.0 tagged from `831bbfb`, which itself has a green run (exact SHA match via API). `actionlint` clean; local `nix flake check` green post-edit. | `.github/workflows/nix.yml`; `docs/ci-watch.md` State updated |
+
 <!-- check-rows:ledger -->
-| 2 | **fuzz.yml 09-03 crash triaged to root cause** — artifact (51 inputs) downloaded; byte-identical to the committed corpus; unreproducible on the exact CI tree `dba6a2f` (seed run green + 60 s fuzz mirror = 10.48M execs green); FAIL timestamped 60.08 s ⇒ one-off worker-shutdown flake at fuzztime expiry. No parser bug. Inputs remain committed regression seeds.                                                                                                                 | run 33716138899 logs; worktree repro; `docs/ci-watch.md`                                 |
+
+| 2 | **fuzz.yml 09-03 crash triaged to root cause** — artifact (51 inputs) downloaded; byte-identical to the committed corpus; unreproducible on the exact CI tree `dba6a2f` (seed run green + 60 s fuzz mirror = 10.48M execs green); FAIL timestamped 60.08 s ⇒ one-off worker-shutdown flake at fuzztime expiry. No parser bug. Inputs remain committed regression seeds. | run 33716138899 logs; worktree repro; `docs/ci-watch.md` |
+
 <!-- check-rows:ledger -->
-| 3 | **fuzztime promoted 60 s → 300 s** (two stable green weeks met)                                                                                                                                                                                                                                                                                                                                                                                                                         | `.github/workflows/fuzz.yml`                                                             |
-| 4 | **CodeQL reviewed** — zero alerts since enablement; recent runs green. Nothing to triage.                                                                                                                                                                                                                                                                                                                                                                                               | `gh api code-scanning/alerts`                                                            |
-| 5 | **Renovate verified** — zero proposals to date, which is EXPECTED (upstream latest v1.0.3 = 2026-08-27, predates the 2026-08-29 onboarding and matches the pinned bundle). Flagged that the app's delivery is still unverified; next upstream release is the first real test.                                                                                                                                                                                                           | `docs/ci-watch.md` renovate State                                                        |
+
+| 3 | **fuzztime promoted 60 s → 300 s** (two stable green weeks met) | `.github/workflows/fuzz.yml` |
+| 4 | **CodeQL reviewed** — zero alerts since enablement; recent runs green. Nothing to triage. | `gh api code-scanning/alerts` |
+| 5 | **Renovate verified** — zero proposals to date, which is EXPECTED (upstream latest v1.0.3 = 2026-08-27, predates the 2026-08-29 onboarding and matches the pinned bundle). Flagged that the app's delivery is still unverified; next upstream release is the first real test. | `docs/ci-watch.md` renovate State |
 | 6 | **datastartest helper tranche 2 shipped** — `RequireNotScript` (assert.go), `FindScript`, `FindAllElements`, `EventToSelectorMap` (search.go, alongside their singular counterpart `FindElement`), `CollectPostWithTimeout` + `CollectWithRequestWithTimeout` (collect.go, sharing `readEventsWithin`, honoring the established partial-events-on-timeout contract). 11 new tests, all green. Specs traced to their source (2026-08-10_04-25 items #38/#39/#41/#42; 09-03 debrief #16). | `datastartest/search.go`, `collect.go`, `assert.go`, `search_test.go`, `collect_test.go` |
+
 <!-- check-rows:ledger -->
-| 7 | **Docs synced** — `docs/ci-watch.md` (4 State lines), `CHANGELOG.md` [Unreleased] (Added — datastartest, Added — CI), `datastartest/README.md` (collect table, assertions, finding section), `docs/testing.md`, `ROADMAP.md` (tranche-2 annotation), `TODO_LIST.md` (completed rows removed, release row sharpened), `docs/release-checklist.md` (3 → 4 modules: broadcast joined the train)                                                                                            | respective files                                                                         |
-| 8 | **Full gate suite green** — workspace race tests (all 4 modules + example), vet, golangci-lint 0 issues (fresh cache), per-module `GOWORK=off` tests, tidy-diff, `go mod verify`, go.work sync idempotency + `go work use` no-op, replace-path audit, govulncheck ("No vulnerabilities found"), `nix flake check` ("all checks passed")                                                                                                                                                 | session run log                                                                          |
-| 9 | **Ghost-lint root-caused and documented** — persistent lint findings pointing at `/tmp/gd-prereview/*` (a deleted foreign worktree) were replayed by the shared 3.8 G `GOLANGCI_LINT_CACHE=/mnt/buildcache/golangci-lint`. Fresh-cache run: 0 issues. Gotcha + fresh-cache verification command recorded in AGENTS.md.                                                                                                                                                                  | AGENTS.md "Shared golangci-lint cache"                                                   |
+
+| 7 | **Docs synced** — `docs/ci-watch.md` (4 State lines), `CHANGELOG.md` [Unreleased] (Added — datastartest, Added — CI), `datastartest/README.md` (collect table, assertions, finding section), `docs/testing.md`, `ROADMAP.md` (tranche-2 annotation), `TODO_LIST.md` (completed rows removed, release row sharpened), `docs/release-checklist.md` (3 → 4 modules: broadcast joined the train) | respective files |
+| 8 | **Full gate suite green** — workspace race tests (all 4 modules + example), vet, golangci-lint 0 issues (fresh cache), per-module `GOWORK=off` tests, tidy-diff, `go mod verify`, go.work sync idempotency + `go work use` no-op, replace-path audit, govulncheck ("No vulnerabilities found"), `nix flake check` ("all checks passed") | session run log |
+| 9 | **Ghost-lint root-caused and documented** — persistent lint findings pointing at `/tmp/gd-prereview/*` (a deleted foreign worktree) were replayed by the shared 3.8 G `GOLANGCI_LINT_CACHE=/mnt/buildcache/golangci-lint`. Fresh-cache run: 0 issues. Gotcha + fresh-cache verification command recorded in AGENTS.md. | AGENTS.md "Shared golangci-lint cache" |
 
 ## b) PARTIALLY DONE
 
@@ -198,61 +201,61 @@ ROADMAP-fuel to be routed through docs-health HARVEST with rigor.
     wire-format goldens (`TestPatchWireGoldens`) stay green.
 18. `b.Loop()` modernization (gopls `bloop` warnings, benchmarks) — 12
     gopls warnings total remain in datastartest.
-~~19. `writestring` gopls warnings in `diff.go`, `require_ordered.go`,~~ **Won't implement — gopls-only false positives (the AGENTS.md gopls gotcha class — gopls stdlib DB lags the toolchain); the pinned lint + compiler gates are the truth and green.**
+    ~~19. `writestring` gopls warnings in `diff.go`, `require_ordered.go`,~~ **Won't implement — gopls-only false positives (the AGENTS.md gopls gotcha class — gopls stdlib DB lags the toolchain); the pinned lint + compiler gates are the truth and green.**
     `reader_fuzz_test.go`.
-20. Headless-browser E2E (chromedp/Playwright) with the real DataStar JS
+19. Headless-browser E2E (chromedp/Playwright) with the real DataStar JS
     client — ROADMAP.
-21. Broadcast ergonomics tranche (TODO_LIST, from the 19:54 review): store
+20. Broadcast ergonomics tranche (TODO_LIST, from the 19:54 review): store
     injection seam, constructor matrix, heartbeat option.
-22. `example/README.md` + `docker-compose.yml` for local runs — ROADMAP.
-23. Compile-checked doc snippets (docspec target) for `BroadcastMany` and the
+21. `example/README.md` + `docker-compose.yml` for local runs — ROADMAP.
+22. Compile-checked doc snippets (docspec target) for `BroadcastMany` and the
     new helper README snippets — ROADMAP.
-24. Comparison table vs upstream SDK in root README — ROADMAP.
-25. Domain-adapter (EventBridge) example demonstrating patch-as-value —
+23. Comparison table vs upstream SDK in root README — ROADMAP.
+24. Domain-adapter (EventBridge) example demonstrating patch-as-value —
     ROADMAP.
-26. Benchmark for `Collect*` helper overhead — ROADMAP.
-27. Table-driven benchmark shapes — ROADMAP internal polish.
-28. `indexTagEnd` rename + tag-attribute parsing beyond quotes — ROADMAP
+25. Benchmark for `Collect*` helper overhead — ROADMAP.
+26. Table-driven benchmark shapes — ROADMAP internal polish.
+27. `indexTagEnd` rename + tag-attribute parsing beyond quotes — ROADMAP
     polish.
-29. Accessor methods over public `Event.ID`/`Event.Retry` fields — ROADMAP
+28. Accessor methods over public `Event.ID`/`Event.Retry` fields — ROADMAP
     polish (breaking-ish; design deliberately).
-30. `signalsMap` type + `signalKeyMessage` naming review — ROADMAP response
+29. `signalsMap` type + `signalKeyMessage` naming review — ROADMAP response
     ergonomics.
-31. Ginkgo/Gomega matchers package — ROADMAP (decision needed first: is a
+30. Ginkgo/Gomega matchers package — ROADMAP (decision needed first: is a
     matcher module wanted at all?).
-32. Community metadata (Sponsors/funding, contributor list) — ROADMAP.
-33. Migration-guide refresh for the starfederation SDK against JS v1.0.3 —
+31. Community metadata (Sponsors/funding, contributor list) — ROADMAP.
+32. Migration-guide refresh for the starfederation SDK against JS v1.0.3 —
     ROADMAP.
-34. ~~`docs/architecture.md`: finish the broadcast module layer in the diagram —~~ done — docs/architecture.md includes the broadcast module in the protocol layer (ROADMAP theme 2 notes it)
+33. ~~`docs/architecture.md`: finish the broadcast module layer in the diagram —~~ done — docs/architecture.md includes the broadcast module in the protocol layer (ROADMAP theme 2 notes it)
     ~~ROADMAP (annotated as "started").~~
-35. More example apps: toasts, progress bars, signal merge modes — ROADMAP.
-36. Refresh `docs/performance.md` with current benchmark numbers.
-37. Fuzz corpus minimization pass (51 seeds include near-duplicates; smaller
+34. More example apps: toasts, progress bars, signal merge modes — ROADMAP.
+35. Refresh `docs/performance.md` with current benchmark numbers.
+36. Fuzz corpus minimization pass (51 seeds include near-duplicates; smaller
     corpus = faster CI baseline gathering).
-38. Decide `nix flake check --all-systems` CI leg (current runs warn about
+37. Decide `nix flake check --all-systems` CI leg (current runs warn about
     omitted aarch64/darwin systems).
-39. Decide whether CI workflow changes belong in the library CHANGELOG
+38. Decide whether CI workflow changes belong in the library CHANGELOG
     (keepachangelog purists say no; current entries do) — document the call.
-40. ~~Investigate the root-owned `.crush -> /mnt/hot/crush/go-datastar` symlink~~ **NOT-DO — local env artifact — the .crush symlink is untracked (git ls-files empty); AGENTS.md need not cover machine-local state.**
+39. ~~Investigate the root-owned `.crush -> /mnt/hot/crush/go-datastar` symlink~~ **NOT-DO — local env artifact — the .crush symlink is untracked (git ls-files empty); AGENTS.md need not cover machine-local state.**
     ~~in the repo root (unexpected; not covered by AGENTS).~~
-41. ~~The `result` Nix symlink reappeared (AGENTS says it was removed) — trash~~ **NOT-DO — local nix-build artifact — the `result` symlink is untracked AND gitignored; recreated by local builds, harmless.**
+40. ~~The `result` Nix symlink reappeared (AGENTS says it was removed) — trash~~ **NOT-DO — local nix-build artifact — the `result` symlink is untracked AND gitignored; recreated by local builds, harmless.**
     ~~it or document that nix builds recreate it.~~
-42. Repo-wide grep for stale "three modules" claims (release checklist is
+41. Repo-wide grep for stale "three modules" claims (release checklist is
     fixed; ADR 002 and others may still say 3).
-43. ADR 002: confirm it reflects broadcast joining the lockstep train, or
+42. ADR 002: confirm it reflects broadcast joining the lockstep train, or
     amend it.
-44. ~~Update `docs/status/README.md` index tier for this report + the two~~ done — docs/status/README.md carries rows for all three 2026-09-18 reports
+43. ~~Update `docs/status/README.md` index tier for this report + the two~~ done — docs/status/README.md carries rows for all three 2026-09-18 reports
     ~~2026-09-18 broadcast reports (index hygiene per docs-health).~~
-45. ~~Rename TODO_LIST release row evidence after the cut (v0.6.0 row will need~~ done — superseded — TODO_LIST rebuilt since; no stale release row remains
+44. ~~Rename TODO_LIST release row evidence after the cut (v0.6.0 row will need~~ done — superseded — TODO_LIST rebuilt since; no stale release row remains
     ~~the same staleness check v0.5.0's row got).~~
-46. datastartest `doc.go`: surface the timeout-variant family in the package
+45. datastartest `doc.go`: surface the timeout-variant family in the package
     doc tour, not only README.
-47. Consider `-shuffle=on` for the workspace race suite (cheap flake finder).
-48. Consider pinning golangci-lint's local cache dir in the AGENTS Commands
+46. Consider `-shuffle=on` for the workspace race suite (cheap flake finder).
+47. Consider pinning golangci-lint's local cache dir in the AGENTS Commands
     block so every session gets the fresh-cache fix for free.
-49. Wire the fuzz matrix for `broadcast/` targets if any exist (currently
+48. Wire the fuzz matrix for `broadcast/` targets if any exist (currently
     only root + datastartest fuzz; broadcast has parsers too).
-50. ~~Harvest this list: move items 1–8 into TODO_LIST (done for 1, 5, 6, 7, 8~~ done (docs-health pass 2026-10-01)
+49. ~~Harvest this list: move items 1–8 into TODO_LIST (done for 1, 5, 6, 7, 8~~ done (docs-health pass 2026-10-01)
     ~~partially), route 9–50 through ROADMAP/docs-health HARVEST with routing~~
     ~~rigor.~~
 
@@ -269,6 +272,7 @@ ROADMAP-fuel to be routed through docs-health HARVEST with rigor.
    survives? Renovate owns the embedded-JS custom manager; dependabot owns
    the actions/go-modules PRs currently open. (TODO_LIST marks this
    owner-blocked; the answer changes what I do with the four open PRs.)
+
 ---
 
 _Point-in-time snapshot. Routing policy: section (f) is HARVEST input for

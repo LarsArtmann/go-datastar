@@ -10,55 +10,38 @@
 
 ---
 
-
 ## Self-review (asked directly)
 
-
-
 **What did I forget?**
-
-
 
 1. The pasted test output had **no `static` module line** — I trusted the "PASS" impression instead of cross-checking module coverage. Found the checksum failure only when running the suite myself (minutes later than necessary).
 2. **nix-checker told me** ("vendorHash may be stale — go.mod modified after hash was set") and I initially filed it under "heuristic noise". It was right. `nix flake check` at minute one would have surfaced the real hash mismatch immediately.
 3. oxfmt/oxlint have **no ignore for `static/datastar.js`** — I shielded prettier and codespell only. Nothing stopped (or stops) oxfmt from sweeping the bundle next run.
 
-
 4. Did not run the baseline gate suite **before** the first edit — the static break and stale hash were pre-existing and would have been found in minute one with a correct READ→UNDERSTAND→VERIFY-first sequence.
 5. Did not run `erraudit nolint-audit .` to confirm directive freshness; did not do the git-town session ritual; did not HARVEST the (f) list into `TODO_LIST.md` yet.
 
-
 **What is stupid that we do anyway?**
-
-
 
 - The **auto-commit daemon commits formatter damage to master ungated** (this is exactly how a prettier-reformatted vendored bundle landed in `ef10422`).
 - **No branch protection + informational CI** → a red master sat on origin for ~6h (unbuildable hermetic flake via hash mismatch).
 - **Four formatters with opinions on non-Go files** (dprint, prettier, oxfmt, treefmt) with no single owner — split brain, see below.
 
-
 - **buildflow's nix self-healing is trusted but does not actually persist fixes** — `nix-hash-fix` reported ✔ while the hash stayed stale.
 
-
-
 **Could I have done better?**
-
 
 - Sequencing: baseline verification first, lint after every edit batch (my first `defer x.Close()` edit traded erraudit-compliance for a golangci errcheck failure — cost one cycle).
 - Spent ~6 tool calls reverse-engineering buildflow's erraudit argv (shim, binary greps, run records) before accepting the residual. Right call to stop; late call to stop.
 - I introduced two typos while writing lint/docs edits (`trip the dictionary`, `reformat ted`) — both caught and fixed, but ironic in a spell-check session.
 
-
 **Did I lie?** No. "All gates green" at session end was true for the working tree; the vendorHash fix has since been committed verbatim (`caa0986`, 1 line), so committed state now matches what was verified.
 
-
 **Ghost systems?** The `//nolint:erraudit` directive in `example/main.go:98` is currently **honored by no gate that scans `example/`**: the AGENTS.md gate runs `--no-suppress` (ignores it) and doesn't scan `example/` at all; the flake `erraudit` app honors it but doesn't scan `example/`; buildflow scans `example/` but ignores nolint. It is documentation, not enforcement — flagged in b) #1.
-
 
 **Split brains found:** (1) two documented erraudit invocations (AGENTS.md gate `--no-suppress` vs flake app `--severity-threshold error`) — different contracts, both "green"; (2) dprint vs prettier both claim markdown/JSON/YAML; (3) buildflow's erraudit policy vs the erraudit CLI's own default (nolint-honoring) policy; (4) codespell enforced only in buildflow, absent from treefmt/CI.
 
 **Scope creep check:** resisted adding samber/lo (dep-for-nothing), resisted the hash.nix extraction (ADR-004 self-reference risk), fixed the `cancelability` finding as a comment, not an API rename. The 50-item list below is a brainstorm, not a commitment.
-
 
 **Removed something useful?** No. Skipped steps are documented with rationale; `checks.*` consolidation is behavior-identical.
 
@@ -92,7 +75,6 @@
 
 | 12 | Full verification battery | see "End state" above |
 
-
 ## b) PARTIALLY DONE
 
 1. **buildflow ↔ erraudit CLI reconciliation** — works: canonical gate green, CLI honors `//nolint:erraudit`. Open: buildflow's erraudit variant reported the same code the CLI passes (invocation flags unpinned; nolint seemingly ignored there). Final full run: 0 failed (finding non-failing there), but single-step runs still surface it. Blocker: buildflow's argv not discoverable from repo side. Effort: **M** (needs buildflow-side fix or flag pinning).
@@ -104,7 +86,6 @@
 ## c) NOT STARTED (observed this session; deliberately untouched)
 
 1. ~~**Push to origin** — master ahead 8 (incl. bundle restore + vendorHash fix). Why: never push without explicit instruction. Priority: high, blocked on owner.~~ done — pushed — v0.5.0 tagged from that tree the same night (`831bbfb`)
-
 
 2. ~~**v0.5.0 release** — `[Unreleased]` holds consumer-facing additions (Response method forms, `version` package, datastartest debug helpers, static v1.0.3). Waiting on release decision.~~ done at `831bbfb`
 3. **docs/static-js.md runbook** — not verified against the new shields/checksum-pin workflow.
@@ -138,17 +119,17 @@
 <!-- brainstorm ledger (self-declared "not commitments"): harvested ideas' dispositions live in TODO_LIST/ROADMAP + the buildflow repo -->
 <!-- check-rows:ledger -->
 
-| #     | Task                                                                                                                                            | Impact       | Effort | Category      |
-| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ------ | ------------- |
-| ~~1~~ | ~~Push master (8 commits: bundle restore, vendorHash fix, docs) after owner approval~~ done — pushed — v0.5.0 tagged from that tree (`831bbfb`) | ~~Critical~~ | ~~S~~  | ~~Process~~   |
-| 2 **→ upstream BuildFlow config candidate (oxfmt/oxlint vendored-artifact ignore); no in-repo oxlint config exists** | Add oxfmt/oxlint ignore for `static/datastar.js` (config file) | High | S | Quality |
-| ~~3~~ done — works as of 2026-11-07: nix-hash-fix landed both moved vendor hashes matching the gate's got: values exactly (verified in the flake re-check); the historical false-success does not reproduce on the current binary | ~~Fix buildflow nix-hash-fix false-success (upstream in buildflow repo)~~ | ~~High~~ | ~~M~~ | ~~Tooling~~ |
-| 4 **→ documented known-tool-bug (AGENTS.md buildflow gotcha: the erraudit variant's flags/nolint handling differs from the CLI); fix belongs upstream in BuildFlow** | Make buildflow's erraudit honor `//nolint:erraudit` or pin its flags | High | M | Tooling |
-| 5 **→ documented known limitation (AGENTS.md vendored-artifact gotcha); prevention lives in fleet daemon config, outside this repo** | Guard the daemon against committing `static/datastar.js` changes (checksum test pre-commit) | High | S | Tooling |
-| 6 **→ TODO_LIST watch-the-first-Renovate-JS-bump row; delivery unverified (zero Renovate PRs — v1.0.4 missed, docs/static-js.md Renovate section)** | Verify the renovate JS-bump manager updates `bundleSHA256` in the same PR | High | M | Tooling |
-| ~~7~~ | ~~Cut v0.5.0 per docs/release-checklist.md (Unreleased is substantial)~~ done at `831bbfb`                                                      | ~~High~~     | ~~M~~  | ~~Release~~   |
-| ~~8~~ done — resolved as a documented dual contract: AGENTS.md Commands section explains when each invocation applies (audit-mode --no-suppress view vs CI-mode severity gate) | ~~Unify the two documented erraudit invocations into one contract~~ | ~~Medium~~ | ~~S~~ | ~~Quality~~ |
-| ~~9~~ done — docs/static-js.md Upgrade process documents the fetch-bundle.sh flow (download, sha256, provenance, checksum constant, goldens); CONTRIBUTING.md now links it too | ~~Update docs/static-js.md with checksum-pin + shields upgrade runbook~~ | ~~Medium~~ | ~~S~~ | ~~Documentation~~ |
+| #                                                                                                                                                                                                                                 | Task                                                                                                                                            | Impact       | Effort | Category          |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ------ | ----------------- |
+| ~~1~~                                                                                                                                                                                                                             | ~~Push master (8 commits: bundle restore, vendorHash fix, docs) after owner approval~~ done — pushed — v0.5.0 tagged from that tree (`831bbfb`) | ~~Critical~~ | ~~S~~  | ~~Process~~       |
+| 2 **→ upstream BuildFlow config candidate (oxfmt/oxlint vendored-artifact ignore); no in-repo oxlint config exists**                                                                                                              | Add oxfmt/oxlint ignore for `static/datastar.js` (config file)                                                                                  | High         | S      | Quality           |
+| ~~3~~ done — works as of 2026-11-07: nix-hash-fix landed both moved vendor hashes matching the gate's got: values exactly (verified in the flake re-check); the historical false-success does not reproduce on the current binary | ~~Fix buildflow nix-hash-fix false-success (upstream in buildflow repo)~~                                                                       | ~~High~~     | ~~M~~  | ~~Tooling~~       |
+| 4 **→ documented known-tool-bug (AGENTS.md buildflow gotcha: the erraudit variant's flags/nolint handling differs from the CLI); fix belongs upstream in BuildFlow**                                                              | Make buildflow's erraudit honor `//nolint:erraudit` or pin its flags                                                                            | High         | M      | Tooling           |
+| 5 **→ documented known limitation (AGENTS.md vendored-artifact gotcha); prevention lives in fleet daemon config, outside this repo**                                                                                              | Guard the daemon against committing `static/datastar.js` changes (checksum test pre-commit)                                                     | High         | S      | Tooling           |
+| 6 **→ TODO_LIST watch-the-first-Renovate-JS-bump row; delivery unverified (zero Renovate PRs — v1.0.4 missed, docs/static-js.md Renovate section)**                                                                               | Verify the renovate JS-bump manager updates `bundleSHA256` in the same PR                                                                       | High         | M      | Tooling           |
+| ~~7~~                                                                                                                                                                                                                             | ~~Cut v0.5.0 per docs/release-checklist.md (Unreleased is substantial)~~ done at `831bbfb`                                                      | ~~High~~     | ~~M~~  | ~~Release~~       |
+| ~~8~~ done — resolved as a documented dual contract: AGENTS.md Commands section explains when each invocation applies (audit-mode --no-suppress view vs CI-mode severity gate)                                                    | ~~Unify the two documented erraudit invocations into one contract~~                                                                             | ~~Medium~~   | ~~S~~  | ~~Quality~~       |
+| ~~9~~ done — docs/static-js.md Upgrade process documents the fetch-bundle.sh flow (download, sha256, provenance, checksum constant, goldens); CONTRIBUTING.md now links it too                                                    | ~~Update docs/static-js.md with checksum-pin + shields upgrade runbook~~                                                                        | ~~Medium~~   | ~~S~~  | ~~Documentation~~ |
 
 <!-- check-rows:ledger -->
 

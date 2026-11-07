@@ -62,6 +62,7 @@ isolation step:
 All checks pass:
 
 <!-- check-rows:ledger -->
+
 | Check                      | Command                                                        | Result     |
 | -------------------------- | -------------------------------------------------------------- | ---------- |
 | go mod tidy (root)         | `GOWORK=off go mod tidy`                                       | No changes |
@@ -82,6 +83,7 @@ structure found. The README correctly documents:
 - Optional sub-modules: `static` and `datastartest` with separate `go get` lines
 - No mention of root depending on datastartest
 - No stale replace directive descriptions
+
 ---
 
 ## B) PARTIALLY DONE

@@ -122,6 +122,7 @@ item #13 in its "50 things" list) but never created.
 ### 8. Full verification suite — all green
 
 <!-- check-rows:ledger -->
+
 | Check                    | Command                                                            | Result     |
 | ------------------------ | ------------------------------------------------------------------ | ---------- |
 | Regression guard test    | `go test -run TestRootModuleDoesNotRequireDatastartest -race`      | PASS       |
@@ -134,6 +135,7 @@ item #13 in its "50 things" list) but never created.
 | golangci-lint            | `golangci-lint run ./... ./datastartest/... ./static/...`          | 0 issues   |
 | actionlint               | `nix run nixpkgs#actionlint .github/workflows/ci.yml`              | Exit 0     |
 | YAML syntax              | `python3 -c "import yaml; yaml.safe_load(...)"`                    | Valid      |
+
 ---
 
 ## B) PARTIALLY DONE

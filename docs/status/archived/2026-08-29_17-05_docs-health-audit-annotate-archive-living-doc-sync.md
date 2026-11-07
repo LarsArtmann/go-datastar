@@ -10,37 +10,26 @@
 
 ## a) FULLY DONE
 
-
 ### 1. Read everything in scope — all 31 `2026-0*` files
 
-
 All 27 `docs/status/*.md` + 1 `docs/planning/*.md` + 1 archived plan + 2 `docs/modularization/*.html` viewed or verified, plus all 6 living docs (TODO_LIST, CHANGELOG, AGENTS, README, ROADMAP, FEATURES) and the docs-health skill's 8 reference documents. Annotation state of every historical file measured by marker grep before and after.
-
-
 
 ### 2. VERIFY — every concrete claim checked against code, not trusted
 
 - **Coverage measured, not asserted:** root **98.4%**, datastartest **92.7%** (`go test -cover` at HEAD in a clean `/tmp/gds-verify` worktree). This adjudicated a three-way doc conflict: CHANGELOG said 92.9% (stale), the 12-24 report claimed "real number is 88.9%" (that was the all-modules badge figure, not the module number), FEATURES said ~94% (round-up).
 
-
 - **Full race gate green at HEAD:** `go test ./... ./datastartest/... ./static/... -race -count=1` — 4/4 packages ok; `go vet` clean. Run in an isolated worktree because the main checkout's workspace was broken (see d.3/a.7).
 - **Lint enumerated per module with real exit codes:** root 3 findings (mnd `example/main.go:153`, modernize `errors.As`→`AsType` ×2 in `errors_test.go:238,289`), datastartest 5 (gci/golines on reader files — already fixed in the working tree, makezero `reader.go:98`, modernize ×2 in `errors_test.go:34,120`), static clean. The TODO_LIST's old "de-flake parallel-session files" item named findings that no longer exist (fixed by `ce3b4bc`, `66a637e`, `ffeedea`, `52cfac8`, `7dec1d3`) — proven stale and replaced.
-
 
 - **Master CI is red on `d032dc5`:** run 33258092947 — lint job fails (same findings); test/govulncheck/erraudit/actionlint pass.
 - **`nix flake check` at HEAD fails only the treefmt format gate** on `datastartest/reader_fuzz_test.go` (committed in `d032dc5` un-gofumpt-ed); the exact proposed reformat already sits unstaged in the main working tree. Module build checks unaffected.
 
-
 - **External state verified via `gh`:** releases (v0.2.0 Latest, 2026-08-13), dependabot config (all 3 modules + github-actions), PR template exists (no CI-checkbox honesty guard), issue templates exist, latest `ci.yml` runs.
-
 
 - **Repo hygiene checks from the 12-43 report executed:** `go.work` tracked and NOT gitignored (`git check-ignore` exit 1; `git ls-files` lists it), stale branches still present (`pr/docs-test-consolidation` local+remote, `preserve/status-report-coderabbit-pr3` local), `ReplaceURLQuerystring` absent from code, `static.Version` = v1.0.2, 51 fuzz corpus seeds on disk.
 - **All internal markdown links resolve** (README, AGENTS, TODO_LIST, ROADMAP, FEATURES).
 
-
 ### 3. ANNOTATE — 8 historical files, ~130 inline item verdicts
-
-
 
 Every numbered item received a verdict (`~~struck~~ done at`<hash>`` / Won't-implement / verified-evidence / left bare = open), using the skill's `annotate-rows.py` / `annotate-prose.py` with mandatory dry-runs and post-write shape checks:
 
@@ -66,7 +55,6 @@ Every numbered item received a verdict (`~~struck~~ done at`<hash>`` / Won't-imp
 | `2026-08-16_08-20` audit annotations | f×4 + g×3 + c×1 | All three owner questions (go directive, go.work.sum, sibling requires) resolved by T16 |
 | `2026-08-16_07-52` README comparison | 3 marker upgrades | "routed to TODO_LIST" upgraded to final resolution (T12, `83d7c60`) |
 
-
 Open items were left bare (no marker) and routed — none skipped.
 
 ### 4. ARCHIVE — 5 fully-resolved snapshots moved
@@ -75,7 +63,6 @@ Open items were left bare (no marker) and routed — none skipped.
 - `docs/status/archived/2026-08-16_07-52_readme-comparison-official-sdk.md`
 - `docs/status/archived/2026-08-16_08-20_docs-health-audit-annotations.md`
 - `docs/status/archived/2026-08-16_08-47_docs-health-audit-completion-self-review.md`
-
 
 - `docs/status/archived/2026-08-16_09-55_full-execution-progress.md`
 
@@ -90,8 +77,6 @@ Open items were left bare (no marker) and routed — none skipped.
 - **AGENTS:** 5 new gotchas (git-town `propose` + `gh pr merge` local-branch deletion + lineage pruning, session-entry/end rituals, `.md` report format + CHANGELOG exclusion policy, daemon-can-commit-to-master warning).
 - **modularization README:** both HTML docs marked executed (→ v0.1.0 / ADR 002).
 
-
-
 ### 6. Health report emitted (inline, per skill)
 
 Accuracy **9.0** (baseline 9.5 — one Critical environmental finding), Fitness **10.0** (baseline 9.0 — unharvested-report regression fixed, stale TODO rebuilt), visible math, per-doc findings table, explicit not-verified list.
@@ -103,7 +88,6 @@ The in-flight go 1.26.7 go.mod bump and all dprint formatting changes were prese
 ---
 
 ## b) PARTIALLY DONE
-
 
 1. **The three newest reports (11-07, 12-24, 12-43) are annotated but not archived** — they still carry routed-open residue (release, branches, CI work). Correct per the archive rule, but their open items now have two homes (report + TODO_LIST) until executed.
 2. ~~**Harvest routing had a residue class:** two 11-07 items (coverage-floor policy, PR labels) were left unrouted — too vague for TODO_LIST, too trivial for ROADMAP. They exist only as bare lines in the report.~~ done (both now dispositioned — coverage-floor policy routed to ROADMAP; PR labels rejected (filtered history unneeded without branch protection))

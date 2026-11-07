@@ -38,7 +38,7 @@
    missing); buildflow ledger 23 verdicts; fuzz smokes PASS;
    `erraudit nolint-audit` recorded; `.gitattributes` + CONTRIBUTING section.
 9. **M18/M22/M23.** AGENTS truth pass (22KB, in band); policy doc with Q1–Q8
-   + marker spec; v0.6.1 retro (wrap report §e); status index rows added.
+   - marker spec; v0.6.1 retro (wrap report §e); status index rows added.
 10. **M25 wrap gates that actually ran:** battery PASS ×5 · `go test -race`
     ×4 · `go vet` ×4 · lint v2.14.0 fresh-cache ×4 = 0 issues ·
     `go mod verify` + `tidy -diff` ×4 · `go work sync` idempotency · replace
@@ -246,7 +246,7 @@
    commits (I re-stage the session's work into real, scoped messages
    before the cut), or is the auto-commit stream acceptable as released
    history? This changes how I land everything between now and the tag.
-2. **MemoryStore ID policy:** is caller-assigned numeric IDs the *permanent*
+2. **MemoryStore ID policy:** is caller-assigned numeric IDs the _permanent_
    contract (storecontract's current documentation stance, MemoryStore
    failing `AssertIDAssignment` by design), or should a future MemoryStore
    option assign IDs on Append (making the helper's "deliberately fails"

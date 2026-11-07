@@ -11,7 +11,6 @@
 
 ### Q1: `datastartest` split into its own Go module
 
-
 Executed end-to-end with verification across all build modes.
 
 <!-- check-rows:ledger -->
@@ -43,22 +42,17 @@ Executed end-to-end with verification across all build modes.
 
 | `AGENTS.md` updated | DONE | Module Structure section, dual-mode Commands section, file layout table |
 
-
-
 **What the split achieves:** Consumers can now `go get github.com/larsartmann/go-datastar/datastartest` as an independently versioned module, without pulling the protocol library's test infrastructure into their dependency tree.
 
 ### Q2 and Q3: Presented with code examples and PRO/CON analysis
-
 
 Both questions answered with concrete examples — awaiting user decisions.
 
 ---
 
-
 ## b) PARTIALLY DONE
 
 Nothing. Everything I started this session was completed.
-
 
 ---
 
@@ -67,7 +61,6 @@ Nothing. Everything I started this session was completed.
 These are gaps I identified during the self-assessment:
 
 1. ~~**`.gitignore` still ignores `go.work` and `go.work.sum`** — This is the single biggest oversight. `go.work` is essential for the dev workflow (workspace mode is the default now that `GOWORK=off` was removed from the devShell). A fresh clone will not have `go.work`, so `go test ./...` from root won't find `datastartest`. The replace directives keep `GOWORK=off` builds working, but the workspace dev experience is broken on fresh clone.~~ done (done — go.work committed and tracked (three-module workspace))
-
 
 2. ~~**`dependabot.yml` not updated** — Only monitors `/` (root go.mod). Needs a second entry for `directory: /datastartest` to get dependency update PRs for the new module.~~ done (done — .github/dependabot.yml covers datastartest + static)
 
@@ -94,7 +87,6 @@ This is not just "not started" — it's a design error I introduced. Here's the 
 3. But `go.work` is in `.gitignore`, so it will never be committed
 4. A fresh clone has no `go.work` — the default `go test ./...` won't find `datastartest`
 5. The flake devShell no longer sets `GOWORK=off`, so it silently falls back to no-workspace mode
-
 
 6. Result: **the documented default commands don't work on fresh clone**
 

@@ -11,7 +11,6 @@
 
 ### Three-module workspace — operational and verified
 
-
 <!-- check-rows:ledger -->
 
 | Artifact | Status | Notes |
@@ -35,7 +34,6 @@
 
 | `AGENTS.md` updated | DONE | Three-module table with deps column, all commands, file layout |
 
-
 ### Verification — all green
 
 <!-- check-rows:ledger -->
@@ -56,7 +54,6 @@
 | GOWORK=off datastartest | PASS | — | — | — |
 | GOWORK=off static | PASS | — | — | — |
 
-
 ### Module dependency graph
 
 ```
@@ -66,7 +63,6 @@ static (zero deps) ← root (go-sse, go-error-family) ← datastartest (go-sse)
                                                           (dogfoods datastartest)
 ```
 
-
 ### Key design decision: datastartest needs replace for static
 
 When `static` was split, `datastartest/go.sum` went stale because the root module
@@ -74,7 +70,6 @@ When `static` was split, `datastartest/go.sum` went stale because the root modul
 Go only follows replace directives from the **current module's** go.mod, so
 datastartest needed its own `replace go-datastar/static => ../static`. This was
 caught by the `GOWORK=off` isolation test.
-
 
 ---
 
@@ -100,7 +95,6 @@ Nothing. Everything started this session was completed.
 3. ~~**`flake.nix` hermeticCheck doesn't build or test `datastartest` or `static`**~~ done (done — flake.nix per-module hermetic checks; nix.yml CI (88c1eed))
    ~~— `subPackages = [ "." ]` only builds the root module. Nix CI passes but~~
    ~~never compiles the other two modules. False green.~~
-
 
 4. ~~**`CHANGELOG.md` not updated** — No entry for the module split.~~ done (done — CHANGELOG module entries since v0.1.0)
 

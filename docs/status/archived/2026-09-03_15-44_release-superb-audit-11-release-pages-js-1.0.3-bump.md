@@ -10,9 +10,7 @@
 
 ---
 
-
 ## a) FULLY DONE
-
 
 <!-- check-rows:ledger -->
 
@@ -47,9 +45,7 @@
 | a9 | flake.nix `datastartestVendorHash` refreshed after the root `response_test.go` edit staled it (minimal fileset consequence, per ADR 004) — converged in one paste | `sha256-YJkABiCo…` in flake.nix; flake check green |
 | a10 | Stale-version sweep: no `1.0.2` mentions left in living docs (README, FEATURES, AGENTS, TODO_LIST, CONTRIBUTING, docs/, static/) outside point-in-time status/planning archives | `rg '1\.0\.2'` clean |
 
-
 ## b) PARTIALLY DONE
-
 
 <!-- check-rows:ledger -->
 
@@ -61,7 +57,6 @@
 | ~~b1~~ | ~~pkg.go.dev datastartest@v0.4.0 indexing~~ done — all four module pages render at later versions (`2026-09-18_22-29` a11); the @v0.4.0 page resolved with the crawl | ~~Proxy side 100% correct (`@latest`=v0.4.0, `go get` works); root + static pages render v0.4.0~~ | ~~The datastartest page still renders v0.3.0; the `@v0.4.0` URL 404s after 3 fetch attempts + 45 s wait~~ | ~~Server-side crawl lag only — nothing repo-side left to do; trigger via the page's "Request" button or wait~~ | ~~S (external)~~ |
 | ~~b2~~ **Won't implement — release pages are append-only published history; restyling legacy pages rewrites shipped artifacts — the uniform template governs new pages.** | ~~Release-page house style~~ | ~~New pages (11) follow a uniform template: module header + lockstep link + full CHANGELOG excerpt~~ | ~~Legacy root pages (v0.0.1–v0.3.0) have heterogeneous titles/styles ("v0.0.3 — Quality, Correctness & Hardening" vs plain "v0.3.0"); v0.3.0 body lacks a version heading~~ | ~~Style decision not made~~ | ~~S–M~~ |
 | ~~b3~~ | ~~TODO_LIST/ROADMAP harvest of this report's section f~~ done (docs-health pass 2026-10-01) | ~~Section f written (50 items, ranked)~~ | ~~Not yet folded into TODO_LIST.md / ROADMAP.md~~ | ~~You said write the report then wait — HARVEST is the immediate next step~~ | ~~S~~ |
-
 
 ## c) NOT STARTED
 
@@ -104,8 +99,6 @@
 | d3 | **Auto-commit daemon raced the commit message.** It committed the 9 JS-bump files as `00c0149 "chore: auto-commit 9 changed file(s) (heuristic)"` before I could write the real message, leaving flake.nix dirty                                        | Process risk: amending was only possible because the daemon hadn't pushed yet; had it pushed, the garbage message would be permanent history (rewrite = forbidden force-push) | Daemon sweeps dirty files on its own schedule                                                                                                    | Check `git log -1` before staging during edit bursts; amend window exists but is luck-dependent (item f6)           |
 | d4 | **pkg.go.dev shows datastartest v0.3.0 while root/static show v0.4.0** — a visible-in-public inconsistency                                                                                                                                              | Cosmetic/confidence: proxy is correct; docs lag is server-side                                                                                                                | Submodule page was never re-checked after the v0.4.0 release (only root was, in T03.8)                                                           | Self-resolves or one click on the page's Request button (f1)                                                        |
 
-
-
 ## e) WHAT WE SHOULD IMPROVE
 
 1. **Make the upstream-JS check a hard release step, not a quarterly suggestion.** §5's "quarterly or after upstream release" was skipped in practice within 7 days. Add an explicit `gh api repos/starfederation/datastar/releases/latest --jq .tag_name` step to the release lane.
@@ -117,7 +110,6 @@
 7. **Test literals that duplicate static.Version.** `response_test.go` hardcodes `"1.0.3"`; deriving it from `static.Version` would have made the bump one touchpoint smaller (this session: 9 touchpoints, several pure version-string churn).
 
 ## f) 50 THINGS TO GET DONE NEXT
-
 
 _Ranked by impact; feeds docs-health HARVEST into TODO_LIST.md / ROADMAP.md._
 

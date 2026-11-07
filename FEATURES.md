@@ -50,10 +50,10 @@
 
 ## Script Serving
 
-| Feature              | Status                | Notes                                                                                                                                     |
-| -------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `ScriptHandler`      | 🟢 `FULLY_FUNCTIONAL` | Serves `static.Bytes` with ETag + `Cache-Control: public, max-age=86400`; GET/HEAD only, 405 otherwise (`script_handler.go`). E2E tested.  |
-| `ScriptHandlerWith`  | 🟢 `FULLY_FUNCTIONAL` | Serves a custom bundle; the version parameter is dead, kept for signature compatibility only (`script_handler.go`). Removal owner-gated.   |
+| Feature              | Status                | Notes                                                                                                                                                                      |
+| -------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ScriptHandler`      | 🟢 `FULLY_FUNCTIONAL` | Serves `static.Bytes` with ETag + `Cache-Control: public, max-age=86400`; GET/HEAD only, 405 otherwise (`script_handler.go`). E2E tested.                                  |
+| `ScriptHandlerWith`  | 🟢 `FULLY_FUNCTIONAL` | Serves a custom bundle; the version parameter is dead, kept for signature compatibility only (`script_handler.go`). Removal owner-gated.                                   |
 | `ScriptTagVersioned` | 🟢 `FULLY_FUNCTIONAL` | Cache-busting `<script>` tag: pinned `?v=`, idempotent replacement, fragments preserved (`script_handler.go`). Consumer assertion: `datastartest.RequireScriptTagVersion`. |
 
 ## Template Adapters

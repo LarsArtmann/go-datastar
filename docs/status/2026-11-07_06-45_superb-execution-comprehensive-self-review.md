@@ -49,7 +49,7 @@ why — the sibling session paid that cost tonight already.
 3. **datastartest consumer assertions** — `RequireScriptTagVersion`,
    `RequireETagForBundle`, `datastar.ETagFor` exported (one algorithm, no
    duplication); tests incl. failure paths + `testing.TB` acceptance; README
-   + docs/testing.md documented.
+   - docs/testing.md documented.
 4. **CHANGELOG transport-pin contract (M07)** —
    `TestTransportPinsRecordedInChangelog` over go.mod ×3; `[Unreleased]
    ### Dependencies` section records the previously invisible pin set.

@@ -19,7 +19,7 @@ Discovered and verified 2026-11-07 while prepping this cut:
   `unknown revision` for all three submodule `@v0.6.3` paths.
 - Checklist §2 was skipped: the tagged root `go.mod` still requires
   `static v0.6.1` (siblings at their v0.6.2 pins at the tag). Root-only
-  consumption resolves fine — the release is *functional but wrong-shaped*:
+  consumption resolves fine — the release is _functional but wrong-shaped_:
   lockstep `go get .../static@v0.6.3` fails by design gap.
 - Checklist §2's CHANGELOG promotion was skipped too: the tag shipped with
   its entries under `[Unreleased]`; master had **no `[0.6.3]` section at
@@ -46,8 +46,8 @@ by the doc comment itself.
 **Options.**
 (a) **Remove at v0.7.0** (recommended). The godoc has pencilled exactly
 this since v0.6.2; the repo is pre-1.0 where minor bumps may break with a
-migration note; the parameter has no semantic future (a *versioned custom
-bundle* would need a real version, not a dead one). Migration is one-line
+migration note; the parameter has no semantic future (a _versioned custom
+bundle_ would need a real version, not a dead one). Migration is one-line
 for callers (`ScriptHandlerWith(b, static.Version)` → `ScriptHandlerWith(b)`),
 and it lands in the migration guide.
 (b) Keep until v1.0. Zero functional cost — it stays a blank param forever.
@@ -90,7 +90,7 @@ surface nobody asked for. Retro-tag only if someone reports the gap.
 
 **Options.**
 (a) **Keep 86400 on ScriptHandler; document the versioned+immutable
-pairing** (recommended). Raising the *handler default* to
+pairing** (recommended). Raising the _handler default_ to
 `max-age=31536000, immutable` would give bare-URL consumers (`ScriptTag`,
 direct mux mounting — the pre-versioning majority pattern) a **one-year
 stale window with no cache key**: an upgrade would not reach browsers for
@@ -98,7 +98,7 @@ a year. The safe immutable story is per-consumer: serve versioned URLs,
 then (optionally) override the header at the mux. A handler option (e.g.
 `ScriptHandlerWithCacheControl`) can be added later on demand — additive,
 no decision needed now.
-(b) Raise the default to immutable. Only safe *after* bare-URL usage is
+(b) Raise the default to immutable. Only safe _after_ bare-URL usage is
 extinct — unknowable for a public library.
 
 **Recommendation: (a)** — default unchanged; add a short
@@ -131,7 +131,7 @@ nothing rots.
 >
 > ### Changed
 >
-> - *(D1 pending)* `ScriptHandlerWith` drops its dead version parameter —
+> - _(D1 pending)_ `ScriptHandlerWith` drops its dead version parameter —
 >   `ScriptHandlerWith(bundle, static.Version)` becomes
 >   `ScriptHandlerWith(bundle)`. Blank since v0.5.x; no behavior change.
 >
