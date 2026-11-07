@@ -198,6 +198,17 @@ go1.27" mean BuildFlow ran outside the devshell (user-shell go 1.26.7 cannot
 analyze go1.27 packages) — run the verification pass inside `nix develop`
 like license-check.
 
+branching-flow's slice-index findings ("may panic if out of bounds") are
+accepted heuristic false positives on this repo's guarded patterns (spot-
+checked 2026-11-07): the diff.go LCS table is allocated (n+1)×(m+1) so
+`i+1`/`j+1` are in bounds by construction, storecontract's parallel-slice
+range is length-asserted, and sugar.go's `slices.IndexFunc` results are
+`i < 0`-guarded before use. Same for its swap-hazard hints on
+stringly-typed test-assertion params — branding those types would churn the
+public datastartest API for zero caller benefit. vulnix findings target
+nixpkgs store derivations (binutils, brotli, …), not this repo's code —
+accepted noise until nixpkgs moves.
+
 ### Submodule LICENSEs
 
 Each published submodule (`broadcast/`, `datastartest/`, `static/`) carries
