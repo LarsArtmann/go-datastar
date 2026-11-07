@@ -13,10 +13,13 @@
 - Build, `go vet`, `golangci-lint`, full `-race` test suite: all green.
 - **5 remaining warnings are all WARNING severity and accepted by design.**
 
+> **Live remainder (archived 2026-11-07):** open ideas were routed — ROADMAP.md themes and TODO_LIST.md (Verified next-up / Owner-blocked) own the current backlog; CHANGELOG.md owns shipped work.
+
 ---
 
 ## a) FULLY DONE
 
+<!-- check-rows:ledger -->
 | #  | Item                                                                                  | Evidence                                                                       |
 | -- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | 1  | Ran the exact requested erraudit command with all 4 flags                             | Captured full 27-violation report                                              |
@@ -52,18 +55,18 @@ I added an Error System section to `AGENTS.md` but did **not** check whether `RE
 
 | #     | Item                                                                                                                                                                                  |
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1     | ~~`CHANGELOG.md` entry for the error system~~ done — included in v0.0.1 CHANGELOG (`6af9dc4`)                                                                                         |
-| 2     | ~~`FEATURES.md` update~~ done at `b1e2063` — FEATURES.md built with full error system inventory                                                                                       |
-| 3     | ~~`README.md` error-handling section~~ done at `391db38` (three typed handles documented)                                                                                             |
+| ~~1~~ | ~~`CHANGELOG.md` entry for the error system~~ done — included in v0.0.1 CHANGELOG (`6af9dc4`) |
+| ~~2~~ | ~~`FEATURES.md` update~~ done at `b1e2063` — FEATURES.md built with full error system inventory |
+| ~~3~~ | ~~`README.md` error-handling section~~ done at `391db38` (three typed handles documented) |
 | ~~4~~ | ~~`doc.go` package doc update (never read this session)~~ done — doc.go 'Classified errors' section documents the three matching patterns                                             |
 | ~~5~~ | ~~CI integration — `.github/workflows/ci.yml` was never checked; erraudit not added to CI~~ done — ci.yml erraudit job runs per module with --enforce-go-error-family                 |
 | ~~6~~ | ~~`flake.nix` integration — erraudit command not added to the flake devShell/checks~~ done — flake.nix apps.erraudit (nix run .#erraudit); devShell exclusion documented in the flake |
-| 7     | Evaluating domain-specific error return types (see Partially Done #2)                                                                                                                 |
-| 8     | ~~Running the example end-to-end~~ done at `a8ba8be` — example updated and verified; `go vet ./example/` passes                                                                       |
-| 9     | ~~Reading `elements.go` and `http.go`~~ done — reviewed during deep-review session (`0d30c94`)                                                                                        |
-| 10    | ~~Reading `go-error-family/interfaces.go`~~ done — reviewed during deep-review session (`0d30c94`)                                                                                    |
-| 11    | NOT-DO — skill/lint config scope is outside this library                                                                                                                              |
-| 12    | Routed to ROADMAP.md (Error System Maturity theme)                                                                                                                                    |
+| ~~7~~     | ~~Evaluating domain-specific error return types (see Partially Done #2)~~ done — decided per AGENTS.md Error System design notes (return error interface; generic_return accepted by design) |
+| ~~8~~ | ~~Running the example end-to-end~~ done at `a8ba8be` — example updated and verified; `go vet ./example/` passes |
+| ~~9~~ | ~~Reading `elements.go` and `http.go`~~ done — reviewed during deep-review session (`0d30c94`) |
+| ~~10~~ | ~~Reading `go-error-family/interfaces.go`~~ done — reviewed during deep-review session (`0d30c94`) |
+| ~~11~~    | ~~NOT-DO — skill/lint config scope is outside this library~~ **NOT-DO — confirmed by the 2026-08-07 audit (skill/lint scope is not this library).** |
+| 12    | Routed to ROADMAP.md (Error System Maturity theme) **→ resolved — ROADMAP.md Error System Maturity theme owns it** |
 
 ---
 
@@ -122,17 +125,17 @@ The `sugar.go:105:13 undefined: fmt` error persisted in the diagnostics for the 
 
 1. ~~**Commit the go-sse event.go fix**~~ done — go-sse v0.4.0 resolves from Go proxy; build passes against published deps.
 2. ~~**Verify the example runs:**~~ done at `a8ba8be` — example modified and verified; `go vet ./example/` passes.
-3. **Decide on `generic_return`:** routed to ROADMAP.md (Error System Maturity). Still open — documented in AGENTS.md as accepted by design.
+3. ~~**Decide on `generic_return`:** routed to ROADMAP.md (Error System Maturity). Still open — documented in AGENTS.md as accepted by design.~~ done — decided — AGENTS.md Error System documents the generic_return warnings as accepted by design
 
 ### Error system hardening
 
 4. ~~Add truncated `input_preview` (first ~200 bytes) to `CodeSignalsUnmarshalFailed` context instead of just byte length.~~ done at `eb8bf29`
 5. ~~Add `errorfamily.WrapOnce` at `ReadSignals` boundary to prevent double-classification.~~ done at `eb8bf29`
 6. ~~Integrate `errorfamily.HTTPStatus(err)` into `ErrorResponse` / `response.go` so HTTP handlers pick status codes from families automatically.~~ done at `eb8bf29` (`ErrorResponseFromError`)
-7. Add a `Retry` helper or example showing how to retry `Transient` (`CodeBodyReadFailed`) errors with backoff.
+7. ~~Add a `Retry` helper or example showing how to retry `Transient` (`CodeBodyReadFailed`) errors with backoff.~~ done — ROADMAP.md carries Retry ergonomics (retry Transient with backoff)
 8. ~~Define and document the error-code naming convention (`_invalid` vs `_required` vs `_failed`) in `errors.go`.~~ done at `eb8bf29`
-9. Consider exporting codes as a typed string (`type Code string`) for compile-time safety instead of untyped `string` constants.
-10. Add a `Code(err) Code` accessor that returns the typed code, complementing `errorfamily.Code(err) string`.
+9. ~~Consider exporting codes as a typed string (`type Code string`) for compile-time safety instead of untyped `string` constants.~~ **Superseded — the typed-code accessor exists as errorfamily.Code(err) (errors.go:15); a typed Code type is the error-family library decision, not this protocol layer.**
+10. ~~Add a `Code(err) Code` accessor that returns the typed code, complementing `errorfamily.Code(err) string`.~~ **Superseded — superseded by errorfamily.Code(err) (errors.go:15), which this repo documents as the typed-code accessor.**
 
 ### Testing gaps
 
@@ -143,7 +146,7 @@ The `sugar.go:105:13 undefined: fmt` error persisted in the diagnostics for the 
 15. ~~Add an `errorfamilytest.AssertHTTPStatus` assertion for each error (Rejection→400, Transient→503, Orchestration→500).~~ **Won't implement — AssertHTTPStatus belongs to the go-error-family repo, not this one.**
 16. ~~Add a fuzz test for `ReadSignals` with arbitrary malformed JSON.~~ done at `3efb8ce` (`inbound_fuzz_test.go`, 1.2M+ executions, 0 failures).
 17. ~~Add a test that `MarshalSignals` error message includes the Go type name for diagnosis.~~ done — `signals.go:89` marshals `"of type %T"` (`d2a9580`)
-18. Snapshot-test error messages (`go-snaps`) for stable wire output across versions.
+18. ~~Snapshot-test error messages (`go-snaps`) for stable wire output across versions.~~ done — ROADMAP.md carries the snapshot-testing idea for stable wire output
 
 ### Documentation
 
@@ -158,7 +161,7 @@ The `sugar.go:105:13 undefined: fmt` error persisted in the diagnostics for the 
 24. ~~Add `erraudit ./... --enforce-go-error-family` (without `--enforce-samber-oops`) to `.github/workflows/ci.yml`.~~ done at `eb8bf29` (v0.0.3 CI job)
 25. ~~Add `erraudit` to `flake.nix` checks (`nix run .#lint` should include it).~~ done as a nix **app** (`nix run .#erraudit`, `flake.nix`), not a check
 26. ~~Add an `erraudit` pre-commit hook.~~ **Won't implement — repo precedent is CI-level guards (module_boundary_test.go), not pre-commit hooks.**
-27. Add `erraudit --format sarif` output for GitHub code scanning.
+27. ~~Add `erraudit --format sarif` output for GitHub code scanning.~~ done — ROADMAP.md carries the erraudit SARIF output idea
 28. ~~Pin the `erraudit` version in CI to prevent surprise breaking changes.~~ done — pinned `@v0.3.0` (`ci.yml:91`)
 
 ### Code quality / exploration
@@ -188,7 +191,7 @@ The `sugar.go:105:13 undefined: fmt` error persisted in the diagnostics for the 
 42. ~~Run `golines` on `errors.go` / `errors_test.go` (the GOPATH bin has it) for consistent line length.~~ done — `golines` runs via treefmt (`flake.nix`)
 43. ~~Add `//nolint` comments with rationale on the 4 accepted `generic_return` sites (so future audits are quiet).~~ **Won't implement** — superseded by the `--severity-threshold error` CI strategy (T09, v0.0.3)
 44. ~~Add `//nolint` on the accepted `silent_swallow` in the example with rationale.~~ **Won't implement** — superseded by the `--severity-threshold error` CI strategy (T09, v0.0.3)
-45. Verify the `input_bytes` context value type — string-ified int via `strconv.Itoa` may be better as a structured numeric field if errorfamily supported it.
+45. ~~Verify the `input_bytes` context value type — string-ified int via `strconv.Itoa` may be better as a structured numeric field if errorfamily supported it.~~ **Won't implement — never adopted; the string form (inbound.go input_bytes) stayed stable and errorfamily context values are untyped by design.**
 46. ~~Consider adding `WithExitCode` overrides if any error needs a non-default exit code.~~ **Won't implement — condition never triggered — no error needs a non-default exit code.**
 47. ~~Add a benchmark for error creation overhead (hot path: `NewSignalsPatch` marshaling + error path).~~ **Won't implement — micro-benchmark without a consumer need; benchmarks cover the hot paths.**
 48. ~~Review whether the `example/` directory should have its own `CHANGELOG` or be excluded from versioning.~~ **Won't implement — the example is unversioned demo code inside the root module; a CHANGELOG would be ceremony.**
