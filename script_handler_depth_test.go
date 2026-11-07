@@ -53,9 +53,10 @@ func TestScriptTagVersioned_EdgeCases(t *testing.T) {
 	t.Parallel()
 
 	version := datastar.Version()
+
 	const (
-		open  = `<script type="module" src="`
-		close = `"></script>`
+		open     = `<script type="module" src="`
+		closeTag = `"></script>`
 	)
 
 	tests := []struct {
@@ -63,45 +64,45 @@ func TestScriptTagVersioned_EdgeCases(t *testing.T) {
 		path string
 		want string
 	}{
-		{"plain path", "/static/datastar.js", open + "/static/datastar.js?v=" + version + close},
-		{"existing query", "/js?x=1", open + "/js?x=1&v=" + version + close},
-		{"fragment", "/js#main", open + "/js?v=" + version + "#main" + close},
-		{"query and fragment", "/js?x=1#main", open + "/js?x=1&v=" + version + "#main" + close},
-		{"empty path", "", open + "?v=" + version + close},
+		{"plain path", "/static/datastar.js", open + "/static/datastar.js?v=" + version + closeTag},
+		{"existing query", "/js?x=1", open + "/js?x=1&v=" + version + closeTag},
+		{"fragment", "/js#main", open + "/js?v=" + version + "#main" + closeTag},
+		{"query and fragment", "/js?x=1#main", open + "/js?x=1&v=" + version + "#main" + closeTag},
+		{"empty path", "", open + "?v=" + version + closeTag},
 		{
 			"absolute URL",
 			"https://cdn.example.com/datastar.js",
-			open + "https://cdn.example.com/datastar.js?v=" + version + close,
+			open + "https://cdn.example.com/datastar.js?v=" + version + closeTag,
 		},
 		{
 			"stale v is replaced",
 			"/js?v=0.0.1",
-			open + "/js?v=" + version + close,
+			open + "/js?v=" + version + closeTag,
 		},
 		{
 			"v replaced among other params",
 			"/js?x=1&v=0.0.1&y=2",
-			open + "/js?x=1&v=" + version + "&y=2" + close,
+			open + "/js?x=1&v=" + version + "&y=2" + closeTag,
 		},
 		{
 			"v replaced before fragment",
 			"/js?v=0.0.1#main",
-			open + "/js?v=" + version + "#main" + close,
+			open + "/js?v=" + version + "#main" + closeTag,
 		},
 		{
 			"empty v value is replaced",
 			"/js?v=",
-			open + "/js?v=" + version + close,
+			open + "/js?v=" + version + closeTag,
 		},
 		{
 			"similar key is not matched",
 			"/js?verbose=1",
-			open + "/js?verbose=1&v=" + version + close,
+			open + "/js?verbose=1&v=" + version + closeTag,
 		},
 		{
 			"v inside another value is not matched",
 			"/js?callback=v=1",
-			open + "/js?callback=v=1&v=" + version + close,
+			open + "/js?callback=v=1&v=" + version + closeTag,
 		},
 	}
 
@@ -229,6 +230,7 @@ func TestScriptHandler_ETagStableIntegration(t *testing.T) {
 
 	conditional := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/datastar.js", nil)
 	conditional.Header.Set("If-None-Match", firstETag)
+
 	rec := httptest.NewRecorder()
 	handler.ServeHTTP(rec, conditional)
 

@@ -124,6 +124,7 @@ func appendVersionQuery(path string, version string) string {
 	for start := 0; ; {
 		rest := query[start:]
 		end := strings.IndexByte(rest, '&')
+
 		param := rest
 		if end >= 0 {
 			param = rest[:end]

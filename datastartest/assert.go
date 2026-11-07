@@ -170,7 +170,10 @@ func RequireScriptTagVersion(tb testing.TB, html string, scriptPath string) {
 
 	want := datastar.ScriptTagVersioned(scriptPath)
 	if !strings.Contains(html, want) {
-		tb.Fatalf("script tag: page does not embed %q — a missing or stale cache-busting src risks old-client/new-server protocol skew", want)
+		tb.Fatalf(
+			"script tag: page does not embed %q — a missing or stale cache-busting src risks old-client/new-server protocol skew",
+			want,
+		)
 	}
 }
 

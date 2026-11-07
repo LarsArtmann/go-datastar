@@ -104,11 +104,21 @@ remains a consumer concern — see `example/domain-adapter` for the pattern.
 
 ### Coming (on master, unreleased)
 
-- **`ScriptTagVersioned(path)`** (root) — cache-busting `<script>` tag that
-  appends the pinned client version as `?v=` (`&v=` when the path already
-  carries a query). Additive; adopt it when the 24h stale-JS window after a
-  bundle upgrade matters to you. `ScriptTag` keeps its
-  verbatim-concatenation contract.
+- **`ScriptTagVersioned(path)`** (root) — a cache-busting `<script
+  type="module">` tag whose src carries the pinned client version as `?v=`.
+  A path that already carries a `v` parameter gets its value replaced (the
+  transform is idempotent); any other query joins with `&`, fragments are
+  preserved. Additive; adopt it when the 24h stale-JS window after a bundle
+  upgrade matters to you. `ScriptTag` keeps its verbatim-concatenation
+  contract.
+- **`ETagFor(bundle)`** (root) — the ETag digest the script handlers serve,
+  exported for consumer caching tests.
+- **datastartest** — `RequireScriptTagVersion(html, path)` and
+  `RequireETagForBundle(etag, bundle)` consumer assertions for the same
+  two contracts.
+- **broadcast** — the `broadcast/storecontract` package
+  (`AssertReplayOrdering`, `AssertIDAssignment`) for custom `Store`
+  implementations.
 
 ### Release-shape context: v0.6.3 was a root-only cut
 

@@ -9,7 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `ScriptTagVersioned(path)`: cache-busting `<script>` tag — appends the pinned client version as a `?v=` query parameter (`&v=` when the path already has a query, fragments preserved) so each release of the embedded bundle is a distinct browser cache key. Motivation: the handler's `Cache-Control: public, max-age=86400` lets a browser keep the old JS client for up to 24h after an upgrade (ETag revalidation is skipped while fresh), risking old-client/new-server protocol skew. `ScriptTag` keeps its verbatim-concatenation contract; `ScriptHandler`/`ScriptHandlerWith` are unchanged.
+- `ScriptTagVersioned(path)`: cache-busting `<script>` tag — a full
+  `<script type="module">` element whose src carries the pinned client
+  version as a `?v=` query parameter so each release of the embedded bundle
+  is a distinct browser cache key. A path that already carries a `v`
+  parameter gets its value replaced (the transform is idempotent — the
+  result always carries exactly the pinned version), any other query joins
+  with `&`, and a fragment is preserved. Motivation: the handler's
+  `Cache-Control: public, max-age=86400` lets a browser keep the old JS
+  client for up to 24h after an upgrade (ETag revalidation is skipped while
+  fresh), risking old-client/new-server protocol skew. `ScriptTag` keeps
+  its verbatim-concatenation contract; `ScriptHandler`/`ScriptHandlerWith`
+  are unchanged.
+- `ETagFor(bundle)`: the ETag digest the script handlers serve, exported so
+  consumer tests can assert caching identity without duplicating the
+  algorithm (previously private `computeETag`).
+- datastartest helpers `RequireScriptTagVersion(html, path)` (a rendered
+  page must embed exactly the `ScriptTagVersioned` output — the
+  consumer-side stale-cache assertion) and `RequireETagForBundle(etag,
+  bundle)` (a serving setup must carry the handler-computed ETag); both
+  keep the `testing.TB` invariant.
 - `broadcast/storecontract` package: `AssertReplayOrdering` and
   `AssertIDAssignment` — reusable `testing.TB` assertions so custom
   `broadcast.Store` implementations (Redis, Postgres, ...) can prove the
@@ -26,6 +45,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   question is still open), so the bump went through the manual
   `fetch-bundle.sh` flow. Client-runtime delta only; wire-format goldens
   unchanged.
+
+### Fixed
+
+- The example app's index page embedded a bare versioned URL in `<head>`
+  where a `<script>` element belongs (pre-`ScriptTagVersioned`-shape
+  leftover), so the live-feed demo silently loaded no DataStar client; the
+  page now embeds the real tag, pinned by a smoke test.
+- `example/Dockerfile` build image `golang:1.26.7-alpine` → `1.27-alpine`
+  (the 1.26.7 image cannot build `go 1.27`-directive modules) and dropped
+  the dead `GOEXPERIMENT=jsonv2` leftover the 2026-10-11 sweep missed.
 
 ### Dependencies
 

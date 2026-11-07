@@ -184,9 +184,12 @@ Things we are deliberately NOT pursuing and why:
   directives make versions irrelevant locally, but a consumer testing without
   replaces must resolve to a real published module. `go mod tidy` already
   emits the correct published versions (e.g., v0.2.0). Documented in AGENTS.md.
-- **`go` directive policy (decided 2026-08-16, updated 2026-09-19):**
-  directives pin the exact patch release — now `go 1.27.1` across go.mod ×3,
-  go.work, CI `go-version`, and the flake `goPkg` (nixpkgs `go_1_27`),
-  keeping the 1.26.6-era stdlib CVEs (GO-2026-5972/6089/6090/6218) cleared
-  and un-gating `encoding/json/v2` — the 1.26.7 directives could not build
-  under a 1.27 toolchain (jsonv2 language-version gate).
+- **`go` directive policy (decided 2026-08-16; patch-pinned 2026-09-19;
+  minor-form 2026-10-03):** directives are minor form — `go 1.27` across
+  go.mod ×3 and go.work (static stays `go 1.26`) — since the fleet
+  de-poisoning: a patch-pinned floor re-poisons consumers through MVS
+  (`go mod tidy` raises every dependent's directive to the floor). CI's
+  setup-go pins `1.27.3` and the flake `goPkg` is nixpkgs `go_1_27`, keeping
+  toolchain choice deliberate while directives stay clean. The stdlib CVEs
+  (GO-2026-5972/6089/6090/6218) stay cleared by the toolchain pin, and
+  `encoding/json/v2` is stable in 1.27 so no gate applies.
