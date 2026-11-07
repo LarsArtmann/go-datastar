@@ -60,7 +60,11 @@ func TestScriptTagVersioned_EdgeCases(t *testing.T) {
 		{"fragment", "/js#main", "/js?v=" + version + "#main"},
 		{"query and fragment", "/js?x=1#main", "/js?x=1&v=" + version + "#main"},
 		{"empty path", "", "?v=" + version},
-		{"absolute URL", "https://cdn.example.com/datastar.js", "https://cdn.example.com/datastar.js?v=" + version},
+		{
+			"absolute URL",
+			"https://cdn.example.com/datastar.js",
+			"https://cdn.example.com/datastar.js?v=" + version,
+		},
 	}
 
 	for _, tt := range tests {
