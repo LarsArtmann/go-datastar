@@ -41,6 +41,39 @@ func TestScriptTag_EdgeCases(t *testing.T) {
 	}
 }
 
+// TestScriptTagVersioned_EdgeCases pins the cache-busting contract: the pinned
+// client version joins the path as a query parameter (?v=, or &v= when a
+// query already exists), inserted before any fragment so it lands in the URL
+// query. The rest is verbatim, like ScriptTag: no normalization, no escaping.
+func TestScriptTagVersioned_EdgeCases(t *testing.T) {
+	t.Parallel()
+
+	version := datastar.Version()
+
+	tests := []struct {
+		name string
+		path string
+		want string
+	}{
+		{"plain path", "/static/datastar.js", "/static/datastar.js?v=" + version},
+		{"existing query", "/js?x=1", "/js?x=1&v=" + version},
+		{"fragment", "/js#main", "/js?v=" + version + "#main"},
+		{"query and fragment", "/js?x=1#main", "/js?x=1&v=" + version + "#main"},
+		{"empty path", "", "?v=" + version},
+		{"absolute URL", "https://cdn.example.com/datastar.js", "https://cdn.example.com/datastar.js?v=" + version},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			if got := datastar.ScriptTagVersioned(tt.path); got != tt.want {
+				t.Errorf("ScriptTagVersioned(%q): got %q, want %q", tt.path, got, tt.want)
+			}
+		})
+	}
+}
+
 // TestScriptHandlerWith_EmptyBundle pins the degenerate-but-valid case: an
 // empty bundle still serves with 200, correct headers, and an empty body.
 func TestScriptHandlerWith_EmptyBundle(t *testing.T) {

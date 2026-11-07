@@ -135,7 +135,7 @@ h1 { margin-bottom: 0.25rem; }
 </div>
 <div data-init="@get('/events')"></div>
 </body>
-</html>`, datastar.ScriptTag("/datastar.js")); err != nil {
+</html>`, datastar.ScriptTagVersioned("/datastar.js")); err != nil {
 		log.Printf("index: write html: %v", err)
 	}
 }

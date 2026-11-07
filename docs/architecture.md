@@ -73,7 +73,7 @@ can be built without a connection, stored, filtered, replayed, and broadcast.
 | Templ / GoStar rendering | `ElementsFromTempl`, `ElementsFromGostar`                                        | elements.go                                               |
 | Per-connection builder   | `Response` (+ `ErrorResponse`, `NotificationResponse`, `ErrorResponseFromError`) | response.go                                               |
 | Inbound                  | `ReadSignals`, `LastEventID`                                                     | inbound.go                                                |
-| JS serving               | `ScriptHandler`, `ScriptHandlerWith`, `ScriptTag`, `Version`                     | script_handler.go                                         |
+| JS serving               | `ScriptHandler`, `ScriptHandlerWith`, `ScriptTag`, `ScriptTagVersioned`, `Version` | script_handler.go                                        |
 | Replay store             | `MemoryStore` (implements `sse.EventStore`)                                      | store.go                                                  |
 | Patch fan-out            | `Broadcaster` — embeds `*sse.Broadcaster[sse.Event]` + `MemoryStore` replay      | broadcast/ (separate module, optional)                    |
 | Wire helpers             | dataline key constants, retry/mode defaults                                      | constants.go                                              |

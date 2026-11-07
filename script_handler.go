@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/larsartmann/go-datastar/static"
 )
@@ -77,9 +78,40 @@ func ScriptHandlerWith(scriptBytes []byte, _ string) http.Handler {
 }
 
 // ScriptTag returns an HTML <script> tag that loads the DataStar client from
-// the given path.
+// the given path. The path is used verbatim: no normalization, no escaping;
+// callers own URL correctness. Prefer [ScriptTagVersioned] so a browser cache
+// cannot serve a stale client after an upgrade.
 func ScriptTag(path string) string {
 	return `<script type="module" src="` + path + `"></script>`
+}
+
+// ScriptTagVersioned returns an HTML <script> tag like [ScriptTag], with the
+// pinned DataStar client version appended as a cache-busting query parameter.
+// [ScriptHandler] serves the bundle with Cache-Control max-age=86400, so a
+// browser that fetched the bundle skips ETag revalidation for up to 24h; a
+// versioned URL turns each release into a distinct cache key and collapses
+// that stale window to zero for pages rendered per request. If path already
+// contains a query, the version joins with &; a fragment is preserved by
+// inserting the parameter before it. The path is otherwise used verbatim;
+// callers own URL correctness.
+func ScriptTagVersioned(path string) string {
+	return appendVersionQuery(path, static.Version)
+}
+
+func appendVersionQuery(path string, version string) string {
+	head := path
+	fragment := ""
+	if index := strings.Index(path, "#"); index >= 0 {
+		head = path[:index]
+		fragment = path[index:]
+	}
+
+	separator := "?"
+	if strings.Contains(head, "?") {
+		separator = "&"
+	}
+
+	return head + separator + "v=" + version + fragment
 }
 
 // Version returns the version of the embedded DataStar JavaScript client.

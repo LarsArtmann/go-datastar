@@ -326,6 +326,7 @@ datastar.DeleteSSE("/api/items/%d", id)
 | `ScriptHandler()`                   | Serve the embedded DataStar JS (v1.0.3) with ETag + Cache-Control             |
 | `ScriptHandlerWith(js, ver)`        | Serve a custom JS bundle                                                      |
 | `ScriptTag(path)`                   | HTML `<script type="module">` tag string                                      |
+| `ScriptTagVersioned(path)`          | `ScriptTag` + `?v=<version>` cache busting (recommended)                      |
 | `static.Bytes()` / `static.Version` | The embedded JS bundle and its version (`go-datastar/static` zero-dep module) |
 | `Version()`                         | Embedded JS client version string                                             |
 
