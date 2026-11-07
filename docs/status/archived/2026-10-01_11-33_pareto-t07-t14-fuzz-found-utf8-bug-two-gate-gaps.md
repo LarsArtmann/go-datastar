@@ -62,56 +62,56 @@
 
 ## f) Next up to 50 (ranked; 1–12 are the pareto)
 
-1. **Class-fix the UTF-8 marshal exposure** — sanitize in `sendSignalsMap` (or at each payload builder) so `ErrorResponse`, `NotificationResponse`, `ConsoleLog`, `ConsoleError` can't fail the same way; extend the fuzz target's invariant; CHANGELOG amend. (b1)
-2. **Add `FuzzErrorResponseFromError` to `.github/workflows/fuzz.yml`** matrix (one line). (b2)
-3. **Update FEATURES.md broadcast section** — options constructors, Store seam, configurable heartbeat; root API rows for Version()/ScriptHandlerWith note. (b3)
-4. **One full `nix develop -c buildflow` pass** to certify the whole pipeline under the devshell contract. (b4)
-5. **Cut v0.7.0** (owner): [Unreleased] is a coherent minor; run the hardened checklist end-to-end (its first real exercise — expect friction, fix the checklist where it stalls).
-6. **Owner: ScriptHandlerWith param removal decision** for v0.7.0 (documented, ready).
-7. **Owner: Renovate app Settings check** — dead-config verdict for renovate.json (T14.3/14.4).
-8. **Re-verify sibling claims first-hand** (fetch-bundle.sh sha256 run; T06 mirror breadth) — cheap, closes b5.
-9. **Full suite `-race -count=10`** once pre-tag (flaky-test confidence after this session's near-miss).
-10. **CI docspec leg**: add the (now broadcast-covering) `nix run .#docspec` command to ci.yml's workspace job — docspec is currently local-only.
-11. **CONTRIBUTING: connection-wait rule + per-change-formatting note** (e3/e4).
-12. **CHANGELOG: de-version the "v0.7.0 tranche" heading** (cosmetic truth fix).
-13. Broadcast README: multi-instance `WithStore` sketch (Redis/Postgres pointer, no backend in repo).
-14. `docs/replay.md`: paragraph on the new `broadcast.Store` seam (it documents only the MemoryStore path).
-15. `docs/error-system.md`: one line on UTF-8 sanitization behavior of error payloads.
-16. Consolidate broadcast test connection helpers (`replayBody` vs `connectSubscriber` — near-duplicates).
-17. Decide+document heartbeat "disable" semantics (currently `<=0` keeps default; no way to disable — accept or add).
-18. FromHub-with-options gap: `NewBroadcasterFromHub` can't take options (heartbeat interval for hub-shared broadcasters) — additive constructor candidate.
-19. Store interface: document/test-helper for consumer stores assigning monotonic IDs (numeric-ID replay contract).
-20. `datastar.Version()` godoc Example (pkg.go.dev polish).
-21. Root: `example/` — add a store-injection demo handler (uses broadcast module; place under example/ with its own main or skip if it violates module boundaries — check first).
-22. ROADMAP: park "reference store backends (Redis)" as explicit non-goal or consumer-example pointer.
-23. BUILD: master ≈20 commits ahead of origin — verify daemon pushed; if not, owner decides push timing.
-24. Session-end `git town status` ritual (unfinished-sync check after this long session).
-25. Owner lane O1: delete merged `pr/docs-test-consolidation`.
-26. Owner lane O2: rehome/drop `preserve/status-report-coderabbit-pr3`.
-27. Owner lane O3: CODEOWNERS.
-28. Owner lane O6: status-index Monitoring tier decision.
-29. Owner lane O7: shared lint-cache policy (purge vs bless mktemp).
-30. Owner lane O8: required-checks policy canonification.
-31. Owner lane O9: v0.6.1 retro write-or-waive.
-32. Owner lane O4: erraudit flip verification plan for repo-publication day.
-33. Owner lane O5: website launch trigger.
-34. BuildFlow upstream: install/run GOROOT alignment fix (the repo-level workaround is documented; the fleet fix isn't in).
-35. `go-licenses` in CI? (license-check is buildflow-local; CI has no license leg — decide if one belongs in ci.yml or stays local.)
-36. AGENTS: clarify the erraudit divergence (AGENTS loop uses `--no-suppress` for the audit view; CI uses `--severity-threshold error`) — one sentence each so readers don't think one is wrong.
-37. CONTRIBUTING fuzzing section: add the fifth target name + seed-corpus regression note.
-38. fuzz.yml: fuzztime sanity — 300s ×5 targets runtime check after adding the new one.
-39. Coverage workflow: confirm it ran on the last master push (badge staleness).
-40. Consider `makezero`-proof buffer idiom note (array+slice) in test-writing conventions — or drop; lint already catches it.
-41. `docs/migration-guide.md`: prep the v0.6.x→v0.7 section skeleton at cut time (not before — truth discipline).
-42. datastartest coverage: 95.5% → decide whether ~97% is worth chasing (likely no; record the decision).
-43. Vendor-hygiene: `go mod verify` all four modules at pre-tag.
-44. Gopls `docspec` build-tag warning: add `-tags=docspec` hint to gopls settings docs (one line in CONTRIBUTING) — cosmetic DX.
-45. `TODO_LIST.md`: after owner answers, the three remaining rows resolve to closed or parked rows — harvest again.
-46. CHANGELOG: at v0.7.0 cut, verify the release-checklist's new §2.5/annotation/proxy steps all execute (their first live run).
-47. Consider marking the LICENSE typo fix visibly in the v0.7.0 release notes (consumers diffing zips will see LICENSE changes in three modules).
-48. Broadcast: `SubscribeFilter` + custom-store interaction test (replay-filter path with injected stores) — the sse.ReplayFiltered path is untested here.
-49. Example `version` ldflags: wire the flake build to stamp it (build app passes -ldflags?) — currently only documented.
-50. Retire/refresh `docs/status/README.md` Monitoring-tier question once O6 lands (currently re-asked in every report).
+1. ~~**Class-fix the UTF-8 marshal exposure** — sanitize in `sendSignalsMap` (or at each payload builder) so `ErrorResponse`, `NotificationResponse`, `ConsoleLog`, `ConsoleError` can't fail the same way; extend the fuzz target's invariant; CHANGELOG amend. (b1)~~ done — the UTF-8 class fix landed (ErrorResponse and NotificationResponse joined via shared sanitizeUTF8 plus a regression test; the 14-14 report records it)
+2. ~~**Add `FuzzErrorResponseFromError` to `.github/workflows/fuzz.yml`** matrix (one line). (b2)~~ done — fuzz.yml went from 4 to 6 targets (the 14-14 report records it)
+3. ~~**Update FEATURES.md broadcast section** — options constructors, Store seam, configurable heartbeat; root API rows for Version()/ScriptHandlerWith note. (b3)~~ done — FEATURES.md broadcast section updated in the truths pass (the 14-14 report records it)
+4. ~~**One full `nix develop -c buildflow` pass** to certify the whole pipeline under the devshell contract. (b4)~~ done — buildflow full pass exit 0 under the devshell contract (the 14-14 report records it)
+5. ~~**Cut v0.7.0** (owner): [Unreleased] is a coherent minor; run the hardened checklist end-to-end (its first real exercise — expect friction, fix the checklist where it stalls).~~ done — DUPLICATE — the TODO_LIST Cut v0.7.0 (owner) row owns it
+6. ~~**Owner: ScriptHandlerWith param removal decision** for v0.7.0 (documented, ready).~~ done — DUPLICATE — the TODO_LIST Cut v0.7.0 row carries the ScriptHandlerWith ride-along decision
+7. ~~**Owner: Renovate app Settings check** — dead-config verdict for renovate.json (T14.3/14.4).~~ done — DUPLICATE — the TODO_LIST Renovate-app verification row owns it
+8. ~~**Re-verify sibling claims first-hand** (fetch-bundle.sh sha256 run; T06 mirror breadth) — cheap, closes b5.~~ done — sibling claims verified first-hand (bundle byte-identical, G1 source-compat compiled; the 14-14 report records it)
+9. ~~**Full suite `-race -count=10`** once pre-tag (flaky-test confidence after this session's near-miss).~~ done — stress x10 ran and pre-tag gating lives in the hardened release-checklist
+10. ~~**CI docspec leg**: add the (now broadcast-covering) `nix run .#docspec` command to ci.yml's workspace job — docspec is currently local-only.~~ done — docspec joined ci.yml (the 14-14 report records it)
+11. ~~**CONTRIBUTING: connection-wait rule + per-change-formatting note** (e3/e4).~~ done — CONTRIBUTING carries the connection-wait rule (relative, never absolute)
+12. ~~**CHANGELOG: de-version the "v0.7.0 tranche" heading** (cosmetic truth fix).~~ done — no version-bearing tranche heading remains in CHANGELOG
+13. ~~Broadcast README: multi-instance `WithStore` sketch (Redis/Postgres pointer, no backend in repo).~~ done — the broadcast README carries the WithStore sketch with the Redis/Postgres pointer
+14. ~~`docs/replay.md`: paragraph on the new `broadcast.Store` seam (it documents only the MemoryStore path).~~ done — the docs/replay.md truth pass covered the Store seam (the 14-14 report records it)
+15. ~~`docs/error-system.md`: one line on UTF-8 sanitization behavior of error payloads.~~ done — the docs/error-system.md truth pass covered UTF-8 sanitization (the 14-14 report records it)
+16. ~~Consolidate broadcast test connection helpers (`replayBody` vs `connectSubscriber` — near-duplicates).~~ done — the connection helpers consolidated (a single helper remains in broadcast tests)
+17. ~~Decide+document heartbeat "disable" semantics (currently `<=0` keeps default; no way to disable — accept or add).~~ done — routed — TODO_LIST broadcast API follow-ups row (heartbeat disable semantics)
+18. ~~FromHub-with-options gap: `NewBroadcasterFromHub` can't take options (heartbeat interval for hub-shared broadcasters) — additive constructor candidate.~~ done — routed — TODO_LIST broadcast API follow-ups row (FromHub options gap)
+19. ~~Store interface: document/test-helper for consumer stores assigning monotonic IDs (numeric-ID replay contract).~~ done — DUPLICATE — the TODO_LIST Broadcast Store contract test helper row owns it
+20. ~~`datastar.Version()` godoc Example (pkg.go.dev polish).~~ done — routed — TODO_LIST example and godoc polish tranche row
+21. ~~Root: `example/` — add a store-injection demo handler (uses broadcast module; place under example/ with its own main or skip if it violates module boundaries — check first).~~ done — routed — TODO_LIST example and godoc polish tranche row
+22. ~~ROADMAP: park "reference store backends (Redis)" as explicit non-goal or consumer-example pointer.~~ done — routed — ROADMAP owns the Redis multi-instance replay idea
+23. ~~BUILD: master ≈20 commits ahead of origin — verify daemon pushed; if not, owner decides push timing.~~ done — daemon push verified at the session ritual (tree synced)
+24. ~~Session-end `git town status` ritual (unfinished-sync check after this long session).~~ done — the git town status ritual runs at session start and end
+25. ~~Owner lane O1: delete merged `pr/docs-test-consolidation`.~~ done — DUPLICATE — TODO_LIST Owner-blocked (branch deletion row)
+26. ~~Owner lane O2: rehome/drop `preserve/status-report-coderabbit-pr3`.~~ done — DUPLICATE — TODO_LIST Owner-blocked (coderabbit rehome row)
+27. ~~Owner lane O3: CODEOWNERS.~~ done — DUPLICATE — TODO_LIST Owner-blocked (CODEOWNERS row)
+28. ~~Owner lane O6: status-index Monitoring tier decision.~~ done — DUPLICATE — TODO_LIST Owner-blocked (status-index tier row)
+29. ~~Owner lane O7: shared lint-cache policy (purge vs bless mktemp).~~ done — DUPLICATE — TODO_LIST Owner-blocked (lint-cache policy row)
+30. ~~Owner lane O8: required-checks policy canonification.~~ done — DUPLICATE — TODO_LIST Owner-blocked (required-checks policy row)
+31. ~~Owner lane O9: v0.6.1 retro write-or-waive.~~ done — DUPLICATE — TODO_LIST Owner-blocked (v0.6.1 retro row)
+32. ~~Owner lane O4: erraudit flip verification plan for repo-publication day.~~ done — DUPLICATE — TODO_LIST Owner-blocked (erraudit flip row)
+33. ~~Owner lane O5: website launch trigger.~~ done — DUPLICATE — TODO_LIST Owner-blocked (website launch row)
+34. ~~BuildFlow upstream: install/run GOROOT alignment fix (the repo-level workaround is documented; the fleet fix isn't in).~~ done — DUPLICATE — the TODO_LIST BuildFlow upstream candidate row owns it
+35. ~~`go-licenses` in CI? (license-check is buildflow-local; CI has no license leg — decide if one belongs in ci.yml or stays local.)~~ done — routed — TODO_LIST long-tail decisions row (go-licenses CI leg)
+36. ~~AGENTS: clarify the erraudit divergence (AGENTS loop uses `--no-suppress` for the audit view; CI uses `--severity-threshold error`) — one sentence each so readers don't think one is wrong.~~ done — AGENTS.md documents the erraudit divergence (audit view uses --no-suppress; the CI gate uses the severity threshold)
+37. ~~CONTRIBUTING fuzzing section: add the fifth target name + seed-corpus regression note.~~ done — the CONTRIBUTING Fuzzing section carries the six-target table
+38. ~~fuzz.yml: fuzztime sanity — 300s ×5 targets runtime check after adding the new one.~~ done — fuzz.yml runs the nightly 300s matrix over all six targets (AGENTS.md CI notes)
+39. ~~Coverage workflow: confirm it ran on the last master push (badge staleness).~~ done — coverage re-measured 2026-10-01 (98.8/95.5/100) and the badge job runs on master pushes
+40. ~~Consider `makezero`-proof buffer idiom note (array+slice) in test-writing conventions — or drop; lint already catches it.~~ done — dropped; lint coverage makes the idiom note redundant
+41. ~~`docs/migration-guide.md`: prep the v0.6.x→v0.7 section skeleton at cut time (not before — truth discipline).~~ done — DUPLICATE — the TODO_LIST Cut v0.7.0 row owns the migration-guide skeleton step
+42. ~~datastartest coverage: 95.5% → decide whether ~97% is worth chasing (likely no; record the decision).~~ done — routed — TODO_LIST long-tail decisions row (the 97 percent coverage chase)
+43. ~~Vendor-hygiene: `go mod verify` all four modules at pre-tag.~~ done — DUPLICATE — the TODO_LIST Cut v0.7.0 row owns the pre-tag mod verify step
+44. ~~Gopls `docspec` build-tag warning: add `-tags=docspec` hint to gopls settings docs (one line in CONTRIBUTING) — cosmetic DX.~~ done — CONTRIBUTING carries the docspec command with the tags hint
+45. ~~`TODO_LIST.md`: after owner answers, the three remaining rows resolve to closed or parked rows — harvest again.~~ done — the standing harvest duty; owner-gated rows live in TODO_LIST Owner-blocked
+46. ~~CHANGELOG: at v0.7.0 cut, verify the release-checklist's new §2.5/annotation/proxy steps all execute (their first live run).~~ done — DUPLICATE — the TODO_LIST Cut v0.7.0 row owns the first live checklist run
+47. ~~Consider marking the LICENSE typo fix visibly in the v0.7.0 release notes (consumers diffing zips will see LICENSE changes in three modules).~~ done — DUPLICATE — the TODO_LIST Cut v0.7.0 row owns the release-notes step
+48. ~~Broadcast: `SubscribeFilter` + custom-store interaction test (replay-filter path with injected stores) — the sse.ReplayFiltered path is untested here.~~ done — routed — TODO_LIST Broadcast Store contract test helper row (extended with filter-interaction coverage)
+49. ~~Example `version` ldflags: wire the flake build to stamp it (build app passes -ldflags?) — currently only documented.~~ done — routed — TODO_LIST example and godoc polish tranche row
+50. ~~Retire/refresh `docs/status/README.md` Monitoring-tier question once O6 lands (currently re-asked in every report).~~ done — routed — TODO_LIST Owner-blocked status-index row (retire the repeated question once it lands)
 
 ## g) Questions I can NOT figure out myself
 
