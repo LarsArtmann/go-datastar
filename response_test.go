@@ -230,7 +230,7 @@ func TestScriptHandlerWith(t *testing.T) {
 	t.Parallel()
 
 	customJS := []byte("// custom")
-	handler := datastar.ScriptHandlerWith(customJS, "0.0.0-test")
+	handler := datastar.ScriptHandlerWith(customJS)
 
 	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/datastar.js", nil)
 	rec := httptest.NewRecorder()

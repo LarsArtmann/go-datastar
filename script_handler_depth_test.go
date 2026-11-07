@@ -148,7 +148,7 @@ func TestScriptTagVersioned_ExactlyOneVersionParam(t *testing.T) {
 func TestScriptHandlerWith_EmptyBundle(t *testing.T) {
 	t.Parallel()
 
-	handler := datastar.ScriptHandlerWith(nil, "0.0.0-empty")
+	handler := datastar.ScriptHandlerWith(nil)
 
 	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/datastar.js", nil)
 	rec := httptest.NewRecorder()

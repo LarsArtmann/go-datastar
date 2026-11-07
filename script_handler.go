@@ -35,17 +35,15 @@ func ETagFor(bundle []byte) string {
 // JavaScript client bundle with correct Content-Type, ETag, and Cache-Control
 // headers. Only GET and HEAD requests are allowed; all others return 405.
 func ScriptHandler() http.Handler {
-	return ScriptHandlerWith(static.Bytes(), static.Version)
+	return ScriptHandlerWith(static.Bytes())
 }
 
 // ScriptHandlerWith returns an [http.Handler] that serves a custom JavaScript
-// bundle. Use this to serve a different version of the DataStar client.
-//
-// The version parameter is unused: it is kept only for signature
-// compatibility with the v0.5.x API. Removing it is a breaking change
-// pencilled in for v0.7.0 (owner-gated); pass any value — static.Version is
-// the conventional choice.
-func ScriptHandlerWith(scriptBytes []byte, _ string) http.Handler {
+// bundle. Use this to serve a different version of the DataStar client. The
+// bundle's content identity is the ETag [ETagFor] computes, so serve it under
+// a URL you version yourself — [ScriptTagVersioned] pins the embedded
+// bundle's version, not a custom bundle's.
+func ScriptHandlerWith(scriptBytes []byte) http.Handler {
 	etag := ETagFor(scriptBytes)
 
 	return http.HandlerFunc(func(responseWriter http.ResponseWriter, request *http.Request) {
