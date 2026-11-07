@@ -34,6 +34,9 @@ on:
       - "static/datastar.js"
       - "datastartest/testdata/**"
 
+permissions:
+  contents: read
+
 jobs:
   flake-check:
     runs-on: ubuntu-latest

@@ -232,6 +232,14 @@ linters:
         - .WithMessagef(
         - .WithStack(
         - (.Stream).Send(
+        # go-error-family IS this library's wrapping mechanism: every Wrap*
+        # constructor and Error.WithContext* method returns a classified
+        # *errorfamily.Error that wraps the cause (docs/error-system.md).
+        # Substring match: the bare prefix covers Wrap, Wrapf, WrapRejection,
+        # WrapTransient, WrapInfrastructure, WrapOnce, and all f-variants;
+        # the method prefix covers WithContext/Map/f/Any.
+        - github.com/larsartmann/go-error-family.Wrap
+        - (*github.com/larsartmann/go-error-family.Error).WithContext
   exclusions:
     generated: lax
     rules:

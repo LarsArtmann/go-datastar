@@ -1,0 +1,70 @@
+# BuildFlow configuration - go-datastar
+#
+# The repo's canonical gates are the flake apps (nix run .#test / .#lint-ci /
+# .#erraudit) plus the CI workflow; this file only tunes BuildFlow's
+# broader-than-repo toolset so it stays green without masking real findings.
+#
+# license-check environment contract: run BuildFlow inside the devshell
+# (`nix develop -c buildflow ...`). The devshell provides go-licenses and,
+# critically, pins GOTOOLCHAIN=local with a real GOROOT; in a plain user
+# shell GOTOOLCHAIN=auto switches to the toolchain cache
+# (/mnt/buildcache/go-mod/golang.org/toolchain@...), and go-licenses stdlib
+# detection (isStdLib compares package paths against the GOROOT the binary
+# was built/run with) misaligns, so every stdlib package errors with "does
+# not have module info" (adjacent to google/go-licenses#128). That was the
+# license-check x4+ failure loop closed 2026-10-01.
+#
+# Skipped steps, each a deliberate, documented decision:
+#
+# eslint-check / eslint-fix: the only JavaScript is the vendored upstream
+#   DataStar client bundle; there is no first-party JS/TS to configure for.
+#   (BuildFlow now also auto-defers eslint when no eslint config exists.)
+#
+# oxfmt: same fact, formatter side. static/datastar.js (the vendored,
+#   checksum-pinned upstream bundle) is the ONLY JS file in the repo, and
+#   BuildFlow's ignore rules exclude it, so oxfmt matches zero targets and
+#   exits 2 ("Expected at least one target file") — a 5-run failure loop
+#   closed 2026-11-07. Formatting vendored minified output is forbidden
+#   anyway (.prettierignore + static/checksum_test.go shield the bundle;
+#   see the 2026 prettier-sweep incident in AGENTS.md).
+#
+# go-auto-upgrade: policy skip (retested 2026-09-22 against gau v0.6.2). The
+#   dependency gate now correctly suppresses import-adding rewrites (lo is not
+#   in go.mod, and this minimal-dependency protocol library will not add it),
+#   so a run is a green no-op that emits lo-dependency-missing + manual-Filter
+#   suggestion warnings every time. Pure noise against a standing policy:
+#   trivial for-range loops stay, no samber/lo dependency for zero behavioral
+#   gain.
+#
+# go-structure-linter stays RUNNING (not skipped): its AGENTS.md size guard
+# is real value. The flat-layout warnings are suppressed the supported way
+# via .go-structure-linter.yaml (presets: [flat]) — this repo is
+# deliberately a flat single package (ADR 002; module_boundary_test.go
+# enforces the module boundaries).
+#
+# workspace/pseudo-version-hygiene preflight FAIL is a verified false
+# positive for this repo: it demands the zero pseudo-version on every
+# intra-repo directory-replaced require, but all four modules are PUBLISHED
+# and tagged in lockstep, and sibling requires deliberately carry real tags
+# (static v0.6.1 etc.) so consumers resolve without the replaces. Zeroing
+# them would re-poison consumers through MVS (the 2026-10-03 fleet
+# de-poisoning). Documented deliberate non-fix; preflight FAIL does not
+# fail the run (only step failures and error-severity findings do).
+skip_steps:
+  - eslint-check
+  - eslint-fix
+  - go-auto-upgrade
+  - oxfmt
+
+tool_options:
+  # CI's setup-go pins an exact patch (1.27.3) deliberately — moved off the
+  # minor form by 09fe522 for the govulncheck stdlib fixes (AGENTS.md).
+  # Respect that pin instead of warning that it diverges from nixpkgs.
+  go-version-auto-configure:
+    respect_patch_floor: true
+
+# Table-driven Go test suites are cohesive units; splitting them to satisfy
+# a line budget fragments review. 700 covers the largest legitimate suite
+# (datastartest/event_test.go, 687 lines) while still guarding unbounded
+# growth. Applies to all files; non-test sources stay far below it.
+max_file_size: 700

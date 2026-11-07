@@ -55,6 +55,9 @@ env:
   # so local and CI lint agree — bump both in the same commit.
   GOLANGCI_VERSION: v2.14.0
 
+permissions:
+  contents: read
+
 jobs:
   test:
     strategy:

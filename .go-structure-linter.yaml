@@ -2,3 +2,13 @@
 # API (github.com/larsartmann/go-datastar), documented in ADR-002; this
 # preset is the upstream-sanctioned encoding of that ADR.
 presets: [flat]
+
+# The flat preset does not cover these directory-suggestion rules; each is a
+# deliberate structure decision, suppressed with its standing reason.
+suppressions:
+  - rule: examples-directory
+    reason: Example code lives as Go example_test.go files in the packages they document (root example_test.go, datastartest/example_test.go) — that is idiomatic Go, not an examples/ tree.
+  - rule: scripts-directory
+    reason: static/fetch-bundle.sh belongs next to the vendored bundle it fetches and checksum-pins (docs/static-js.md); a repo-root scripts/ dir would decouple it from its single caller.
+  - rule: testdata-directory
+    reason: wire_golden_test.go is a golden WIRE-FORMAT test (docs/wire-format.md), not a fixture-parsing test; its table lives in-file so the golden contract and its assertions stay co-located.
