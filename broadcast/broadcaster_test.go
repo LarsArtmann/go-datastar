@@ -532,3 +532,95 @@ func TestBroadcasterReplayFilterInteraction(t *testing.T) {
 		}
 	}
 }
+
+// WithHeartbeatDisabled is an absolute kill switch: streams served by a
+// disabled broadcaster carry no ": heartbeat" frames, even when a tight
+// interval is also configured (the enabled twin proves the window is long
+// enough to have caught ticks had the switch not won).
+func TestBroadcasterHeartbeatDisabled(t *testing.T) {
+	t.Parallel()
+
+	enabled := broadcast.NewBroadcaster(broadcast.WithHeartbeatInterval(10 * time.Millisecond))
+	disabled := broadcast.NewBroadcaster(
+		broadcast.WithHeartbeatInterval(10*time.Millisecond),
+		broadcast.WithHeartbeatDisabled(),
+	)
+
+	run := func(b *broadcast.Broadcaster) string {
+		ctx, cancel := context.WithCancel(context.Background())
+		recorder := httptest.NewRecorder()
+		req := httptest.NewRequestWithContext(ctx, http.MethodGet, "/events", nil)
+
+		done := make(chan struct{})
+		go func() {
+			b.ServeHTTP(recorder, req)
+			close(done)
+		}()
+
+		waitFor(t, "subscriber to connect", func() bool { return b.SubscriberCount() == 1 })
+		time.Sleep(200 * time.Millisecond)
+		cancel()
+		<-done
+
+		return recorder.Body.String()
+	}
+
+	enabledBody := run(enabled)
+	if !strings.Contains(enabledBody, "heartbeat") {
+		t.Fatalf("enabled twin body %q carries no heartbeat frames — test window too short to prove the disabled case", enabledBody)
+	}
+
+	disabledBody := run(disabled)
+	if strings.Contains(disabledBody, "heartbeat") {
+		t.Errorf("disabled broadcaster body %q must not contain heartbeat frames", disabledBody)
+	}
+}
+
+// Options compose on hub-shared broadcasters: the heartbeat interval and the
+// replay store are broadcaster-owned and apply through NewBroadcasterFromHub
+// (only the buffer size is hub-owned and stays with the hub's construction).
+func TestNewBroadcasterFromHubWithOptions(t *testing.T) {
+	t.Parallel()
+
+	hub := sse.NewBroadcaster[sse.Event]()
+	b := broadcast.NewBroadcasterFromHub(
+		hub,
+		broadcast.WithHeartbeatInterval(10*time.Millisecond),
+		broadcast.WithReplayCapacity(8),
+	)
+
+	if b.Hub() != hub {
+		t.Fatal("FromHub must wrap the given hub")
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	recorder := httptest.NewRecorder()
+	req := httptest.NewRequestWithContext(ctx, http.MethodGet, "/events", nil)
+	req.Header.Set("Last-Event-ID", "1")
+
+	b.BroadcastEvent(sse.Event{
+		ID:    sse.NewEventID("2"),
+		Event: "feed",
+		Data:  "shared-hub",
+	})
+
+	done := make(chan struct{})
+	go func() {
+		b.ServeHTTP(recorder, req)
+		close(done)
+	}()
+
+	waitFor(t, "hub-shared subscriber to connect", func() bool { return b.SubscriberCount() == 1 })
+	time.Sleep(100 * time.Millisecond)
+	cancel()
+	<-done
+
+	body := recorder.Body.String()
+	if !strings.Contains(body, "heartbeat") {
+		t.Errorf("hub-shared body %q carries no heartbeat frames — WithHeartbeatInterval did not apply", body)
+	}
+
+	if !strings.Contains(body, "shared-hub") {
+		t.Errorf("hub-shared body %q must replay the stored event after Last-Event-ID 1", body)
+	}
+}

@@ -42,6 +42,7 @@ type config struct {
 	bufferSize        int
 	store             Store
 	heartbeatInterval time.Duration
+	heartbeatDisabled bool
 }
 
 // WithBufferSize sets the per-subscriber channel capacity. Slow clients
@@ -77,12 +78,27 @@ func WithStore(store Store) Option {
 
 // WithHeartbeatInterval overrides the per-connection SSE comment-ping
 // interval (the default keeps idle streams alive through reverse proxies
-// and firewalls). interval <= 0 keeps the default.
+// and firewalls). interval <= 0 keeps the default. To turn heartbeats off
+// entirely, use [WithHeartbeatDisabled] — it wins over any interval set
+// here, regardless of option order.
 func WithHeartbeatInterval(interval time.Duration) Option {
 	return func(c *config) {
 		if interval > 0 {
 			c.heartbeatInterval = interval
 		}
+	}
+}
+
+// WithHeartbeatDisabled turns the per-connection SSE comment-ping off
+// entirely — streams carry no heartbeat frames and never wake for them.
+// Use it when the transport below you already keeps the connection alive
+// (e.g. an edge proxy with its own idle strategy) or when protocol
+// cleanliness of the event stream matters more than idle protection. The
+// switch is absolute: it wins over any [WithHeartbeatInterval] regardless
+// of option order.
+func WithHeartbeatDisabled() Option {
+	return func(c *config) {
+		c.heartbeatDisabled = true
 	}
 }
 

@@ -42,6 +42,7 @@ type Broadcaster struct {
 
 	store             Store
 	heartbeatInterval time.Duration
+	heartbeatDisabled bool
 }
 
 // NewBroadcaster creates a DataStar patch broadcaster with default settings
@@ -65,6 +66,7 @@ func NewBroadcaster(opts ...Option) *Broadcaster {
 		Broadcaster:       sse.NewBroadcaster[sse.Event](sseOpts...),
 		store:             cfg.store,
 		heartbeatInterval: cfg.heartbeatInterval,
+		heartbeatDisabled: cfg.heartbeatDisabled,
 	}
 }
 
@@ -91,10 +93,24 @@ func NewBroadcasterWithReplay(capacity int) *Broadcaster {
 // you want two SSE flavors (or another transport adapter) to distribute from
 // the same hub.
 //
-// The returned broadcaster has no replay store; [BroadcastEvent] on it reaches
-// all hub subscribers, but nothing is retained for reconnection replay.
-func NewBroadcasterFromHub(hub *sse.Broadcaster[sse.Event]) *Broadcaster {
-	return &Broadcaster{Broadcaster: hub}
+// Options compose as on [NewBroadcaster], with one exception: the buffer
+// size ([WithBufferSize]) is owned by the hub's own construction and cannot
+// be retro-fitted here — size the hub with sse.WithBufferSize when you build
+// it. Heartbeat options and the replay [Store] are broadcaster-owned and
+// apply normally.
+//
+// Without options the returned broadcaster has no replay store;
+// [BroadcastEvent] on it reaches all hub subscribers, but nothing is
+// retained for reconnection replay.
+func NewBroadcasterFromHub(hub *sse.Broadcaster[sse.Event], opts ...Option) *Broadcaster {
+	cfg := newConfig(opts...)
+
+	return &Broadcaster{
+		Broadcaster:       hub,
+		store:             cfg.store,
+		heartbeatInterval: cfg.heartbeatInterval,
+		heartbeatDisabled: cfg.heartbeatDisabled,
+	}
 }
 
 // Hub returns the embedded [*sse.Broadcaster] — the canonical fan-out hub.
@@ -195,7 +211,9 @@ func (b *Broadcaster) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	go stream.Heartbeat(r.Context(), b.effectiveHeartbeatInterval())
+	if !b.heartbeatDisabled {
+		go stream.Heartbeat(r.Context(), b.effectiveHeartbeatInterval())
+	}
 
 	for {
 		select {
