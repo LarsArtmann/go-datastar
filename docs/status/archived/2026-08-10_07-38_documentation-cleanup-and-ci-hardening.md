@@ -10,51 +10,36 @@ and replace directive audit checks, verify `go mod tidy` cleanliness, and
 run the full test suite.
 
 ---
-<!-- check-rows:ledger -->
 
-<!-- check-rows:ledger -->
 ## A) FULLY DONE
 
-<!-- check-rows:ledger -->
 ### AGENTS.md Documentation Update
-<!-- check-rows:ledger -->
 
 Three edits applied and verified:
 
 1. **Lines 15-19 — Replace directive description**: Removed stale
    `datastartest => ./datastartest` from root's replace directive list. Added
-<!-- check-rows:ledger -->
    note explaining root no longer depends on datastartest and why (circular
    dependency fix via test relocation).
-<!-- check-rows:ledger -->
 
-<!-- check-rows:ledger -->
 2. **Lines 89-91 — File layout table**: Added `e2e_test.go` row describing
    `TestE2E_SSEHeaders` and noting the DataStar wire-format E2E test was
    relocated to `datastartest/e2e_test.go`. Updated `datastartest/` row to
-<!-- check-rows:ledger -->
    mention it contains `e2e_test.go` (dogfood integration test).
-<!-- check-rows:ledger -->
 
-<!-- check-rows:ledger -->
 3. **Lines 171-177 — Datastartest section**: Replaced misleading "It replaces
-<!-- check-rows:ledger -->
    ~260 lines of private parsing code that previously lived in this repo's
    own `e2e_test.go`" with accurate description: the full wire-format E2E test
    lives in `datastartest/e2e_test.go`, root retains only `TestE2E_SSEHeaders`,
    and the separation breaks the circular module dependency.
-<!-- check-rows:ledger -->
 
 ### CHANGELOG.md Entry
 
-<!-- check-rows:ledger -->
 Added `[Unreleased]` section with two subsections:
-<!-- check-rows:ledger -->
 
 - **Fixed — Module boundary**: Circular module dependency between root and
   datastartest. Documents the test relocation, the elimination of root's
   require on datastartest, and what remains in root's `e2e_test.go`.
-<!-- check-rows:ledger -->
 - **Added — CI hardening**: Per-module isolation check (`GOWORK=off` build +
   test per module). This was added in the prior session but not documented
   in the changelog until now.
@@ -63,7 +48,6 @@ Added `[Unreleased]` section with two subsections:
 
 Two new steps added to `.github/workflows/ci.yml` after the per-module
 isolation step:
-<!-- check-rows:ledger -->
 
 1. **Workspace sync idempotency** — Copies `go.work`, runs `go work sync`,
    diffs. Fails with `::error::` if `go.work` changed, indicating the
@@ -76,7 +60,6 @@ isolation step:
 ### Verification
 
 All checks pass:
-<!-- check-rows:ledger -->
 
 <!-- check-rows:ledger -->
 | Check                      | Command                                                        | Result     |
@@ -91,7 +74,6 @@ All checks pass:
 | Replace directive audit    | `grep 'replace.*=>/' go.mod datastartest/go.mod static/go.mod` | No matches |
 
 ### README.md Review
-<!-- check-rows:ledger -->
 
 Reviewed README.md in full (379 lines). No stale references to the old module
 structure found. The README correctly documents:

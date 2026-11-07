@@ -24,7 +24,6 @@
 | 8 | `go get @v0.0.3` verified from module proxy                    | Resolves with all 4 deps in clean temp module               |
 | 9 | Local quality gates all pass                                   | build, vet, 119 tests, lint 0 issues, erraudit 0 violations |
 
-<!-- check-rows:ledger -->
 
 ---
 
@@ -41,7 +40,6 @@
 | 2 | TODO_LIST.md cleanup | Open items updated, completed items added | One uncommitted change remains (`TODO_LIST.md` modified, not committed). Local branch is 1 commit ahead of origin (not pushed). |
 | 3 | CI pipeline verification | Identified that test/lint/govulncheck pass | **erraudit job is broken** — erraudit repo is private, CI can't `go install` it. Every CI run is RED. |
 
-<!-- check-rows:ledger -->
 
 ---
 
@@ -91,7 +89,6 @@
 
 ### Critical (release integrity)
 
-<!-- check-rows:ledger -->
 
 1. ~~Fix the go.mod lie: either lower `go 1.26.5` → `go 1.26` in go.mod, or remove the false CHANGELOG claims from v0.0.2 and v0.0.3 sections~~ resolved later — the directives went minor-form (`go 1.27`) at `7f57346` (2026-09-19: patch-pinned `go 1.27.1` first, later relaxed to the minor form); the false claims went with them
 2. ~~Fix CI erraudit job (make erraudit repo public OR add GOPRIVATE + PAT secret OR remove job temporarily)~~ done — job made non-blocking (`continue-on-error`, `a1aaa15`)

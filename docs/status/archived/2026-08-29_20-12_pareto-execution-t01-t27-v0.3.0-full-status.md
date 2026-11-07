@@ -11,7 +11,6 @@ all five CI workflows green, v0.3.0 shipped and rendered on pkg.go.dev.
 
 ## Verdict at a glance
 
-<!-- check-rows:ledger -->
 
 <!-- check-rows:ledger -->
 
@@ -28,47 +27,35 @@ all five CI workflows green, v0.3.0 shipped and rendered on pkg.go.dev.
 | 20% (T10–T20) | CI depth, docs, features | ✅ done (T20 includes decision spike) |
 | Rest (T21–T27) | long tail | 🟡 5 done, T21/T27 delivered as scoped deferrals, not spikes |
 
-<!-- check-rows:ledger -->
 
 17 commits pushed. Every gate re-verified at HEAD: race ×5 packages, vet,
 
-<!-- check-rows:ledger -->
 
 lint 0 issues ×3 modules, `GOWORK=off` isolation ×3, `go work sync`
 idempotent, govulncheck clean, `nix flake check` all-passed, actionlint
 
-<!-- check-rows:ledger -->
 
 clean, and all five CI workflows **success** on the final push (run
 
-<!-- check-rows:ledger -->
 
 33266637847 et al.).
 
 ---
-<!-- check-rows:ledger -->
 
-<!-- check-rows:ledger -->
 ## Self-critique first: what I forgot, what I did worse, what to improve
-<!-- check-rows:ledger -->
 
-<!-- check-rows:ledger -->
 ### Forgotten (caught late or by this report)
 
 1. **The exact-CI linter build.** I verified lint locally with the devShell
    golangci-lint, but CI go-installs `v2.12.2` — a build that flags
-<!-- check-rows:ledger -->
    `varnamelen` on `s` where mine didn't. Result: one red master push
    (run 33266437052), fixed one commit later. I used exact-version
    `go run` for actionlint but not for golangci-lint. Asymmetric discipline.
-<!-- check-rows:ledger -->
 2. ~~**`erraudit` local run.** The AGENTS command block includes it; my final~~ done (done — erraudit loop run clean on all three modules (docs-health pass 2026-09-02: 0 violations))
-<!-- check-rows:ledger -->
    ~~gate skipped it. The new classified error in `script_accessors.go`~~
    ~~(`datastartest.custom_event_detail_unmarshal_failed`) is unverified by~~
    ~~the audit tool this session.~~
 3. ~~**FEATURES.md was never updated** with today's additions (typed~~ done (done — FEATURES.md updated 2026-09-02 (accessors, domain-adapter, guides, CI workflows, compression, ReplaceURLQuerystring, goldens))
-<!-- check-rows:ledger -->
    ~~accessors, domain-adapter example, guides, new CI workflows). Last~~
    ~~touched by the morning audit (`011104d`).~~
 4. ~~**AGENTS.md CI section went stale the same day I wrote it** — it lists~~ done (done — AGENTS.md CI section synced 2026-09-02 (nix.yml, fuzz.yml, codeql.yml, renovate.json, SHA pinning))
@@ -77,7 +64,6 @@ clean, and all five CI workflows **success** on the final push (run
 5. ~~**No cross-links from README to the seven new guides** (plan sub-task~~ done (done — README 'Documentation' section + AGENTS Docs Map link all seven guides (2026-09-02))
    ~~16.3). The guides exist; the README never points at them.~~
 6. **Renovate + Dependabot now run in parallel** — I added `renovate.json`
-<!-- check-rows:ledger -->
    without checking that `.github/dependabot.yml` exists. Two dependency
    bots = duplicate PR noise. Confirmed by `ls` during this report.
 7. **Dockerfile/compose never built.** `example/Dockerfile` +
@@ -90,9 +76,7 @@ clean, and all five CI workflows **success** on the final push (run
    ```
 10. **Session-entry ritual partial** — `git town status` and `gh pr list`
     were skipped at session start.
-<!-- check-rows:ledger -->
 
-<!-- check-rows:ledger -->
 ### Done worse than it should have been
 
 11. **v0.3.0 was tagged with a stale datastartest `vendorHash`** — the
@@ -105,7 +89,6 @@ clean, and all five CI workflows **success** on the final push (run
     and re-tagging is forbidden (proxy poisoning) — but the canonical gate
     is red at the tag. See (d).
 12. **Module-boundary violation in my own test.** I wrote
-<!-- check-rows:ledger -->
     `example/domain-adapter/main_test.go` importing `datastartest` — the
     exact dependency the repo spent an ADR and a regression guard
     eliminating. Caught only because the root `GOWORK=off` isolation run

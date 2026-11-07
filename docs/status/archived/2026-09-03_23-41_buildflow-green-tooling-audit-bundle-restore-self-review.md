@@ -10,72 +10,55 @@
 
 ---
 
-<!-- check-rows:ledger -->
 
 ## Self-review (asked directly)
 
-<!-- check-rows:ledger -->
 
-<!-- check-rows:ledger -->
 
 **What did I forget?**
 
-<!-- check-rows:ledger -->
 
-<!-- check-rows:ledger -->
 
 1. The pasted test output had **no `static` module line** — I trusted the "PASS" impression instead of cross-checking module coverage. Found the checksum failure only when running the suite myself (minutes later than necessary).
 2. **nix-checker told me** ("vendorHash may be stale — go.mod modified after hash was set") and I initially filed it under "heuristic noise". It was right. `nix flake check` at minute one would have surfaced the real hash mismatch immediately.
 3. oxfmt/oxlint have **no ignore for `static/datastar.js`** — I shielded prettier and codespell only. Nothing stopped (or stops) oxfmt from sweeping the bundle next run.
 
-<!-- check-rows:ledger -->
 
 4. Did not run the baseline gate suite **before** the first edit — the static break and stale hash were pre-existing and would have been found in minute one with a correct READ→UNDERSTAND→VERIFY-first sequence.
 5. Did not run `erraudit nolint-audit .` to confirm directive freshness; did not do the git-town session ritual; did not HARVEST the (f) list into `TODO_LIST.md` yet.
 
-<!-- check-rows:ledger -->
 
 **What is stupid that we do anyway?**
 
-<!-- check-rows:ledger -->
 
-<!-- check-rows:ledger -->
 
 - The **auto-commit daemon commits formatter damage to master ungated** (this is exactly how a prettier-reformatted vendored bundle landed in `ef10422`).
 - **No branch protection + informational CI** → a red master sat on origin for ~6h (unbuildable hermetic flake via hash mismatch).
 - **Four formatters with opinions on non-Go files** (dprint, prettier, oxfmt, treefmt) with no single owner — split brain, see below.
 
-<!-- check-rows:ledger -->
 
 - **buildflow's nix self-healing is trusted but does not actually persist fixes** — `nix-hash-fix` reported ✔ while the hash stayed stale.
 
-<!-- check-rows:ledger -->
 
-<!-- check-rows:ledger -->
 
 **Could I have done better?**
 
-<!-- check-rows:ledger -->
 
 - Sequencing: baseline verification first, lint after every edit batch (my first `defer x.Close()` edit traded erraudit-compliance for a golangci errcheck failure — cost one cycle).
 - Spent ~6 tool calls reverse-engineering buildflow's erraudit argv (shim, binary greps, run records) before accepting the residual. Right call to stop; late call to stop.
 - I introduced two typos while writing lint/docs edits (`trip the dictionary`, `reformat ted`) — both caught and fixed, but ironic in a spell-check session.
 
-<!-- check-rows:ledger -->
 
 **Did I lie?** No. "All gates green" at session end was true for the working tree; the vendorHash fix has since been committed verbatim (`caa0986`, 1 line), so committed state now matches what was verified.
 
-<!-- check-rows:ledger -->
 
 **Ghost systems?** The `//nolint:erraudit` directive in `example/main.go:98` is currently **honored by no gate that scans `example/`**: the AGENTS.md gate runs `--no-suppress` (ignores it) and doesn't scan `example/` at all; the flake `erraudit` app honors it but doesn't scan `example/`; buildflow scans `example/` but ignores nolint. It is documentation, not enforcement — flagged in b) #1.
 
-<!-- check-rows:ledger -->
 
 **Split brains found:** (1) two documented erraudit invocations (AGENTS.md gate `--no-suppress` vs flake app `--severity-threshold error`) — different contracts, both "green"; (2) dprint vs prettier both claim markdown/JSON/YAML; (3) buildflow's erraudit policy vs the erraudit CLI's own default (nolint-honoring) policy; (4) codespell enforced only in buildflow, absent from treefmt/CI.
 
 **Scope creep check:** resisted adding samber/lo (dep-for-nothing), resisted the hash.nix extraction (ADR-004 self-reference risk), fixed the `cancelability` finding as a comment, not an API rename. The 50-item list below is a brainstorm, not a commitment.
 
-<!-- check-rows:ledger -->
 
 **Removed something useful?** No. Skipped steps are documented with rationale; `checks.*` consolidation is behavior-identical.
 
@@ -109,7 +92,6 @@
 
 | 12 | Full verification battery | see "End state" above |
 
-<!-- check-rows:ledger -->
 
 ## b) PARTIALLY DONE
 
@@ -123,7 +105,6 @@
 
 1. ~~**Push to origin** — master ahead 8 (incl. bundle restore + vendorHash fix). Why: never push without explicit instruction. Priority: high, blocked on owner.~~ done — pushed — v0.5.0 tagged from that tree the same night (`831bbfb`)
 
-<!-- check-rows:ledger -->
 
 2. ~~**v0.5.0 release** — `[Unreleased]` holds consumer-facing additions (Response method forms, `version` package, datastartest debug helpers, static v1.0.3). Waiting on release decision.~~ done at `831bbfb`
 3. **docs/static-js.md runbook** — not verified against the new shields/checksum-pin workflow.

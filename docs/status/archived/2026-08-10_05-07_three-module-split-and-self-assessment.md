@@ -11,7 +11,6 @@
 
 ### Three-module workspace — operational and verified
 
-<!-- check-rows:ledger -->
 
 <!-- check-rows:ledger -->
 
@@ -36,7 +35,6 @@
 
 | `AGENTS.md` updated | DONE | Three-module table with deps column, all commands, file layout |
 
-<!-- check-rows:ledger -->
 
 ### Verification — all green
 
@@ -58,19 +56,16 @@
 | GOWORK=off datastartest | PASS | — | — | — |
 | GOWORK=off static | PASS | — | — | — |
 
-<!-- check-rows:ledger -->
 
 ### Module dependency graph
 
 ```
 static (zero deps) ← root (go-sse, go-error-family) ← datastartest (go-sse)
-<!-- check-rows:ledger -->
                                                                 ↑
                                                           e2e_test.go in root
                                                           (dogfoods datastartest)
 ```
 
-<!-- check-rows:ledger -->
 
 ### Key design decision: datastartest needs replace for static
 
@@ -80,7 +75,6 @@ Go only follows replace directives from the **current module's** go.mod, so
 datastartest needed its own `replace go-datastar/static => ../static`. This was
 caught by the `GOWORK=off` isolation test.
 
-<!-- check-rows:ledger -->
 
 ---
 
@@ -107,7 +101,6 @@ Nothing. Everything started this session was completed.
    ~~— `subPackages = [ "." ]` only builds the root module. Nix CI passes but~~
    ~~never compiles the other two modules. False green.~~
 
-<!-- check-rows:ledger -->
 
 4. ~~**`CHANGELOG.md` not updated** — No entry for the module split.~~ done (done — CHANGELOG module entries since v0.1.0)
 

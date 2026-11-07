@@ -51,51 +51,51 @@
 
 ## f) Up to 50 things to get done next (ranked; owner-gated marked)
 
-1. **HARVEST this report's §f into TODO_LIST/ROADMAP** (docs-health HARVEST) before the next gate run — this file is now the freshness gate's newest report.
-2. Land the 35 dirty archive paths (daemon) and verify a clean tree + `git town status` (session-end ritual, unfinished).
-3. Decide the no-strike-archive canon: per-item verdict pass for `2026-10-01_04-59` + `2026-10-01_11-33`, or adopt a fleet `routed-remainder` marker (g1).
-4. Real per-row verdicts for the broadcast-review test-matrix residue (~40 ledgered rows; many likely shipped — options tests, replay tests).
-5. Verify the 09-02 pointer-ledger rows (45) still resolve now that their source reports are archived.
-6. Disposition the buildflow brainstorm-ledger rows (38) — several belong upstream in the BuildFlow repo.
-7. **(owner)** Cut v0.7.0 — release-checklist §2.5 first live run; CHANGELOG `[Unreleased]` is release-shaped.
-8. Broadcast `Store` monotonic-ID contract test helper (TODO_LIST row from this session).
-9. Upstream `starfederation/datastar-go` release check + README comparison table (TODO_LIST row).
-10. Release-checklist hardening trio at the cut (TODO_LIST row).
-11. **(owner)** Renovate app installed? — first regex-manager proposal or dead-config verdict.
-12. aarch64/darwin `nix flake check --all-systems` (ROADMAP theme 3; needs a darwin runner).
-13. Bundle-integrity checksum API idea (ROADMAP theme 5).
-14. Micro-quality consolidation backlog (ROADMAP theme 2: BOM test, ETag-stable integration test, sha256 ETag helper, Dockerfile smoke, title convention, CHANGELOG→release links, runbook backfill note).
-15. VendorHash discrepancy investigation (`git show b713f67 -- flake.nix`; parallel session's Now item).
-16. datastartest `RequireScriptTagVersion` helper (parallel item; testing.TB invariant).
-17. CSP nonce + versioned-URL doc note in `docs/static-js.md` (parallel item).
-18. **(owner)** Cache policy: raise ScriptHandler to `public, max-age=31536000, immutable`?
-19. doc.go: mention `ScriptTagVersioned` next to ScriptHandler (parallel item).
-20. `ScriptTagVersioned` custom-bundle asymmetry doc comment (parallel item).
-21. README quick-start: pair `mux.Handle` with a `ScriptTagVersioned` reference (parallel item).
-22. Example smoke test asserting `src="/datastar.js?v=<static.Version>"` (parallel item).
-23. README feature-table cache-busting row (parallel item).
-24. Godoc `ExampleScriptTagVersioned` (parallel item).
-25. **(owner)** Review/merge emeet-pixyd PR #12 (the port's origin; templ regen hunk needs the templ-version check).
-26. **(owner)** Release lane for `ScriptTagVersioned`: v0.6.3 root re-tag vs next minor (parallel g).
-27. FEATURES.md row + docs-map drift reconcile for the new API (parallel items 15/16).
-28. `ScriptTagVersioned` idempotency for URLs already carrying `v=` (parallel item).
-29. `appendVersionQuery` malformed-URL edge documentation (parallel item).
-30. datastartest README API tour update if item 16 ships (parallel item).
-31. `docs/testing.md` versioned-tag assertion mention (parallel item).
-32. `nix run .#test` vs raw go test parity check (parallel item).
-33. Fleet sweep for the bare-`datastar.js` pattern in sibling web repos (parallel item).
-34. Upstream SDK docs: do they recommend a cache-busting query? (parallel item).
-35. Verify no cross-module doc claims `ScriptTagVersioned` for `static/` (parallel item).
-36. AGENTS.md one-line pointer: versioned URLs are the recommended serving pattern (parallel item).
-37. Watch the first Renovate JS bump: confirm `?v=` updates automatically via `static.Version` (parallel item).
-38. Confirm no API-surface golden test trips on future exports (parallel item).
-39. Re-measure root coverage post-`ScriptTagVersioned`; badge job agreement (parallel item).
-40. CHANGELOG hygiene at the cut: `Added` entry survives the `[Unreleased]` rename (parallel item).
-41. Record the fuzz non-decision (pure string concat) in `docs/static-js.md` (parallel item).
-42. Verify broadcast docspec CI wiring still green (parallel item).
-43. AGENTS.md gotcha: `<!-- check-rows:ledger -->` must be a pure line — glued comments cancel it (from d2).
-44. Upstream docs-gates candidate: check-rows continuation-row mode (skill parks this proposal).
-45. Upstream docs-gates candidate: link-rotation guard (README index links resolve — I checked by hand this session).
+1. ~~**HARVEST this report's §f into TODO_LIST/ROADMAP** (docs-health HARVEST) before the next gate run — this file is now the freshness gate's newest report.~~ done — this harvest pass routed them — TODO_LIST tranches and owner-blocked rows plus ROADMAP; duplicates struck individually below
+2. ~~Land the 35 dirty archive paths (daemon) and verify a clean tree + `git town status` (session-end ritual, unfinished).~~ done — the daemon landed all archive paths, the tree is clean, and git town is quiet
+3. ~~Decide the no-strike-archive canon: per-item verdict pass for `2026-10-01_04-59` + `2026-10-01_11-33`, or adopt a fleet `routed-remainder` marker (g1).~~ done — routed — TODO_LIST Owner-blocked (no-strike-archive canon decision row)
+4. ~~Real per-row verdicts for the broadcast-review test-matrix residue (~40 ledgered rows; many likely shipped — options tests, replay tests).~~ done — routed — TODO_LIST archive-ledger residue pass row
+5. ~~Verify the 09-02 pointer-ledger rows (45) still resolve now that their source reports are archived.~~ done — routed — TODO_LIST archive-ledger residue pass row
+6. ~~Disposition the buildflow brainstorm-ledger rows (38) — several belong upstream in the BuildFlow repo.~~ done — routed — TODO_LIST archive-ledger residue pass row
+7. ~~**(owner)** Cut v0.7.0 — release-checklist §2.5 first live run; CHANGELOG `[Unreleased]` is release-shaped.~~ done — DUPLICATE — the TODO_LIST Cut v0.7.0 (owner) row owns it
+8. ~~Broadcast `Store` monotonic-ID contract test helper (TODO_LIST row from this session).~~ done — DUPLICATE — the TODO_LIST Broadcast Store contract test helper row owns it
+9. ~~Upstream `starfederation/datastar-go` release check + README comparison table (TODO_LIST row).~~ done — DUPLICATE — the TODO_LIST Upstream release check + README comparison table row owns it
+10. ~~Release-checklist hardening trio at the cut (TODO_LIST row).~~ done — DUPLICATE — the TODO_LIST Release-checklist hardening trio row owns it
+11. ~~**(owner)** Renovate app installed? — first regex-manager proposal or dead-config verdict.~~ done — DUPLICATE — the TODO_LIST Renovate-app verification row owns it
+12. ~~aarch64/darwin `nix flake check --all-systems` (ROADMAP theme 3; needs a darwin runner).~~ done — DUPLICATE — ROADMAP theme 3 owns it (aarch64/darwin all-systems)
+13. ~~Bundle-integrity checksum API idea (ROADMAP theme 5).~~ done — DUPLICATE — ROADMAP theme 5 owns it (bundle-integrity checksum)
+14. ~~Micro-quality consolidation backlog (ROADMAP theme 2: BOM test, ETag-stable integration test, sha256 ETag helper, Dockerfile smoke, title convention, CHANGELOG→release links, runbook backfill note).~~ done — DUPLICATE — ROADMAP theme 2 owns it (micro-quality backlog)
+15. ~~VendorHash discrepancy investigation (`git show b713f67 -- flake.nix`; parallel session's Now item).~~ done — routed — TODO_LIST VendorHash discrepancy investigation row
+16. ~~datastartest `RequireScriptTagVersion` helper (parallel item; testing.TB invariant).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche B
+17. ~~CSP nonce + versioned-URL doc note in `docs/static-js.md` (parallel item).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche A
+18. ~~**(owner)** Cache policy: raise ScriptHandler to `public, max-age=31536000, immutable`?~~ done — routed — TODO_LIST Owner-blocked (cache-policy row)
+19. ~~doc.go: mention `ScriptTagVersioned` next to ScriptHandler (parallel item).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche A
+20. ~~`ScriptTagVersioned` custom-bundle asymmetry doc comment (parallel item).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche A
+21. ~~README quick-start: pair `mux.Handle` with a `ScriptTagVersioned` reference (parallel item).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche A
+22. ~~Example smoke test asserting `src="/datastar.js?v=<static.Version>"` (parallel item).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche B
+23. ~~README feature-table cache-busting row (parallel item).~~ done — the README feature-table cache-busting row exists (README, ScriptTagVersioned row)
+24. ~~Godoc `ExampleScriptTagVersioned` (parallel item).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche B
+25. ~~**(owner)** Review/merge emeet-pixyd PR #12 (the port's origin; templ regen hunk needs the templ-version check).~~ done — routed — TODO_LIST Owner-blocked (emeet-pixyd PR 12 review row)
+26. ~~**(owner)** Release lane for `ScriptTagVersioned`: v0.6.3 root re-tag vs next minor (parallel g).~~ done — routed — TODO_LIST Owner-blocked (release-lane row)
+27. ~~FEATURES.md row + docs-map drift reconcile for the new API (parallel items 15/16).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche A
+28. ~~`ScriptTagVersioned` idempotency for URLs already carrying `v=` (parallel item).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche B
+29. ~~`appendVersionQuery` malformed-URL edge documentation (parallel item).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche A
+30. ~~datastartest README API tour update if item 16 ships (parallel item).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche A
+31. ~~`docs/testing.md` versioned-tag assertion mention (parallel item).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche A
+32. ~~`nix run .#test` vs raw go test parity check (parallel item).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche B
+33. ~~Fleet sweep for the bare-`datastar.js` pattern in sibling web repos (parallel item).~~ done — routed — ROADMAP theme 2 (fleet sweep for the bare serving pattern)
+34. ~~Upstream SDK docs: do they recommend a cache-busting query? (parallel item).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche A
+35. ~~Verify no cross-module doc claims `ScriptTagVersioned` for `static/` (parallel item).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche A
+36. ~~AGENTS.md one-line pointer: versioned URLs are the recommended serving pattern (parallel item).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche A
+37. ~~Watch the first Renovate JS bump: confirm `?v=` updates automatically via `static.Version` (parallel item).~~ done — routed — TODO_LIST Renovate JS-bump watch row
+38. ~~Confirm no API-surface golden test trips on future exports (parallel item).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche B
+39. ~~Re-measure root coverage post-`ScriptTagVersioned`; badge job agreement (parallel item).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche B
+40. ~~CHANGELOG hygiene at the cut: `Added` entry survives the `[Unreleased]` rename (parallel item).~~ done — routed — TODO_LIST Cut v0.7.0 row (CHANGELOG rename clause added)
+41. ~~Record the fuzz non-decision (pure string concat) in `docs/static-js.md` (parallel item).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche A
+42. ~~Verify broadcast docspec CI wiring still green (parallel item).~~ done — routed — TODO_LIST ScriptTagVersioned follow-up tranche B
+43. ~~AGENTS.md gotcha: `<!-- check-rows:ledger -->` must be a pure line — glued comments cancel it (from d2).~~ done — the AGENTS.md gotcha is recorded (docs-gates ledger markers must be a pure line)
+44. ~~Upstream docs-gates candidate: check-rows continuation-row mode (skill parks this proposal).~~ **Won't implement — upstream docs-gates tooling proposal, parked in the docs-gates repo, outside this repo's scope.**
+45. ~~Upstream docs-gates candidate: link-rotation guard (README index links resolve — I checked by hand this session).~~ **Won't implement — upstream docs-gates tooling proposal, parked in the docs-gates repo, outside this repo's scope.**
 46. **(owner)** CHANGELOG policy verdict for infra/docs passes (g3).
 47. Confirm the three exempted backlog ledgers are the right disposition or schedule per-row passes (ties to 4–6).
 48. Re-run `docs-gates run` after this report lands to size the freshness debt from f) honestly.

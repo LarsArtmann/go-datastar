@@ -85,7 +85,6 @@ the honest accounting: including the fuckups.
 | T27 | Platform pack | `Response` method forms (additive), `version` pkg (ldflags), `.goreleaser.yaml` (check-validated); signalsMap HELD, changelog automation DECLINED; `49a0ae6`/`9cb1d17` |
 | — | Final integration | Root + datastartest vendorHash refresh, datastartest go.sum tidy fix, CI paths filter fix — all CI workflows green on `dba6a2f` (CI 1m27s, nix, actionlint, coverage, codeql); `nix flake check` ALL CHECKS PASSED locally |
 
-<!-- check-rows:ledger -->
 
 ## b) PARTIALLY DONE
 
@@ -95,7 +94,6 @@ the honest accounting: including the fuckups.
 2. **T26.3/26.4 (snippet coverage):** replay.md, error-system.md, and
    docs/testing.md are mirrored; **wire-format.md and migration-guide.md
 
-<!-- check-rows:ledger -->
 
 snippets are NOT mirrored** — docspec's guarantee is partial.
 3. **docs/testing.md quick-start snippet:** the doc's handler doesn't set
@@ -110,11 +108,9 @@ skipped, not executed-and-rejected.
 dry-run never ran.
 6. **T25.6 (playground):** only the data-star.dev site link (the one URL
 
-<!-- check-rows:ledger -->
 
 verifiable from the repo); no direct playground URL.
 
-<!-- check-rows:ledger -->
 
 7. **T21.2 (verdict spot-check):** 5 items sampled from ONE report (07-27);
    the plan said "08-10 reports" (plural).
@@ -129,7 +125,6 @@ verifiable from the repo); no direct playground URL.
    re-ran green 2026-09-18 (`2026-09-18_21-02` a8)._
 10. **aarch64/darwin:** `nix flake check` omits those systems — never
 
-<!-- check-rows:ledger -->
 
     validated anywhere.
 
@@ -174,19 +169,16 @@ verifiable from the repo); no direct playground URL.
    rewriting released history permanently.
 3. **The vendorHash end-game thrash.** After T12 the ROOT hash was stale
 
-<!-- check-rows:ledger -->
 
 (x/mod = a requires change — the ADR literally predicts this), yet I
 chased the DATASTARTEST hash through three paste cycles (O1o+ ↔ jM1MW4
 
-<!-- check-rows:ledger -->
 
 flip-flop) before recognizing the failing derivation was the root one.
 Wasted ~30 minutes on a hash the ADR told me to expect.
 4. **Daemon lost two edits mid-flight** (diff_test.go assertion,
 docspec heartbeat func) — both caught by failing tests and re-applied;
 
-<!-- check-rows:ledger -->
 
 cost was confusion time, not correctness.
 5. **Plan quality debt:** T02's prescribed mechanism (UnmarshalRead clears
@@ -211,7 +203,6 @@ failed an isolation leg and confused the hash measurements.
 5. **Docspec mirrors must be verbatim-adjacent to the doc snippet** — when a
    mirror needs a change the doc lacks, fix the DOC (or record why not), or
 
-<!-- check-rows:ledger -->
 
 the mirror silently diverges (it already did once).
 6. **Record Not-Do decisions where they are findable** (ADR/ROADMAP/CHANGELOG

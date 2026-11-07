@@ -10,51 +10,36 @@ document new CI checks in AGENTS.md, validate CI YAML, run golangci-lint, add
 a circular-dependency regression guard test, and run the full verification
 suite.
 
-<!-- check-rows:ledger -->
 ---
-<!-- check-rows:ledger -->
 
 ## A) FULLY DONE
-<!-- check-rows:ledger -->
 
-<!-- check-rows:ledger -->
 ### 1. CHANGELOG.md — CI hardening section completed
 
 Added two bullet points to the `Added — CI hardening` section under
 `[Unreleased]`:
 
-<!-- check-rows:ledger -->
 - **Workspace sync idempotency check** — CI copies `go.work`, runs `go work
   sync`, fails if the file changed.
-<!-- check-rows:ledger -->
 - **Replace directive audit** — CI greps all `go.mod` files for absolute paths
-<!-- check-rows:ledger -->
   in replace directives.
 
 The prior session only documented the per-module isolation check from the
-<!-- check-rows:ledger -->
 session before that. This closes the documentation gap.
-<!-- check-rows:ledger -->
 
-<!-- check-rows:ledger -->
 **File:** `CHANGELOG.md:20-30`
-<!-- check-rows:ledger -->
 
 ### 2. CI diff exit-code bug fixed
 
 The prior session's idempotency check used a `diff ... && echo ... || { ... }`
-<!-- check-rows:ledger -->
 pattern that conflated diff exit code 1 (files differ) with exit code 2
 (trouble, e.g. file not found). Both went to the same `||` block, producing a
 misleading "go.work changed" error even when the real problem was an I/O error.
-<!-- check-rows:ledger -->
 
-<!-- check-rows:ledger -->
 Replaced with explicit `rc=$?` handling:
 
 ```bash
 diff go.work go.work.bak; rc=$?
-<!-- check-rows:ledger -->
 rm -f go.work.bak
 if [ "$rc" -eq 0 ]; then
   echo "go.work is idempotent"
@@ -63,7 +48,6 @@ elif [ "$rc" -eq 1 ]; then
   exit 1
 else
   echo "::error::diff exited with code $rc (trouble)"
-<!-- check-rows:ledger -->
   exit 1
 fi
 ```
@@ -76,9 +60,7 @@ fail if the file was already removed.
 ### 3. AGENTS.md Commands section updated
 
 Added two lines to the Commands section documenting the CI-enforced checks
-<!-- check-rows:ledger -->
 that developers should run locally to pre-empt CI failures:
-<!-- check-rows:ledger -->
 
 ```bash
 # CI also enforces (run locally to pre-empt CI failures):
@@ -91,7 +73,6 @@ grep -rn 'replace.*=>/' go.mod datastartest/go.mod static/go.mod  # must find no
 ### 4. AGENTS.md file layout table updated
 
 Added a row for the new `module_boundary_test.go` file:
-<!-- check-rows:ledger -->
 
 ```
 | `module_boundary_test.go` | Regression guard: asserts root go.mod never requires datastartest (circular dependency prevention) |

@@ -35,26 +35,21 @@
 
 ## Verdict
 
-<!-- check-rows:ledger -->
 
 Sound architecture: thin wrapper over `*sse.Broadcaster[sse.Event]`, patches as
 
-<!-- check-rows:ledger -->
 
 values, hub shared via `Hub()`/`NewBroadcasterFromHub`. One real correctness
 bug found (replay race window), two test bugs, and the canonical lint gate was
 
-<!-- check-rows:ledger -->
 
 red on committed master (9 findings, all in this module). Everything fixed on
 
-<!-- check-rows:ledger -->
 
 the spot; repo-wide CI-parity lint now exits 0.
 
 ## Fixed on the spot
 
-<!-- check-rows:ledger -->
 
 <!-- check-rows:ledger -->
 
@@ -88,7 +83,6 @@ the spot; repo-wide CI-parity lint now exits 0.
 F1 detail: subscribe-before-replay already closed one half of the gap
 (duplicates instead of loss after subscribe). The other half — events that left
 
-<!-- check-rows:ledger -->
 
 the hub before entering the store — is closed by appending first. Duplicates
 remain possible and are documented as harmless. No deterministic unit test can
@@ -97,11 +91,9 @@ invariant is enforced by construction and documented in F9.
 
 ## Investigated, no action needed
 
-<!-- check-rows:ledger -->
 
 - **Heartbeat goroutine concurrency**: `Stream.Send` and `Heartbeat` serialize
 
-<!-- check-rows:ledger -->
 
 on the stream mutex (go-sse `stream.go`); the goroutine exits on ctx-done or
 write error. No leak, no race. Race suite confirms.
@@ -111,7 +103,6 @@ write error. No leak, no race. Race suite confirms.
   compile (`cannot infer T`). Matches the AGENTS.md "LSP output can lie" rule;
   verified with the compiler before accepting.
 
-<!-- check-rows:ledger -->
 
 - **erraudit `--no-suppress` finding** (`_ = stream.Close()`): documented
   tolerated pattern — `Stream.Close` always returns nil; errcheck excludes
@@ -119,11 +110,9 @@ write error. No leak, no race. Race suite confirms.
 - **Drop-on-full backpressure**: intentional go-sse semantics, documented in
   README and fan-out docs.
 
-<!-- check-rows:ledger -->
 
 ## Recommendations (routed to TODO_LIST, not fixed)
 
-<!-- check-rows:ledger -->
 
 _Routed 2026-10-01: R1–R3 live in the TODO_LIST "Verified next-up" row
 (broadcast ergonomics tranche); still open there._
@@ -137,7 +126,6 @@ _Routed 2026-10-01: R1–R3 live in the TODO_LIST "Verified next-up" row
 - **R2 — constructor matrix gap**: buffer-size × replay are orthogonal axes
   with only 3 of 4 combos constructible. Functional options (or one combined
 
-<!-- check-rows:ledger -->
 
 constructor) would close it without breaking v0.x callers.
 

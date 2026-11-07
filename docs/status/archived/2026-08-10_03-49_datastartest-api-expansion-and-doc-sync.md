@@ -326,7 +326,7 @@ Nothing is broken or regressively damaged. However:
     this, but it's untested.
 
 11. **No test for `ScriptContent()` with Prefetch (type="speculationrules").**
-    Prefetch patches use `WithScriptAttributes(\`type="speculationrules"\`)`and`WithScriptAutoRemove(false)`. The`<script type="speculationrules">`tag has attributes that`ScriptContent()` must skip past. Untested.
+    <!-- format:allow --> Prefetch patches use `WithScriptAttributes(\`type="speculationrules"\`)` and `WithScriptAutoRemove(false)`. The `<script type="speculationrules">` tag has attributes that `ScriptContent()` must skip past. Untested.
 
 12. **No concurrent Collect test.** Multiple `Collect` calls in parallel
     (with `t.Parallel()`) work (proven by all tests using t.Parallel()), but

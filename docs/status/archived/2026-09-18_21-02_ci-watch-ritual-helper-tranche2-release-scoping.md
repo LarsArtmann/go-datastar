@@ -8,43 +8,33 @@
 - **Input baseline:** master `3974cd7` (later swept by the auto-commit daemon
   into `af3ce90`+). One crush session, shared checkout.
 
-<!-- check-rows:ledger -->
 
 ## Verdict in one paragraph
 
-<!-- check-rows:ledger -->
 
 All three queued tasks were executed and verified. The CI-watch ritual
 
-<!-- check-rows:ledger -->
 
 completed all four workflow checklists and triggered two promotions
 
-<!-- check-rows:ledger -->
 
 (nix.yml blocking, fuzz 300s). The datastartest tranche shipped five helpers
 
-<!-- check-rows:ledger -->
 
 with eleven tests. The scoping task exposed that its own TODO row was stale
 
-<!-- check-rows:ledger -->
 
 (v0.5.0 shipped 2026-09-03) and produced the correct v0.6.0 next-release row
 instead. Full local gate suite is green. Two of the session's own mistakes
 (a near split-brain `find.go`, a linter-fighting helper extraction) were
 
-<!-- check-rows:ledger -->
 
 self-caught and corrected before completion; the report below documents them
 honestly.
 
-<!-- check-rows:ledger -->
 
 ---
-<!-- check-rows:ledger -->
 
-<!-- check-rows:ledger -->
 ## a) FULLY DONE
 
 <!-- check-rows:ledger -->
@@ -64,14 +54,11 @@ honestly.
 | 7 | **Docs synced** — `docs/ci-watch.md` (4 State lines), `CHANGELOG.md` [Unreleased] (Added — datastartest, Added — CI), `datastartest/README.md` (collect table, assertions, finding section), `docs/testing.md`, `ROADMAP.md` (tranche-2 annotation), `TODO_LIST.md` (completed rows removed, release row sharpened), `docs/release-checklist.md` (3 → 4 modules: broadcast joined the train)                                                                                            | respective files                                                                         |
 | 8 | **Full gate suite green** — workspace race tests (all 4 modules + example), vet, golangci-lint 0 issues (fresh cache), per-module `GOWORK=off` tests, tidy-diff, `go mod verify`, go.work sync idempotency + `go work use` no-op, replace-path audit, govulncheck ("No vulnerabilities found"), `nix flake check` ("all checks passed")                                                                                                                                                 | session run log                                                                          |
 | 9 | **Ghost-lint root-caused and documented** — persistent lint findings pointing at `/tmp/gd-prereview/*` (a deleted foreign worktree) were replayed by the shared 3.8 G `GOLANGCI_LINT_CACHE=/mnt/buildcache/golangci-lint`. Fresh-cache run: 0 issues. Gotcha + fresh-cache verification command recorded in AGENTS.md.                                                                                                                                                                  | AGENTS.md "Shared golangci-lint cache"                                                   |
-<!-- check-rows:ledger -->
 
-<!-- check-rows:ledger -->
 ## b) PARTIALLY DONE
 
 1. ~~**Release scoping** — scoping itself done (verdict: next release is~~ done — v0.6.0 cut 2026-09-18 20:18 by the follow-up session (`2026-09-18_22-29`)
    ~~**v0.6.0**, the first lockstep tag including `broadcast/`; `[Unreleased]`~~
-<!-- check-rows:ledger -->
    ~~currently = broadcast module + helper tranche 2 + CI promotions). The~~
    ~~release CUT is intentionally not started: tagging is an owner go/no-go and~~
    ~~a dedicated runbook operation. TODO_LIST now carries the sharpened row.~~
@@ -79,25 +66,20 @@ honestly.
    NOT prune items that already shipped (`Diff`, `Snapshot` still sit in the
    raw-idea list they graduated from; `RequireElementsOrdered` was already
    annotated for tranche 1). Micro split-brain between ROADMAP and CHANGELOG;
-<!-- check-rows:ledger -->
    needs a pruning pass.
-<!-- check-rows:ledger -->
 3. **ci-watch.md fuzz section consistency** — State line updated and the
    promotion executed in fuzz.yml, but the fuzz **Promote** bullet lacks the
    ✅-done annotation the nix Promote bullet received.
 4. ~~**End-of-session tree state** — `docs/testing.md` was still dirty at~~ done — swept by the daemon; tree clean at the v0.6.0 tag
    ~~session end (the auto-commit daemon sweeps it; AGENTS wants "clean tree at~~
    ~~end"). Cosmetic, pending the daemon.~~
-<!-- check-rows:ledger -->
 5. **New-helper example coverage** — the house pattern includes godoc
    `Example*` functions (e.g. `ExampleFindElement`); tranche 2 shipped without
    them. README snippets exist; pkg.go.dev examples do not.
 
 ## c) NOT STARTED
 
-<!-- check-rows:ledger -->
 - **Cut v0.6.0** (see b1 — deliberately owner-gated). _Done — v0.6.0 cut
-<!-- check-rows:ledger -->
   2026-09-18 20:18 (`2026-09-18_22-29`); v0.6.1 followed 2026-09-29._
 - **Broadcast API ergonomics tranche** (`NewBroadcasterWithStore`, constructor
   matrix, heartbeat interval) — separate session's row, untouched by design.
@@ -110,7 +92,6 @@ honestly.
   minor-and-patch group; codeql-action analyze PR #14 still open._
 - **One-bot decision** (Renovate vs dependabot) and other owner-blocked items
   (CODEOWNERS, erraudit CI probe flip, branch deletions) — owner-blocked,
-<!-- check-rows:ledger -->
   unchanged. _Still open — TODO_LIST Owner-blocked section._
 
 ## d) TOTALLY FUCKED UP (own mistakes this session, honest)
@@ -153,15 +134,12 @@ before completion. Listed by how much time they burned:
 ## e) WHAT WE SHOULD IMPROVE
 
 1. **Re-baseline pasted task tables against repo state before executing** —
-<!-- check-rows:ledger -->
    check the referenced artifacts (`gh release list`, TODO_LIST) as step zero,
    not when the discrepancy bites.
-<!-- check-rows:ledger -->
 2. **Untruncated discovery**: never `head` a file listing in a new area; pair
    it with a symbol-prefix grep before minting new names (`func Find*`,
    `Collect*`, …) so the family and the file home are chosen with full
    knowledge.
-<!-- check-rows:ledger -->
 3. **Linter-aware refactoring**: before extracting a helper, check whether a
    linter relies on the pattern staying inline (`bodyclose` ↔ response-body
    closes are per-function-visible by design).
@@ -184,7 +162,6 @@ before completion. Listed by how much time they burned:
 
 Brainstorm, sorted by impact; items 1–8 are actionable NOW, the rest are
 ROADMAP-fuel to be routed through docs-health HARVEST with rigor.
-<!-- check-rows:ledger -->
 
 1. ~~**Cut the v0.6.0 lockstep release** (first `broadcast/` tag) per the~~ done — v0.6.0 cut 2026-09-18 20:18; v0.6.1 on 2026-09-29 (`2026-09-18_22-29` + tags)
    ~~updated release checklist — all pre-tag gates already green.~~
