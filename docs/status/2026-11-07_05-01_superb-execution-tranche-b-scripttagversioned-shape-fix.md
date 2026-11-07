@@ -69,7 +69,7 @@ earlier, repeated by me despite reading it (§d1).
    minor-form reality (it still claimed patch-pinned `1.27.1`, contradicting
    AGENTS.md and go.mod); testing.md coverage date-stamped (root 98.9%,
    datastartest 95.6%, static 100%, broadcast 95.4% measured) and its
-   measurement snippet de-`GOEXPERIMENT`ed; AGENTS.md gained the
+   measurement snippet dropped the `GOEXPERIMENT` flag; AGENTS.md gained the
    versioned-serving gotcha (M18b; 21.2KB, in band); migration-guide
    v0.7.0 skeleton updated to the final shapes (M02.4).
 8. **M13 gate verdicts (verify-only).** Broadcast docspec CI wiring:
