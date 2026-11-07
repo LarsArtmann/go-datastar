@@ -1,8 +1,9 @@
 # Migration guide
 
-Two hops are documented: [v0.2.0 → v0.3.0](#v020--v030) and
-[v0.5.0 → v0.6.x](#v050--v06x). No exported API was removed in either;
-all changes are additive or toolchain-level.
+Three hops are documented: [v0.2.0 → v0.3.0](#v020--v030),
+[v0.5.0 → v0.6.x](#v050--v06x), and the v0.6.x → v0.7.0 skeleton below.
+No exported API was removed in any of them; all changes are additive or
+toolchain-level.
 
 ## Go toolchain (current truth)
 
@@ -94,6 +95,38 @@ remains a consumer concern — see `example/domain-adapter` for the pattern.
 
 - The nix gate was promoted from `continue-on-error` to a real check — a red
   nix run counts as red master for this repo's CI only.
+
+## v0.6.x → v0.7.0 (skeleton — completed at the cut)
+
+> Pre-cut skeleton: v0.7.0 is not tagged yet. Everything below states only
+> what is already true on master; the at-the-cut placeholders are filled in
+> when the release checklist runs.
+
+### Coming (on master, unreleased)
+
+- **`ScriptTagVersioned(path)`** (root) — cache-busting `<script>` tag that
+  appends the pinned client version as `?v=` (`&v=` when the path already
+  carries a query). Additive; adopt it when the 24h stale-JS window after a
+  bundle upgrade matters to you. `ScriptTag` keeps its
+  verbatim-concatenation contract.
+
+### Release-shape context: v0.6.3 was a root-only cut
+
+`v0.6.3` (2026-11-04) exists for the root module alone — the submodule
+lockstep tags were never created, so submodule `@v0.6.3` is an unknown
+revision on the module proxy, and the CHANGELOG section was backfilled
+(2026-11-07). Nothing to migrate: root `@v0.6.3` resolves; if you need the
+submodules, jump straight to `@v0.7.0` (or later), where the full four-tag
+lockstep shape is restored.
+
+### At the cut (placeholders)
+
+- Sibling requires bump to the v0.7.0 lockstep set (root → `static`,
+  broadcast/datastartest → root + static) — checklist §2. Today's tagged
+  truth: root still requires `static v0.6.1` (the v0.6.3 §2 step was
+  skipped), and the siblings require root `v0.6.3`.
+- Go toolchain floor unchanged: minor-form `go 1.27` directives; CI pins
+  the patched toolchain of the day (1.27.3 as of this writing).
 
 ## Migrating from the official SDK?
 
