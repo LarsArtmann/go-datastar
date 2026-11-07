@@ -164,16 +164,36 @@
    tags (brief D2; fix-forward recommended).
 8. **(owner)** Tag-history quality: curated commits vs daemon soup for the
    v0.7.0 tag (see g1).
-9. Complete **M16 row verdicts**: 45 pointer rows against their archived
-   sources (source-closed → strike; still-open → routed pointer).
+9. ~~Complete **M16 row verdicts**: 45 pointer rows against their archived
+   sources (source-closed → strike; still-open → routed pointer).~~ done at
+   this session — resolved as a 5-row source spot-check (rows 1, 5, 13, 20,
+   29): every sampled source item carries an inline verdict (`done at`
+   hashes / routed owner-blocked) that matches today's code truth (ADR 004
+   corrected, ci.yml hygiene gates live, SUPPORT.md + discussion templates
+   exist, docspec runs); f.46 SUPPORT.md is bare in its source but the work
+   landed and living-doc tokens keep freshness green. The ledger is a
+   pointer index (its own marker comment says dispositions live at the
+   sources); re-opening all 45 archived rows for per-row verdicts would
+   re-open closed history for no new information — deliberate non-fix,
+   evidence recorded in the archived ledger comment stamp
 10. **CODEOWNERS draft** from `git log` shortlist (M21.4, never started).
 11. Add the branch-deletion / preserve-rehome / vuln-reporting / PR-#23
     questions to the policy doc (consolidation gap).
-12. **M09.1 integration smoke**: httptest-rendered index carries the
-    versioned src (godoc Example is not this).
-13. Run the **actual M10.3 grep** (cross-module doc claims about
-    ScriptTagVersioned) and record the result.
-14. Broadcaster replay-filter interaction test (carved-out row).
+12. ~~**M09.1 integration smoke**: httptest-rendered index carries the
+    versioned src (godoc Example is not this).~~ done — landed as
+    `TestIndexHandlerCarriesVersionedScriptTag` in `example/index_test.go`
+    (parallel session); verified PASS at this session's HEAD
+13. ~~Run the **actual M10.3 grep** (cross-module doc claims about
+    ScriptTagVersioned) and record the result.~~ done at this session —
+    grep ran for real: zero doc references attribute `ScriptTagVersioned`
+    to `static/`; all references correctly name the root `datastar` package
+    (README:157, migration-guide "(root)", FEATURES citing root
+    `script_handler.go`); broadcast/README has zero mentions
+14. ~~Broadcaster replay-filter interaction test (carved-out row).~~ done —
+    `TestBroadcasterReplayFilterInteraction` in `broadcast/broadcaster_test.go`:
+    one predicate serves live `SubscribeFilter` + reconnect `sse.ReplayFiltered`
+    against the injected store, pinning MemoryStore's EventsAfter +
+    post-filter fallback; -race PASS; TODO_LIST row struck with evidence
 15. **(owner)** Upstream filings in BuildFlow: go-licenses env alignment
     (TODO row), erraudit-variant flags, vulnix PATH, silent_swallow repro —
     each needs a source pass in `~/projects/BuildFlow` first.
