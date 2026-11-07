@@ -127,38 +127,38 @@ lives in TODO_LIST or was observed this session)
 
 From TODO_LIST next-up (18 rows, impact/effort as recorded):
 
-1. Merge dependabot PR #14 (Low/5min) — green, owner nod pending.
-2. Verify Renovate app installation (NEW this session, Low/5min).
-3. Harden `docs/release-checklist.md` with v0.6.0 lessons (High/30min).
-4. Run the erraudit loop over all four modules (High/15min).
-5. Route the buildflow license-check failure loop (NEW: observed 4× this
-   session, carried by no TODO row).
-6. AGENTS.md settle point decision (Low/30min).
-7. datastartest tranche-2 godocs + FindAllElements doc paragraph (Medium/45min).
-8. `docs/migration-guide.md` v0.5.0→v0.6.x note + toolchain-floor fix (Medium/20min).
-9. `datastartest/README.md` v0.6.0 helper note (Low/10min).
-10. docspec mirroring for wire-format + migration-guide; testing.md snippet fix (Medium/1h).
-11. `docs/static-js.md` CSP mode + `static/fetch-bundle.sh` (Medium/45min).
-12. datastartest coverage re-measure post-tranche-2 (Low/15min).
-13. Upstream `starfederation/datastar-go` release check + README table (Low/15min).
-14. Broadcast API ergonomics tranche R1–R3 (Medium/1h).
-15. `response_test.go` `"1.0.3"` hardcode → derive from `static.Version` (Low/10min).
-16. `version/` package minimal tests (Low/15min).
-17. `datastar.Version()` deprecation-cycle review (Low/20min).
-18. `ReadSignals` nestif + example erraudit silent_swallow (Low/30min).
-19. gzip-SSE middleware docs promotion + version ldflags doc (Low/30min).
-20. Tag-annotation convention ritual step (Low/15min).
+1. ~~Merge dependabot PR #14 (Low/5min) — green, owner nod pending.~~ done — dependabot PR 14 merged with CodeQL green (the 2026-10-01 09-55 report records the merge)
+2. ~~Verify Renovate app installation (NEW this session, Low/5min).~~ done — DUPLICATE — the TODO_LIST Renovate-app verification row owns it
+3. ~~Harden `docs/release-checklist.md` with v0.6.0 lessons (High/30min).~~ done — release-checklist hardened at the v0.7.0 prep (the 2.5 gate; 2026-10-01 09-55 report; TODO_LIST row cites it)
+4. ~~Run the erraudit loop over all four modules (High/15min).~~ done — erraudit loop green across all four modules at HEAD (2026-10-01 09-55 and 14-14 reports)
+5. ~~Route the buildflow license-check failure loop (NEW: observed 4× this~~ done — the license-check loop closed via the devshell GOROOT contract (AGENTS.md buildflow gotcha; 14-14 report)
+   ~~session, carried by no TODO row).~~
+6. ~~AGENTS.md settle point decision (Low/30min).~~ done — AGENTS.md settle point decided (TODO_LIST Notes: 15-30KB band, decided 2026-10-01)
+7. ~~datastartest tranche-2 godocs + FindAllElements doc paragraph (Medium/45min).~~ done — tranche-2 godoc examples shipped with coverage 95.5 percent (2026-10-01 09-55 report)
+8. ~~`docs/migration-guide.md` v0.5.0→v0.6.x note + toolchain-floor fix (Medium/20min).~~ done — migration-guide truth pass and toolchain-floor fix (2026-10-01 09-55 report)
+9. ~~`datastartest/README.md` v0.6.0 helper note (Low/10min).~~ done — datastartest README helper note (the v0.6.0 helper tranche shipped 2026-09-18)
+10. ~~docspec mirroring for wire-format + migration-guide; testing.md snippet fix (Medium/1h).~~ done — docspec mirrored for wire-format and migration-guide; testing.md divergence fixed (2026-10-01 14-14 report)
+11. ~~`docs/static-js.md` CSP mode + `static/fetch-bundle.sh` (Medium/45min).~~ done — static-js CSP docs plus fetch-bundle.sh shipped and verified (2026-10-01 09-55 report)
+12. ~~datastartest coverage re-measure post-tranche-2 (Low/15min).~~ done — datastartest coverage re-measured at 95.5 percent (2026-10-01 09-55 report)
+13. ~~Upstream `starfederation/datastar-go` release check + README table (Low/15min).~~ done — DUPLICATE — the TODO_LIST upstream release check and README table row owns it
+14. ~~Broadcast API ergonomics tranche R1–R3 (Medium/1h).~~ done — routed — TODO_LIST Notes: the broadcast R1-R3 tranche row stands owner-gated for the next minor
+15. ~~`response_test.go` `"1.0.3"` hardcode → derive from `static.Version` (Low/10min).~~ done — the test derives from static.Version (response_test.go carries no hardcode)
+16. ~~`version/` package minimal tests (Low/15min).~~ done — version package tests shipped (2026-10-01 14-14 report)
+17. ~~`datastar.Version()` deprecation-cycle review (Low/20min).~~ done — Version re-pointed to static.Version with the deprecated alias documented (script_handler.go)
+18. ~~`ReadSignals` nestif + example erraudit silent_swallow (Low/30min).~~ done — the nestif half decomposed at 5bab343; the example passes the erraudit gate at HEAD
+19. ~~gzip-SSE middleware docs promotion + version ldflags doc (Low/30min).~~ done — gzip middleware documented (docs/migration-starfederation.md; example/sse_middleware.go); ldflags doc in docs/version.md
+20. ~~Tag-annotation convention ritual step (Low/15min).~~ done — the annotated-tags step is in docs/release-checklist.md
 
 Owner-blocked drain queue (each ≤15min after a yes/no):
 
-21. Delete merged branch `pr/docs-test-consolidation`.
-22. Rehome or drop `preserve/status-report-coderabbit-pr3`.
-23. CODEOWNERS: create with named owners or record "never".
-24. erraudit hard-gate flip verification (repo-publication trigger).
-25. Website launch trigger decision.
-26. Status-index "Monitoring" tier.
-27. Shared lint-cache policy (purge vs bless mktemp default).
-28. Required-checks policy ("local gates are the gate" canonical doc or alerting).
+21. ~~Delete merged branch `pr/docs-test-consolidation`.~~ done — DUPLICATE — TODO_LIST Owner-blocked (branch deletion row)
+22. ~~Rehome or drop `preserve/status-report-coderabbit-pr3`.~~ done — DUPLICATE — TODO_LIST Owner-blocked (coderabbit rehome row)
+23. ~~CODEOWNERS: create with named owners or record "never".~~ done — DUPLICATE — TODO_LIST Owner-blocked (CODEOWNERS row)
+24. ~~erraudit hard-gate flip verification (repo-publication trigger).~~ done — DUPLICATE — TODO_LIST Owner-blocked (erraudit flip row)
+25. ~~Website launch trigger decision.~~ done — DUPLICATE — TODO_LIST Owner-blocked (website launch row)
+26. ~~Status-index "Monitoring" tier.~~ done — DUPLICATE — TODO_LIST Owner-blocked (status-index tier row)
+27. ~~Shared lint-cache policy (purge vs bless mktemp default).~~ done — DUPLICATE — TODO_LIST Owner-blocked (lint-cache policy row)
+28. ~~Required-checks policy ("local gates are the gate" canonical doc or alerting).~~ done — DUPLICATE — TODO_LIST Owner-blocked (required-checks policy row)
 
 ## g) Questions I cannot figure out myself
 
