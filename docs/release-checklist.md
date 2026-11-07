@@ -2,7 +2,7 @@
 
 Steps to cut a new go-datastar release. All four modules tag in lockstep
 (root, `static`, `datastartest`, `broadcast`) — see
-[ADR 002](../adr/002-multi-module-split.md).
+[ADR 002](adr/002-multi-module-split.md).
 
 Run everything from the repo root under the pinned toolchain
 (`GOTOOLCHAIN=go1.27.1`). `GOEXPERIMENT=jsonv2` is no longer needed under the

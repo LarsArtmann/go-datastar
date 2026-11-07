@@ -522,7 +522,7 @@ from the 17-05 report's g) section remain open: branch deletions (T04),
 ## Resolution (2026-09-02)
 
 Executed by the same-day session — full verdicts in
-[`docs/status/2026-08-29_20-12_pareto-execution-t01-t27-v0.3.0-full-status.md`](../status/2026-08-29_20-12_pareto-execution-t01-t27-v0.3.0-full-status.md).
+[`docs/status/archived/2026-08-29_20-12_pareto-execution-t01-t27-v0.3.0-full-status.md`](../status/archived/2026-08-29_20-12_pareto-execution-t01-t27-v0.3.0-full-status.md).
 T01–T03, T05–T20, T22–T26 done (row strikes above cite the commits); T21/T27
 delivered as recorded deferrals in ROADMAP; T04 remains owner-blocked (the
 only bare row). Post-release residue (tag-flake vendorHash, linter-parity,
