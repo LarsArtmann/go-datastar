@@ -54,7 +54,7 @@ This means:
 - **Fan-out:** `Broadcaster[Patch]` broadcasts typed patches, not raw events.
 - **Filtering:** `SubscribeFilter` predicates can inspect the patch type, not
   just the event name.
-- **Replay:** `MemoryStore` stores `sse.Event`s; patches produce deterministic
+- **Replay:** `MemoryStore` stores `sse.Event` values; patches produce deterministic
   events, so replay is consistent.
 - **Testing:** Patches are values — construct one, call `Event()`, assert on
   the wire output. No HTTP server needed for unit tests.

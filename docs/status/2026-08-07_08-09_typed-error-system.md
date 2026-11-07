@@ -193,7 +193,7 @@ The `sugar.go:105:13 undefined: fmt` error persisted in the diagnostics for the 
 47. ~~Add a benchmark for error creation overhead (hot path: `NewSignalsPatch` marshaling + error path).~~ **Won't implement — micro-benchmark without a consumer need; benchmarks cover the hot paths.**
 48. ~~Review whether the `example/` directory should have its own `CHANGELOG` or be excluded from versioning.~~ **Won't implement — the example is unversioned demo code inside the root module; a CHANGELOG would be ceremony.**
 49. ~~Check if the embedded `datastar.js` version (`1.0.2`) is outdated; update if a newer client exists.~~ done — confirmed latest in the v0.0.3 session (T13)
-50. ~~Confirm the `flake.nix` `devShell` includes `erraudit` so contributors have it available.~~ still open — devShell has golangci-lint + govulncheck but not erraudit (TODO_LIST)
+50. ~~Confirm the `flake.nix` `devShell` includes `erraudit` so contributors have it available.~~ resolved differently — contributors get erraudit via the flake erraudit app (private deps block a hermetic devShell package; flake.nix)
 
 ---
 

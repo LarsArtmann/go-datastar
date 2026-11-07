@@ -71,7 +71,7 @@
 
 ### Critical (release integrity)
 
-1. ~~Fix the go.mod lie: either lower `go 1.26.5` → `go 1.26` in go.mod, or remove the false CHANGELOG claims from v0.0.2 and v0.0.3 sections~~ **still open (2026-08-16)** — never landed; routed to TODO_LIST (CHANGELOG is append-only, so the likely fix is lowering go.mod)
+1. ~~Fix the go.mod lie: either lower `go 1.26.5` → `go 1.26` in go.mod, or remove the false CHANGELOG claims from v0.0.2 and v0.0.3 sections~~ resolved later — the directives went minor-form (`go 1.27`) at `7f57346` (2026-09-19: patch-pinned `go 1.27.1` first, later relaxed to the minor form); the false claims went with them
 2. ~~Fix CI erraudit job (make erraudit repo public OR add GOPRIVATE + PAT secret OR remove job temporarily)~~ done — job made non-blocking (`continue-on-error`, `a1aaa15`)
 3. ~~Commit and push the uncommitted TODO_LIST.md change~~ done
 4. ~~Push the local commit (`0ebb270`) that's ahead of origin~~ done

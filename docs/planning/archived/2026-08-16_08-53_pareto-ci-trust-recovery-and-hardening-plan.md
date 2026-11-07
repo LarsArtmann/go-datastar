@@ -343,9 +343,9 @@ T12 → T14; T15 + T16 as rulings arrive.
 
 ## Owner questions required before execution
 
-1. ~~**Go directive:** bump all directives + CI to **1.26.6** (greens CI, clears 4 stdlib CVEs, supersedes the 1.26-vs-1.26.5 ghost) — yes/no?~~ Answered YES — executed at `bf68063` (3× go.mod + go.work + ci.yml pinned 1.26.6).
-2. ~~**erraudit CI job:** gate it, silence it, or keep the red X until erraudit is public?~~ Answered — probe-gate chosen; shipped at `bf68063` (skips with a visible notice while the repo is private, becomes a hard gate when public).
-3. ~~**DOMAIN_LANGUAGE.md:** must-have glossary, or waived for a protocol library?~~ Answered CREATE — executed at `83d7c60` (`docs/DOMAIN_LANGUAGE.md`).
+1. ~~**Go directive:** bump all directives + CI to **1.26.6** (greens CI, clears 4 stdlib CVEs, supersedes the 1.26-vs-1.26.5 ghost) — yes/no?~~ done at `bf68063` — answered YES (3× go.mod + go.work + ci.yml pinned 1.26.6).
+2. ~~**erraudit CI job:** gate it, silence it, or keep the red X until erraudit is public?~~ decided — probe-gate chosen; done at `bf68063` (skips with a visible notice while the repo is private, becomes a hard gate when public).
+3. ~~**DOMAIN_LANGUAGE.md:** must-have glossary, or waived for a protocol library?~~ done at `83d7c60` — answered CREATE (`docs/DOMAIN_LANGUAGE.md`).
 
 ---
 

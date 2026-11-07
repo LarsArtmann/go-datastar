@@ -99,7 +99,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added — broadcast ergonomics
 
-- `broadcast.NewBroadcaster` now takes variadic `Option`s (source-compatible:
+- `broadcast.NewBroadcaster` now takes variadic `Option` values (source-compatible:
   `NewBroadcaster()` keeps its behavior) — `WithBufferSize`,
   `WithReplayCapacity`, `WithStore`, and `WithHeartbeatInterval` compose
   freely, closing the constructor-matrix gap (buffer size × replay were

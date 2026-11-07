@@ -72,9 +72,9 @@ Created a `datastartest/` subpackage with:
 ## (b) PARTIALLY DONE
 
 1. 🟡 **CHANGELOG.md** — NOT updated. The `[Unreleased]` section is empty. This
-   new package is a user-facing feature addition and should be logged. ~~→ done at `7c18089`~~
+   new package is a user-facing feature addition and should be logged. ~~→~~ done at `7c18089`
 2. 🟡 **FEATURES.md** — NOT updated. Should have a new "Testing" section listing
-   the `datastartest` package as `FULLY_FUNCTIONAL`. ~~→ done at `222353e`~~
+   the `datastartest` package as `FULLY_FUNCTIONAL`. ~~→~~ done at `222353e`
 3. 🟡 **Test coverage of `datastartest` itself** — Good but not exhaustive:
    - `Collect` is tested transitively via every event test, but has no dedicated
      error-path test (e.g., handler that panics, handler that returns 500).

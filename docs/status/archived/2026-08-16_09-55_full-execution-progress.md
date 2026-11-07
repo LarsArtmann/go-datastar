@@ -14,7 +14,7 @@
 2. **Q2 erraudit CI job:** probe-gate, don't delete. Job probes
    `go list -m github.com/larsartmann/erraudit@v0.3.0`; skips with a visible
    notice while the repo is private, becomes a hard gate when public.
-3. **Q3 DOMAIN_LANGUAGE.md:** create (T15) — ~~**not yet executed**.~~ Executed at `83d7c60` (docs-health correction 2026-08-29).
+3. **Q3 DOMAIN_LANGUAGE.md:** create (T15) — ~~**not yet executed**.~~ done at `83d7c60` (docs-health correction 2026-08-29).
 
 ## Completed and verified
 

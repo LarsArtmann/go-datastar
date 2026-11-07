@@ -178,7 +178,7 @@ didn't do it.
 
 1. ~~**Decide: commit `go.work` or keep gitignored** — This is question (g) below. Blocks all fresh-clone workflows.~~ resolved — committed (`a73a8fb`)
 2. ~~**Remove `go.work` + `go.work.sum` from `.gitignore`** (if committing go.work)~~ done at `a73a8fb`
-3. ~~**OR: restore `GOWORK=off` to devShell and document manual `go work init`** (if keeping gitignored)~~ n/a — Option A chosen
+3. ~~**OR: restore `GOWORK=off` to devShell and document manual `go work init`** (if keeping gitignored)~~ moot — Option A chosen
 4. ~~**Test fresh-clone behavior** — clone to `/tmp`, run documented commands~~ done — CI exercises the committed workspace
 5. ~~**Add dependabot entries for `/datastartest` and `/static`**~~ done in the v0.1.0 session
 6. ~~**Update `flake.nix` hermeticCheck** to build + test all three modules (or add separate checks) ← still open (`flake.nix` TODO)~~ done (done — flake.nix hermetic checks for all three modules; nix.yml)

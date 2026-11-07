@@ -194,7 +194,7 @@ are complete.
 
 ### Medium impact
 
-6. ~~Add `erraudit` to CI as a hard gate once the repo goes public (remove probe-gate)~~ **→ open — owner-blocked (TODO_LIST: erraudit CI flip row).**
+6. ~~Add `erraudit` to CI as a hard gate once the repo goes public (remove probe-gate)~~ **→ no longer actionable here — owner-blocked (TODO_LIST: erraudit CI flip row).**
 7. ~~Upgrade system Go to 1.26.6 (fixes LSP, removes the flake overrideAttrs TODO)~~ done (system go1.26.7 verified 2026-08-29)
 8. ~~Remove the `goPkg` overrideAttrs when nixpkgs ships go_1_26 >= 1.26.6~~ done — superseded by the Go 1.27.1 move (v0.6.1): the flake now uses nixpkgs `go_1_27` directly
 9. ~~Add `ReplaceURLQuerystring` (upstream SDK has it, we don't — documented in README "Where the official SDK wins")~~ done (done — NewReplaceURLQuerystringPatch + Response method + tests (3d3cba0))

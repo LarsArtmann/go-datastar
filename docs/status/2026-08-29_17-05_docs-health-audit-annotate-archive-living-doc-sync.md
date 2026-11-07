@@ -86,7 +86,7 @@ The in-flight go 1.26.7 go.mod bump and all dprint formatting changes were prese
 4. ~~PR-template honesty guard ("CI will verify" boxes) — routed TODO_LIST.~~ done (done — PR-template honesty guard (5887043))
 5. ~~CONTRIBUTING fuzz-test how-to section — routed TODO_LIST.~~ done (done — CONTRIBUTING fuzz section (5887043))
 6. ~~**v0.3.0 release** — routed TODO_LIST High; [Unreleased] CHANGELOG is ready and now accurate.~~ done (done — v0.3.0 cut 2026-08-29, proxy-verified)
-7. ~~Branch deletions (`pr/docs-test-consolidation`, rehoming `preserve/...`) — Blocked on owner.~~ done (still open — owner-blocked; routed TODO_LIST)
+7. ~~Branch deletions (`pr/docs-test-consolidation`, rehoming `preserve/...`) — Blocked on owner.~~ no longer actionable in this report — owner-blocked; routed to the TODO_LIST branch-deletion rows
 8. ~~All lint fixes (mnd, makezero, `errors.As`→`AsType` ×4) + committing the pending gofumpt reformat — routed TODO_LIST Critical; the AsType migration requires the go-error-modernization skill before touching code.~~ done (done — all lint findings fixed (T02: 489256b, 8cc56a7))
 9. ~~Toolchain bump completion/reversion — deliberately untouched (parallel session's in-flight work).~~ done (done — toolchain settled at 1.26.7 (T01, b37d11a))
 10. ~~ROADMAP engineering items (ReplaceURLQuerystring, SSE compression, nix CI job, ADRs 003–005, consumer guides, headless E2E, …) — harvested as ideas, none started.~~ done (done — most shipped in the pareto execution (ADRs 003-006, guides, ReplaceURLQuerystring, typed accessors, domain-adapter, compression, CI expansions); the rest remain ROADMAP ideas)

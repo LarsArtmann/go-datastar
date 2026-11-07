@@ -98,8 +98,8 @@ a4712ab test(e2e): relocate datastartest-based E2E test to break circular depend
 ### CI Isolation Step
 
 - Added `GOWORK=off` per-module build + test to CI.
-- ~~**Missing:** `go work sync && git diff --exit-code` idempotency check (mentioned in proposal as essential, not implemented).~~ Added at `dc0d6f2`
-- ~~**Missing:** Replace directive audit for absolute paths (mentioned in proposal, not implemented).~~ Added at `dc0d6f2`
+- ~~**Missing:** `go work sync && git diff --exit-code` idempotency check (mentioned in proposal as essential, not implemented).~~ done at `dc0d6f2`
+- ~~**Missing:** Replace directive audit for absolute paths (mentioned in proposal, not implemented).~~ done at `dc0d6f2`
 
 ---
 
