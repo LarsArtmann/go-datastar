@@ -141,7 +141,7 @@
 37. Add benchmarks comparing patch Event() generation across types
 38. Consider godoc-rendered example for `Response` fluent builder
 39. Consider adding `ElementsFromHTML(string)` convenience adapter
-40. Review upstream DataStar SDK for new features/patches to port
+40. ~~Review upstream DataStar SDK for new features/patches to port~~ done — the standing mechanism landed: the README vs-upstream comparison table (date-stamped 2026-11-07 at Go SDK v1.2.2) plus the manual fetch-bundle flow that caught and shipped the v1.0.3→v1.0.4 JS bump; ongoing tracking via the Renovate regex manager / ROADMAP drift-alarm idea
 41. Consider adding `WithSelectorClass` helper (currently only `WithSelectorID`)
 42. Review if `DispatchCustomEventPatch` needs `transferDetail` option
 43. Consider adding `RemoveSignalsIfMissing` variant

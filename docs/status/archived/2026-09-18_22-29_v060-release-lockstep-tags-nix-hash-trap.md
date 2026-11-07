@@ -123,8 +123,8 @@ _Impact-ordered. ★ = harvest candidate for TODO_LIST (actionable now); the res
 
 1. ★ Add checklist §2.5: post-bump `nix flake check`, paste EVERY moved hash, green before tagging (the d-1 fix).
 2. ★ Fix checklist §2: replace phantom `go mod edit -version` with the real sibling-require procedure.
-3. ★ Checklist §3: explicit tag-push refs instead of `git push --tags`.
-4. ★ Checklist §4: add "verify GitHub Latest = root release" step.
+3. ~~★ Checklist §3: explicit tag-push refs instead of `git push --tags`.~~ done — release-checklist §3 mandates pushing the exact four-ref list and warns `git push --tags` would push stray local tags
+4. ~~★ Checklist §4: add "verify GitHub Latest = root release" step.~~ done — §4 covers GitHub Releases ×4 with the create-root-LAST rule (newest-created becomes Latest) and the `gh release edit --latest` recovery; the TODO trio row adds the `gh release list` completeness assertion
 5. ★ Decide: erraudit loop — mandatory release gate or documented skip?
 6. ★ Decide: shared `GOLANGCI_LINT_CACHE` — purge the 3.8G cache or standardize the fresh-cache override in AGENTS.md.
 7. CI: split the nix workflow's checks into a matrix (or `--keep-going`) so one hash failure can't hide its sibling.
