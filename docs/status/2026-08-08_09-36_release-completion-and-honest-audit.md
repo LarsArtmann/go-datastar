@@ -111,7 +111,7 @@
 
 ### Future enhancements (from prior TODO_LIST)
 
-29. Address `nestif` complexity in `ReadSignals`
+~~29. Address `nestif` complexity in `ReadSignals`~~ done at `5bab343`
 30. ~~Add coverage badge to README~~ done — coverage.yml orphan-branch badge, live since 2026-08-16
 31. ~~Verify pkg.go.dev docs are rendered for latest version~~ done — pkg.go.dev renders all modules at latest versions
 32. ~~Consider SSE reconnection integration test~~ done — datastartest e2e dogfoods replay via WithLastEventID + RequireEventID (FEATURES "Replay testing")

@@ -266,7 +266,7 @@ session-specific follow-ups and smaller residue, ranked roughly by value.
 | 9  | Plan v0.4.0 scope from `[Unreleased]` (go-sse v0.6.0, goldens, accessors, ReplaceURLQuerystring, guides)                             | 20-12 f.41            |
 | 10 | Watch first runs: fuzz.yml nightly, CodeQL results, nix.yml promotion, Renovate regex vs real upstream tags                          | 20-12 f.12-f.16       |
 | 11 | Micro-hygiene: heartbeat ticker constant, http.NewResponseController in gzipSSEWriter, stable bench headers, PR-template module row  | 20-12 f.34/f.35/f.47  |
-| 12 | module_boundary_test → golang.org/x/mod/modfile parsing                                                                              | 07-55 f.14            |
+| ~~12~~ done at `62128bf` | ~~module_boundary_test → golang.org/x/mod/modfile parsing~~ | ~~07-55 f.14~~ |
 | 13 | Community files: CODEOWNERS / SUPPORT.md / DISCUSSION_TEMPLATE (owner)                                                               | 07-04 f.23/f.46       |
 | 14 | Reply to 5 CodeRabbit threads on PR #3; human-review the 5 parallel commits                                                          | 12-24 b.1/c.6         |
 | 15 | Coverage/lint-cache measurement ritual after code changes (close 12.3 debt)                                                          | 20-12 f.32            |
@@ -275,7 +275,7 @@ session-specific follow-ups and smaller residue, ranked roughly by value.
 | 18 | Owner: branch deletions + lineage prune                                                                                              | 20-12 f.18/f.19       |
 | 19 | Owner: erraudit hard-gate flip verification once the repo goes public                                                                | 11-07 §5              |
 | 20 | AGENTS.md pruning pass → ≤15KB (drop resolved-incident gotchas)                                                                      | 17-05 e.5/f.50        |
-| 21 | Re-align the hand-edited markdown tables (README/FEATURES/TODO_LIST)                                                                 | this session b.8      |
+| ~~21~~ **Won't implement — hand-aligned pipes churn on every edit and no machine gate owns markdown tables (dprint deliberately unwired per docs/adr/006-formatter-decision.md; treefmt covers Go/Nix); the rendered output is identical.** | ~~Re-align the hand-edited markdown tables (README/FEATURES/TODO_LIST)~~ | ~~this session b.8~~ |
 | 22 | Add this report's row to docs/status/README.md (done at write time)                                                                  | policy                |
 | 23 | Verify actionlint locally with captured exit code (this session's gate gap)                                                          | this session b.7      |
 | 24 | Cross-reference consolidated ROADMAP ideas back to source report item IDs                                                            | this session e.8      |
@@ -286,16 +286,16 @@ session-specific follow-ups and smaller residue, ranked roughly by value.
 | 29 | Compile-checked doc snippets (docspec test target)                                                                                   | 20-12 f.22/e.6        |
 | 30 | datastartest helper-API expansion (consolidated ROADMAP idea — pick the top 3 helpers first: RequireElementsOrdered, Diff, Snapshot) | 08-10 residue         |
 | 31 | Response ergonomics idea: ErrorResponse-family as Response methods; signalsMap type                                                  | 07-04 f.11/f.17       |
-| 32 | `example/` own-go.mod structural decision                                                                                            | 07-38 f.28            |
+| ~~32~~ **NOT-DO — example stays in the root module — the published module set is root/broadcast/static/datastartest (ADR 002); no separate go.mod for the example program.** | ~~`example/` own-go.mod structural decision~~ | ~~07-38 f.28~~ |
 | 33 | Coverage-floor policy decision (optional CI gate)                                                                                    | 12-24 c.3             |
 | 34 | static fuzz targets in fuzz.yml (bundle bytes are parser-adjacent)                                                                   | 02-57 f.30            |
 | 35 | TestScriptHandlerWith with an empty custom bundle                                                                                    | 02-57 f.31            |
 | 36 | static provenance comment (upstream SHA) + bundle checksum test                                                                      | 02-57 f.18/f.19       |
 | 37 | Evaluate Last-Modified + nosniff headers for ScriptHandler                                                                           | 02-57 f.25/f.48       |
-| 38 | computeETag benchmark + cache-per-call evaluation                                                                                    | 02-57 f.26/f.27       |
+| ~~38~~ done — BenchmarkComputeETag (script_handler_internal_test.go) documents the one-time construction-time ETag cost (`b7e6e7f`); per-call caching unnecessary | ~~computeETag benchmark + cache-per-call evaluation~~ | ~~02-57 f.26/f.27~~ |
 | 39 | `DatastarJSVersion` alias deprecation comment                                                                                        | 02-57 f.22            |
 | 40 | ScriptTag edge-case tests (empty, query, fragment)                                                                                   | 02-57 f.49            |
-| 41 | datastartest doc.go/examples gap: CollectPost/CollectN/DataValue/String examples                                                     | 03-49 c.9             |
+| ~~41~~ done at `5b9e6ec` | ~~datastartest doc.go/examples gap: CollectPost/CollectN/DataValue/String examples~~ | ~~03-49 c.9~~ |
 | 42 | datastartest CHANGELOG decision (root CHANGELOG sections vs module file)                                                             | 04-48 f.49            |
 | 43 | `go work vendor` support / flake app for offline graphs                                                                              | 04-48 f.47            |
 | 44 | CI per-module matrix / parallel jobs for faster feedback                                                                             | 05-07 f.43            |

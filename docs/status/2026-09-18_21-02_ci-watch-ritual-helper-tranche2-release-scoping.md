@@ -177,7 +177,7 @@ ROADMAP-fuel to be routed through docs-health HARVEST with rigor.
     wire-format goldens (`TestPatchWireGoldens`) stay green.
 18. `b.Loop()` modernization (gopls `bloop` warnings, benchmarks) — 12
     gopls warnings total remain in datastartest.
-19. `writestring` gopls warnings in `diff.go`, `require_ordered.go`,
+~~19. `writestring` gopls warnings in `diff.go`, `require_ordered.go`,~~ **Won't implement — gopls-only false positives (the AGENTS.md gopls gotcha class — gopls stdlib DB lags the toolchain); the pinned lint + compiler gates are the truth and green.**
     `reader_fuzz_test.go`.
 20. Headless-browser E2E (chromedp/Playwright) with the real DataStar JS
     client — ROADMAP.

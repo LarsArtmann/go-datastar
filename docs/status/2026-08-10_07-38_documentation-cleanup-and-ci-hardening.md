@@ -251,7 +251,7 @@ is clean (3 files modified, no new untracked files except this status report).
 
 13. ~~Add a regression guard test that verifies root's go.mod does NOT contain~~ done (done — module_boundary_test.go (fda70c7) guards root's go.mod in CI)
     ~~datastartest~~
-14. Add a programmatic test that verifies the module DAG is acyclic
+~~14. Add a programmatic test that verifies the module DAG is acyclic~~ done at `fda70c7`
 15. Run erraudit on the updated codebase
 16. Run govulncheck on all 3 modules
 17. ~~Add test for `TestE2E_DataStarPatches` that exercises `CollectPost` and~~ done (done — TestE2E_CollectPostRoundTrip + TestE2E_CollectNStreaming (datastartest/e2e_test.go))

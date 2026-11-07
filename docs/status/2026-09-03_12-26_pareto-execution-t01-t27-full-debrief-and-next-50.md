@@ -216,7 +216,7 @@ the honest accounting: including the fuckups.
 47. ~~Re-verify FEATURES "16+ methods" claim after the method forms landed (count drifted upward).~~ done — 20 methods counted 2026-10-01; FEATURES 16+ claim holds
 48. ~~Sweep TODO_LIST evidence column for stale hashes after the next release.~~ done — superseded — TODO_LIST rebuilt 2026-09-18 with report-based evidence
 49. Consider a `just`-free one-shot `nix run .#gate` app composing the full pre-push sequence (test-race, vet, lint-ci, docspec, sync, tidy) — one command, no forgotten legs.
-50. After the owner answers g.1–g.3, fold the decisions into ROADMAP/TODO_LIST the same day.
+~~50. After the owner answers g.1–g.3, fold the decisions into ROADMAP/TODO_LIST the same day.~~ done — all three answered and folded: nix.yml promoted 2026-09-18, v0.5.0 cut same-day (`831bbfb`), one-bot policy decided + executed 2026-10-01 (ROADMAP.md Resolved questions)
 
 ## g) QUESTIONS FOR THE OWNER (cannot figure out myself)
 

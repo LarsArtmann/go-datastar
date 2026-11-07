@@ -188,7 +188,7 @@ Nothing partially done. All 4 fixes were binary: either fixed or not.
 ### Project maturity
 
 46. Add `SUPPORT.md` for community support channels
-47. Add `DISCUSSION_TEMPLATE.md` for GitHub Discussions
+~~47. Add `DISCUSSION_TEMPLATE.md` for GitHub Discussions~~ done at `69ede1b`
 48. Review all exported function signatures for API stability before v1.0
 49. Create a formal deprecation policy
 50. Consider adding a `CHANGELOG` generator tool (e.g., `changie`)

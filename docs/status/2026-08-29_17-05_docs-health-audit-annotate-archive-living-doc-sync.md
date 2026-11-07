@@ -142,13 +142,13 @@ Items 1–10 are the verified TODO_LIST (harvested this session, evidence-cited)
 20. Release automation (goreleaser / tag-triggered releases)
 21. Build-time version variable / `version` package
 22. ADR 003: error classification (go-error-family decision)
-23. ADR 004: nix per-module hermetic checks
+~~23. ADR 004: nix per-module hermetic checks~~ done at `88c1eed`
 24. ADR 005: coverage strategy (what the % includes)
 25. `docs/error-system.md` deep-dive (incl. why `--enforce-samber-oops` stays forbidden)
 26. `docs/replay.md` (EventStore + LastEventID consumer guide)
 27. `docs/wire-format.md` (annotated dataline examples per patch type)
 28. `docs/testing.md` (unit/E2E/fuzz/WPT strategy)
-29. `docs/performance.md` (benchmarks, allocs, SSE throughput)
+~~29. `docs/performance.md` (benchmarks, allocs, SSE throughput)~~ done at `3fa96f0`
 30. `docs/migration-guide.md` for the next minor bump
 31. `docs/architecture.md` diagram (transport → protocol → domain)
 32. Headless-browser E2E (chromedp/Playwright) exercising the real DataStar JS client
@@ -157,7 +157,7 @@ Items 1–10 are the verified TODO_LIST (harvested this session, evidence-cited)
 35. `example/README.md` + `example/docker-compose.yml`
 36. Benchmark for `Collect` helper overhead (`collect_bench_test.go`)
 37. Website launch (Astro + Starlight pattern) — see website-launch skill
-38. DataStar JS version pinning/upgrade docs
+~~38. DataStar JS version pinning/upgrade docs~~ done at `3fa96f0`
 39. SSE heartbeat documentation
 40. Upstream protocol tracking: subscribe to starfederation/datastar releases
 41. Renovate rule for upstream DataStar JS
