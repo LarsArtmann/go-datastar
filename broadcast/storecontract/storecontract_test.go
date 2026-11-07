@@ -40,7 +40,10 @@ func ascendingEvents(count int) []sse.Event {
 
 	for i := 1; i <= count; i++ {
 		id := strconv.Itoa(i)
-		events = append(events, sse.Event{ID: sse.NewEventID(id), Event: "feed", Data: "payload-" + id})
+		events = append(
+			events,
+			sse.Event{ID: sse.NewEventID(id), Event: "feed", Data: "payload-" + id},
+		)
 	}
 
 	return events
@@ -59,7 +62,9 @@ func TestAssertIDAssignmentCatchesUnassignedIDs(t *testing.T) {
 	AssertIDAssignment(ftb, datastar.NewMemoryStore(16), 3)
 
 	if len(ftb.failures) == 0 {
-		t.Fatal("MemoryStore stores ID-less events verbatim, so the ID-assignment assertion must fail — it did not")
+		t.Fatal(
+			"MemoryStore stores ID-less events verbatim, so the ID-assignment assertion must fail — it did not",
+		)
 	}
 }
 
@@ -76,7 +81,9 @@ func TestAssertIDAssignmentCatchesDuplicateIDs(t *testing.T) {
 	AssertIDAssignment(ftb, &staticIDStore{}, 3)
 
 	if len(ftb.failures) == 0 {
-		t.Fatal("a store assigning the same ID to every event must fail the monotonic check — it did not")
+		t.Fatal(
+			"a store assigning the same ID to every event must fail the monotonic check — it did not",
+		)
 	}
 }
 
@@ -87,7 +94,9 @@ func TestAssertReplayOrderingCatchesDescendingStore(t *testing.T) {
 	AssertReplayOrdering(ftb, &descendingStore{}, ascendingEvents(4))
 
 	if len(ftb.failures) == 0 {
-		t.Fatal("a store replaying in descending order must fail the ordering assertion — it did not")
+		t.Fatal(
+			"a store replaying in descending order must fail the ordering assertion — it did not",
+		)
 	}
 }
 
@@ -98,7 +107,9 @@ func TestAssertReplayOrderingCatchesDroppingStore(t *testing.T) {
 	AssertReplayOrdering(ftb, &droppingStore{}, ascendingEvents(4))
 
 	if len(ftb.failures) == 0 {
-		t.Fatal("a store dropping appended events must fail the completeness assertion — it did not")
+		t.Fatal(
+			"a store dropping appended events must fail the completeness assertion — it did not",
+		)
 	}
 }
 

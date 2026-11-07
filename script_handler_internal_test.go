@@ -35,7 +35,12 @@ func TestAppendVersionQueryIdempotent(t *testing.T) {
 		twice := appendVersionQuery(once, "9.9.9")
 
 		if once != twice {
-			t.Errorf("appendVersionQuery not idempotent for %q: once %q, twice %q", path, once, twice)
+			t.Errorf(
+				"appendVersionQuery not idempotent for %q: once %q, twice %q",
+				path,
+				once,
+				twice,
+			)
 		}
 	}
 }

@@ -147,6 +147,12 @@ CHANGELOG.
 
 ## Gotchas
 
+- **Serving the JS client: `ScriptTagVersioned(path)` is the recommended
+  pattern** (versioned `?v=` cache key, idempotent — it replaces an existing
+  `v` value rather than double-appending). The example's index page pins the
+  rendered tag with a smoke test, and datastartest's
+  `RequireScriptTagVersion` is the consumer-side assertion; never regress a
+  page back to a bare `datastar.js` src.
 - **gopls warnings on `encoding/json/v2` are false positives — do not "fix"
   them.** Its stdlib DB lags the toolchain (flagged json/v2 as "requires
   go1.27" long before it was standard; `go vet`/golangci-lint never flag it).

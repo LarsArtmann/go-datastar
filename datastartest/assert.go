@@ -188,6 +188,10 @@ func RequireETagForBundle(tb testing.TB, gotETag string, bundle []byte) {
 
 	want := datastar.ETagFor(bundle)
 	if gotETag != want {
-		tb.Fatalf("ETag: got %s, want %s (the digest datastar.ETagFor computes for the served bundle)", gotETag, want)
+		tb.Fatalf(
+			"ETag: got %s, want %s (the digest datastar.ETagFor computes for the served bundle)",
+			gotETag,
+			want,
+		)
 	}
 }

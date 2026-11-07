@@ -49,8 +49,11 @@
 //
 // The embedded DataStar JavaScript client lives in the separate zero-dependency
 // module github.com/larsartmann/go-datastar/static (static.Bytes,
-// static.Version), served ready-to-use via ScriptHandler. The E2E test helpers
-// for consumers live in github.com/larsartmann/go-datastar/datastartest.
+// static.Version), served ready-to-use via ScriptHandler. ScriptTagVersioned
+// renders the cache-busting <script> tag whose src carries static.Version as
+// a query parameter, so each bundle release is a distinct browser cache key.
+// The E2E test helpers for consumers live in
+// github.com/larsartmann/go-datastar/datastartest.
 //
 // # Classified errors
 //

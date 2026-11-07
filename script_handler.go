@@ -101,7 +101,12 @@ func ScriptTag(path string) string {
 // pinned version — the result always carries exactly the pinned version, so
 // the versioned URL is idempotent; any other existing query joins with &, and
 // a fragment is preserved by inserting the parameter before it. The path is
-// otherwise used verbatim; callers own URL correctness.
+// otherwise used verbatim — no normalization, no escaping — so a malformed
+// path yields a malformed src, and callers own URL correctness. The version
+// is always the embedded [static.Version]: pair this tag with [ScriptHandler]
+// or a serving setup for `static.Bytes`; a custom bundle served via
+// [ScriptHandlerWith] carries a different content identity than the URL
+// advertises, so version the URL yourself in that setup.
 func ScriptTagVersioned(path string) string {
 	return ScriptTag(appendVersionQuery(path, static.Version))
 }

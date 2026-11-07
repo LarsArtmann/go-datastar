@@ -58,6 +58,10 @@ The pinned client supports Content-Security-Policy deployments without
 
 Go-served bundles need no special handling: `ScriptHandler` serves the file
 like any static asset; the CSP dance happens in your page template.
+Versioned URLs compose with CSP mode: `ScriptTagVersioned`'s `?v=` query is
+invisible to nonce matching (`script-src 'nonce-…'` pins the element, not
+the URL), so the cache-busting parameter and the nonce dance are
+independent concerns in the same template.
 
 ## Canonical minified bundle only
 
@@ -80,15 +84,22 @@ signal — plus the artifact switch from a beautified ~56 KB file to the
 canonical minified 33.5 KB bundle. The wire format was untouched: all
 wire-format goldens stayed green, so no Go protocol changes accompanied it.
 
+The v1.0.3 → v1.0.4 bump (upstream release 2026-09-21, landed here
+2026-11-07) went through the same gates: fetched verbatim from
+`bundles/datastar.js` at the tag, checksum pinned in `checksum_test.go`,
+wire-format goldens green.
+
 ## Renovate
 
 `renovate.json`'s custom manager (scoped via `enabledManagers: ["regex"]` —
 Dependabot owns every other ecosystem, owner decision 2026-10-01) proposes
 `Version` bumps when `starfederation/datastar` cuts a release. The proposal
 only touches the version string: the bundle download, checksum update, and
-golden re-run above still land manually. Delivery is unverified until the
-first upstream release after the 2026-08-29 onboarding (see
-`docs/ci-watch.md`).
+golden re-run above still land manually. **Delivery is unverified as of
+2026-11-07**: v1.0.4 was the first upstream release after the 2026-08-29
+onboarding and no proposal ever arrived (zero Renovate PRs; the GitHub App
+install question is still open — see the TODO_LIST Renovate row), so the
+v1.0.4 bump went through the manual flow.
 
 ## Hardening decisions
 

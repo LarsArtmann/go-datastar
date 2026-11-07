@@ -36,8 +36,12 @@ func AssertReplayOrdering(tb testing.TB, store broadcast.Store, events []sse.Eve
 		seq := requireSeq(tb, i, evt.ID)
 
 		if seq <= previous {
-			tb.Fatalf("event %d carries ID %d, not greater than %d: input must be strictly increasing numeric IDs",
-				i, seq, previous)
+			tb.Fatalf(
+				"event %d carries ID %d, not greater than %d: input must be strictly increasing numeric IDs",
+				i,
+				seq,
+				previous,
+			)
 		}
 
 		store.Append(evt)
@@ -51,12 +55,21 @@ func AssertReplayOrdering(tb testing.TB, store broadcast.Store, events []sse.Eve
 	}
 
 	if len(all) != len(events) {
-		tb.Fatalf("EventsAfter(zero) returned %d event(s); appended %d — a compliant store replays every appended event", len(all), len(events))
+		tb.Fatalf(
+			"EventsAfter(zero) returned %d event(s); appended %d — a compliant store replays every appended event",
+			len(all),
+			len(events),
+		)
 	}
 
 	for i, evt := range all {
 		if evt != events[i] {
-			tb.Fatalf("EventsAfter(zero)[%d] = %+v; want the appended %+v verbatim", i, evt, events[i])
+			tb.Fatalf(
+				"EventsAfter(zero)[%d] = %+v; want the appended %+v verbatim",
+				i,
+				evt,
+				events[i],
+			)
 		}
 	}
 
@@ -67,13 +80,23 @@ func AssertReplayOrdering(tb testing.TB, store broadcast.Store, events []sse.Eve
 		}
 
 		if want := len(events) - i - 1; len(after) != want {
-			tb.Fatalf("EventsAfter(%q) returned %d event(s); want %d — exactly the suffix after that Last-Event-ID", events[i].ID.Get(), len(after), want)
+			tb.Fatalf(
+				"EventsAfter(%q) returned %d event(s); want %d — exactly the suffix after that Last-Event-ID",
+				events[i].ID.Get(),
+				len(after),
+				want,
+			)
 
 			continue
 		}
 
 		if len(after) > 0 && after[0] != events[i+1] {
-			tb.Fatalf("EventsAfter(%q)[0] = %+v; want %+v", events[i].ID.Get(), after[0], events[i+1])
+			tb.Fatalf(
+				"EventsAfter(%q)[0] = %+v; want %+v",
+				events[i].ID.Get(),
+				after[0],
+				events[i+1],
+			)
 		}
 	}
 }
@@ -99,7 +122,11 @@ func AssertIDAssignment(tb testing.TB, store broadcast.Store, count int) {
 	}
 
 	if len(all) != count {
-		tb.Fatalf("EventsAfter(zero) returned %d of %d appended events — ID-less events stored without an assigned ID are unreachable for every real Last-Event-ID", len(all), count)
+		tb.Fatalf(
+			"EventsAfter(zero) returned %d of %d appended events — ID-less events stored without an assigned ID are unreachable for every real Last-Event-ID",
+			len(all),
+			count,
+		)
 	}
 
 	previous := 0
@@ -107,7 +134,12 @@ func AssertIDAssignment(tb testing.TB, store broadcast.Store, count int) {
 	for i, evt := range all {
 		seq := requireSeq(tb, i, evt.ID)
 		if seq <= previous {
-			tb.Fatalf("event %d carries ID %d, not greater than the previous %d: replay requires strictly increasing IDs", i, seq, previous)
+			tb.Fatalf(
+				"event %d carries ID %d, not greater than the previous %d: replay requires strictly increasing IDs",
+				i,
+				seq,
+				previous,
+			)
 		}
 
 		previous = seq
@@ -122,7 +154,11 @@ func requireSeq(tb testing.TB, index int, evtID sse.EventID) int {
 
 	seq, err := strconv.Atoi(text)
 	if err != nil || text == "" {
-		tb.Fatalf("event %d carries ID %q: replay is keyed on numeric IDs, so the contract assertions require non-empty numeric string IDs", index, text)
+		tb.Fatalf(
+			"event %d carries ID %q: replay is keyed on numeric IDs, so the contract assertions require non-empty numeric string IDs",
+			index,
+			text,
+		)
 
 		return 0
 	}

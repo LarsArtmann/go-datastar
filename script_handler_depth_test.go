@@ -133,7 +133,12 @@ func TestScriptTagVersioned_ExactlyOneVersionParam(t *testing.T) {
 		tag := datastar.ScriptTagVersioned(path)
 
 		if got := strings.Count(tag, "v="+datastar.Version()); got != 1 {
-			t.Errorf("ScriptTagVersioned(%q): pinned version appears %d times, want 1: %q", path, got, tag)
+			t.Errorf(
+				"ScriptTagVersioned(%q): pinned version appears %d times, want 1: %q",
+				path,
+				got,
+				tag,
+			)
 		}
 	}
 }
@@ -202,7 +207,12 @@ func TestScriptHandler_ETagStableIntegration(t *testing.T) {
 	wantETag := datastar.ETagFor(static.Bytes())
 
 	get := func() (int, string, string) {
-		req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/datastar.js", nil)
+		req := httptest.NewRequestWithContext(
+			context.Background(),
+			http.MethodGet,
+			"/datastar.js",
+			nil,
+		)
 		rec := httptest.NewRecorder()
 		handler.ServeHTTP(rec, req)
 
@@ -225,10 +235,19 @@ func TestScriptHandler_ETagStableIntegration(t *testing.T) {
 	}
 
 	if firstBody != string(static.Bytes()) {
-		t.Errorf("served body differs from the embedded bundle (len %d vs %d)", len(firstBody), len(static.Bytes()))
+		t.Errorf(
+			"served body differs from the embedded bundle (len %d vs %d)",
+			len(firstBody),
+			len(static.Bytes()),
+		)
 	}
 
-	conditional := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/datastar.js", nil)
+	conditional := httptest.NewRequestWithContext(
+		context.Background(),
+		http.MethodGet,
+		"/datastar.js",
+		nil,
+	)
 	conditional.Header.Set("If-None-Match", firstETag)
 
 	rec := httptest.NewRecorder()
