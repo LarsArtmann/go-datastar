@@ -466,6 +466,7 @@ func TestBroadcasterReplayFilterInteraction(t *testing.T) {
 	b := broadcast.NewBroadcaster(broadcast.WithStore(store))
 
 	pred := func(evt sse.Event) bool { return evt.Event == "wanted" }
+
 	events := b.SubscribeFilter(pred)
 	defer b.Unsubscribe(events)
 
@@ -484,6 +485,7 @@ func TestBroadcasterReplayFilterInteraction(t *testing.T) {
 
 	// Live leg: the promoted filter admits only the two "wanted" events.
 	live := make([]sse.Event, 0, 2)
+
 	for range 2 {
 		select {
 		case evt := <-events:
@@ -506,6 +508,7 @@ func TestBroadcasterReplayFilterInteraction(t *testing.T) {
 		"/events",
 		nil,
 	)
+
 	stream := sse.NewStream(recorder, request)
 	defer func() { _ = stream.Close() }()
 
