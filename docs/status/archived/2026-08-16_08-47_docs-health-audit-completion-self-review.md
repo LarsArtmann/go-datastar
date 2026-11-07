@@ -16,7 +16,7 @@ parallel session mid-flight (see d) F6); zero Go files changed by this session.
 ### 1. Annotated the 5 remaining historical reports inline
 
 Every numbered item resolved in place (`~~item~~ done at \`hash\``/`NOT-DO — reason`/`Won't implement`/ left untouched = still open), every
-hash verified against `git show --stat` before citing:
+hash verified against`git show --stat` before citing:
 
 | Report                                   | Edits                | Notable resolutions                                                                                                                                                                      |
 | ---------------------------------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
