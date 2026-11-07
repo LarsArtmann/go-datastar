@@ -51,16 +51,16 @@
           # directory ENTIRELY, so repo source DOES enter the vendor tree
           # (corrected 2026-10-11; the earlier "root imports no
           # directory-replaced package" claim predated the static import).
-          vendorHash = "sha256-Th8JGTFaJpk9qCgu5mGcI+dn2tgmqgon7vfx8+WCM4c=";
+          vendorHash = "sha256-ITznVX4wlZj1Df6hXwMwjsS2Z2giU6b0oIBg8n21f9E=";
           # datastartest vendors root + static through its directory replaces:
           # `go mod vendor` copies the replaced directories ENTIRELY (docs
           # included), so this hash moves on ANY edit to any tracked file
           # under the repo root or static/ (plus requires/toolchain changes)
           # — verified 2026-09-02 (ADR 004 correction, evidence matrix).
-          datastartestVendorHash = "sha256-dvw0guGGGL9cGSe9G2Oo7cGg/Wf4tm1JHC0/1bWsjRk=";
+          datastartestVendorHash = "sha256-LP76LCADwTyjEAmVn08zfCNflyh/xtKtywGUe9+qzEQ=";
           # broadcast vendors root + static through its directory replaces —
           # same movement rules as datastartestVendorHash above.
-          broadcastVendorHash = "sha256-fcMRYSto/0SFpUT21PBxSb9VAh6UGBO7F8crqYnJUIs=";
+          broadcastVendorHash = "sha256-Rf8yt3Gr+dSzx+bmYEQYY1/WDfbiji9yRp2ai+lS+BY=";
 
           maintainer = {
             name = "Lars Artmann";

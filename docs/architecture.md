@@ -66,18 +66,18 @@ type Patch interface { Event() sse.Event }
 Every protocol message is a value that renders to an `sse.Event`, so patches
 can be built without a connection, stored, filtered, replayed, and broadcast.
 
-| Area                     | Key types / functions                                                            | File                                                      |
-| ------------------------ | -------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| Patch values             | `ElementsPatch`, `SignalsPatch`, `ScriptPatch`, `DispatchCustomEventPatch`       | elements.go, signals.go, script.go, script_convenience.go |
-| Constructors             | `NewElementsPatch`, `NewSignalsPatch`, `NewScriptPatch`, `NewRedirectPatch`, …   | same files                                                |
-| Templ / GoStar rendering | `ElementsFromTempl`, `ElementsFromGostar`                                        | elements.go                                               |
-| Per-connection builder   | `Response` (+ `ErrorResponse`, `NotificationResponse`, `ErrorResponseFromError`) | response.go                                               |
-| Inbound                  | `ReadSignals`, `LastEventID`                                                     | inbound.go                                                |
-| JS serving               | `ScriptHandler`, `ScriptHandlerWith`, `ScriptTag`, `ScriptTagVersioned`, `Version` | script_handler.go                                        |
-| Replay store             | `MemoryStore` (implements `sse.EventStore`)                                      | store.go                                                  |
-| Patch fan-out            | `Broadcaster` — embeds `*sse.Broadcaster[sse.Event]` + `MemoryStore` replay      | broadcast/ (separate module, optional)                    |
-| Wire helpers             | dataline key constants, retry/mode defaults                                      | constants.go                                              |
-| Errors                   | classified codes + sentinels                                                     | errors.go                                                 |
+| Area                     | Key types / functions                                                              | File                                                      |
+| ------------------------ | ---------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| Patch values             | `ElementsPatch`, `SignalsPatch`, `ScriptPatch`, `DispatchCustomEventPatch`         | elements.go, signals.go, script.go, script_convenience.go |
+| Constructors             | `NewElementsPatch`, `NewSignalsPatch`, `NewScriptPatch`, `NewRedirectPatch`, …     | same files                                                |
+| Templ / GoStar rendering | `ElementsFromTempl`, `ElementsFromGostar`                                          | elements.go                                               |
+| Per-connection builder   | `Response` (+ `ErrorResponse`, `NotificationResponse`, `ErrorResponseFromError`)   | response.go                                               |
+| Inbound                  | `ReadSignals`, `LastEventID`                                                       | inbound.go                                                |
+| JS serving               | `ScriptHandler`, `ScriptHandlerWith`, `ScriptTag`, `ScriptTagVersioned`, `Version` | script_handler.go                                         |
+| Replay store             | `MemoryStore` (implements `sse.EventStore`)                                        | store.go                                                  |
+| Patch fan-out            | `Broadcaster` — embeds `*sse.Broadcaster[sse.Event]` + `MemoryStore` replay        | broadcast/ (separate module, optional)                    |
+| Wire helpers             | dataline key constants, retry/mode defaults                                        | constants.go                                              |
+| Errors                   | classified codes + sentinels                                                       | errors.go                                                 |
 
 Behavioral guarantees that span these files (mode defaults, dataline key
 shapes, splitting rules) are pinned by `wire_golden_test.go` and documented

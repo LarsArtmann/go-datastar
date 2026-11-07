@@ -101,6 +101,7 @@ func ScriptTagVersioned(path string) string {
 func appendVersionQuery(path string, version string) string {
 	head := path
 	fragment := ""
+
 	if index := strings.Index(path, "#"); index >= 0 {
 		head = path[:index]
 		fragment = path[index:]

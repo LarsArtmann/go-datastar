@@ -3,7 +3,7 @@ module github.com/larsartmann/go-datastar/datastartest
 go 1.27
 
 require (
-	github.com/larsartmann/go-datastar v0.6.2
+	github.com/larsartmann/go-datastar v0.6.3
 	github.com/larsartmann/go-error-family v0.12.0
 	github.com/larsartmann/go-sse v0.6.2
 	github.com/larsartmann/go-sse/ssetest v0.5.0
