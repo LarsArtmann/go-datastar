@@ -199,9 +199,22 @@
     each needs a source pass in `~/projects/BuildFlow` first.
 16. **(owner)** Upstream filings in docs-gates: routed-remainder marker,
     continuation-row mode, link-rotation guard (spec in the policy doc).
-17. Dockerfile smoke via an available runner (podman? nix-run of the image
-    build?) — two more attempts before accepting env-limited.
-18. `buildflow doctor` run (bare ledger row 27).
+17. ~~Dockerfile smoke via an available runner (podman? nix-run of the image
+    build?) — two more attempts before accepting env-limited.~~ done at this
+    session — no container runner exists on this machine (podman, docker,
+    nerdctl, buildah all absent; flake ships no container output), so the
+    Dockerfile's build sequence was simulated natively: minimal context
+    (go.mod, go.sum, static/go.mod) + `GOWORK=off go mod download` +
+    `go build ./example` all green, and the built binary served HTTP 200 on
+    `/` with `src="/datastar.js?v=1.0.4"` — the exact `compose up` behavior;
+    a true image build stays env-limited (needs a runner install)
+18. ~~`buildflow doctor` run (bare ledger row 27).~~ done at this session —
+    68 pass / 5 warn / 30 fail; all 30 failures are uninstalled non-Go
+    ecosystem tools (bandit, cargo-*, eslint, jest, pytest, …) that a
+    Go-only repo never invokes; warnings are informational (formatter
+    fingerprint drift → canonical formatting is treefmt's, dprint unwired
+    per AGENTS; dprint remote-plugin fetch = documented intent-only config
+    shape). Nothing repo-specific broken
 19. datastartest diff.go bounds guards (bare row 25).
 20. Example handler testability → honest coverage raise (bare row 32).
 21. Codespell-into-treefmt decision (bare row 28).
