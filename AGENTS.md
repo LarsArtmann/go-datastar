@@ -183,8 +183,9 @@ CHANGELOG.
 - **Recurring F/spacing damage in archived reports — a parallel session's
   formatter pass.** `docs/status/archived/2026-08-16_08-47…:19` has had the
   space before an inline-code span stripped (the word "against" glued to
-  the following backtick span) THREE times now (re-fixed 2026-11-07 twice;
-  the third pass landed via daemon commits
+  the following backtick span) FOUR times now (re-fixed 2026-11-07 ×3,
+  most recently minutes after the prior fix — the pass runs continuously;
+  damage landed via daemon commits
   `4539949`, `2e05692`, `ff4f51e`, `da3e0e3`). If it recurs, do NOT just
   re-fix: hunt the loose repeat-pass in the concurrently-running sessions'
   tooling (git log -S is the trail), and note docs-gates' annotate gate is
