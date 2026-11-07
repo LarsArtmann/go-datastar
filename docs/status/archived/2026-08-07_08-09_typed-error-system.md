@@ -15,7 +15,6 @@
 - Build, `go vet`, `golangci-lint`, full `-race` test suite: all green.
 - **5 remaining warnings are all WARNING severity and accepted by design.**
 
-> **Live remainder (archived 2026-11-07):** open ideas were routed — ROADMAP.md themes and TODO_LIST.md (Verified next-up / Owner-blocked) own the current backlog; CHANGELOG.md owns shipped work.
 
 ---
 

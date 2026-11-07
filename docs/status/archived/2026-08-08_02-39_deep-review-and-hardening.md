@@ -5,7 +5,6 @@
 **Date:** 2026-08-08 02:39
 **Session scope:** Deep code review of go-datastar, bug fixes, test hardening, spec compliance fix
 
-> **Live remainder (archived 2026-11-07):** open ideas were routed — ROADMAP.md themes and TODO_LIST.md (Verified next-up / Owner-blocked) own the current backlog; CHANGELOG.md owns shipped work.
 **Overall state:** All gates green (lint 0 issues, test+race pass, nix flake check pass, 98.7% coverage). One real bug fixed, one spec violation fixed, fuzz testing added.
 
 ---
