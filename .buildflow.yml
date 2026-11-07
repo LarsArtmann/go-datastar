@@ -57,9 +57,13 @@ skip_steps:
   - oxfmt
 
 tool_options:
-  # CI's setup-go pins an exact patch (1.27.3) deliberately — moved off the
-  # minor form by 09fe522 for the govulncheck stdlib fixes (AGENTS.md).
-  # Respect that pin instead of warning that it diverges from nixpkgs.
+  # Protects the deliberate exact CI/toolchain patch pin (1.27.3, moved off
+  # the minor form by 09fe522 for the govulncheck stdlib fixes — AGENTS.md):
+  # a patch-form `go` directive the installed toolchain satisfies is policy,
+  # not drift, and must survive every rewriting pipeline. The ci-pin-patch-
+  # form suggestions on .github/workflows/*.yml remain BY DESIGN (the rule
+  # is suggestion-only: which side moves is a maintainer decision) — this
+  # repo keeps the exact pin; those warnings are a documented non-fix.
   go-version-auto-configure:
     respect_patch_floor: true
 
