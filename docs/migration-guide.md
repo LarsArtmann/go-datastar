@@ -1,9 +1,10 @@
 # Migration guide
 
 Three hops are documented: [v0.2.0 → v0.3.0](#v020--v030),
-[v0.5.0 → v0.6.x](#v050--v06x), and the v0.6.x → v0.7.0 skeleton below.
-No exported API was removed in any of them; all changes are additive or
-toolchain-level.
+[v0.5.0 → v0.6.x](#v050--v06x), and v0.6.x → v0.7.0 below. v0.7.0 carries
+the first breaking change of the release history — `ScriptHandlerWith`
+drops its dead version parameter (one-line migration) — everything else is
+additive or toolchain-level.
 
 ## Go toolchain (current truth)
 
@@ -96,13 +97,26 @@ remains a consumer concern — see `example/domain-adapter` for the pattern.
 - The nix gate was promoted from `continue-on-error` to a real check — a red
   nix run counts as red master for this repo's CI only.
 
-## v0.6.x → v0.7.0 (skeleton — completed at the cut)
+## v0.6.x → v0.7.0
 
-> Pre-cut skeleton: v0.7.0 is not tagged yet. Everything below states only
-> what is already true on master; the at-the-cut placeholders are filled in
-> when the release checklist runs.
+### Breaking: `ScriptHandlerWith` drops its dead version parameter
 
-### Coming (on master, unreleased)
+`ScriptHandlerWith(bundle, version)` is now `ScriptHandlerWith(bundle)`. The
+second parameter was blank-identified and unused since v0.5.x, kept only for
+signature compatibility; the migration window closes with v0.7.0.
+One-line migration:
+
+```go
+// before
+mux.Handle("/js", datastar.ScriptHandlerWith(myBundle, static.Version))
+// after
+mux.Handle("/js", datastar.ScriptHandlerWith(myBundle))
+```
+
+Behavior is unchanged: same ETag, same `Cache-Control`, same HEAD/304
+contract.
+
+### New in v0.7.0
 
 - **`ScriptTagVersioned(path)`** (root) — a cache-busting `<script
   type="module">` tag whose src carries the pinned client version as `?v=`.
@@ -118,7 +132,19 @@ remains a consumer concern — see `example/domain-adapter` for the pattern.
   two contracts.
 - **broadcast** — the `broadcast/storecontract` package
   (`AssertReplayOrdering`, `AssertIDAssignment`) for custom `Store`
-  implementations.
+  implementations; `WithHeartbeatDisabled()` (absolute per-connection
+  heartbeat off); `NewBroadcasterFromHub` now accepts options.
+- **Embedded DataStar JS client v1.0.4** (upstream release 2026-09-21,
+  fetched verbatim; wire-format goldens unchanged).
+
+### Dependencies (v0.7.0)
+
+- go-sse **v0.7.0** (root, broadcast, datastartest), go-sse/ssetest
+  **v0.5.0** (datastartest), go-error-family v0.12.0. The sibling lockstep
+  set is all four modules at **v0.7.0**: root requires `static@v0.7.0`;
+  broadcast/datastartest require root `@v0.7.0` (+ `static` transitively).
+- Go toolchain floor unchanged: minor-form `go 1.27` directives; CI pins
+  the patched toolchain of the day (1.27.3 as of this writing).
 
 ### Release-shape context: v0.6.3 was a root-only cut
 
@@ -128,15 +154,6 @@ revision on the module proxy, and the CHANGELOG section was backfilled
 (2026-11-07). Nothing to migrate: root `@v0.6.3` resolves; if you need the
 submodules, jump straight to `@v0.7.0` (or later), where the full four-tag
 lockstep shape is restored.
-
-### At the cut (placeholders)
-
-- Sibling requires bump to the v0.7.0 lockstep set (root → `static`,
-  broadcast/datastartest → root + static) — checklist §2. Today's tagged
-  truth: root still requires `static v0.6.1` (the v0.6.3 §2 step was
-  skipped), and the siblings require root `v0.6.3`.
-- Go toolchain floor unchanged: minor-form `go 1.27` directives; CI pins
-  the patched toolchain of the day (1.27.3 as of this writing).
 
 ## Migrating from the official SDK?
 

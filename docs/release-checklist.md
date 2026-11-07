@@ -4,9 +4,10 @@ Steps to cut a new go-datastar release. All four modules tag in lockstep
 (root, `static`, `datastartest`, `broadcast`) — see
 [ADR 002](adr/002-multi-module-split.md).
 
-Run everything from the repo root under the pinned toolchain
-(`GOTOOLCHAIN=go1.27.1`). `GOEXPERIMENT=jsonv2` is no longer needed under the
-1.27.1 floor — v0.6.1 un-gated `encoding/json/v2`.
+Run everything from the repo root with your local Go toolchain (≥ 1.27.3 —
+CI pins 1.27.3; the modules carry minor-form `go 1.27` directives, so no
+`GOTOOLCHAIN` override is needed). `GOEXPERIMENT=jsonv2` must NOT be set —
+it is a no-op under 1.27 and was removed from every live surface.
 
 > **Gates are stateful.** §2 edits go.mod files, which invalidates §1's nix
 > vendor-hash check — missing that re-run caused both documented red-master
@@ -16,12 +17,12 @@ Run everything from the repo root under the pinned toolchain
 
 ## 1. Pre-release verification
 
-- [ ] `GOTOOLCHAIN=go1.27.1 go test ./... ./broadcast/... ./datastartest/... ./static/... -race -count=1` — all green
-- [ ] `GOTOOLCHAIN=go1.27.1 go vet ./... ./broadcast/... ./datastartest/... ./static/...` — clean
-- [ ] `GOTOOLCHAIN=go1.27.1 go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.2 run ./... ./broadcast/... ./datastartest/... ./static/... --timeout 5m` — 0 issues (version pinned = CI parity)
+- [ ] `go test ./... ./broadcast/... ./datastartest/... ./static/... -race -count=1` — all green
+- [ ] `go vet ./... ./broadcast/... ./datastartest/... ./static/...` — clean
+- [ ] `go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.14.0 run ./... ./broadcast/... ./datastartest/... ./static/... --timeout 5m` — 0 issues (version pinned = CI parity; `GOLANGCI_VERSION` in ci.yml is the single source)
 - [ ] Fresh-cache lint — the shared `GOLANGCI_LINT_CACHE` can replay ghost findings from other sessions' deleted worktrees: re-run the same command with `GOLANGCI_LINT_CACHE=$(mktemp -d)` and trust only that verdict — 0 issues. _(owner-policy pending: decide whether this replaces or supplements the shared-cache run)_
 - [ ] erraudit loop with CI flags, all four modules — "No violations found" ×4:
-      `for mod in . ./broadcast ./datastartest ./static; do (cd "$mod" && GOEXPERIMENT=jsonv2 erraudit . --type-aware --enforce-go-error-family --severity-threshold error); done`
+      `for mod in . ./broadcast ./datastartest ./static; do (cd "$mod" && erraudit . --type-aware --enforce-go-error-family --severity-threshold error); done`
       _(owner-policy pending: the CI erraudit leg is probe-gated off while the repo is private; this row is the substitute — the `--no-suppress` audit-mode variant in AGENTS.md intentionally lists a few documented-tolerated patterns on top)_
 - [ ] `nix flake check` — all checks passed
 - [ ] `go work sync` — go.work unchanged (idempotency)
