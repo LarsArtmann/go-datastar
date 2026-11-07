@@ -20,7 +20,7 @@ The key design principle: **patches are values, not method calls**. Every patch 
 
 The official Go SDK, [`starfederation/datastar-go`](https://github.com/starfederation/datastar-go), is the first-party reference implementation and a perfectly good choice for straightforward request/response handlers. go-datastar exists because of one architectural decision — and everything else follows from it.
 
-_Compared against [datastar-go v1.2.2](https://pkg.go.dev/github.com/starfederation/datastar-go/datastar), the current release._
+_Compared against [datastar-go v1.2.2](https://pkg.go.dev/github.com/starfederation/datastar-go/datastar), the current release. Upstream release check 2026-11-07: v1.2.2 is the newest Go SDK tag (the repo publishes tags, not GitHub Release objects); the embedded JS bundle pins the upstream datastar v1.0.4 client._
 
 ### The core difference: patches are values
 

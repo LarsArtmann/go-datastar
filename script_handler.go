@@ -19,8 +19,14 @@ import (
 // next minor release after the migration window.
 const DatastarJSVersion = static.Version
 
-func computeETag(data []byte) string {
-	h := sha256.Sum256(data)
+// ETagFor returns the ETag header value the script handlers serve for the
+// given bundle: a quoted, truncated SHA-256 digest, computed once at handler
+// construction. It is exported so consumer tests (via
+// github.com/larsartmann/go-datastar/datastartest) can assert the caching
+// setup around their own [ScriptHandlerWith] bundles without duplicating
+// the digest algorithm.
+func ETagFor(bundle []byte) string {
+	h := sha256.Sum256(bundle)
 
 	return `"` + hex.EncodeToString(h[:16]) + `"`
 }
@@ -40,7 +46,7 @@ func ScriptHandler() http.Handler {
 // pencilled in for v0.7.0 (owner-gated); pass any value — static.Version is
 // the conventional choice.
 func ScriptHandlerWith(scriptBytes []byte, _ string) http.Handler {
-	etag := computeETag(scriptBytes)
+	etag := ETagFor(scriptBytes)
 
 	return http.HandlerFunc(func(responseWriter http.ResponseWriter, request *http.Request) {
 		if request.Method != http.MethodGet && request.Method != http.MethodHead {

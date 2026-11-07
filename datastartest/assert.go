@@ -173,3 +173,18 @@ func RequireScriptTagVersion(tb testing.TB, html string, scriptPath string) {
 		tb.Fatalf("script tag: page does not embed %q — a missing or stale cache-busting src risks old-client/new-server protocol skew", want)
 	}
 }
+
+// RequireETagForBundle fails the test unless gotETag equals the ETag the
+// script handlers serve for bundle: [datastar.ETagFor] of the exact bytes
+// the handler was constructed with. Use it to prove a serving setup (a
+// wrapper handler, a proxy in tests, a custom bundle) carries the caching
+// identity of the bundle it serves — a mismatched ETag silently disables
+// conditional-request reuse or serves stale bytes as fresh.
+func RequireETagForBundle(tb testing.TB, gotETag string, bundle []byte) {
+	tb.Helper()
+
+	want := datastar.ETagFor(bundle)
+	if gotETag != want {
+		tb.Fatalf("ETag: got %s, want %s (the digest datastar.ETagFor computes for the served bundle)", gotETag, want)
+	}
+}

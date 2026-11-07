@@ -18,6 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   for ID-less events (the degeneration the contract warns about).
   `datastar.MemoryStore` deliberately passes only the ordering assertion —
   its contract is caller-assigned IDs.
+- Embedded DataStar JS client bumped v1.0.3 → **v1.0.4** (upstream release
+  2026-09-21, fetched verbatim from `bundles/datastar.js` at the tag,
+  sha256 `727844adfc825ee651fb93c544a2a739986f9a21820a94524b35f0cac470cf91`).
+  Found by the 2026-11-07 upstream release check — the Renovate custom
+  manager never proposed it (zero Renovate PRs to date; the app-install
+  question is still open), so the bump went through the manual
+  `fetch-bundle.sh` flow. Client-runtime delta only; wire-format goldens
+  unchanged.
 
 ### Dependencies
 

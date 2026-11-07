@@ -18,7 +18,7 @@ package static
 import _ "embed"
 
 // Version is the release version of the embedded DataStar JavaScript client.
-const Version = "1.0.3"
+const Version = "1.0.4"
 
 //go:embed datastar.js
 var datastarJS []byte

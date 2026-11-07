@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-datastar"
+	"github.com/larsartmann/go-datastar/static"
 )
 
 // TestScriptTag_EdgeCases pins the pure-concatenation contract: whatever path
@@ -185,5 +186,53 @@ func TestScriptHandler_NoSniffHeader(t *testing.T) {
 
 	if nosniff := rec.Header().Get("X-Content-Type-Options"); nosniff != "nosniff" {
 		t.Errorf("X-Content-Type-Options: got %q, want nosniff", nosniff)
+	}
+}
+
+// TestScriptHandler_ETagStableIntegration pins the caching contract end to
+// end: the embedded handler serves the bundle bytes verbatim, the ETag is
+// the exported digest of those bytes, the ETag is stable across requests
+// (a per-request digest would defeat conditional-request caching), and a
+// matching If-None-Match yields 304 without a body.
+func TestScriptHandler_ETagStableIntegration(t *testing.T) {
+	t.Parallel()
+
+	handler := datastar.ScriptHandler()
+	wantETag := datastar.ETagFor(static.Bytes())
+
+	get := func() (int, string, string) {
+		req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/datastar.js", nil)
+		rec := httptest.NewRecorder()
+		handler.ServeHTTP(rec, req)
+
+		return rec.Code, rec.Body.String(), rec.Header().Get("ETag")
+	}
+
+	firstCode, firstBody, firstETag := get()
+	secondCode, _, secondETag := get()
+
+	if firstCode != http.StatusOK || secondCode != http.StatusOK {
+		t.Fatalf("status: got %d/%d, want 200/200", firstCode, secondCode)
+	}
+
+	if firstETag == "" || firstETag != secondETag {
+		t.Fatalf("ETag not stable across requests: %q vs %q", firstETag, secondETag)
+	}
+
+	if firstETag != wantETag {
+		t.Errorf("served ETag %q != ETagFor(bundle) %q", firstETag, wantETag)
+	}
+
+	if firstBody != string(static.Bytes()) {
+		t.Errorf("served body differs from the embedded bundle (len %d vs %d)", len(firstBody), len(static.Bytes()))
+	}
+
+	conditional := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/datastar.js", nil)
+	conditional.Header.Set("If-None-Match", firstETag)
+	rec := httptest.NewRecorder()
+	handler.ServeHTTP(rec, conditional)
+
+	if rec.Code != http.StatusNotModified {
+		t.Errorf("conditional request status: got %d, want 304", rec.Code)
 	}
 }

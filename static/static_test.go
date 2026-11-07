@@ -1,6 +1,7 @@
 package static_test
 
 import (
+	"bytes"
 	"strings"
 	"testing"
 
@@ -52,5 +53,18 @@ func TestBytes_StableAcrossCalls(t *testing.T) {
 
 	if &first[0] != &second[0] {
 		t.Error("Bytes() returned copies rather than the shared embedded value")
+	}
+}
+
+// TestBytes_NoBOM guards the UTF-8 BOM trap: a bundle carrying a leading BOM
+// (\xef\xbb\xbf) breaks `go:embed`-adjacent Go source handling and leaks the
+// invisible bytes into the served JavaScript, where browsers mis-parse the
+// first statement. The vendored artifact must stay BOM-free; the escape
+// form keeps this file itself BOM-immune.
+func TestBytes_NoBOM(t *testing.T) {
+	t.Parallel()
+
+	if bytes.HasPrefix(static.Bytes(), []byte("\xef\xbb\xbf")) {
+		t.Fatal("embedded bundle starts with a UTF-8 BOM — strip it from static/datastar.js")
 	}
 }
