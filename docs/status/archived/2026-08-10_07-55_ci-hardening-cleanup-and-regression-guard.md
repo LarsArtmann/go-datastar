@@ -153,7 +153,6 @@ item #13 in its "50 things" list) but never created.
 | golangci-lint            | `golangci-lint run ./... ./datastartest/... ./static/...`          | 0 issues   |
 | actionlint               | `nix run nixpkgs#actionlint .github/workflows/ci.yml`              | Exit 0     |
 | YAML syntax              | `python3 -c "import yaml; yaml.safe_load(...)"`                    | Valid      |
-
 ---
 
 ## B) PARTIALLY DONE

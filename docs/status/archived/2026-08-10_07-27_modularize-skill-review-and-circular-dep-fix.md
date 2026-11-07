@@ -11,59 +11,86 @@ Run the `go-modularize` skill against go-datastar to review module boundaries, f
 ## A) FULLY DONE
 
 <!-- check-rows:ledger -->
+
 ### Modularization Analysis (Phases 1-2)
+
 <!-- check-rows:ledger -->
 
 - **Phase 1 — State Detection:** Mapped all 3 go.mod files (root, static/, datastartest/). Classified as "partial split" with a circular dependency. Confirmed go.work workspace mode active.
+
 <!-- check-rows:ledger -->
+
 - **Phase 2 — Research & Analysis:** Mapped all intra-repo import relationships across 15 production files and 16+ test files. Identified:
+
 <!-- check-rows:ledger -->
-  - root → static (production: `script_handler.go`)
-  - root → datastartest (test-only: `e2e_test.go` — LEAK)
-  - datastartest → root (production: `event.go`, `assert.go`, `filter.go`)
-  - static → nothing (clean leaf)
+
+- root → static (production: `script_handler.go`)
+- root → datastartest (test-only: `e2e_test.go` — LEAK)
+- datastartest → root (production: `event.go`, `assert.go`, `filter.go`)
+- static → nothing (clean leaf)
 - Confirmed no `internal/` packages exist (no access breakage risk).
+
 <!-- check-rows:ledger -->
+
 - Confirmed all error types in root `errors.go` — no cross-module error accessibility issues.
 - Confirmed no god-packages — root is a single cohesive `datastar` package at correct granularity.
+
 <!-- check-rows:ledger -->
+
 - Verified all 3 modules build standalone with `GOWORK=off` before changes.
+
 <!-- check-rows:ledger -->
 
 ### Proposal & Self-Review (Phases 3-4)
 
 <!-- check-rows:ledger -->
+
 - **Phase 3:** Wrote comprehensive HTML proposal to `docs/modularization/2026-08-10_PROPOSAL.html` with:
+
 <!-- check-rows:ledger -->
-  - Module inventory table (3 modules)
+
+- Module inventory table (3 modules)
+
 <!-- check-rows:ledger -->
-  - Current dependency graph (with circular dep highlighted)
+
+- Current dependency graph (with circular dep highlighted)
+
 <!-- check-rows:ledger -->
-  - Proposed dependency graph (clean DAG)
-  - DAG verification table (3 layers: 0, 1, 2)
-  - Replace/workspace strategy (dual: go.work + replace, already in place)
-  - Error type placement analysis (all in root, no issues)
+
+- Proposed dependency graph (clean DAG)
+- DAG verification table (3 layers: 0, 1, 2)
+- Replace/workspace strategy (dual: go.work + replace, already in place)
+- Error type placement analysis (all in root, no issues)
+
 <!-- check-rows:ledger -->
-  - Versioning strategy (shared versioning, single tag)
-  - Breaking change analysis (zero consumer impact)
-  - Risk assessment (4 risks, all low/medium)
+
+- Versioning strategy (shared versioning, single tag)
+- Breaking change analysis (zero consumer impact)
+- Risk assessment (4 risks, all low/medium)
+
 <!-- check-rows:ledger -->
-  - Build system impact (flake.nix vendorHash, CI)
+
+- Build system impact (flake.nix vendorHash, CI)
+
 <!-- check-rows:ledger -->
+
 - **Phase 4:** Ran brutal self-review against the proposal-specific checklist:
   - No forgotten packages
   - No split brains
   - Right granularity (3 modules, no over/under-modularization)
-<!-- check-rows:ledger -->
-  - No reinventing the wheel
-  - Import paths verified (traced full chain)
-  - Test deps isolated after fix
-  - Error types accessible
-  - No internal/ breakage risk
-  - No consumers broken
-  - Cross-referenced with how-to-golang skill (no banned deps, correct patterns)
 
 <!-- check-rows:ledger -->
+
+- No reinventing the wheel
+- Import paths verified (traced full chain)
+- Test deps isolated after fix
+- Error types accessible
+- No internal/ breakage risk
+- No consumers broken
+- Cross-referenced with how-to-golang skill (no banned deps, correct patterns)
+
+<!-- check-rows:ledger -->
+
 ### Execution Plan (Phase 5)
 
 - Wrote execution plan to `docs/modularization/2026-08-10_EXECUTION_PLAN.html` with:
@@ -77,6 +104,7 @@ Run the `go-modularize` skill against go-datastar to review module boundaries, f
 All 5 steps executed and verified:
 
 <!-- check-rows:ledger -->
+
 | Step | Tier           | Action                                                            | Status |
 | ---- | -------------- | ----------------------------------------------------------------- | ------ |
 | 1    | Domain         | Relocated `TestE2E_DataStarPatches` to `datastartest/e2e_test.go` | DONE   |
@@ -90,7 +118,9 @@ All 5 steps executed and verified:
 - `go test ./... ./datastartest/... ./static/... -race -count=1` — ALL PASS
 - `go vet ./... ./datastartest/... ./static/...` — CLEAN
 - `golangci-lint run ./... ./datastartest/... ./static/...` — 0 ISSUES
+
 <!-- check-rows:ledger -->
+
 - `GOWORK=off go build` per module — ALL 3 PASS
 - `GOWORK=off go test` per module — ALL 3 PASS
 - `go work sync` — IDEMPOTENT (no changes)

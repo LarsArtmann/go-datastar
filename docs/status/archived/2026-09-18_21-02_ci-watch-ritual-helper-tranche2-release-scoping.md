@@ -9,23 +9,36 @@
   into `af3ce90`+). One crush session, shared checkout.
 
 <!-- check-rows:ledger -->
+
 ## Verdict in one paragraph
 
 <!-- check-rows:ledger -->
+
 All three queued tasks were executed and verified. The CI-watch ritual
+
 <!-- check-rows:ledger -->
+
 completed all four workflow checklists and triggered two promotions
+
 <!-- check-rows:ledger -->
+
 (nix.yml blocking, fuzz 300s). The datastartest tranche shipped five helpers
+
 <!-- check-rows:ledger -->
+
 with eleven tests. The scoping task exposed that its own TODO row was stale
+
 <!-- check-rows:ledger -->
+
 (v0.5.0 shipped 2026-09-03) and produced the correct v0.6.0 next-release row
 instead. Full local gate suite is green. Two of the session's own mistakes
 (a near split-brain `find.go`, a linter-fighting helper extraction) were
+
 <!-- check-rows:ledger -->
+
 self-caught and corrected before completion; the report below documents them
 honestly.
+
 <!-- check-rows:ledger -->
 
 ---
@@ -279,7 +292,6 @@ ROADMAP-fuel to be routed through docs-health HARVEST with rigor.
    survives? Renovate owns the embedded-JS custom manager; dependabot owns
    the actions/go-modules PRs currently open. (TODO_LIST marks this
    owner-blocked; the answer changes what I do with the four open PRs.)
-
 ---
 
 _Point-in-time snapshot. Routing policy: section (f) is HARVEST input for

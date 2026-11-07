@@ -11,50 +11,80 @@ the honest accounting: including the fuckups.
 ## a) FULLY DONE
 
 <!-- check-rows:ledger -->
-| #   | Task                                                                                           | Evidence                                                                                                                                                                                                                                            |
+
+| # | Task | Evidence |
+
 <!-- check-rows:ledger -->
+
 | --- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| T01 | Exact-CI linter parity (`nix run .#lint-ci`, v2.12.2 = CI's version)                           | 0 issues at HEAD; habit documented (CONTRIBUTING, AGENTS); `80034e1`                                                                                                                                                                                |
+| T01 | Exact-CI linter parity (`nix run .#lint-ci`, v2.12.2 = CI's version) | 0 issues at HEAD; habit documented (CONTRIBUTING, AGENTS); `80034e1` |
+
 <!-- check-rows:ledger -->
-| T02 | Benchmark modernization ×4 (`b.Loop`) + stdversion false-positive proof + AGENTS documentation | `cd54cdc`                                                                                                                                                                                                                                           |
+
+| T02 | Benchmark modernization ×4 (`b.Loop`) + stdversion false-positive proof + AGENTS documentation | `cd54cdc` |
+
 <!-- check-rows:ledger -->
-| T03 | Ship v0.4.0                                                                                    | Lockstep tags ×3, GitHub Release, proxy `go list -m -versions` verified ×3, pkg.go.dev rendering, release gate (isolation ×3, sync, replace audit, govulncheck, flake check) green at the release tree                                              |
-| T04 | FOD/vendorHash mechanism investigation                                                         | Evidence matrix in ADR 004; `go mod vendor` copies replaced directories ENTIRELY; root hash = requires/toolchain only; `5750fc5`                                                                                                                    |
-| T05 | CI hygiene batch                                                                               | `go mod verify` ×3, go.work use-vs-disk, tidy-diff ×3, JS-version drift test; `3d7cada`                                                                                                                                                             |
+
+| T03 | Ship v0.4.0 | Lockstep tags ×3, GitHub Release, proxy `go list -m -versions` verified ×3, pkg.go.dev rendering, release gate (isolation ×3, sync, replace audit, govulncheck, flake check) green at the release tree |
+| T04 | FOD/vendorHash mechanism investigation | Evidence matrix in ADR 004; `go mod vendor` copies replaced directories ENTIRELY; root hash = requires/toolchain only; `5750fc5` |
+| T05 | CI hygiene batch | `go mod verify` ×3, go.work use-vs-disk, tidy-diff ×3, JS-version drift test; `3d7cada` |
+
 <!-- check-rows:ledger -->
-| T06 | Tag v0.3.0 flake verdict                                                                       | Verified FAIL at `60cf5b1` (datastartest FOD; root clean) — recorded in ADR 004                                                                                                                                                                     |
-| T07 | Docker verify                                                                                  | Dockerfile fixed (root context + cached layer + static/go.mod); HTTP 200 + live SSE datalines from `/events`; `c242d3f`                                                                                                                             |
+
+| T06 | Tag v0.3.0 flake verdict | Verified FAIL at `60cf5b1` (datastartest FOD; root clean) — recorded in ADR 004 |
+| T07 | Docker verify | Dockerfile fixed (root context + cached layer + static/go.mod); HTTP 200 + live SSE datalines from `/events`; `c242d3f` |
+
 <!-- check-rows:ledger -->
-| T08 | Performance re-measure                                                                         | 1s benchtime, multi-million samples: Elements ~146 ns/op (was ~476), Collect ~186µs (was ~906); caveat dropped; `80d2f94`                                                                                                                           |
-| T09 | Micro-hygiene batch                                                                            | `feedInterval` const, `http.NewResponseController`, bench headers, PR rows; `2f29b71`                                                                                                                                                               |
+
+| T08 | Performance re-measure | 1s benchtime, multi-million samples: Elements ~146 ns/op (was ~476), Collect ~186µs (was ~906); caveat dropped; `80d2f94` |
+| T09 | Micro-hygiene batch | `feedInterval` const, `http.NewResponseController`, bench headers, PR rows; `2f29b71` |
+
 <!-- check-rows:ledger -->
-| T10 | Measurement ritual                                                                             | Coverage 98.4/93.4/100 re-measured; lint cold ~17s → warm ~1.5s documented; `4b4c76a`                                                                                                                                                               |
+
+| T10 | Measurement ritual | Coverage 98.4/93.4/100 re-measured; lint cold ~17s → warm ~1.5s documented; `4b4c76a` |
+
 <!-- check-rows:ledger -->
-| T11 | AGENTS.md pruning                                                                              | 19,369B → 14,847B at commit (later additions regrew to 15,415B — see b); merged checkout gotchas; `9d09512`                                                                                                                                         |
-| T12 | modfile boundary guard                                                                         | `golang.org/x/mod/modfile` semantic parsing; both modes green; `62128bf`                                                                                                                                                                            |
-| T13 | datastartest top-3 helpers                                                                     | `RequireElementsOrdered`/`Diff`/`Snapshot` + tests + README + CHANGELOG (source-cited, G12); coverage 92.7→93.4%; `b87374e`                                                                                                                         |
+
+| T11 | AGENTS.md pruning | 19,369B → 14,847B at commit (later additions regrew to 15,415B — see b); merged checkout gotchas; `9d09512` |
+| T12 | modfile boundary guard | `golang.org/x/mod/modfile` semantic parsing; both modes green; `62128bf` |
+| T13 | datastartest top-3 helpers | `RequireElementsOrdered`/`Diff`/`Snapshot` + tests + README + CHANGELOG (source-cited, G12); coverage 92.7→93.4%; `b87374e` |
+
 <!-- check-rows:ledger -->
-| T14 | Hygiene pack                                                                                   | ROADMAP source-citations + vendorHash resolved; observed-branches configured; `a994657`                                                                                                                                                             |
+
+| T14 | Hygiene pack | ROADMAP source-citations + vendorHash resolved; observed-branches configured; `a994657` |
+
 <!-- check-rows:ledger -->
-| T15 | CI watch runbook                                                                               | `docs/ci-watch.md` with state/verify/promote/drop per workflow; `f77a941`                                                                                                                                                                           |
+
+| T15 | CI watch runbook | `docs/ci-watch.md` with state/verify/promote/drop per workflow; `f77a941` |
+
 <!-- check-rows:ledger -->
-| T16 | Response test-depth (8 of 9 sub-tasks)                                                         | Decoded-JSON assertions, nil-error guard + new code `datastar.error_response_nil_error`, nil detail → JSON null, edge cases, 16-goroutine concurrency under -race, 200-line splitting, nested signals, source precedence, wire-shape E2E; `72aed78` |
+
+| T16 | Response test-depth (8 of 9 sub-tasks) | Decoded-JSON assertions, nil-error guard + new code `datastar.error_response_nil_error`, nil detail → JSON null, edge cases, 16-goroutine concurrency under -race, 200-line splitting, nested signals, source precedence, wire-shape E2E; `72aed78` |
+
 <!-- check-rows:ledger -->
-| T17 | External closure                                                                               | 5/5 CodeRabbit threads answered (1 valid → go.work.sum policy narrowed); 5 parallel commits reviewed clean; `06b84fb`                                                                                                                               |
-| T18 | Community files                                                                                | SUPPORT.md + 2 discussion templates; CODEOWNERS deliberately withheld (G11); `69ede1b`                                                                                                                                                              |
-| T19 | static hardening                                                                               | nosniff, SHA-256 checksum pin, provenance, edge tests, ETag benchmark; Last-Modified + fuzz = recorded Not-Dos; `DatastarJSVersion` deprecated; `685a347`                                                                                           |
-| T20 | datastartest examples                                                                          | 4 runnable examples with Output blocks; DataValue prefix contract documented; `5b9e6ec`                                                                                                                                                             |
+
+| T17 | External closure | 5/5 CodeRabbit threads answered (1 valid → go.work.sum policy narrowed); 5 parallel commits reviewed clean; `06b84fb` |
+| T18 | Community files | SUPPORT.md + 2 discussion templates; CODEOWNERS deliberately withheld (G11); `69ede1b` |
+| T19 | static hardening | nosniff, SHA-256 checksum pin, provenance, edge tests, ETag benchmark; Last-Modified + fuzz = recorded Not-Dos; `DatastarJSVersion` deprecated; `685a347` |
+| T20 | datastartest examples | 4 runnable examples with Output blocks; DataValue prefix contract documented; `5b9e6ec` |
+
 <!-- check-rows:ledger -->
-| T21 | Audit pack                                                                                     | README table verified vs upstream v1.2.2 (3 claims hold); 10% verdict spot-check 5/5 pass; appendix in the 09-02 report; `45b7399`                                                                                                                  |
-| T22 | Decisions pack                                                                                 | ADR 002 + 005 addenda; CHANGELOG-placement + CI-table questions resolved in ROADMAP; `592e12c`                                                                                                                                                      |
-| T23 | Infra pack                                                                                     | Per-module CI matrix + workspace job; `go work vendor` Not-Do recorded; actionlint + 3 local legs verified; `6cb34ae`                                                                                                                               |
+
+| T21 | Audit pack | README table verified vs upstream v1.2.2 (3 claims hold); 10% verdict spot-check 5/5 pass; appendix in the 09-02 report; `45b7399` |
+| T22 | Decisions pack | ADR 002 + 005 addenda; CHANGELOG-placement + CI-table questions resolved in ROADMAP; `592e12c` |
+| T23 | Infra pack | Per-module CI matrix + workspace job; `go work vendor` Not-Do recorded; actionlint + 3 local legs verified; `6cb34ae` |
+
 <!-- check-rows:ledger -->
-| T24 | Docs depth                                                                                     | `docs/architecture.md` (mermaid + type/file map), links wired; version-constraint tests documented; `7932f74`                                                                                                                                       |
+
+| T24 | Docs depth | `docs/architecture.md` (mermaid + type/file map), links wired; version-constraint tests documented; `7932f74` |
+
 <!-- check-rows:ledger -->
-| T25 | Consumer content                                                                               | `docs/migration-starfederation.md`, Broadcaster/SubscribeFilter/MemoryStore examples, Learn-DataStar link; `ac1de23`                                                                                                                                |
-| T26 | docspec                                                                                        | Tag-gated mirrors (root + datastartest) + `nix run .#docspec`; caught 3 real doc drifts (replay.md Close/NewStream arity, CollectWithRequest arg order); break-verified; CONTRIBUTING contract; `b055625`                                           |
-| T27 | Platform pack                                                                                  | `Response` method forms (additive), `version` pkg (ldflags), `.goreleaser.yaml` (check-validated); signalsMap HELD, changelog automation DECLINED; `49a0ae6`/`9cb1d17`                                                                              |
-| —   | Final integration                                                                              | Root + datastartest vendorHash refresh, datastartest go.sum tidy fix, CI paths filter fix — all CI workflows green on `dba6a2f` (CI 1m27s, nix, actionlint, coverage, codeql); `nix flake check` ALL CHECKS PASSED locally                          |
+
+| T25 | Consumer content | `docs/migration-starfederation.md`, Broadcaster/SubscribeFilter/MemoryStore examples, Learn-DataStar link; `ac1de23` |
+| T26 | docspec | Tag-gated mirrors (root + datastartest) + `nix run .#docspec`; caught 3 real doc drifts (replay.md Close/NewStream arity, CollectWithRequest arg order); break-verified; CONTRIBUTING contract; `b055625` |
+| T27 | Platform pack | `Response` method forms (additive), `version` pkg (ldflags), `.goreleaser.yaml` (check-validated); signalsMap HELD, changelog automation DECLINED; `49a0ae6`/`9cb1d17` |
+| — | Final integration | Root + datastartest vendorHash refresh, datastartest go.sum tidy fix, CI paths filter fix — all CI workflows green on `dba6a2f` (CI 1m27s, nix, actionlint, coverage, codeql); `nix flake check` ALL CHECKS PASSED locally |
+
 <!-- check-rows:ledger -->
 
 ## b) PARTIALLY DONE
@@ -64,22 +94,28 @@ the honest accounting: including the fuckups.
    was never written down anywhere — an invisible decision.
 2. **T26.3/26.4 (snippet coverage):** replay.md, error-system.md, and
    docs/testing.md are mirrored; **wire-format.md and migration-guide.md
+
 <!-- check-rows:ledger -->
-   snippets are NOT mirrored** — docspec's guarantee is partial.
+
+snippets are NOT mirrored** — docspec's guarantee is partial.
 3. **docs/testing.md quick-start snippet:** the doc's handler doesn't set
-   `WithModeAppend`, but its assertion expects `"append"` — my docspec mirror
-   made it pass by adding the option to the MIRROR, not the DOC. The doc and
-   mirror have now diverged (the mirror proves an API shape the doc doesn't
-   quite show).
+`WithModeAppend`, but its assertion expects `"append"` — my docspec mirror
+made it pass by adding the option to the MIRROR, not the DOC. The doc and
+mirror have now diverged (the mirror proves an API shape the doc doesn't
+quite show).
 4. **T27.3 (signalsMap):** decision was HOLD without building the planned
-   prototype — the review replaced the prototype, but the plan's step was
-   skipped, not executed-and-rejected.
+prototype — the review replaced the prototype, but the plan's step was
+skipped, not executed-and-rejected.
 5. **T27.4 (goreleaser):** `goreleaser check` validated; `build --snapshot`
-   dry-run never ran.
+dry-run never ran.
 6. **T25.6 (playground):** only the data-star.dev site link (the one URL
+
 <!-- check-rows:ledger -->
-   verifiable from the repo); no direct playground URL.
+
+verifiable from the repo); no direct playground URL.
+
 <!-- check-rows:ledger -->
+
 7. **T21.2 (verdict spot-check):** 5 items sampled from ONE report (07-27);
    the plan said "08-10 reports" (plural).
 8. ~~**AGENTS.md size:** 15,415B — 55 bytes OVER the ≤15,360 target I set in
@@ -92,7 +128,9 @@ the honest accounting: including the fuckups.
    (skipped at v0.5.0 and v0.6.0 too — `2026-09-18_22-29` b2); govulncheck
    re-ran green 2026-09-18 (`2026-09-18_21-02` a8)._
 10. **aarch64/darwin:** `nix flake check` omits those systems — never
+
 <!-- check-rows:ledger -->
+
     validated anywhere.
 
 ## c) NOT STARTED
@@ -135,23 +173,29 @@ the honest accounting: including the fuckups.
    `[0.4.0]`. Both caught and repaired in-session, but each was one edit from
    rewriting released history permanently.
 3. **The vendorHash end-game thrash.** After T12 the ROOT hash was stale
+
 <!-- check-rows:ledger -->
-   (x/mod = a requires change — the ADR literally predicts this), yet I
-   chased the DATASTARTEST hash through three paste cycles (O1o+ ↔ jM1MW4
+
+(x/mod = a requires change — the ADR literally predicts this), yet I
+chased the DATASTARTEST hash through three paste cycles (O1o+ ↔ jM1MW4
+
 <!-- check-rows:ledger -->
-   flip-flop) before recognizing the failing derivation was the root one.
-   Wasted ~30 minutes on a hash the ADR told me to expect.
+
+flip-flop) before recognizing the failing derivation was the root one.
+Wasted ~30 minutes on a hash the ADR told me to expect.
 4. **Daemon lost two edits mid-flight** (diff_test.go assertion,
-   docspec heartbeat func) — both caught by failing tests and re-applied;
+docspec heartbeat func) — both caught by failing tests and re-applied;
+
 <!-- check-rows:ledger -->
-   cost was confusion time, not correctness.
+
+cost was confusion time, not correctness.
 5. **Plan quality debt:** T02's prescribed mechanism (UnmarshalRead clears
-   the stdversion warning) was wrong — I implemented, proved it wrong,
-   reverted; and the plan carried a nonexistent commit hash (`ffeeda`).
-   Planning-time verification would have caught both.
+the stdversion warning) was wrong — I implemented, proved it wrong,
+reverted; and the plan carried a nonexistent commit hash (`ffeeda`).
+Planning-time verification would have caught both.
 6. **Scratch-state poisoning:** a manual `go mod vendor` in the MAIN checkout
-   (for the FOD experiment) left datastartest/vendor behind, which briefly
-   failed an isolation leg and confused the hash measurements.
+(for the FOD experiment) left datastartest/vendor behind, which briefly
+failed an isolation leg and confused the hash measurements.
 
 ## e) WHAT WE SHOULD IMPROVE
 
@@ -166,20 +210,22 @@ the honest accounting: including the fuckups.
    into a plan** (T02's wrong prescription cost implementation + revert).
 5. **Docspec mirrors must be verbatim-adjacent to the doc snippet** — when a
    mirror needs a change the doc lacks, fix the DOC (or record why not), or
+
 <!-- check-rows:ledger -->
-   the mirror silently diverges (it already did once).
+
+the mirror silently diverges (it already did once).
 6. **Record Not-Do decisions where they are findable** (ADR/ROADMAP/CHANGELOG
-   note), not in session memory — T16.8's skip is currently invisible.
+note), not in session memory — T16.8's skip is currently invisible.
 7. **CHANGELOG edits: re-read section headers before every edit** — two G4
-   violations came from editing by content-match without checking which
-   release section the match sat in.
+violations came from editing by content-match without checking which
+release section the match sat in.
 8. **The auto-commit daemon + edit tools:** prefer one atomic write per file
-   and re-view before re-edit; the two lost edits were both multi-step
-   python-based edits racing daemon commits.
+and re-view before re-edit; the two lost edits were both multi-step
+python-based edits racing daemon commits.
 9. **Audit spot-checks should sample across ALL cited source reports**, not
-   one.
+one.
 10. **Plan verification pass:** before executing, grep the plan's commit
-    hashes for existence and dry-run one API-spelling claim.
+hashes for existence and dry-run one API-spelling claim.
 
 ## f) UP TO 50 THINGS TO DO NEXT
 

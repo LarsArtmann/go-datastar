@@ -9,55 +9,87 @@
 ## Scope
 
 <!-- check-rows:ledger -->
-| File                  | Lines (review → now) | Role                                       |
-| --------------------- | -------------------- | ------------------------------------------ |
+
+| File | Lines (review → now) | Role |
+| ---- | -------------------- | ---- |
+
 <!-- check-rows:ledger -->
-| `broadcaster.go`      | 163 → 183            | Patch fan-out hub + `http.Handler`         |
+
+| `broadcaster.go` | 163 → 183 | Patch fan-out hub + `http.Handler` |
+
 <!-- check-rows:ledger -->
-| `broadcaster_test.go` | 427 → 471            | 13 tests, race-covered                     |
+
+| `broadcaster_test.go` | 427 → 471 | 13 tests, race-covered |
+
 <!-- check-rows:ledger -->
-| `doc.go`              | 21                   | Package docs                               |
+
+| `doc.go` | 21 | Package docs |
+
 <!-- check-rows:ledger -->
-| `README.md`           | 63                   | Module README                              |
+
+| `README.md` | 63 | Module README |
+
 <!-- check-rows:ledger -->
-| `go.mod` / `go.sum`   | —                    | Requires go-datastar v0.5.0, go-sse v0.6.0 |
+
+| `go.mod` / `go.sum` | — | Requires go-datastar v0.5.0, go-sse v0.6.0 |
 
 ## Verdict
+
 <!-- check-rows:ledger -->
 
 Sound architecture: thin wrapper over `*sse.Broadcaster[sse.Event]`, patches as
+
 <!-- check-rows:ledger -->
+
 values, hub shared via `Hub()`/`NewBroadcasterFromHub`. One real correctness
 bug found (replay race window), two test bugs, and the canonical lint gate was
+
 <!-- check-rows:ledger -->
+
 red on committed master (9 findings, all in this module). Everything fixed on
+
 <!-- check-rows:ledger -->
+
 the spot; repo-wide CI-parity lint now exits 0.
 
 ## Fixed on the spot
+
 <!-- check-rows:ledger -->
 
 <!-- check-rows:ledger -->
-| #  | Severity    | Location                                     | Issue                                                                                                                                                              | Fix                                                                                                                                                     |
+
+| # | Severity | Location | Issue | Fix |
+
 <!-- check-rows:ledger -->
+
 | -- | ----------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+
 <!-- check-rows:ledger -->
-| F1 | BUG         | `Broadcast`/`BroadcastEvent`                 | Event appended to replay store AFTER hub fan-out: a reconnect racing between the two replays nothing and receives nothing — event permanently lost for that client | Append to store BEFORE fan-out; reconnecting mid-broadcast now replays the event instead of missing it                                                  |
-| F2 | Smell       | `BroadcastMany`                              | Looped per-patch `Broadcast`: N lock passes, batch interleavable by concurrent broadcasters                                                                        | Single-pass atomic `BroadcastMany` on the hub; all events appended first, then one fan-out pass                                                         |
-| F3 | Split brain | `Broadcast` vs `BroadcastEvent`              | Identical fan-out+store logic duplicated in two methods                                                                                                            | `Broadcast` now delegates to `BroadcastEvent(patch.Event())`                                                                                            |
-| F4 | Test bug    | `TestBroadcasterBroadcastEvent`              | Never called `BroadcastEvent` — tested `Broadcast` under the wrong name                                                                                            | Rewritten: raw `sse.Event` in, `event: raw` / `data: payload` asserted on the wire                                                                      |
+
+| F1 | BUG | `Broadcast`/`BroadcastEvent` | Event appended to replay store AFTER hub fan-out: a reconnect racing between the two replays nothing and receives nothing — event permanently lost for that client | Append to store BEFORE fan-out; reconnecting mid-broadcast now replays the event instead of missing it |
+| F2 | Smell | `BroadcastMany` | Looped per-patch `Broadcast`: N lock passes, batch interleavable by concurrent broadcasters | Single-pass atomic `BroadcastMany` on the hub; all events appended first, then one fan-out pass |
+| F3 | Split brain | `Broadcast` vs `BroadcastEvent` | Identical fan-out+store logic duplicated in two methods | `Broadcast` now delegates to `BroadcastEvent(patch.Event())` |
+| F4 | Test bug | `TestBroadcasterBroadcastEvent` | Never called `BroadcastEvent` — tested `Broadcast` under the wrong name | Rewritten: raw `sse.Event` in, `event: raw` / `data: payload` asserted on the wire |
+
 <!-- check-rows:ledger -->
-| F5 | Test gap    | `TestBroadcasterBroadcastMany`               | Zero delivery assertions (only SubscriberCount after disconnect)                                                                                                   | Asserts both patch families (`datastar-patch-signals`, `datastar-patch-elements`) reach the wire                                                        |
-| F6 | Flake risk  | `readFirstResponse` helper                   | Single `Read` of the first chunk — body split across TCP segments breaks assertions; channel-based, error-swallowing                                               | Replaced by `startReader`/`readBody`: drain-until-EOF (deterministic), typed result, `t.Fatalf` on test goroutine                                       |
-| F7 | Gate red    | whole module                                 | CI-parity `golangci-lint` failed on committed master with 9 findings (mnd, noctx ×2, varnamelen ×5, makezero) — unnoticed because nothing is a required check      | Fixed all 9: `defaultHeartbeatInterval` const, `httptest.NewRequestWithContext`, `events`/`recorder`/`countMu` renames; makezero resolved by F6 rewrite |
+
+| F5 | Test gap | `TestBroadcasterBroadcastMany` | Zero delivery assertions (only SubscriberCount after disconnect) | Asserts both patch families (`datastar-patch-signals`, `datastar-patch-elements`) reach the wire |
+| F6 | Flake risk | `readFirstResponse` helper | Single `Read` of the first chunk — body split across TCP segments breaks assertions; channel-based, error-swallowing | Replaced by `startReader`/`readBody`: drain-until-EOF (deterministic), typed result, `t.Fatalf` on test goroutine |
+| F7 | Gate red | whole module | CI-parity `golangci-lint` failed on committed master with 9 findings (mnd, noctx ×2, varnamelen ×5, makezero) — unnoticed because nothing is a required check | Fixed all 9: `defaultHeartbeatInterval` const, `httptest.NewRequestWithContext`, `events`/`recorder`/`countMu` renames; makezero resolved by F6 rewrite |
+
 <!-- check-rows:ledger -->
-| F8 | Docs        | `ServeHTTP`                                  | Replay-failure path silently returned with no documented semantics                                                                                                 | Documented: connection ends; a well-behaved client reconnects with Last-Event-ID and retries                                                            |
+
+| F8 | Docs | `ServeHTTP` | Replay-failure path silently returned with no documented semantics | Documented: connection ends; a well-behaved client reconnects with Last-Event-ID and retries |
+
 <!-- check-rows:ledger -->
-| F9 | Docs        | `Broadcast`/`BroadcastEvent`/`BroadcastMany` | Store/fan-out ordering invariant undocumented                                                                                                                      | Doc comments now state append-BEFORE-fan-out and the single-pass batch atomicity                                                                        |
+
+| F9 | Docs | `Broadcast`/`BroadcastEvent`/`BroadcastMany` | Store/fan-out ordering invariant undocumented | Doc comments now state append-BEFORE-fan-out and the single-pass batch atomicity |
 
 F1 detail: subscribe-before-replay already closed one half of the gap
 (duplicates instead of loss after subscribe). The other half — events that left
+
 <!-- check-rows:ledger -->
+
 the hub before entering the store — is closed by appending first. Duplicates
 remain possible and are documented as harmless. No deterministic unit test can
 pin F1 without injection seams between hub fan-out and store append; the
@@ -66,15 +98,21 @@ invariant is enforced by construction and documented in F9.
 ## Investigated, no action needed
 
 <!-- check-rows:ledger -->
+
 - **Heartbeat goroutine concurrency**: `Stream.Send` and `Heartbeat` serialize
+
 <!-- check-rows:ledger -->
-  on the stream mutex (go-sse `stream.go`); the goroutine exits on ctx-done or
-  write error. No leak, no race. Race suite confirms.
+
+on the stream mutex (go-sse `stream.go`); the goroutine exits on ctx-done or
+write error. No leak, no race. Race suite confirms.
+
 - **gopls `infertypeargs` hint on `broadcaster.go:48` is a false positive**:
   dropping the explicit `[sse.Event]` from `sse.WithBufferSize` fails to
   compile (`cannot infer T`). Matches the AGENTS.md "LSP output can lie" rule;
   verified with the compiler before accepting.
+
 <!-- check-rows:ledger -->
+
 - **erraudit `--no-suppress` finding** (`_ = stream.Close()`): documented
   tolerated pattern — `Stream.Close` always returns nil; errcheck excludes
   cover `*sse.Stream`. Canonical gate green.
@@ -82,7 +120,9 @@ invariant is enforced by construction and documented in F9.
   README and fan-out docs.
 
 <!-- check-rows:ledger -->
+
 ## Recommendations (routed to TODO_LIST, not fixed)
+
 <!-- check-rows:ledger -->
 
 _Routed 2026-10-01: R1–R3 live in the TODO_LIST "Verified next-up" row
@@ -96,8 +136,11 @@ _Routed 2026-10-01: R1–R3 live in the TODO_LIST "Verified next-up" row
   Redis/Postgres adapters stay consumer-side, per the module's non-goals.
 - **R2 — constructor matrix gap**: buffer-size × replay are orthogonal axes
   with only 3 of 4 combos constructible. Functional options (or one combined
+
 <!-- check-rows:ledger -->
-  constructor) would close it without breaking v0.x callers.
+
+constructor) would close it without breaking v0.x callers.
+
 - **R3 — heartbeat configurability**: interval is now the
   `defaultHeartbeatInterval` const (was a magic number); expose as an option
   only if a consumer asks (YAGNI).

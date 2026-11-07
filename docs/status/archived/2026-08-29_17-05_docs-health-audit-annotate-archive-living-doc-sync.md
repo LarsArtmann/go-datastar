@@ -11,51 +11,74 @@
 ## a) FULLY DONE
 
 <!-- check-rows:ledger -->
+
 ### 1. Read everything in scope — all 31 `2026-0*` files
+
 <!-- check-rows:ledger -->
 
 All 27 `docs/status/*.md` + 1 `docs/planning/*.md` + 1 archived plan + 2 `docs/modularization/*.html` viewed or verified, plus all 6 living docs (TODO_LIST, CHANGELOG, AGENTS, README, ROADMAP, FEATURES) and the docs-health skill's 8 reference documents. Annotation state of every historical file measured by marker grep before and after.
+
 <!-- check-rows:ledger -->
 
 <!-- check-rows:ledger -->
+
 ### 2. VERIFY — every concrete claim checked against code, not trusted
 
 - **Coverage measured, not asserted:** root **98.4%**, datastartest **92.7%** (`go test -cover` at HEAD in a clean `/tmp/gds-verify` worktree). This adjudicated a three-way doc conflict: CHANGELOG said 92.9% (stale), the 12-24 report claimed "real number is 88.9%" (that was the all-modules badge figure, not the module number), FEATURES said ~94% (round-up).
+
 <!-- check-rows:ledger -->
+
 - **Full race gate green at HEAD:** `go test ./... ./datastartest/... ./static/... -race -count=1` — 4/4 packages ok; `go vet` clean. Run in an isolated worktree because the main checkout's workspace was broken (see d.3/a.7).
 - **Lint enumerated per module with real exit codes:** root 3 findings (mnd `example/main.go:153`, modernize `errors.As`→`AsType` ×2 in `errors_test.go:238,289`), datastartest 5 (gci/golines on reader files — already fixed in the working tree, makezero `reader.go:98`, modernize ×2 in `errors_test.go:34,120`), static clean. The TODO_LIST's old "de-flake parallel-session files" item named findings that no longer exist (fixed by `ce3b4bc`, `66a637e`, `ffeedea`, `52cfac8`, `7dec1d3`) — proven stale and replaced.
+
 <!-- check-rows:ledger -->
+
 - **Master CI is red on `d032dc5`:** run 33258092947 — lint job fails (same findings); test/govulncheck/erraudit/actionlint pass.
 - **`nix flake check` at HEAD fails only the treefmt format gate** on `datastartest/reader_fuzz_test.go` (committed in `d032dc5` un-gofumpt-ed); the exact proposed reformat already sits unstaged in the main working tree. Module build checks unaffected.
+
 <!-- check-rows:ledger -->
+
 - **External state verified via `gh`:** releases (v0.2.0 Latest, 2026-08-13), dependabot config (all 3 modules + github-actions), PR template exists (no CI-checkbox honesty guard), issue templates exist, latest `ci.yml` runs.
+
 <!-- check-rows:ledger -->
+
 - **Repo hygiene checks from the 12-43 report executed:** `go.work` tracked and NOT gitignored (`git check-ignore` exit 1; `git ls-files` lists it), stale branches still present (`pr/docs-test-consolidation` local+remote, `preserve/status-report-coderabbit-pr3` local), `ReplaceURLQuerystring` absent from code, `static.Version` = v1.0.2, 51 fuzz corpus seeds on disk.
 - **All internal markdown links resolve** (README, AGENTS, TODO_LIST, ROADMAP, FEATURES).
 
 <!-- check-rows:ledger -->
+
 ### 3. ANNOTATE — 8 historical files, ~130 inline item verdicts
+
 <!-- check-rows:ledger -->
 
 <!-- check-rows:ledger -->
+
 Every numbered item received a verdict (`~~struck~~ done at`<hash>`` / Won't-implement / verified-evidence / left bare = open), using the skill's `annotate-rows.py` / `annotate-prose.py` with mandatory dry-runs and post-write shape checks:
-<!-- check-rows:ledger -->
-
-| File                                         | Verdicts                                                                 | Highlights                                                                                                                                                                                               |
-| -------------------------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `docs/planning/2026-08-16_08-53` pareto plan | 16 T-rows + 17 P-items (resolution table) + 3 owner questions + appendix | All T01–T16 executed across `bf68063`/`affbe30`/`83d7c60`/`496a18b`; erraudit-devShell marked done-by-reversal; dprint removed-then-kept documented                                                      |
-<!-- check-rows:ledger -->
-| `2026-08-16_09-55` full-execution progress   | 7 table rows + final-sync row + stale Q3 claim + appendix                | "Remaining" T11–T16/T04 all done at `83d7c60`/`496a18b`/`ed815c7`                                                                                                                                        |
-| `2026-08-16_11-07` T11–T16 completion        | E×3, G×2, F×20 of 50 + 2 stale-claim corrections                         | Dynamic badge `ed815c7`; lint `ce3b4bc`+4; system Go now 1.26.7; 9 items verified-done (SECURITY.md, CoC, dependabot, issue templates, v0.2.0 release, doc.go, constants_test, benchmark, checks.format) |
-| `2026-08-16_12-24` master recovery           | 12 f-rows + b/c items                                                    | nix gate run today with honest FAIL verdict recorded; CHANGELOG fix done; badge superseded by live badge                                                                                                 |
-<!-- check-rows:ledger -->
-| `2026-08-16_12-43` git-town recovery         | 25 f-rows + g×2                                                          | 6 items superseded by the same-day branch-protection removal (`257c395`); go.work checks verified today                                                                                                  |
-<!-- check-rows:ledger -->
-| `2026-08-16_08-47` audit completion          | 25 f-items + g×3 + c×5                                                   | Every item resolved by the pareto execution or verified today                                                                                                                                            |
-| `2026-08-16_08-20` audit annotations         | f×4 + g×3 + c×1                                                          | All three owner questions (go directive, go.work.sum, sibling requires) resolved by T16                                                                                                                  |
-| `2026-08-16_07-52` README comparison         | 3 marker upgrades                                                        | "routed to TODO_LIST" upgraded to final resolution (T12, `83d7c60`)                                                                                                                                      |
 
 <!-- check-rows:ledger -->
+
+| File                                         | Verdicts                                                                 | Highlights                                                                                                                                          |
+| -------------------------------------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `docs/planning/2026-08-16_08-53` pareto plan | 16 T-rows + 17 P-items (resolution table) + 3 owner questions + appendix | All T01–T16 executed across `bf68063`/`affbe30`/`83d7c60`/`496a18b`; erraudit-devShell marked done-by-reversal; dprint removed-then-kept documented |
+
+<!-- check-rows:ledger -->
+
+| `2026-08-16_09-55` full-execution progress | 7 table rows + final-sync row + stale Q3 claim + appendix | "Remaining" T11–T16/T04 all done at `83d7c60`/`496a18b`/`ed815c7` |
+| `2026-08-16_11-07` T11–T16 completion | E×3, G×2, F×20 of 50 + 2 stale-claim corrections | Dynamic badge `ed815c7`; lint `ce3b4bc`+4; system Go now 1.26.7; 9 items verified-done (SECURITY.md, CoC, dependabot, issue templates, v0.2.0 release, doc.go, constants_test, benchmark, checks.format) |
+| `2026-08-16_12-24` master recovery | 12 f-rows + b/c items | nix gate run today with honest FAIL verdict recorded; CHANGELOG fix done; badge superseded by live badge |
+
+<!-- check-rows:ledger -->
+
+| `2026-08-16_12-43` git-town recovery | 25 f-rows + g×2 | 6 items superseded by the same-day branch-protection removal (`257c395`); go.work checks verified today |
+
+<!-- check-rows:ledger -->
+
+| `2026-08-16_08-47` audit completion | 25 f-items + g×3 + c×5 | Every item resolved by the pareto execution or verified today |
+| `2026-08-16_08-20` audit annotations | f×4 + g×3 + c×1 | All three owner questions (go directive, go.work.sum, sibling requires) resolved by T16 |
+| `2026-08-16_07-52` README comparison | 3 marker upgrades | "routed to TODO_LIST" upgraded to final resolution (T12, `83d7c60`) |
+
+<!-- check-rows:ledger -->
+
 Open items were left bare (no marker) and routed — none skipped.
 
 ### 4. ARCHIVE — 5 fully-resolved snapshots moved
@@ -64,7 +87,9 @@ Open items were left bare (no marker) and routed — none skipped.
 - `docs/status/archived/2026-08-16_07-52_readme-comparison-official-sdk.md`
 - `docs/status/archived/2026-08-16_08-20_docs-health-audit-annotations.md`
 - `docs/status/archived/2026-08-16_08-47_docs-health-audit-completion-self-review.md`
+
 <!-- check-rows:ledger -->
+
 - `docs/status/archived/2026-08-16_09-55_full-execution-progress.md`
 
 `docs/status/` now holds 25 active reports: 22 fully-annotated historical ones + 3 recent with routed-open residue (correct lifecycle — those stay until their open items close).
@@ -77,9 +102,11 @@ Open items were left bare (no marker) and routed — none skipped.
 - **ROADMAP:** removed the shipped "extract ssetest" idea (go-sse/ssetest exists, datastartest delegates via `b3824e8`); added 13 harvested raw ideas across themes (ReplaceURLQuerystring, SSE compression, nix CI job, hermetic lint/vet/govulncheck checks, vendorHash fragility, ADRs 003–005, consumer guides, community metadata).
 - **AGENTS:** 5 new gotchas (git-town `propose` + `gh pr merge` local-branch deletion + lineage pruning, session-entry/end rituals, `.md` report format + CHANGELOG exclusion policy, daemon-can-commit-to-master warning).
 - **modularization README:** both HTML docs marked executed (→ v0.1.0 / ADR 002).
+
 <!-- check-rows:ledger -->
 
 <!-- check-rows:ledger -->
+
 ### 6. Health report emitted (inline, per skill)
 
 Accuracy **9.0** (baseline 9.5 — one Critical environmental finding), Fitness **10.0** (baseline 9.0 — unharvested-report regression fixed, stale TODO rebuilt), visible math, per-doc findings table, explicit not-verified list.
@@ -93,6 +120,7 @@ The in-flight go 1.26.7 go.mod bump and all dprint formatting changes were prese
 ## b) PARTIALLY DONE
 
 <!-- check-rows:ledger -->
+
 1. **The three newest reports (11-07, 12-24, 12-43) are annotated but not archived** — they still carry routed-open residue (release, branches, CI work). Correct per the archive rule, but their open items now have two homes (report + TODO_LIST) until executed.
 2. ~~**Harvest routing had a residue class:** two 11-07 items (coverage-floor policy, PR labels) were left unrouted — too vague for TODO_LIST, too trivial for ROADMAP. They exist only as bare lines in the report.~~ done (both now dispositioned — coverage-floor policy routed to ROADMAP; PR labels rejected (filtered history unneeded without branch protection))
 3. **AGENTS.md grew while being audited for size:** I added 5 gotchas to a file already above the 5–15KB target (now 28.7KB, under the 30KB flag line). The additions are load-bearing, but the net direction was +, not −.
@@ -138,19 +166,22 @@ Items 1–10 are the verified TODO_LIST (harvested this session, evidence-cited)
 **Verified open work (TODO_LIST, ranked):**
 
 <!-- check-rows:ledger -->
-| #  | Task                                                                                                                                                                                                                                       | Status                            | Impact   | Effort |
-| -- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------- | -------- | ------ |
-| 1  | Finish or revert the in-flight go 1.26.7 bump (go.mod ×3 + go.work + ci.yml + flake `overrideAttrs` as ONE change, or restore 1.26.6) — workspace `go` commands fail until then                                                            | 🟡 IN_PROGRESS (parallel session) | Critical | 30min  |
-| 2  | Restore master CI green: commit the pending gofumpt reformat of `reader_fuzz_test.go` (also fixes the nix format gate), fix mnd `example/main.go:153`, makezero `reader.go:98`, migrate `errors.As`→`AsType` ×4 via go-error-modernization | 🔴 TODO                           | Critical | 45min  |
+
+| # | Task                                                                                                                                                                                                                                       | Status                            | Impact   | Effort |
+| - | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------- | -------- | ------ |
+| 1 | Finish or revert the in-flight go 1.26.7 bump (go.mod ×3 + go.work + ci.yml + flake `overrideAttrs` as ONE change, or restore 1.26.6) — workspace `go` commands fail until then                                                            | 🟡 IN_PROGRESS (parallel session) | Critical | 30min  |
+| 2 | Restore master CI green: commit the pending gofumpt reformat of `reader_fuzz_test.go` (also fixes the nix format gate), fix mnd `example/main.go:153`, makezero `reader.go:98`, migrate `errors.As`→`AsType` ×4 via go-error-modernization | 🔴 TODO                           | Critical | 45min  |
+
 <!-- check-rows:ledger -->
-| 3  | Cut v0.3.0 per `docs/release-checklist.md` (tag ×3 lockstep, pkg.go.dev verify)                                                                                                                                                            | 🔴 TODO                           | High     | 1h     |
-| 4  | Delete merged `pr/docs-test-consolidation` (local + remote)                                                                                                                                                                                | 🔵 BLOCKED (owner)                | Medium   | 5min   |
-| 5  | Rehome or drop `preserve/status-report-coderabbit-pr3` (sole copy of the 11-37 report)                                                                                                                                                     | 🔵 BLOCKED (owner)                | Medium   | 15min  |
-| 6  | CI path filters: docs-only PRs skip test/lint/govulncheck                                                                                                                                                                                  | 🔴 TODO                           | Medium   | 15min  |
-| 7  | `docs/status/README.md` index (date, one-liner, outcome per report)                                                                                                                                                                        | 🔴 TODO                           | Medium   | 30min  |
-| 8  | golangci-lint CI caching (1m33s long pole)                                                                                                                                                                                                 | 🔴 TODO                           | Low      | 30min  |
-| 9  | PR template: CI-dependent boxes become "checked by CI"                                                                                                                                                                                     | 🔴 TODO                           | Low      | 10min  |
-| 10 | CONTRIBUTING.md: how to run fuzz tests per module                                                                                                                                                                                          | 🔴 TODO                           | Low      | 15min  |
+
+| 3 | Cut v0.3.0 per `docs/release-checklist.md` (tag ×3 lockstep, pkg.go.dev verify) | 🔴 TODO | High | 1h |
+| 4 | Delete merged `pr/docs-test-consolidation` (local + remote) | 🔵 BLOCKED (owner) | Medium | 5min |
+| 5 | Rehome or drop `preserve/status-report-coderabbit-pr3` (sole copy of the 11-37 report) | 🔵 BLOCKED (owner) | Medium | 15min |
+| 6 | CI path filters: docs-only PRs skip test/lint/govulncheck | 🔴 TODO | Medium | 15min |
+| 7 | `docs/status/README.md` index (date, one-liner, outcome per report) | 🔴 TODO | Medium | 30min |
+| 8 | golangci-lint CI caching (1m33s long pole) | 🔴 TODO | Low | 30min |
+| 9 | PR template: CI-dependent boxes become "checked by CI" | 🔴 TODO | Low | 10min |
+| 10 | CONTRIBUTING.md: how to run fuzz tests per module | 🔴 TODO | Low | 15min |
 
 **ROADMAP fuel (11–50):**
 
@@ -166,34 +197,34 @@ Items 1–10 are the verified TODO_LIST (harvested this session, evidence-cited)
 20. Release automation (goreleaser / tag-triggered releases)
 21. Build-time version variable / `version` package
 22. ADR 003: error classification (go-error-family decision)
-~~23. ADR 004: nix per-module hermetic checks~~ done at `88c1eed`
-24. ADR 005: coverage strategy (what the % includes)
-25. `docs/error-system.md` deep-dive (incl. why `--enforce-samber-oops` stays forbidden)
-26. `docs/replay.md` (EventStore + LastEventID consumer guide)
-27. `docs/wire-format.md` (annotated dataline examples per patch type)
-28. `docs/testing.md` (unit/E2E/fuzz/WPT strategy)
-~~29. `docs/performance.md` (benchmarks, allocs, SSE throughput)~~ done at `3fa96f0`
-30. `docs/migration-guide.md` for the next minor bump
-31. `docs/architecture.md` diagram (transport → protocol → domain)
-32. Headless-browser E2E (chromedp/Playwright) exercising the real DataStar JS client
-33. Typed script-patch accessors in datastartest (`RedirectURL`, `CustomEventName/Detail`, `ScriptAttributes`)
-34. Domain-adapter example (EventBridge-style) showing the Patch-as-value payoff
-35. `example/README.md` + `example/docker-compose.yml`
-36. Benchmark for `Collect` helper overhead (`collect_bench_test.go`)
-37. Website launch (Astro + Starlight pattern) — see website-launch skill
-~~38. DataStar JS version pinning/upgrade docs~~ done at `3fa96f0`
-39. SSE heartbeat documentation
-40. Upstream protocol tracking: subscribe to starfederation/datastar releases
-41. Renovate rule for upstream DataStar JS
-42. Protocol version negotiation strategy if upstream breaks wire format
-43. GitHub Sponsors / funding metadata
-44. Contributor list / all-contributors
-45. Reply to the 5 CodeRabbit threads on merged PR #3 (closure)
-46. Human review of the 5 parallel-session commits merged in PR #3 (`ce3b4bc` set)
-47. ~~Coverage-floor policy decision (optional CI gate)~~ done (routed — coverage-floor policy now a ROADMAP raw idea)
-48. ~~PR labels (`docs`) for filterable history~~ **Won't implement — trivial — filtered history is unneeded now that branch protection is gone and nothing is a required check.**
-49. Migrate deleted `dprint`-vs-treefmt learnings into a single formatter-decision ADR if the topic resurfaces
-50. ~~AGENTS.md pruning pass: remove resolved-incident gotchas, target ≤15KB~~ done (done — AGENTS.md pruned to ~17KB by T06 (5887043))
+    ~~23. ADR 004: nix per-module hermetic checks~~ done at `88c1eed`
+23. ADR 005: coverage strategy (what the % includes)
+24. `docs/error-system.md` deep-dive (incl. why `--enforce-samber-oops` stays forbidden)
+25. `docs/replay.md` (EventStore + LastEventID consumer guide)
+26. `docs/wire-format.md` (annotated dataline examples per patch type)
+27. `docs/testing.md` (unit/E2E/fuzz/WPT strategy)
+    ~~29. `docs/performance.md` (benchmarks, allocs, SSE throughput)~~ done at `3fa96f0`
+28. `docs/migration-guide.md` for the next minor bump
+29. `docs/architecture.md` diagram (transport → protocol → domain)
+30. Headless-browser E2E (chromedp/Playwright) exercising the real DataStar JS client
+31. Typed script-patch accessors in datastartest (`RedirectURL`, `CustomEventName/Detail`, `ScriptAttributes`)
+32. Domain-adapter example (EventBridge-style) showing the Patch-as-value payoff
+33. `example/README.md` + `example/docker-compose.yml`
+34. Benchmark for `Collect` helper overhead (`collect_bench_test.go`)
+35. Website launch (Astro + Starlight pattern) — see website-launch skill
+    ~~38. DataStar JS version pinning/upgrade docs~~ done at `3fa96f0`
+36. SSE heartbeat documentation
+37. Upstream protocol tracking: subscribe to starfederation/datastar releases
+38. Renovate rule for upstream DataStar JS
+39. Protocol version negotiation strategy if upstream breaks wire format
+40. GitHub Sponsors / funding metadata
+41. Contributor list / all-contributors
+42. Reply to the 5 CodeRabbit threads on merged PR #3 (closure)
+43. Human review of the 5 parallel-session commits merged in PR #3 (`ce3b4bc` set)
+44. ~~Coverage-floor policy decision (optional CI gate)~~ done (routed — coverage-floor policy now a ROADMAP raw idea)
+45. ~~PR labels (`docs`) for filterable history~~ **Won't implement — trivial — filtered history is unneeded now that branch protection is gone and nothing is a required check.**
+46. Migrate deleted `dprint`-vs-treefmt learnings into a single formatter-decision ADR if the topic resurfaces
+47. ~~AGENTS.md pruning pass: remove resolved-incident gotchas, target ≤15KB~~ done (done — AGENTS.md pruned to ~17KB by T06 (5887043))
 
 ## g) Questions I cannot answer myself
 

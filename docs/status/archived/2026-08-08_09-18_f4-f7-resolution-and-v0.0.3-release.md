@@ -22,6 +22,7 @@
 - **Nothing is actually blocked.** `gh` CLI works. `git push` works. Everything
   I claimed was "blocked on access" was a false assumption propagated across
   3 status reports without verification.
+
 <!-- check-rows:ledger -->
 
 ---
@@ -29,21 +30,25 @@
 ## a) FULLY DONE
 
 <!-- check-rows:ledger -->
-| Task                       | What                                                                                                                                                                                                                                                                                                                  | Evidence                                                          |
-| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| **F4**                     | Added CHANGELOG `[Unreleased] → Changed` entry: "CI Actions upgraded — `actions/checkout` v4→v5 and `actions/setup-go` v5→v6 across all 4 CI jobs"                                                                                                                                                                    | `CHANGELOG.md:37-38`                                              |
-| **F5**                     | Annotated prior status report (`06-52_pareto-hardening-execution.md`) with resolution pointer at top, linking to the 07-04 report. Preserves original content as point-in-time snapshot while eliminating drift.                                                                                                      | `docs/status/2026-08-08_06-52_*.md` lines 3-8                     |
-| **F6**                     | Ran `actionlint` (v1.7.12 via nix) on `.github/workflows/ci.yml`. Exit 0, 0 violations. YAML is syntactically valid and semantically correct for GitHub Actions.                                                                                                                                                      | `nix run nixpkgs#actionlint -- ci.yml` — clean exit               |
+
+| Task   | What                                                                                                                                                                                                             | Evidence                                            |
+| ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| **F4** | Added CHANGELOG `[Unreleased] → Changed` entry: "CI Actions upgraded — `actions/checkout` v4→v5 and `actions/setup-go` v5→v6 across all 4 CI jobs"                                                               | `CHANGELOG.md:37-38`                                |
+| **F5** | Annotated prior status report (`06-52_pareto-hardening-execution.md`) with resolution pointer at top, linking to the 07-04 report. Preserves original content as point-in-time snapshot while eliminating drift. | `docs/status/2026-08-08_06-52_*.md` lines 3-8       |
+| **F6** | Ran `actionlint` (v1.7.12 via nix) on `.github/workflows/ci.yml`. Exit 0, 0 violations. YAML is syntactically valid and semantically correct for GitHub Actions.                                                 | `nix run nixpkgs#actionlint -- ci.yml` — clean exit |
+
 <!-- check-rows:ledger -->
-| **F7**                     | Verified breaking changes for both Actions via release notes analysis. checkout@v5: only change is Node 24 runtime (GitHub-hosted runners already support it). setup-go@v6: forces `GOTOOLCHAIN=local`, but go.mod `go 1.26` matches CI `go-version: "1.26"` — no conflict. No `pull_request_target` used. Both safe. | agentic_fetch on GitHub release pages                             |
-| **Quality gates**          | Full suite re-run after all doc changes: build, vet, test+race (119 tests), coverage (98.4%), golangci-lint (0 issues), erraudit (0 violations), nix flake check (all passed).                                                                                                                                        | All green                                                         |
-| **v0.0.3 tag**             | Updated CHANGELOG (`[Unreleased]` → `[0.0.3] - 2026-08-08`), created annotated git tag with release highlights, tag pushed to remote.                                                                                                                                                                                 | `git tag -l` shows v0.0.3; `git ls-remote --tags origin` confirms |
-| **07-04 report annotated** | Added resolution note at top marking F4-F7 as resolved with evidence.                                                                                                                                                                                                                                                 | `docs/status/2026-08-08_07-04_*.md` lines 3-9                     |
-| **TODO_LIST.md updated**   | Added F4-F7 rows to completed-items table.                                                                                                                                                                                                                                                                            | `TODO_LIST.md:62-65`                                              |
+
+| **F7** | Verified breaking changes for both Actions via release notes analysis. checkout@v5: only change is Node 24 runtime (GitHub-hosted runners already support it). setup-go@v6: forces `GOTOOLCHAIN=local`, but go.mod `go 1.26` matches CI `go-version: "1.26"` — no conflict. No `pull_request_target` used. Both safe. | agentic_fetch on GitHub release pages |
+| **Quality gates** | Full suite re-run after all doc changes: build, vet, test+race (119 tests), coverage (98.4%), golangci-lint (0 issues), erraudit (0 violations), nix flake check (all passed). | All green |
+| **v0.0.3 tag** | Updated CHANGELOG (`[Unreleased]` → `[0.0.3] - 2026-08-08`), created annotated git tag with release highlights, tag pushed to remote. | `git tag -l` shows v0.0.3; `git ls-remote --tags origin` confirms |
+| **07-04 report annotated** | Added resolution note at top marking F4-F7 as resolved with evidence. | `docs/status/2026-08-08_07-04_*.md` lines 3-9 |
+| **TODO_LIST.md updated** | Added F4-F7 rows to completed-items table. | `TODO_LIST.md:62-65` |
 
 ### Quality gates — all green at v0.0.3
 
 <!-- check-rows:ledger -->
+
 | Command                               | Result           |
 | ------------------------------------- | ---------------- |
 | `go build ./...`                      | PASS             |
@@ -78,6 +83,7 @@ Nothing partially done. All tasks were binary.
 ## c) NOT STARTED
 
 <!-- check-rows:ledger -->
+
 | Item                               | Why not started                                                                  | Blocked?                      |
 | ---------------------------------- | -------------------------------------------------------------------------------- | ----------------------------- |
 | GitHub release for v0.0.3          | Didn't realize `gh release create` was needed until post-tag verification        | NO — just missed it           |

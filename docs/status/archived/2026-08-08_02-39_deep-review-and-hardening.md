@@ -55,6 +55,7 @@ Ran 15 seconds of fuzz exploration: **1,246,696 executions, 0 failures**. `ReadS
 ### All quality gates green
 
 <!-- check-rows:ledger -->
+
 | Gate                                       | Result                                                   |
 | ------------------------------------------ | -------------------------------------------------------- |
 | `go build ./...`                           | ✓                                                        |

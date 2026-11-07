@@ -28,6 +28,7 @@
 ## a) FULLY DONE
 
 <!-- check-rows:ledger -->
+
 | #  | Task                                  | What was done                                                                                 | Evidence                                             |
 | -- | ------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
 | 1  | T01: Fix CONTRIBUTING.md              | Rewrote with GOEXPERIMENT=jsonv2, GOWORK=off, Nix workflow, manual workflow                   | `CONTRIBUTING.md` — 2 GOWORK refs, 13 Nix refs       |
@@ -83,11 +84,11 @@ Tried adding `mdformat` to treefmt. It reformatted status reports and other docs
 
 | #     | Task                                                                                                           | Why                                                                           | Status |
 | ----- | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------ |
-| ~~1~~ | ~~T12: GitHub repo polish (topics, wiki)~~ | ~~BLOCKED — requires `gh` CLI access~~ done in the 09-36 session (`cfe328d`) | ~~ ~~ |
-| ~~2~~ | ~~T14: Tag v0.0.3~~ | ~~BLOCKED — release cadence decision (user)~~ done — v0.0.3 tagged 2026-08-08 | ~~ ~~ |
-| ~~3~~ | ~~Nestif refactor of ReadSignals~~ | ~~complexity addressed~~ done at `5bab343` | ~~ ~~ |
-| ~~4~~ | ~~Coverage badge in README~~ done — README coverage badge + coverage.yml (ed815c7)                             | ~~TODO~~                                                                      | ~~ ~~ |
-| ~~5~~ | ~~pkg.go.dev rendering verification~~ done — verified 2026-09-02 — pkg.go.dev renders v0.3.0 for all 3 modules | ~~TODO~~                                                                      | ~~ ~~ |
+| ~~1~~ | ~~T12: GitHub repo polish (topics, wiki)~~                                                                     | ~~BLOCKED — requires `gh` CLI access~~ done in the 09-36 session (`cfe328d`)  | ~~ ~~  |
+| ~~2~~ | ~~T14: Tag v0.0.3~~                                                                                            | ~~BLOCKED — release cadence decision (user)~~ done — v0.0.3 tagged 2026-08-08 | ~~ ~~  |
+| ~~3~~ | ~~Nestif refactor of ReadSignals~~                                                                             | ~~complexity addressed~~ done at `5bab343`                                    | ~~ ~~  |
+| ~~4~~ | ~~Coverage badge in README~~ done — README coverage badge + coverage.yml (ed815c7)                             | ~~TODO~~                                                                      | ~~ ~~  |
+| ~~5~~ | ~~pkg.go.dev rendering verification~~ done — verified 2026-09-02 — pkg.go.dev renders v0.3.0 for all 3 modules | ~~TODO~~                                                                      | ~~ ~~  |
 
 ---
 

@@ -50,11 +50,11 @@ Phase gates run before each commit: race ×4, vet, isolation builds ×4, tidy-di
 **T06 closure + gate truth (this session's direct residue):**
 
 1. ★ Extend flake `.#docspec` and the AGENTS docspec command with `./broadcast/...` (one line each) — closes the split brain.
-~~2. ★ Rewrite the contradictory PR-14 CHANGELOG sentence (d2).~~ done at `eb2f83f`
-3. Run the FULL gate at current HEAD (parallel sessions' T07/T08 changed broadcast + root API surface; I have not seen a post-`225b925` full gate: race ×4, lint, erraudit, `nix flake check`).
-4. Verify T07's additive-only claim (G1) mechanically: build the v0.6.1 tag's example against current broadcast API in a scratch module.
-5. Verify `9a3ece8`'s UTF-8 fix against its committed crash seeds; confirm `FuzzErrorResponseFromError` is registered in fuzz.yml's target list (fuzz.yml sweeps "all four" targets — now five).
-6. Check whether AGENTS.md's fuzz section (targets, durations) still matches after the new target.
+   ~~2. ★ Rewrite the contradictory PR-14 CHANGELOG sentence (d2).~~ done at `eb2f83f`
+2. Run the FULL gate at current HEAD (parallel sessions' T07/T08 changed broadcast + root API surface; I have not seen a post-`225b925` full gate: race ×4, lint, erraudit, `nix flake check`).
+3. Verify T07's additive-only claim (G1) mechanically: build the v0.6.1 tag's example against current broadcast API in a scratch module.
+4. Verify `9a3ece8`'s UTF-8 fix against its committed crash seeds; confirm `FuzzErrorResponseFromError` is registered in fuzz.yml's target list (fuzz.yml sweeps "all four" targets — now five).
+5. Check whether AGENTS.md's fuzz section (targets, durations) still matches after the new target.
 
 **Plan remainder (verify-then-finish, since parallel sessions moved the tree):**
 7. ★ T12: AGENTS settle point — prune to ≤15KB or accept the 15–30KB band; update TODO_LIST trigger wording.

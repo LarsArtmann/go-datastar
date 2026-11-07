@@ -71,6 +71,8 @@ Raw ideas:
   ETag helper, example Dockerfile rebuild smoke, release-page title
   convention + CHANGELOG-heading-to-release-page links, release-runbook
   page backfill note
+- Fleet sweep: find the bare-`datastar.js` serving pattern in sibling web
+  repos (emeet-pixyd and friends) and offer the versioned-URL migration
 
 ### 3. CI/CD & Hermeticity
 

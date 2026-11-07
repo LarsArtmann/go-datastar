@@ -100,7 +100,6 @@ structure found. The README correctly documents:
 - Optional sub-modules: `static` and `datastartest` with separate `go get` lines
 - No mention of root depending on datastartest
 - No stale replace directive descriptions
-
 ---
 
 ## B) PARTIALLY DONE
@@ -272,13 +271,13 @@ is clean (3 files modified, no new untracked files except this status report).
 
 13. ~~Add a regression guard test that verifies root's go.mod does NOT contain~~ done (done — module_boundary_test.go (fda70c7) guards root's go.mod in CI)
     ~~datastartest~~
-~~14. Add a programmatic test that verifies the module DAG is acyclic~~ done at `fda70c7`
-15. Run erraudit on the updated codebase
-16. Run govulncheck on all 3 modules
-17. ~~Add test for `TestE2E_DataStarPatches` that exercises `CollectPost` and~~ done (done — TestE2E_CollectPostRoundTrip + TestE2E_CollectNStreaming (datastartest/e2e_test.go))
+    ~~14. Add a programmatic test that verifies the module DAG is acyclic~~ done at `fda70c7`
+14. Run erraudit on the updated codebase
+15. Run govulncheck on all 3 modules
+16. ~~Add test for `TestE2E_DataStarPatches` that exercises `CollectPost` and~~ done (done — TestE2E_CollectPostRoundTrip + TestE2E_CollectNStreaming (datastartest/e2e_test.go))
     ~~`CollectN` paths~~
-18. ~~Consider property-based testing for the SSE parser in datastartest~~ done (done — FuzzReadEvents + WPT/chunk-boundary corpus cover the property space)
-19. ~~Run `go test -bench=. -benchmem` to verify benchmarks still pass~~ done (done — benchmarks run via nix run .#bench; green)
+17. ~~Consider property-based testing for the SSE parser in datastartest~~ done (done — FuzzReadEvents + WPT/chunk-boundary corpus cover the property space)
+18. ~~Run `go test -bench=. -benchmem` to verify benchmarks still pass~~ done (done — benchmarks run via nix run .#bench; green)
 
 ### Code Quality (pre-existing gopls warnings)
 

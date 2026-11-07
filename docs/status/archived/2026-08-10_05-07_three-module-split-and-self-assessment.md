@@ -10,39 +10,56 @@
 ## a) FULLY DONE
 
 ### Three-module workspace — operational and verified
+
 <!-- check-rows:ledger -->
 
 <!-- check-rows:ledger -->
-| Artifact                                 | Status | Notes                                                                                |
-| ---------------------------------------- | ------ | ------------------------------------------------------------------------------------ |
+
+| Artifact | Status | Notes |
+| -------- | ------ | ----- |
+
 <!-- check-rows:ledger -->
-| `datastartest/go.mod`                    | DONE   | Module: `github.com/larsartmann/go-datastar/datastartest`, deps: go-datastar, go-sse |
+
+| `datastartest/go.mod` | DONE | Module: `github.com/larsartmann/go-datastar/datastartest`, deps: go-datastar, go-sse |
+
 <!-- check-rows:ledger -->
-| `datastartest/go.sum`                    | DONE   | 7 lines, includes static module hash                                                 |
-| `static/go.mod`                          | DONE   | Module: `github.com/larsartmann/go-datastar/static`, zero deps                       |
-| `static/go.sum`                          | N/A    | Not generated (zero dependencies)                                                    |
-| Root `go.mod` replace directives         | DONE   | `datastartest => ./datastartest`, `static => ./static`                               |
-| `datastartest/go.mod` replace directives | DONE   | `go-datastar => ..`, `static => ../static`                                           |
-| `go.work`                                | DONE   | Three modules: `.`, `./datastartest`, `./static`                                     |
-| `flake.nix` apps updated                 | DONE   | All 8 apps include `./datastartest/... ./static/...`                                 |
+
+| `datastartest/go.sum` | DONE | 7 lines, includes static module hash |
+| `static/go.mod` | DONE | Module: `github.com/larsartmann/go-datastar/static`, zero deps |
+| `static/go.sum` | N/A | Not generated (zero dependencies) |
+| Root `go.mod` replace directives | DONE | `datastartest => ./datastartest`, `static => ./static` |
+| `datastartest/go.mod` replace directives | DONE | `go-datastar => ..`, `static => ../static` |
+| `go.work` | DONE | Three modules: `.`, `./datastartest`, `./static` |
+| `flake.nix` apps updated | DONE | All 8 apps include `./datastartest/... ./static/...` |
+
 <!-- check-rows:ledger -->
-| `AGENTS.md` updated                      | DONE   | Three-module table with deps column, all commands, file layout                       |
+
+| `AGENTS.md` updated | DONE | Three-module table with deps column, all commands, file layout |
+
 <!-- check-rows:ledger -->
 
 ### Verification — all green
 
 <!-- check-rows:ledger -->
-| Mode                    | Test (-race) | Vet  | Lint            | Nix build     |
-<!-- check-rows:ledger -->
-| ----------------------- | ------------ | ---- | --------------- | ------------- |
-<!-- check-rows:ledger -->
-| Workspace (all 3)       | PASS         | PASS | PASS (0 issues) | PASS (exit 0) |
-<!-- check-rows:ledger -->
-| GOWORK=off root         | PASS         | —    | —               | —             |
-| GOWORK=off datastartest | PASS         | —    | —               | —             |
-| GOWORK=off static       | PASS         | —    | —               | —             |
+
+| Mode | Test (-race) | Vet | Lint | Nix build |
 
 <!-- check-rows:ledger -->
+
+| ----------------------- | ------------ | ---- | --------------- | ------------- |
+
+<!-- check-rows:ledger -->
+
+| Workspace (all 3) | PASS | PASS | PASS (0 issues) | PASS (exit 0) |
+
+<!-- check-rows:ledger -->
+
+| GOWORK=off root | PASS | — | — | — |
+| GOWORK=off datastartest | PASS | — | — | — |
+| GOWORK=off static | PASS | — | — | — |
+
+<!-- check-rows:ledger -->
+
 ### Module dependency graph
 
 ```
@@ -52,6 +69,7 @@ static (zero deps) ← root (go-sse, go-error-family) ← datastartest (go-sse)
                                                           e2e_test.go in root
                                                           (dogfoods datastartest)
 ```
+
 <!-- check-rows:ledger -->
 
 ### Key design decision: datastartest needs replace for static
@@ -61,6 +79,7 @@ When `static` was split, `datastartest/go.sum` went stale because the root modul
 Go only follows replace directives from the **current module's** go.mod, so
 datastartest needed its own `replace go-datastar/static => ../static`. This was
 caught by the `GOWORK=off` isolation test.
+
 <!-- check-rows:ledger -->
 
 ---
@@ -87,6 +106,7 @@ Nothing. Everything started this session was completed.
 3. ~~**`flake.nix` hermeticCheck doesn't build or test `datastartest` or `static`**~~ done (done — flake.nix per-module hermetic checks; nix.yml CI (88c1eed))
    ~~— `subPackages = [ "." ]` only builds the root module. Nix CI passes but~~
    ~~never compiles the other two modules. False green.~~
+
 <!-- check-rows:ledger -->
 
 4. ~~**`CHANGELOG.md` not updated** — No entry for the module split.~~ done (done — CHANGELOG module entries since v0.1.0)

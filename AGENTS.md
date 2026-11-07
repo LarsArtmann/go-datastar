@@ -193,6 +193,10 @@ CHANGELOG.
   `.codespellrc` (skip + `crasher` ignore-list — legit Go fuzzing term), and
   dprint excludes for `.github/DISCUSSION_TEMPLATE/**` (markdown-in-yml
   GitHub templates that dprint's YAML parser rejects).
+- **docs-gates ledger markers must be a pure line.** The
+  `<!-- check-rows:ledger -->` table exemption only works as its own line
+  directly above the table header; gluing it onto other text silently
+  cancels the exemption (found by the 2026-11-07 archive sweep).
 - **buildflow** (repo-external quality pipeline) reads `.buildflow.yml`:
   `skip_steps` documents every tool intentionally skipped (go-structure-linter
   flat-layout false positives, eslint — no first-party JS, go-auto-upgrade's

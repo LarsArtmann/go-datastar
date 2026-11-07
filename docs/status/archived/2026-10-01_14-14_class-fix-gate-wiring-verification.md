@@ -89,9 +89,9 @@
 28. `reports/coverage.out` provenance/staleness check (regenerated today by a parallel actor; committed or stray?).
 29. LSP err113 stale-replay root cause (cosmetic; pinned gate is the truth).
 30. FEATURES.md pipe-alignment normalization (cosmetic).
-~~31. `/tmp/g1check` scratch cleanup (trivial).~~ done — verified: the path is absent (2026-11-07)
-32. `git notes` annotation on `4331796` (mixed-provenance note for future bisects).
-33. Consider a lane-declaration/lock protocol for parallel sessions (owner decision — see g3).
+    ~~31. `/tmp/g1check` scratch cleanup (trivial).~~ done — verified: the path is absent (2026-11-07)
+31. `git notes` annotation on `4331796` (mixed-provenance note for future bisects).
+32. Consider a lane-declaration/lock protocol for parallel sessions (owner decision — see g3).
 
 ## g) Questions I can NOT figure out myself
 

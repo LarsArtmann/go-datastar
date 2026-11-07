@@ -21,7 +21,7 @@ noticed during that run. NOT a whole-repo audit.
 **NOT verified (and why):**
 
 - **Rendered page end-to-end**: never served `example/` and fetched the index HTML to see `<script src="/datastar.js?v=1.0.3">` for real. Risk is low (pure string function, unit-tested) but the delivering layer was exercised only via unit tests, not a browser-facing response.
-- **Why NO vendor hashes moved**: AGENTS.md (verified 2026-10-01 ×2) says ANY root non-test `.go` edit moves `broadcastVendorHash`; my `script_handler.go` + `example/main.go` edits should have moved it. `nix flake check` is green, so *something* absorbed or ended that coupling — but the concurrent session's `b713f67` (01:37) edited `flake.nix` + all four go.mod/go.sum in the same window, so I cannot tell from here whether (a) the 2026-10-11 flake restructure ended the coupling, or (b) the other session's hash-paste absorbed my movement. Green, but **unexplained green**.
+- **Why NO vendor hashes moved**: AGENTS.md (verified 2026-10-01 ×2) says ANY root non-test `.go` edit moves `broadcastVendorHash`; my `script_handler.go` + `example/main.go` edits should have moved it. `nix flake check` is green, so _something_ absorbed or ended that coupling — but the concurrent session's `b713f67` (01:37) edited `flake.nix` + all four go.mod/go.sum in the same window, so I cannot tell from here whether (a) the 2026-10-11 flake restructure ended the coupling, or (b) the other session's hash-paste absorbed my movement. Green, but **unexplained green**.
 - **Master CI status post-push**: the session-start ritual (`gh run list --branch master --limit 5`) was **never run this session** — the probe is missing from the verified column (my process fault, see (d)).
 - **Upstream PR #12 CI/merge state** in emeet-pixyd beyond the initial `gh pr view` snapshot from the analysis turn.
 - **The concurrent session's go-sse v0.7.0 / go-datastar v0.6.3 bump provenance** beyond its diff: looks like release prep (lockstep requires in broadcast), intent unknown (see (g) Q1).
@@ -244,8 +244,8 @@ HARVEST, not as commitments).
     planning home for HARVEST output before item 3 runs (docs/planning/ is
     the docs-map-listed candidate).
 
-*(Items 17–34 are ROADMAP-class brainstorm per the status-report skill —
-route through docs-health HARVEST with extra rigor, not as commitments.)*
+_(Items 17–34 are ROADMAP-class brainstorm per the status-report skill —
+route through docs-health HARVEST with extra rigor, not as commitments.)_
 
 ## g) Questions I cannot figure out myself
 
@@ -266,5 +266,5 @@ route through docs-health HARVEST with extra rigor, not as commitments.)*
 
 ---
 
-*Point-in-time snapshot (excluded from CHANGELOG by policy). Section (f) is
-the primary input for docs-health HARVEST.*
+_Point-in-time snapshot (excluded from CHANGELOG by policy). Section (f) is
+the primary input for docs-health HARVEST._

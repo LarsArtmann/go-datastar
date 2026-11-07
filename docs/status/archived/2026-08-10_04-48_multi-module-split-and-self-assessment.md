@@ -10,47 +10,62 @@
 ## a) FULLY DONE
 
 ### Q1: `datastartest` split into its own Go module
+
 <!-- check-rows:ledger -->
 
 Executed end-to-end with verification across all build modes.
 
 <!-- check-rows:ledger -->
-| Step                                 | Status | Verification                                                                            |
+
+| Step | Status | Verification |
+
 <!-- check-rows:ledger -->
+
 | ------------------------------------ | ------ | --------------------------------------------------------------------------------------- |
-| `datastartest/go.mod` created        | DONE   | `go mod tidy` resolved deps: go-sse direct, go-error-family + go-branded-id indirect    |
-| `datastartest/go.sum` created        | DONE   | 6 lines, 3 module hashes                                                                |
-| Mutual replace directives            | DONE   | Root go.mod: `datastartest => ./datastartest`; datastartest go.mod: `go-datastar => ..` |
-| `go.work` created                    | DONE   | `go 1.26.5` with `use ( . ./datastartest )`                                             |
-| Workspace test (both modules, -race) | PASS   | 4 packages, 0 failures                                                                  |
-| GOWORK=off root test (-race)         | PASS   | e2e_test.go resolves datastartest via replace directive                                 |
+| `datastartest/go.mod` created | DONE | `go mod tidy` resolved deps: go-sse direct, go-error-family + go-branded-id indirect |
+| `datastartest/go.sum` created | DONE | 6 lines, 3 module hashes |
+| Mutual replace directives | DONE | Root go.mod: `datastartest => ./datastartest`; datastartest go.mod: `go-datastar => ..` |
+| `go.work` created | DONE | `go 1.26.5` with `use ( . ./datastartest )` |
+| Workspace test (both modules, -race) | PASS | 4 packages, 0 failures |
+| GOWORK=off root test (-race) | PASS | e2e_test.go resolves datastartest via replace directive |
+
 <!-- check-rows:ledger -->
-| GOWORK=off datastartest test (-race) | PASS   | Resolves go-datastar via replace directive                                              |
+
+| GOWORK=off datastartest test (-race) | PASS | Resolves go-datastar via replace directive |
+
 <!-- check-rows:ledger -->
-| Workspace vet                        | PASS   | 0 issues                                                                                |
-| Workspace lint                       | PASS   | 0 issues                                                                                |
-| Nix hermeticCheck build              | PASS   | `nix build .#checks.x86_64-linux.build` exit 0                                          |
-| `flake.nix` updated                  | DONE   | Removed `GOWORK=off` from devShell; all 8 apps now include `./datastartest/...`         |
+
+| Workspace vet | PASS | 0 issues |
+| Workspace lint | PASS | 0 issues |
+| Nix hermeticCheck build | PASS | `nix build .#checks.x86_64-linux.build` exit 0 |
+| `flake.nix` updated | DONE | Removed `GOWORK=off` from devShell; all 8 apps now include `./datastartest/...` |
+
 <!-- check-rows:ledger -->
-| `AGENTS.md` updated                  | DONE   | Module Structure section, dual-mode Commands section, file layout table                 |
+
+| `AGENTS.md` updated | DONE | Module Structure section, dual-mode Commands section, file layout table |
+
 <!-- check-rows:ledger -->
 
 <!-- check-rows:ledger -->
+
 **What the split achieves:** Consumers can now `go get github.com/larsartmann/go-datastar/datastartest` as an independently versioned module, without pulling the protocol library's test infrastructure into their dependency tree.
 
 ### Q2 and Q3: Presented with code examples and PRO/CON analysis
 
 <!-- check-rows:ledger -->
+
 Both questions answered with concrete examples — awaiting user decisions.
 
 ---
 
 <!-- check-rows:ledger -->
+
 ## b) PARTIALLY DONE
 
 Nothing. Everything I started this session was completed.
 
 <!-- check-rows:ledger -->
+
 ---
 
 ## c) NOT STARTED (things I should have done but didn't)
@@ -60,6 +75,7 @@ These are gaps I identified during the self-assessment:
 1. ~~**`.gitignore` still ignores `go.work` and `go.work.sum`** — This is the single biggest oversight. `go.work` is essential for the dev workflow (workspace mode is the default now that `GOWORK=off` was removed from the devShell). A fresh clone will not have `go.work`, so `go test ./...` from root won't find `datastartest`. The replace directives keep `GOWORK=off` builds working, but the workspace dev experience is broken on fresh clone.~~ done (done — go.work committed and tracked (three-module workspace))
 
 <!-- check-rows:ledger -->
+
 2. ~~**`dependabot.yml` not updated** — Only monitors `/` (root go.mod). Needs a second entry for `directory: /datastartest` to get dependency update PRs for the new module.~~ done (done — .github/dependabot.yml covers datastartest + static)
 
 3. ~~**`flake.nix` hermeticCheck doesn't build or test `datastartest`** — `subPackages = [ "." ]` only builds the root module. The Nix CI passes but never compiles or tests `datastartest/`. This is a false-green: CI looks healthy but doesn't cover the new module.~~ done (done — flake.nix hermetic checks per module; nix.yml runs nix flake check (88c1eed))
@@ -85,7 +101,9 @@ This is not just "not started" — it's a design error I introduced. Here's the 
 3. But `go.work` is in `.gitignore`, so it will never be committed
 4. A fresh clone has no `go.work` — the default `go test ./...` won't find `datastartest`
 5. The flake devShell no longer sets `GOWORK=off`, so it silently falls back to no-workspace mode
+
 <!-- check-rows:ledger -->
+
 6. Result: **the documented default commands don't work on fresh clone**
 
 The fix is either:
