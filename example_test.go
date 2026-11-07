@@ -36,6 +36,19 @@ func ExampleSignalsPatch() {
 	// signals {"count":1}
 }
 
+// ExampleScriptTagVersioned renders the cache-busting script tag: the pinned
+// client version rides the URL as a query parameter, so a browser cache cannot
+// serve a stale client after an upgrade. An existing v value is replaced with
+// the pinned version, making the transform idempotent.
+func ExampleScriptTagVersioned() {
+	fmt.Println(datastar.ScriptTagVersioned("/datastar.js"))
+	fmt.Println(datastar.ScriptTagVersioned("/datastar.js?v=0.9.0"))
+
+	// Output:
+	// <script type="module" src="/datastar.js?v=1.0.3"></script>
+	// <script type="module" src="/datastar.js?v=1.0.3"></script>
+}
+
 // ExampleNewReplaceURLQuerystringPatch replaces the browser URL's query
 // string while preserving the request path (upstream-parity convenience).
 func ExampleNewReplaceURLQuerystringPatch() {
