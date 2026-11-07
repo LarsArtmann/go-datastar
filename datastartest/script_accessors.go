@@ -79,9 +79,9 @@ func (e Event) UnmarshalCustomEventDetail(target any) error {
 
 // scriptTagParts splits the event's script element into its open-tag
 // attribute region (between "<script" and the closing '>') and its inner
-// content (after the '>'). ok is false when the event carries no script
-// element or the open tag never closes.
-func (e Event) scriptTagParts() (attrs, content string, ok bool) {
+// content (after the '>'). The boolean is false when the event carries no
+// script element or the open tag never closes.
+func (e Event) scriptTagParts() (string, string, bool) {
 	afterTag, hasTag := strings.CutPrefix(e.Elements(), "<script")
 	if !hasTag {
 		return "", "", false
