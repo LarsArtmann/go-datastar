@@ -80,11 +80,11 @@ Tried adding `mdformat` to treefmt. It reformatted status reports and other docs
 
 | #     | Task                                                                                                           | Why                                                                           | Status |
 | ----- | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------ |
-| 1     | T12: GitHub repo polish (topics, wiki)                                                                         | ~~BLOCKED — requires `gh` CLI access~~ done in the 09-36 session (`cfe328d`)  |        |
-| 2     | T14: Tag v0.0.3                                                                                                | ~~BLOCKED — release cadence decision (user)~~ done — v0.0.3 tagged 2026-08-08 |        |
-| 3     | Nestif refactor of ReadSignals                                                                                 | done at `5bab343`                                                             |        |
-| ~~4~~ | ~~Coverage badge in README~~ done — README coverage badge + coverage.yml (ed815c7)                             | ~~TODO~~                                                                      | ~~~~   |
-| ~~5~~ | ~~pkg.go.dev rendering verification~~ done — verified 2026-09-02 — pkg.go.dev renders v0.3.0 for all 3 modules | ~~TODO~~                                                                      | ~~~~   |
+| ~~1~~ | ~~T12: GitHub repo polish (topics, wiki)~~ | ~~BLOCKED — requires `gh` CLI access~~ done in the 09-36 session (`cfe328d`) | ~~ ~~ |
+| ~~2~~ | ~~T14: Tag v0.0.3~~ | ~~BLOCKED — release cadence decision (user)~~ done — v0.0.3 tagged 2026-08-08 | ~~ ~~ |
+| ~~3~~ | ~~Nestif refactor of ReadSignals~~ | done at `5bab343` | ~~ ~~ |
+| ~~4~~ | ~~Coverage badge in README~~ done — README coverage badge + coverage.yml (ed815c7)                             | ~~TODO~~                                                                      | ~~ ~~ |
+| ~~5~~ | ~~pkg.go.dev rendering verification~~ done — verified 2026-09-02 — pkg.go.dev renders v0.3.0 for all 3 modules | ~~TODO~~                                                                      | ~~ ~~ |
 
 ---
 
@@ -144,23 +144,23 @@ Commits `de6abaf`, `eb8bf29`, and `17325c2` have empty commit messages (just whi
 
 ### Error system hardening
 
-5. Add `errorfamilytest.AssertHTTPStatus` assertions for each error code in `errors_test.go`.
-6. Add `Retry` helper or example showing backoff for `Transient` (`CodeBodyReadFailed`) errors.
-7. Consider exporting codes as a typed string (`type Code string`) for compile-time safety.
-8. Add a `Code(err) Code` accessor returning the typed code.
-9. Snapshot-test error messages for stable wire output across versions.
+5. ~~Add `errorfamilytest.AssertHTTPStatus` assertions for each error code in `errors_test.go`.~~ done — errorfamilytest.AssertHTTPStatus exists in go-error-family v0.10.0
+6. ~~Add `Retry` helper or example showing backoff for `Transient` (`CodeBodyReadFailed`) errors.~~ done — ROADMAP.md carries Retry ergonomics (retry Transient with backoff)
+7. ~~Consider exporting codes as a typed string (`type Code string`) for compile-time safety.~~ **Superseded — the typed-code accessor exists as errorfamily.Code(err) (errors.go:15); a typed Code type is the error-family library decision, not this protocol layer.**
+8. ~~Add a `Code(err) Code` accessor returning the typed code.~~ **Superseded — superseded by errorfamily.Code(err) (errors.go:15).**
+9. ~~Snapshot-test error messages for stable wire output across versions.~~ done — ROADMAP.md carries the snapshot-testing idea for stable wire output
 
 ### Testing gaps
 
 10. ~~Run `FuzzMarshalSignalsRoundtrip` for 60+ seconds and verify 0 panics.~~ done (done — FuzzMarshalSignalsRoundtrip runs daily (fuzz.yml, 1a72616))
-11. Add fuzz test for `NewDispatchCustomEventPatch` with unmarshallable detail values.
-12. Add test that `MarshalSignals` error message includes the Go type name.
+11. ~~Add fuzz test for `NewDispatchCustomEventPatch` with unmarshallable detail values.~~ **Won't implement — never adopted; the fuzz suite was deliberately scoped (CONTRIBUTING.md Fuzzing section, six targets) and the constructor nil/error paths are covered by table tests.**
+12. ~~Add test that `MarshalSignals` error message includes the Go type name.~~ done — the error names the Go type: marshal signals value of type %T (signals.go:89)
 13. ~~Add test for `ErrorResponseFromError` with nil error (edge case).~~ done at `72aed78`
-14. Add test for `DispatchCustomEventPatch.Event()` when `detailJSON` is nil (detail is nil at construction).
+14. ~~Add test for `DispatchCustomEventPatch.Event()` when `detailJSON` is nil (detail is nil at construction).~~ done — nil-detail construction is exercised in coverage_test.go (NewDispatchCustomEventPatch with nil detail)
 
 ### CI / tooling
 
-15. Add `erraudit --format sarif` output for GitHub code scanning.
+15. ~~Add `erraudit --format sarif` output for GitHub code scanning.~~ done — ROADMAP.md carries the erraudit SARIF output idea
 16. ~~Pin `erraudit` version in CI to a specific tag (currently v0.3.0, but unpinned in the `go install` command — actually it IS pinned, verify).~~ done — verified pinned `@v0.3.0` (`ci.yml:91`)
 17. ~~Add `erraudit` to nix `checks` (not just `apps`) — hermetic check in `nix flake check`.~~ **Won't implement — ADR 004 verdict — lint is not sandboxable while erraudit/go-finding repos are private; stays a flake app + CI job.**
 18. ~~Add govulncheck to nix `checks`.~~ **Won't implement — ADR 004 verdict — same hermeticity line as checks.lint.**
@@ -171,7 +171,7 @@ Commits `de6abaf`, `eb8bf29`, and `17325c2` have empty commit messages (just whi
 
 21. ~~Add `docs/error-system.md` deep-dive with full contract + decision rationale.~~ done (done — docs/error-system.md + docs/adr/003-error-classification.md)
 22. ~~Document why `--enforce-samber-oops` must NOT be used with this library in CI config comments.~~ done — documented in `AGENTS.md` (Error System)
-23. Update CONTRIBUTING.md to mention erraudit and govulncheck commands.
+23. ~~Update CONTRIBUTING.md to mention erraudit and govulncheck commands.~~ done — govulncheck documented (CONTRIBUTING.md:25); erraudit intentionally lives in AGENTS.md (private-repo probe gate)
 24. ~~Add architecture diagram (D2 or mermaid) showing go-sse → go-datastar → consumer.~~ done at `7932f74`
 25. ~~Write migration guide from `starfederation/datastar-go` to go-datastar.~~ done at `ac1de23`
 
