@@ -29,14 +29,9 @@ func (e Event) RedirectURL() string {
 // CustomEventName extracts the event name from a custom-event dispatch
 // script patch (`new CustomEvent(%q, ...)`). Returns empty if not found.
 func (e Event) CustomEventName() string {
-	script := e.ScriptContent()
+	const marker = "new CustomEvent("
 
-	_, name, found := strings.Cut(script, "new CustomEvent(")
-	if !found {
-		return ""
-	}
-
-	return unquotePrefix(name)
+	return quotedSuffix(e.ScriptContent(), marker)
 }
 
 // CustomEventDetail returns the raw JSON detail expression from a
@@ -82,23 +77,34 @@ func (e Event) UnmarshalCustomEventDetail(target any) error {
 	return nil
 }
 
-// ScriptAttributes returns the attributes on the injected `<script>` tag
-// (e.g. `type="speculationrules"`, `data-effect="el.remove()"`). Values keep
-// their quotes. Returns nil for non-script events.
-func (e Event) ScriptAttributes() []string {
-	el := e.Elements()
-
-	afterTag, ok := strings.CutPrefix(el, "<script")
-	if !ok {
-		return nil
+// scriptTagParts splits the event's script element into its open-tag
+// attribute region (between "<script" and the closing '>') and its inner
+// content (after the '>'). ok is false when the event carries no script
+// element or the open tag never closes.
+func (e Event) scriptTagParts() (attrs, content string, ok bool) {
+	afterTag, hasTag := strings.CutPrefix(e.Elements(), "<script")
+	if !hasTag {
+		return "", "", false
 	}
 
 	idx := indexTagEnd(afterTag)
 	if idx < 0 {
+		return "", "", false
+	}
+
+	return afterTag[:idx], afterTag[idx+1:], true
+}
+
+// ScriptAttributes returns the attributes on the injected `<script>` tag
+// (e.g. `type="speculationrules"`, `data-effect="el.remove()"`). Values keep
+// their quotes. Returns nil for non-script events.
+func (e Event) ScriptAttributes() []string {
+	attrs, _, ok := e.scriptTagParts()
+	if !ok {
 		return nil
 	}
 
-	return strings.Fields(afterTag[:idx])
+	return strings.Fields(attrs)
 }
 
 // quotedSuffix finds marker in s and unquotes the double-quoted string that

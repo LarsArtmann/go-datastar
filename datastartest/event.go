@@ -127,21 +127,12 @@ func (e Event) OnlyIfMissing() bool {
 //
 // Returns empty string if the event is not a script-bearing elements patch.
 func (e Event) ScriptContent() string {
-	el := e.Elements()
-
-	afterTag, ok := strings.CutPrefix(el, "<script")
+	_, content, ok := e.scriptTagParts()
 	if !ok {
 		return ""
 	}
 
-	idx := indexTagEnd(afterTag)
-	if idx < 0 {
-		return ""
-	}
-
-	content := afterTag[idx+1:]
-
-	if inner, ok := strings.CutSuffix(content, "</script>"); ok {
+	if inner, found := strings.CutSuffix(content, "</script>"); found {
 		return inner
 	}
 

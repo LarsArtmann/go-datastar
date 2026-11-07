@@ -110,7 +110,7 @@ func NewDispatchCustomEventPatch(
 			WithContext("eventName", eventName)
 	}
 
-	patch := DispatchCustomEventPatch{
+	patch := applyOptions(DispatchCustomEventPatch{
 		EventName:  eventName,
 		Detail:     detail,
 		detailJSON: detailJSON,
@@ -118,10 +118,7 @@ func NewDispatchCustomEventPatch(
 		Bubbles:    true,
 		Cancelable: true,
 		Composed:   true,
-	}
-	for _, opt := range opts {
-		opt(&patch)
-	}
+	}, opts)
 
 	return patch, nil
 }

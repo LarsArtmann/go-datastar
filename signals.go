@@ -64,13 +64,10 @@ func NewSignalsPatch(v any, opts ...SignalsPatchOption) (SignalsPatch, error) {
 		return SignalsPatch{}, err
 	}
 
-	patch := SignalsPatch{
+	patch := applyOptions(SignalsPatch{
 		Signals:       b,
 		RetryDuration: DefaultRetryDuration,
-	}
-	for _, opt := range opts {
-		opt(&patch)
-	}
+	}, opts)
 
 	return patch, nil
 }

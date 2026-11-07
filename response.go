@@ -66,13 +66,10 @@ func (r *Response) PatchElementsTempl(c TemplComponent, opts ...ElementPatchOpti
 
 // PatchSignals sends a [SignalsPatch] with the given pre-encoded JSON.
 func (r *Response) PatchSignals(signalsJSON []byte, opts ...SignalsPatchOption) error {
-	patch := SignalsPatch{
+	patch := applyOptions(SignalsPatch{
 		Signals:       signalsJSON,
 		RetryDuration: DefaultRetryDuration,
-	}
-	for _, opt := range opts {
-		opt(&patch)
-	}
+	}, opts)
 
 	return wrapStreamError(r.stream.Send(patch.Event()))
 }

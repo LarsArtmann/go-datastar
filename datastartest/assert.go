@@ -85,14 +85,22 @@ func RequireElementsContains(
 func RequireSignals(tb testing.TB, evt Event, wantJSON string) {
 	tb.Helper()
 
-	if evt.Type != string(datastar.EventTypePatchSignals) {
-		tb.Fatalf("expected patch-signals event, got %q", evt.Type)
-
-		return
-	}
+	requireSignalsEvent(tb, evt)
 
 	if got := string(evt.SignalsJSON()); got != wantJSON {
 		tb.Errorf("signals JSON: got %q, want %q", got, wantJSON)
+	}
+}
+
+// requireSignalsEvent fails the test unless evt is a patch-signals event,
+// mirroring [requireElementsPatch] for the signals family.
+func requireSignalsEvent(tb testing.TB, evt Event) {
+	tb.Helper()
+
+	if !evt.IsSignals() {
+		tb.Fatalf("expected patch-signals event, got %q", evt.Type)
+
+		return
 	}
 }
 
@@ -102,11 +110,7 @@ func RequireSignals(tb testing.TB, evt Event, wantJSON string) {
 func RequireSignalsContain(tb testing.TB, evt Event, key string) {
 	tb.Helper()
 
-	if evt.Type != string(datastar.EventTypePatchSignals) {
-		tb.Fatalf("expected patch-signals event, got %q", evt.Type)
-
-		return
-	}
+	requireSignalsEvent(tb, evt)
 
 	jsonStr := string(evt.SignalsJSON())
 	needle := `"` + key + `":`

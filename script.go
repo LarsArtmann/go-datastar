@@ -87,15 +87,10 @@ func WithScriptRetryDuration(d time.Duration) ScriptPatchOption {
 // NewScriptPatch creates a [ScriptPatch] with the given JavaScript source and
 // options. The default retry duration is [DefaultRetryDuration].
 func NewScriptPatch(script string, opts ...ScriptPatchOption) ScriptPatch {
-	patch := ScriptPatch{
+	return applyOptions(ScriptPatch{
 		Script:        script,
 		RetryDuration: DefaultRetryDuration,
-	}
-	for _, opt := range opts {
-		opt(&patch)
-	}
-
-	return patch
+	}, opts)
 }
 
 // Event returns the [sse.Event] for this script patch. The script is wrapped in
