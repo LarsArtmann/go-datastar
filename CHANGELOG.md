@@ -19,6 +19,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `datastar.MemoryStore` deliberately passes only the ordering assertion —
   its contract is caller-assigned IDs.
 
+### Dependencies
+
+- go-sse v0.6.2 → v0.7.0 in the root and broadcast modules (routine
+  all-latest sweep, `ba90d86`); datastartest still requires v0.6.2 —
+  workspace builds resolve up via MVS, and its published pin moves at the
+  next lockstep require bump. Release history now records the transport
+  pin set this train ships (`go-sse v0.7.0`, `go-sse/ssetest v0.5.0`,
+  `go-error-family v0.12.0`, sibling pins `go-datastar v0.6.3`,
+  `go-datastar/static v0.6.1`), enforced by the CHANGELOG-pin contract
+  test: a version bump can never land invisibly.
+
 ## [0.6.3] - 2026-11-04
 
 > **Root-only cut (release-shape defect, recorded as shipped).** The `v0.6.3`
