@@ -3,8 +3,8 @@
 #
 # docker build -f example/Dockerfile -t go-datastar-example .
 # docker compose -f example/docker-compose.yml up
-FROM golang:1.26.7-alpine AS build
-ENV GOEXPERIMENT=jsonv2 GOWORK=off
+FROM golang:1.27-alpine AS build
+ENV GOWORK=off
 WORKDIR /src
 COPY go.mod go.sum ./
 COPY static/go.mod ./static/

@@ -45,8 +45,8 @@ func ExampleScriptTagVersioned() {
 	fmt.Println(datastar.ScriptTagVersioned("/datastar.js?v=0.9.0"))
 
 	// Output:
-	// <script type="module" src="/datastar.js?v=1.0.3"></script>
-	// <script type="module" src="/datastar.js?v=1.0.3"></script>
+	// <script type="module" src="/datastar.js?v=1.0.4"></script>
+	// <script type="module" src="/datastar.js?v=1.0.4"></script>
 }
 
 // ExampleNewReplaceURLQuerystringPatch replaces the browser URL's query

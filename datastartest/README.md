@@ -96,6 +96,21 @@ datastartest.RequireElementsOrdered(t, events,
 All helpers accept [`testing.TB`](https://pkg.go.dev/testing#TB), so they work
 with `*testing.T`, `*testing.B`, and Ginkgo's `GinkgoT()`.
 
+## Versioned-cache assertions
+
+Two helpers pin the client-serving contract from [docs/static-js.md](../docs/static-js.md):
+
+```go
+// A rendered page must embed the script tag exactly as
+// datastar.ScriptTagVersioned renders it — the pinned client version in the
+// src query. A bare or stale-versioned src fails here.
+datastartest.RequireScriptTagVersion(t, renderedHTML, "/datastar.js")
+
+// A serving setup must carry the ETag the script handlers compute for the
+// exact bundle bytes, so conditional requests stay coherent.
+datastartest.RequireETagForBundle(t, rec.Header().Get("ETag"), bundle)
+```
+
 ## Finding events without index math
 
 ```go

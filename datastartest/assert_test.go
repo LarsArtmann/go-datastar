@@ -349,3 +349,34 @@ func TestRequireScriptTagVersion(t *testing.T) {
 		}
 	})
 }
+
+// TestRequireETagForBundle proves the caching-identity assertion: the exact
+// handler digest passes, any other value fails.
+func TestRequireETagForBundle(t *testing.T) {
+	t.Parallel()
+
+	bundle := []byte("// Datastar test bundle\nconsole.log('ok');\n")
+	want := datastar.ETagFor(bundle)
+
+	t.Run("matching ETag passes", func(t *testing.T) {
+		t.Parallel()
+
+		tb := &recordingTB{name: t.Name()}
+		datastartest.RequireETagForBundle(tb, want, bundle)
+
+		if len(tb.fatals) != 0 {
+			t.Errorf("expected pass for matching ETag; got %v", tb.fatals)
+		}
+	})
+
+	t.Run("mismatched ETag fails", func(t *testing.T) {
+		t.Parallel()
+
+		tb := &recordingTB{name: t.Name()}
+		datastartest.RequireETagForBundle(tb, `"deadbeef"`, bundle)
+
+		if len(tb.fatals) != 1 {
+			t.Errorf("expected fatal for mismatched ETag; got %v", tb.fatals)
+		}
+	})
+}

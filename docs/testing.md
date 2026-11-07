@@ -67,6 +67,15 @@ datastartest.RequireScript(t, evt, `console.log("hi")`)
 if got := evt.RedirectURL(); got != "/next" { ... }
 ```
 
+Assert the client-serving contract from [static-js.md](static-js.md): a
+rendered page must embed the versioned script tag, and a serving setup must
+carry the ETag the handlers compute for their bundle:
+
+```go
+datastartest.RequireScriptTagVersion(t, renderedHTML, "/datastar.js")
+datastartest.RequireETagForBundle(t, rec.Header().Get("ETag"), bundle)
+```
+
 Full API tour: [datastartest/README.md](../datastartest/README.md).
 
 ## Fuzzing
