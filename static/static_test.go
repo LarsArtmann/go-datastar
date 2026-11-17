@@ -68,3 +68,32 @@ func TestBytes_NoBOM(t *testing.T) {
 		t.Fatal("embedded bundle starts with a UTF-8 BOM — strip it from static/datastar.js")
 	}
 }
+
+// TestVersionConstants pins the named-version contract: the current
+// Version1_0_X constant always equals the pinned [static.Version] (a bump
+// that forgets to move the constant fails here), every defined constant is
+// valid per VersionIsValid, and unknown values are rejected.
+func TestVersionConstants(t *testing.T) {
+	t.Parallel()
+
+	if static.Version1_0_4 != static.Version {
+		t.Errorf("Version1_0_4 = %q, want the pinned Version %q", static.Version1_0_4, static.Version)
+	}
+
+	for _, tc := range []struct{ name, value string }{
+		{"Version1_0_4", static.Version1_0_4},
+		{"Version1_0_3", static.Version1_0_3},
+		{"Version1_0_2", static.Version1_0_2},
+	} {
+		if !static.VersionIsValid(tc.value) {
+			t.Errorf("VersionIsValid(%s = %q) = false, want true", tc.name, tc.value)
+		}
+		if !strings.Contains(tc.value, ".") {
+			t.Errorf("%s = %q does not look like semver", tc.name, tc.value)
+		}
+	}
+
+	if static.VersionIsValid("0.0.0") {
+		t.Error(`VersionIsValid("0.0.0") = true, want false`)
+	}
+}
