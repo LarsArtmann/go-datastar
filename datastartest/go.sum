@@ -8,5 +8,5 @@ github.com/larsartmann/go-sse/sseparse v0.2.1 h1:GHn8SFFZkMJRhLkmusJwtchgSPJV0/b
 github.com/larsartmann/go-sse/sseparse v0.2.1/go.mod h1:1Nql3y1hf9v/IVd4/26AfRilz0/OiDyF7YA2mvwwtHw=
 github.com/larsartmann/go-sse/ssetest v0.5.0 h1:6QQ9rURjqScKfkV8BmpNdoMSW5pxsNVs+ioLOqERS4k=
 github.com/larsartmann/go-sse/ssetest v0.5.0/go.mod h1:mTBSF8nBmmw3Eb7DOKWqgmp0B1unUOFcjt6WGdUJT0o=
-golang.org/x/mod v0.42.0 h1:ICeL3t2L30ljSPHHxDnR4fqVcBt/zR2zJAb9juavmQg=
-golang.org/x/mod v0.42.0/go.mod h1:u5fzIrRInkL8MaO1cbRkUHT64v303YIT5KEqpNr7jRs=
+golang.org/x/mod v0.43.0 h1:MFuq5J6s35W9D3IjkwyWc9vHh0nENOrt5K8Iof4ofmg=
+golang.org/x/mod v0.43.0/go.mod h1:4ec1JnuyBz5+FIVhg86UsA39YG8BpnrZdJYSNHmGzHY=
