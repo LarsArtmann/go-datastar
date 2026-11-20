@@ -88,6 +88,7 @@ func TestVersionConstants(t *testing.T) {
 		if !static.VersionIsValid(tc.value) {
 			t.Errorf("VersionIsValid(%s = %q) = false, want true", tc.name, tc.value)
 		}
+
 		if !strings.Contains(tc.value, ".") {
 			t.Errorf("%s = %q does not look like semver", tc.name, tc.value)
 		}

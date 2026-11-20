@@ -9,7 +9,7 @@ require (
 
 require (
 	github.com/larsartmann/go-branded-id v0.7.1 // indirect
-	github.com/larsartmann/go-datastar/static v0.7.0 // indirect
+	github.com/larsartmann/go-datastar/static v0.8.0 // indirect
 	github.com/larsartmann/go-error-family v0.12.0 // indirect
 )
 
