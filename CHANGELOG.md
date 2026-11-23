@@ -20,7 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Nothing yet.
+- static: module pin moved to `go-datastar/static v0.8.0` (the bump had landed
+  in `go.mod` without a changelog line; recorded for release history).
+- Nothing else yet.
 
 ## [0.7.0] - 2026-11-07
 
