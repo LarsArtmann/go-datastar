@@ -36,23 +36,26 @@ func TestConcurrentFanOut(t *testing.T) {
 	var (
 		eventsA, eventsB []string
 		errA, errB       error
-		wg               sync.WaitGroup
+		waitGroup        sync.WaitGroup
 	)
 
-	wg.Add(2)
+	waitGroup.Add(2)
 
 	go func() {
-		defer wg.Done()
+		defer waitGroup.Done()
+
 		eventsA, errA = collectSSEEvents(httpServer.URL+"/events", collectDuration)
 	}()
 
 	go func() {
-		defer wg.Done()
+		defer waitGroup.Done()
+
 		time.Sleep(100 * time.Millisecond) // slight offset so both overlap
+
 		eventsB, errB = collectSSEEvents(httpServer.URL+"/events", collectDuration)
 	}()
 
-	wg.Wait()
+	waitGroup.Wait()
 
 	if errA != nil {
 		t.Fatalf("client A error: %v", errA)

@@ -178,7 +178,7 @@ func feedItemEvent(id sse.EventID, item activityItem) sse.Event {
 func countEvent(count int) (sse.Event, error) {
 	patch, err := datastar.NewSignalsPatch(map[string]any{"subscriberCount": count})
 	if err != nil {
-		return sse.Event{}, fmt.Errorf("marshal subscriberCount signal: %w", err)
+		return sse.Event{}, err // already classified by go-datastar (Rejection)
 	}
 
 	return patch.Event(), nil
@@ -189,7 +189,7 @@ func countEvent(count int) (sse.Event, error) {
 func replayEvent(n int) (sse.Event, error) {
 	patch, err := datastar.NewSignalsPatch(map[string]any{"replayed": n})
 	if err != nil {
-		return sse.Event{}, fmt.Errorf("marshal replayed signal: %w", err)
+		return sse.Event{}, err // already classified by go-datastar (Rejection)
 	}
 
 	return patch.Event(), nil
@@ -200,7 +200,7 @@ func replayEvent(n int) (sse.Event, error) {
 func totalEventSignal(n int64) (sse.Event, error) {
 	patch, err := datastar.NewSignalsPatch(map[string]any{"totalEvents": n})
 	if err != nil {
-		return sse.Event{}, fmt.Errorf("marshal totalEvents signal: %w", err)
+		return sse.Event{}, err // already classified by go-datastar (Rejection)
 	}
 
 	return patch.Event(), nil

@@ -109,12 +109,14 @@ func TestMemStore_RingBufferEviction(t *testing.T) {
 
 	firstID := events[0].ID.Get()
 	expectedFirst := "11"
+
 	if firstID != expectedFirst {
 		t.Errorf("expected first event ID %s after eviction, got %s", expectedFirst, firstID)
 	}
 
 	lastID := events[len(events)-1].ID.Get()
 	expectedLast := "15"
+
 	if lastID != expectedLast {
 		t.Errorf("expected last event ID %s after eviction, got %s", expectedLast, lastID)
 	}

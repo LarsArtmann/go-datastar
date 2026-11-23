@@ -67,6 +67,7 @@ func scanSSEFrames(resp *http.Response, duration time.Duration) ([]string, error
 		for scanner.Scan() {
 			lineCh <- scanLine{text: scanner.Text(), ok: true}
 		}
+
 		lineCh <- scanLine{ok: false}
 	}()
 
@@ -86,6 +87,7 @@ func scanSSEFrames(resp *http.Response, duration time.Duration) ([]string, error
 			if !line.ok {
 				return finishScan(events, &current, scanner)
 			}
+
 			if line.text == "" {
 				events = flushFrame(events, &current)
 			} else {
@@ -177,9 +179,9 @@ func connectSSEClient(t *testing.T, url string) context.CancelFunc {
 
 	req.Header.Set("Accept", "text/event-stream")
 
-	var wg sync.WaitGroup
+	var waitGroup sync.WaitGroup
 
-	wg.Go(func() {
+	waitGroup.Go(func() {
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			return
@@ -192,6 +194,6 @@ func connectSSEClient(t *testing.T, url string) context.CancelFunc {
 
 	return func() {
 		cancel()
-		wg.Wait()
+		waitGroup.Wait()
 	}
 }
