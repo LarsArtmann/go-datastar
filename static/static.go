@@ -22,7 +22,7 @@ const Version = "1.0.4"
 
 // Named version constants for every DataStar runtime release this module has
 // shipped, so consumers reference compile-time names instead of each
-// re-declaring their own per-version constant lists (the templ-components
+// redeclaring their own per-version constant lists (the templ-components
 // datastar package maintained such a local copy until 2026-11-17 — this is
 // the single source of truth now).
 //

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	datastar "github.com/larsartmann/go-datastar"
+	errorfamily "github.com/larsartmann/go-error-family"
 	"github.com/larsartmann/go-sse"
 )
 
@@ -178,7 +179,8 @@ func feedItemEvent(id sse.EventID, item activityItem) sse.Event {
 func countEvent(count int) (sse.Event, error) {
 	patch, err := datastar.NewSignalsPatch(map[string]any{"subscriberCount": count})
 	if err != nil {
-		return sse.Event{}, err // already classified by go-datastar (Rejection)
+		return sse.Event{}, errorfamily.Wrapf(err, errorfamily.Rejection,
+			datastar.CodeSignalsMarshalFailed, "marshal subscriberCount signal")
 	}
 
 	return patch.Event(), nil
@@ -189,7 +191,8 @@ func countEvent(count int) (sse.Event, error) {
 func replayEvent(n int) (sse.Event, error) {
 	patch, err := datastar.NewSignalsPatch(map[string]any{"replayed": n})
 	if err != nil {
-		return sse.Event{}, err // already classified by go-datastar (Rejection)
+		return sse.Event{}, errorfamily.Wrapf(err, errorfamily.Rejection,
+			datastar.CodeSignalsMarshalFailed, "marshal replayed signal")
 	}
 
 	return patch.Event(), nil
@@ -200,7 +203,8 @@ func replayEvent(n int) (sse.Event, error) {
 func totalEventSignal(n int64) (sse.Event, error) {
 	patch, err := datastar.NewSignalsPatch(map[string]any{"totalEvents": n})
 	if err != nil {
-		return sse.Event{}, err // already classified by go-datastar (Rejection)
+		return sse.Event{}, errorfamily.Wrapf(err, errorfamily.Rejection,
+			datastar.CodeSignalsMarshalFailed, "marshal totalEvents signal")
 	}
 
 	return patch.Event(), nil

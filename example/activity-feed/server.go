@@ -133,6 +133,7 @@ func (s *activityServer) replayMissedEvents(stream *sse.Stream) bool {
 
 		return true
 	}
+
 	if err := stream.Send(evt); err != nil {
 		return false
 	}

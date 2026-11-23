@@ -77,7 +77,11 @@ func TestVersionConstants(t *testing.T) {
 	t.Parallel()
 
 	if static.Version1_0_4 != static.Version {
-		t.Errorf("Version1_0_4 = %q, want the pinned Version %q", static.Version1_0_4, static.Version)
+		t.Errorf(
+			"Version1_0_4 = %q, want the pinned Version %q",
+			static.Version1_0_4,
+			static.Version,
+		)
 	}
 
 	for _, tc := range []struct{ name, value string }{
