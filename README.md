@@ -172,13 +172,23 @@ broadcaster.Broadcast(datastar.NewElementsPatch("<div>Update</div>",
 ))
 ```
 
-### Full working example
+### Full working examples
 
-A complete live-feed application is in [`example/`](example/):
+A minimal live-feed application is in [`example/`](example/):
 
 ```bash
 go run ./example/
 # Open http://localhost:8765
+```
+
+The full-stack showcase — [`example/activity-feed/`](example/activity-feed/) —
+layers reconnection replay (Last-Event-ID + ring-buffer `EventStore`),
+alerts-only filtering (`SubscribeFilter`), a live subscriber count, heartbeats,
+and themed UI on top of the same patch values:
+
+```bash
+go run ./example/activity-feed/
+# Open http://localhost:8767
 ```
 
 ## Core concept: the Patch interface

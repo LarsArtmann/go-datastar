@@ -9,7 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Nothing yet.
+- `example/activity-feed/` — the full-stack activity-feed showcase (ported
+  from go-sse and rewritten on the Patch API): `ElementsPatch` feed items with
+  event IDs driving Last-Event-ID replay through a ring-buffer `EventStore`,
+  `SignalsPatch` meta events (subscriber count, replay banner, event total),
+  alerts-only filtering via `SubscribeFilter`, heartbeats, CORS, graceful
+  shutdown, and the pinned JS served by `ScriptHandler`/`ScriptTagVersioned`.
+  Tested (`-race`) and browser-checklisted
+  ([`VERIFY.md`](example/activity-feed/VERIFY.md)).
 
 ### Changed
 

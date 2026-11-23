@@ -1,9 +1,16 @@
-# example/ — the live-feed demo
+# example/ — runnable demos
 
-`go run .` in this directory starts a live-feed dashboard on `:8765` built
-entirely from go-datastar patches: broadcaster fan-out, MemoryStore replay
-on reconnect, and the pinned DataStar JS served by `ScriptHandler`. Zero
+`go run .` in this directory starts a minimal live-feed dashboard on `:8765`
+built entirely from go-datastar patches: broadcaster fan-out, drop logging
+via `WithOnDrop`, and the pinned DataStar JS served by `ScriptHandler`. Zero
 custom client-side JavaScript.
+
+[`activity-feed/`](activity-feed/) is the full-stack showcase (`:8767`):
+patch-elements feed items carrying event IDs, Last-Event-ID replay through a
+ring-buffer `EventStore`, patch-signals meta events (subscriber count,
+replay banner, event total), alerts-only filtering via `SubscribeFilter`,
+heartbeats, CORS, and graceful shutdown — tested under `-race` with a
+browser checklist in [`activity-feed/VERIFY.md`](activity-feed/VERIFY.md).
 
 `domain-adapter/` is a second, smaller demo: a domain layer speaking its own
 events, bridged into patches — see the README section "Patches as values in
