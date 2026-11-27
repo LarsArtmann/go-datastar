@@ -31,6 +31,6 @@ jobs:
         with:
           languages: go
 
-      - uses: github/codeql-action/analyze@6f5948dfacef28e207b48d0905cf90c03365536d # v3
+      - uses: github/codeql-action/analyze@915412ff23e8b7659517e607487dbeae018f2934 # v3
         with:
           category: "/language:go"
